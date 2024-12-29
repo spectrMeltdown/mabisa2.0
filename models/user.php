@@ -1,6 +1,7 @@
 <?php
 class User
 {
+  // public string $profilePicLink; // might add profile pics later
   public string $id; // auto-generated from uuid
   public string $username;
   public string $fullName;
