@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 class User
 {
   // public string $profilePicLink; // might add profile pics later
