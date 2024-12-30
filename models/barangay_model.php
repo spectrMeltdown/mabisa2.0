@@ -42,3 +42,13 @@ enum Barangay: string
   case Tugaya = "Tugaya";
   case Zamora = "Zamora";
 }
+
+function getBarangay($data): ?Barangay
+{
+  foreach (Barangay::cases() as $barangay) {
+    if ($data === $barangay->value) {
+      return $barangay;
+    }
+  }
+  return null;
+}

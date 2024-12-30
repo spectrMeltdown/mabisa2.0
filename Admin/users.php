@@ -26,99 +26,102 @@
               <div class="container mt-5"></div>
             </div>
           </div>
-          <script>
-            function selectGovernance(option) {
-              document.getElementById("dropdownMenuButton").textContent =
-                option;
-            }
-          </script>
 
           <!-- Content Row -->
           <div class="row">
             <form>
               <div class="form-group"></div>
               <!-- Save Criteria -->
-              <!-- Button to open the modal -->
-              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-                Add user
-              </button>
 
-              <!-- The Modal -->
-              <div class="modal fade" id="myModal">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <!-- Modal Header -->
-                    <div class="modal-header">
-                      <h4 class="modal-title">Modal Title</h4>
-                      <button type="button" class="close" data-dismiss="modal">
-                        &times;
-                      </button>
-                    </div>
-
-                    <!-- Modal Body -->
-                    <div class="modal-body">
-                      <!-- Your modal content here -->
-                      <p>This is the modal body.</p>
-                    </div>
-
-                    <!-- Modal Footer -->
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                        Close
-                      </button>
-                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#saveModal">
-                        Save
-                      </button>
-                    </div>
-                  </div>
-                </div>
+              <?php require 'components/modal.php';
+              echo createModal(
+                btnTxt: "Add user",
+                title: "New User",
+                content: '
+              <div class="mb-3">
+                <label for="" class="form-label">Full Name</label>
+                <input type="text" class="form-control" name="fullName" id="fullName" placeholder="e.g John Doe ..." />
               </div>
-
-              <!-- The Save Modal -->
-              <div class="modal fade" id="saveModal">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <!-- Modal Header -->
-                    <div class="modal-header">
-                      <h4 class="modal-title">Save Successful</h4>
-                      <button type="button" class="close" data-dismiss="modal">
-                        &times;
-                      </button>
-                    </div>
-
-                    <!-- Modal Body -->
-                    <div class="modal-body">
-                      <p>Saved successfully!</p>
-                    </div>
-                  </div>
-                </div>
+              <div class="mb-3">
+                <label for="" class="form-label">Username</label>
+                <input type="text" class="form-control" name="username" id="username" placeholder="e.g John Doe ..." />
               </div>
-            </form>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" name="email" id="email" placeholder="abc@mail.com" />
+              </div>
+              <div class="mb-3">
+                <label for="mobileNum" class="form-label">Mobile Number</label>
+                <input type="text" class="form-control" name="mobileNum" id="mobileNum" placeholder="" />
+              </div>
+              <div class="mb-3">
+                <label for="pass" class="form-label">Password</label>
+                <input type="password" class="form-control" name="pass" id="pass" placeholder="" />
+              </div>
+              <div class="mb-3">
+                <label for="confirmPass" class="form-label">Confirm password</label>
+                <input type="password" class="form-control" name="confirmPass" id="confirmPass" placeholder="" />
+              </div>
+              <div class="mb-3">
+                <label for="role" class="form-label">Role</label>
+                <select class="form-select form-select-lg" name="role" id="role" required>
+                  <option value="" disabled selected hidden>Select one</option>
+                   ' .
+                  (function () {
+                    require_once "../models/role_model.php";
+                    $options = '';
+                    foreach (UserRole::cases() as $role) {
+                      $options .= '<option value="' . htmlspecialchars($role->value) . '">' . htmlspecialchars($role->toString()) . '</option>';
+                    }
+                    return $options;
+                  })() .
+                  '</select>
           </div>
-
-          <!-- user table -->
-          <table class="table table-bordered mt-3">
-            <thead>
-              <tr>
-                <!--  Intentionally left blank for checkboxes column -->
-                <th><input type="checkbox"></th>
-                <th>Full Name</th>
-                <th>Role</th>
-                <th>Barangay</th>
-                <th>Created At</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php
-
+          '
+              );
               ?>
-            </tbody>
-          </table>
+              <!-- user table -->
+              <table class="table table-bordered mt-3">
+                <thead>
+                  <tr>
+                    <!--  Intentionally left blank for checkboxes column -->
+                    <!-- <th><input type="checkbox"></th> -->
+                    <th>Full Name</th>
+                    <th>Role</th>
+                    <th>Barangay</th>
+                    <!-- <th>Created At</th> -->
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php
+                  require '../api/get_users.php';
+                  /** @var User[] */
+                  $users = getAllUsers();
+                  if (!empty($users)):
+                    foreach ($users as $user):
+                  ?>
+                      <tr>
+                        <!-- <td><input type="checkbox" class="" name="id" id="<?= htmlspecialchars($user->id) ?>"> </td> -->
+                        <td><?= htmlspecialchars($user->fullName) ?> </td>
+                        <td><?= htmlspecialchars($user->role) ?> </td>
+                        <td><?= htmlspecialchars($user->barangay) ?> </td>
+                        <td></td>
+                      </tr>
+                    <?php
+                    endforeach;
+                  else:
+                    ?>
+                    <tr>
+                      <td colspan="4">No users found</td>
+                    </tr>
+                  <?php endif; ?>
+                </tbody>
+              </table>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 </body>
 <!-- Bootstrap core JavaScript-->
 <script src="../vendor/jquery/jquery.min.js"></script>
