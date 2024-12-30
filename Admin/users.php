@@ -27,97 +27,94 @@
             </div>
           </div>
 
-          <!-- Content Row -->
-          <div class="row">
-            <form>
-              <div class="form-group"></div>
-              <!-- Save Criteria -->
-
-              <?php require 'components/modal.php';
-              echo createModal(
-                btnTxt: "Add user",
-                title: "New User",
-                content: '
+          <?php require 'components/modal.php';
+          echo createModal(
+            btnTxt: "Add user",
+            title: "New User",
+            cancelBtnTxt: 'Cancel',
+            formAttrs: 'action="../api/create_user.php" method="post"',
+            content: '
               <div class="mb-3">
                 <label for="" class="form-label">Full Name</label>
-                <input type="text" class="form-control" name="fullName" id="fullName" placeholder="e.g John Doe ..." />
+                <input type="text" class="form-control" name="fullName" id="fullName" placeholder="e.g John Doe ..." required/>
               </div>
               <div class="mb-3">
                 <label for="" class="form-label">Username</label>
-                <input type="text" class="form-control" name="username" id="username" placeholder="e.g John Doe ..." />
+                <input type="text" class="form-control" name="username" id="username" placeholder="e.g John Doe ..." required/>
               </div>
               <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" name="email" id="email" placeholder="abc@mail.com" />
+                <input type="email" class="form-control" name="email" id="email" placeholder="abc@mail.com" required/>
               </div>
               <div class="mb-3">
                 <label for="mobileNum" class="form-label">Mobile Number</label>
-                <input type="text" class="form-control" name="mobileNum" id="mobileNum" placeholder="" />
+                <input type="tel" class="form-control" name="mobileNum" id="mobileNum" placeholder="" required/>
               </div>
               <div class="mb-3">
                 <label for="pass" class="form-label">Password</label>
-                <input type="password" class="form-control" name="pass" id="pass" placeholder="" />
+                <input type="password" class="form-control" name="pass" id="pass" placeholder="" required/>
               </div>
               <div class="mb-3">
                 <label for="confirmPass" class="form-label">Confirm password</label>
-                <input type="password" class="form-control" name="confirmPass" id="confirmPass" placeholder="" />
+                <input type="password" class="form-control" name="confirmPass" id="confirmPass" placeholder="" required/>
               </div>
               <div class="mb-3">
                 <label for="role" class="form-label">Role</label>
                 <select class="form-select form-select-lg" name="role" id="role" required>
                   <option value="" disabled selected hidden>Select one</option>
                    ' .
-                  (function () {
-                    require_once "../models/role_model.php";
-                    $options = '';
-                    foreach (UserRole::cases() as $role) {
-                      $options .= '<option value="' . htmlspecialchars($role->value) . '">' . htmlspecialchars($role->toString()) . '</option>';
-                    }
-                    return $options;
-                  })() .
-                  '</select>
+              (function () {
+                require_once "../models/role_model.php";
+                $options = '';
+                foreach (UserRole::cases() as $role) {
+                  $options .= '<option value="' . htmlspecialchars($role->value) . '">' . htmlspecialchars($role->toString()) . '</option>';
+                }
+                return $options;
+              })() .
+              '</select>
           </div>
           '
-              );
-              ?>
-              <!-- user table -->
-              <table class="table table-bordered mt-3">
-                <thead>
-                  <tr>
-                    <!--  Intentionally left blank for checkboxes column -->
-                    <!-- <th><input type="checkbox"></th> -->
-                    <th>Full Name</th>
-                    <th>Role</th>
-                    <th>Barangay</th>
-                    <!-- <th>Created At</th> -->
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php
-                  require '../api/get_users.php';
-                  /** @var User[] */
-                  $users = getAllUsers();
-                  if (!empty($users)):
-                    foreach ($users as $user):
-                  ?>
-                      <tr>
-                        <!-- <td><input type="checkbox" class="" name="id" id="<?= htmlspecialchars($user->id) ?>"> </td> -->
-                        <td><?= htmlspecialchars($user->fullName) ?> </td>
-                        <td><?= htmlspecialchars($user->role) ?> </td>
-                        <td><?= htmlspecialchars($user->barangay) ?> </td>
-                        <td></td>
-                      </tr>
-                    <?php
-                    endforeach;
-                  else:
-                    ?>
+          );
+          ?>
+          <!-- user table -->
+          <div class="mx-5">
+            <table class="table table-bordered my-3">
+              <thead>
+                <tr>
+                  <!--  Intentionally left blank for checkboxes column -->
+                  <!-- <th><input type="checkbox"></th> -->
+                  <th>Full Name</th>
+                  <th>Role</th>
+                  <th>Barangay</th>
+                  <!-- <th>Created At</th> -->
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php
+                require '../api/get_users.php';
+                /** @var User[] */
+                $users = getAllUsers();
+                if (!empty($users)):
+                  foreach ($users as $user):
+                ?>
                     <tr>
-                      <td colspan="4">No users found</td>
+                      <!-- <td><input type="checkbox" class="" name="id" id="<?= htmlspecialchars($user->id) ?>"> </td> -->
+                      <td><?= htmlspecialchars($user->fullName) ?> </td>
+                      <td><?= htmlspecialchars($user->role) ?> </td>
+                      <td><?= htmlspecialchars($user->barangay) ?> </td>
+                      <td></td>
                     </tr>
-                  <?php endif; ?>
-                </tbody>
-              </table>
+                  <?php
+                  endforeach;
+                else:
+                  ?>
+                  <tr>
+                    <td colspan="4">No users found.</td>
+                  </tr>
+                <?php endif; ?>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

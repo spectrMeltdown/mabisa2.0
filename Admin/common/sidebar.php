@@ -79,7 +79,7 @@
 
   <li class="nav-item active">
     <a class="nav-link" href="users.php">
-      <i class="fas fa-fw fa-table"></i>
+      <i class="fas fa-fw fa-users"></i>
       <span>Users</span></a>
   </li>
 

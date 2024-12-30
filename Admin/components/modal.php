@@ -1,7 +1,10 @@
 <?php
 
-function createModal(string $btnTxt, string $title, string $content, string $cancelBtnTxt = 'Close'): string
+function createModal(string $btnTxt, string $title, string $content, string $formAttrs = '', string $script = '', string $cancelBtnTxt = 'Close', string $saveBtnTxt = 'Save'): string
 {
+  /** @var string */
+  $topWrapTag = empty($formAttrs) ? '' : '<form ' . $formAttrs . ' >';
+  $bottomWrapTag = empty($formAttrs) ? '' : '</form>';
   return '
    <!-- Button to open the modal -->
               <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
@@ -19,7 +22,7 @@ function createModal(string $btnTxt, string $title, string $content, string $can
                         &times;
                       </button>
                     </div>
-
+                    ' . $topWrapTag . '
                     <div class="modal-body">
                       ' . $content . '
                     </div>
@@ -29,13 +32,16 @@ function createModal(string $btnTxt, string $title, string $content, string $can
                       <button type="button" class="btn btn-secondary" data-dismiss="modal">
                         ' . $cancelBtnTxt . '
                       </button>
-                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#saveModal">
-                        Save
+                      <button ' . (empty($formAttrs) ? 'type="button"' : 'type="submit"') . ' class="btn btn-primary" data-dismiss="modal">
+                        ' . $saveBtnTxt . '
                       </button>
                     </div>
+                    ' . $bottomWrapTag . '
                   </div>
                 </div>
               </div>
+
+              ' . $script . '
 
               <!-- The Save Modal -->
               <div class="modal fade" id="saveModal">
@@ -56,7 +62,6 @@ function createModal(string $btnTxt, string $title, string $content, string $can
                   </div>
                 </div>
               </div>
-            </form>
           </div>
 
   ';
