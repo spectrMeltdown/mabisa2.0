@@ -3,10 +3,9 @@
 function createModal(string $btnTxt, string $title, string $content, string $formAttrs = '', string $script = '', string $cancelBtnTxt = 'Close', string $saveBtnTxt = 'Save'): string
 {
   /** @var string */
-  $topWrapTag = empty($formAttrs) ? '' : '<form ' . $formAttrs . ' >';
+  $topWrapTag = empty($formAttrs) ? '' : '<form ' . $formAttrs . ' id="modalForm">';
   $bottomWrapTag = empty($formAttrs) ? '' : '</form>';
   return '
-   <!-- Button to open the modal -->
               <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
                 ' . $btnTxt . '
               </button>
@@ -32,7 +31,7 @@ function createModal(string $btnTxt, string $title, string $content, string $for
                       <button type="button" class="btn btn-secondary" data-dismiss="modal">
                         ' . $cancelBtnTxt . '
                       </button>
-                      <button ' . (empty($formAttrs) ? 'type="button"' : 'type="submit"') . ' class="btn btn-primary" data-dismiss="modal">
+                      <button ' . (empty($formAttrs) ? 'type="button"' : 'type="submit"') . ' class="btn btn-primary" ' . (empty($formAttrs) ? 'data-dismiss="modal"' : '') . '>
                         ' . $saveBtnTxt . '
                       </button>
                     </div>
@@ -42,7 +41,11 @@ function createModal(string $btnTxt, string $title, string $content, string $for
               </div>
 
               ' . $script . '
-
+            <script>
+              document.getElementById("myModal").addEventListener("hidden.bs.modal", function () {
+                document.getElementById("modalForm").reset();
+              });
+            </script>
               <!-- The Save Modal -->
               <div class="modal fade" id="saveModal">
                 <div class="modal-dialog">

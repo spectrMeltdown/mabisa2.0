@@ -7,7 +7,7 @@ class User
   public string $id; // auto-generated from uuid
   public string $username;
   public string $fullName;
-  public string $barangay; // if secretary, the barangay where they are assigned
+  public ?Barangay $barangay; // if secretary, the barangay where they are assigned
   public string $email;
   public int $mobileNum; // should include country code
   public string $password;
@@ -15,7 +15,7 @@ class User
   // public string $createdAt; // timestamp is preferred when frequently updating a field, in this case, we don't update this.
   public string $role; // enum
 
-  public function __construct(string $id, string $username, string $fullName, string $barangay, string $email, int $mobileNum, string $password, bool $policyRead, string $role, /*string $createdAt*/)
+  public function __construct(string $id, string $username, string $fullName, ?Barangay $barangay, string $email, int $mobileNum, string $password, bool $policyRead, string $role, /*string $createdAt*/)
   {
     $this->id = $id;
     $this->username = $username;

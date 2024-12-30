@@ -35,29 +35,35 @@
             formAttrs: 'action="../api/create_user.php" method="post"',
             content: '
               <div class="mb-3">
-                <label for="" class="form-label">Full Name</label>
-                <input type="text" class="form-control" name="fullName" id="fullName" placeholder="e.g John Doe ..." required/>
+                <label for="fullName" class="form-label">Full Name</label>
+                <input max="100" type="text" class="form-control" name="fullName" id="fullName" placeholder="e.g John Doe ..." required/>
               </div>
+
               <div class="mb-3">
-                <label for="" class="form-label">Username</label>
-                <input type="text" class="form-control" name="username" id="username" placeholder="e.g John Doe ..." required/>
+                <label for="username" class="form-label">Username</label>
+                <input max="100" type="text" class="form-control" name="username" id="username" placeholder="e.g John Doe ..." required/>
               </div>
+              
               <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" name="email" id="email" placeholder="abc@mail.com" required/>
+                <input max="100" type="email" class="form-control" name="email" id="email" placeholder="abc@mail.com" required/>
               </div>
+
               <div class="mb-3">
                 <label for="mobileNum" class="form-label">Mobile Number</label>
-                <input type="tel" class="form-control" name="mobileNum" id="mobileNum" placeholder="" required/>
+                <input max="13" min="11" type="tel" class="form-control" name="mobileNum" id="mobileNum" placeholder="" required/>
               </div>
+
               <div class="mb-3">
                 <label for="pass" class="form-label">Password</label>
-                <input type="password" class="form-control" name="pass" id="pass" placeholder="" required/>
+                <input max="100" type="password" class="form-control" name="pass" id="pass" placeholder="" required/>
               </div>
+
               <div class="mb-3">
                 <label for="confirmPass" class="form-label">Confirm password</label>
-                <input type="password" class="form-control" name="confirmPass" id="confirmPass" placeholder="" required/>
+                <input max="100" type="password" class="form-control" name="confirmPass" id="confirmPass" placeholder="" required/>
               </div>
+
               <div class="mb-3">
                 <label for="role" class="form-label">Role</label>
                 <select class="form-select form-select-lg" name="role" id="role" required>
@@ -72,10 +78,44 @@
                 return $options;
               })() .
               '</select>
-          </div>
+              </div>
+
+                  <div class="mb-3" id="barangayDiv" style="display: none;">
+                <label for="barangay" class="form-label">Barangay</label>
+                <select class="form-select form-select-lg" name="barangay" id="barangay" required>
+                  <option value="" disabled selected hidden>Select one</option>
+                   ' .
+              (function () {
+                require_once "../models/barangay_model.php";
+                $options = '';
+                foreach (Barangay::cases() as $barangay) {
+                  $options .= '<option value="' . htmlspecialchars($barangay->value) . '">' . htmlspecialchars($barangay->value) . '</option>';
+                }
+                return $options;
+              })() .
+              '</select>
+              </div>
+              
+              
           '
           );
           ?>
+          <script>
+            "use strict"
+            document.addEventListener("DOMContentLoaded", function(event) {
+              // listen when the admin changes selection, and display additional inputs
+              document.querySelector("#role").addEventListener("change", (event) => {
+                const selectedOption = event.target.value;
+                console.log(`${selectedOption}`);
+                const barangayDivSelector = document.querySelector("#barangayDiv");
+                if (selectedOption == 2) {
+                  barangayDivSelector.style.display = "block";
+                } else {
+                  barangayDivSelector.style.display = "none";
+                }
+              });
+            });
+          </script>
           <!-- user table -->
           <div class="mx-5">
             <table class="table table-bordered my-3">
@@ -102,7 +142,7 @@
                       <!-- <td><input type="checkbox" class="" name="id" id="<?= htmlspecialchars($user->id) ?>"> </td> -->
                       <td><?= htmlspecialchars($user->fullName) ?> </td>
                       <td><?= htmlspecialchars($user->role) ?> </td>
-                      <td><?= htmlspecialchars($user->barangay) ?> </td>
+                      <td><?= htmlspecialchars($user->barangay ?? 'N/A') ?> </td>
                       <td></td>
                     </tr>
                   <?php
