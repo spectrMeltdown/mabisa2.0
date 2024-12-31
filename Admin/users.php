@@ -1,182 +1,292 @@
+<?php
+error_reporting(E_ALL ^ E_NOTICE);
+date_default_timezone_set('Asia/Manila');
+session_set_cookie_params(0);
+session_start();
+
+// if (!$_SESSION['id']) {
+//   header('location:../actions/logout.php');
+// }
+require_once '../db/db.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-  <?php require('common/head.php') ?>
-  <title>MABISA - Users</title>
+  <?php require 'common/head.php' ?>
+  <script src="own.js"></script>
 </head>
 
 <body id="page-top">
+
   <!-- Page Wrapper -->
   <div id="wrapper">
-    <?php require('common/sidebar.php') ?>
+
+    <!-- Sidebar -->
+    <?php require 'common/sidebar.php' ?>
+    <!-- End of Sidebar -->
+
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
+
       <!-- Main Content -->
       <div id="content">
+
         <!-- Topbar -->
-        <?php require('common/nav.php') ?>
+        <?php include 'common/nav.php'; ?>
+        <!-- End of Topbar -->
 
         <!-- Begin Page Content -->
         <div class="container-fluid">
+
           <!-- Page Heading -->
-          <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Users</h1>
-            <div class="d-sm-flex align-items-center justify-content-between mb-4">
-              <div class="container mt-5"></div>
+          <!-- <h1 class="h3 mb-2 text-gray-800">Tables</h1>
+                    <p class="mb-4">DataTables is a third party plugin that is used to generate the demo table below.
+                        For more information about DataTables, please visit the <a target="_blank"
+                            href="https://datatables.net">official DataTables documentation</a>.</p> -->
+
+          <!-- DataTales Example -->
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <div style="float: left;">
+                <h6 class="m-0 font-weight-bold text-primary">Users</h6>
+              </div>
+              <div style="float: right;">
+                <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#addLocation">Add User</button>
+              </div>
+            </div>
+            <div class="card-body" id="viewLocation">
+              <div class="table-responsive">
+                <table class="table table-bordered" id="user_dataTable" width="100%" cellspacing="0">
+                  <?php
+                  // $stmt = $dbconn->prepare("SELECT COUNT(*) FROM pos.received_from where area_code=? and cmp_code=? ");
+                  $stmt = $dbconn->prepare("SELECT COUNT(*) FROM account where account_type!=00");
+                  $stmt->execute();
+                  $count = $stmt->fetchColumn();
+
+                  if ($count != 0) {
+                  ?>
+                    <thead>
+                      <tr>
+                        <th>Id</th>
+                        <th>Username</th>
+                        <th>Password</th>
+                        <th>Date</th>
+                        <th>Location</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <?php if ($count > 10) { ?>
+                      <tfoot>
+                        <tr>
+                          <th>Id</th>
+                          <th>Username</th>
+                          <th>Password</th>
+                          <th>Date</th>
+                          <th>Location</th>
+                          <th>Action</th>
+                        </tr>
+                      </tfoot>
+                    <?php } ?>
+                    <tbody>
+                      <?php
+                      // $query = $dbconn->prepare("SELECT * FROM pos.received_from where area_code=? and cmp_code=? order by brand_name");
+                      $query = $dbconn->prepare("SELECT a.id,a.username,a.password,a.date,a.account_type,b.country_name,c.region_name,d.province_name,e.city_name,f.barangay_name FROM account as a inner join country as b on a.country_code=b.country_code inner join region as c on a.region_code=c.region_code inner join province as d on a.province_code=d.province_code inner join city as e on a.city_code=e.city_code inner join barangay as f on a.barangay_code=f.barangay_code where a.account_type!=00");
+                      // $query->bindParam(1, $area_code);
+                      // $query->bindParam(2, $cmp_code);
+                      $query->execute();
+                      while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+                      ?>
+                        <tr>
+                          <td><?php echo $row['id'] ?></td>
+                          <td><?php echo $row['username'] ?></td>
+                          <td><?php echo $row['password'] ?></td>
+                          <td><?php echo $row['date'] ?></td>
+                          <td>
+                            <?php echo $row['barangay_name'] . ', ' . $row['city_name'] . ', ' . $row['province_name'] . ', ' . $row['region_name'] . ', ' . $row['country_name'] ?>
+                          </td>
+                          <td>
+                            <a href="#" class="btn btn-sm btn-info btn-circle"
+                              onclick="edit_user('<?php echo $row['id'] ?>')" data-toggle="modal" data-target="#editUser">
+                              <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="#" class="btn btn-sm btn-danger btn-circle"
+                              onclick="delete_user('<?php echo $row['id'] ?>')">
+                              <i class="fas fa-trash"></i>
+                            </a>
+                          </td>
+                        </tr>
+                      <?php } ?>
+                    </tbody>
+                  <?php } else { ?>
+                    <tbody>
+                      <tr>
+                        <td>No Results Found..</td>
+                      </tr>
+                    </tbody>
+                  <?php } ?>
+                </table>
+              </div>
             </div>
           </div>
 
-          <?php require 'components/modal.php';
-          echo createModal(
-            btnTxt: "Add user",
-            title: "New User",
-            cancelBtnTxt: 'Cancel',
-            formAttrs: 'action="../api/create_user.php" method="post"',
-            content: '
-              <div class="mb-3">
-                <label for="fullName" class="form-label">Full Name</label>
-                <input max="100" type="text" class="form-control" name="fullName" id="fullName" placeholder="e.g John Doe ..." required/>
-              </div>
-
-              <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input max="100" type="text" class="form-control" name="username" id="username" placeholder="e.g John Doe ..." required/>
-              </div>
-              
-              <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input max="100" type="email" class="form-control" name="email" id="email" placeholder="abc@mail.com" required/>
-              </div>
-
-              <div class="mb-3">
-                <label for="mobileNum" class="form-label">Mobile Number</label>
-                <input max="13" min="11" type="tel" class="form-control" name="mobileNum" id="mobileNum" placeholder="" required/>
-              </div>
-
-              <div class="mb-3">
-                <label for="pass" class="form-label">Password</label>
-                <input max="100" type="password" class="form-control" name="pass" id="pass" placeholder="" required/>
-              </div>
-
-              <div class="mb-3">
-                <label for="confirmPass" class="form-label">Confirm password</label>
-                <input max="100" type="password" class="form-control" name="confirmPass" id="confirmPass" placeholder="" required/>
-              </div>
-
-              <div class="mb-3">
-                <label for="role" class="form-label">Role</label>
-                <select class="form-select form-select-lg" name="role" id="role" required>
-                  <option value="" disabled selected hidden>Select one</option>
-                   ' .
-              (function () {
-                require_once "../models/role_model.php";
-                $options = '';
-                foreach (UserRole::cases() as $role) {
-                  $options .= '<option value="' . htmlspecialchars($role->value) . '">' . htmlspecialchars($role->toString()) . '</option>';
-                }
-                return $options;
-              })() .
-              '</select>
-              </div>
-
-                  <div class="mb-3" id="barangayDiv" style="display: none;">
-                <label for="barangay" class="form-label">Barangay</label>
-                <select class="form-select form-select-lg" name="barangay" id="barangay" required>
-                  <option value="" disabled selected hidden>Select one</option>
-                   ' .
-              (function () {
-                require_once "../models/barangay_model.php";
-                $options = '';
-                foreach (Barangay::cases() as $barangay) {
-                  $options .= '<option value="' . htmlspecialchars($barangay->value) . '">' . htmlspecialchars($barangay->value) . '</option>';
-                }
-                return $options;
-              })() .
-              '</select>
-              </div>
-              
-              
-          '
-          );
-          ?>
-          <script>
-            "use strict"
-            document.addEventListener("DOMContentLoaded", function(event) {
-              // listen when the admin changes selection, and display additional inputs
-              document.querySelector("#role").addEventListener("change", (event) => {
-                const selectedOption = event.target.value;
-                console.log(`${selectedOption}`);
-                const barangayDivSelector = document.querySelector("#barangayDiv");
-                if (selectedOption == 2) {
-                  barangayDivSelector.style.display = "block";
-                } else {
-                  barangayDivSelector.style.display = "none";
-                }
-              });
-            });
-          </script>
-          <!-- user table -->
-          <div class="mx-5">
-            <table class="table table-bordered my-3">
-              <thead>
-                <tr>
-                  <!--  Intentionally left blank for checkboxes column -->
-                  <!-- <th><input type="checkbox"></th> -->
-                  <th>Full Name</th>
-                  <th>Role</th>
-                  <th>Barangay</th>
-                  <!-- <th>Created At</th> -->
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php
-                require '../api/get_users.php';
-                /** @var User[] */
-                $users = getAllUsers();
-                if (!empty($users)):
-                  foreach ($users as $user):
-                ?>
-                    <tr>
-                      <!-- <td><input type="checkbox" class="" name="id" id="<?= htmlspecialchars($user->id) ?>"> </td> -->
-                      <td><?= htmlspecialchars($user->fullName) ?> </td>
-                      <td><?= htmlspecialchars($user->role) ?> </td>
-                      <td><?= htmlspecialchars($user->barangay ?? 'N/A') ?> </td>
-                      <td></td>
-                    </tr>
-                  <?php
-                  endforeach;
-                else:
-                  ?>
-                  <tr>
-                    <td colspan="4">No users found.</td>
-                  </tr>
-                <?php endif; ?>
-              </tbody>
-            </table>
-          </div>
         </div>
+        <!-- /.container-fluid -->
+
       </div>
+      <!-- End of Main Content -->
+
+      <!-- Footer -->
+      <?php include '../lib/footer.php' ?>
+      <!-- End of Footer -->
+
     </div>
+    <!-- End of Content Wrapper -->
+
+  </div>
+  <!-- End of Page Wrapper -->
+
+  <?php include '../lib/bot.php' ?>
+  <script src="user.js"></script>
+
 </body>
-<!-- Bootstrap core JavaScript-->
-<script src="../vendor/jquery/jquery.min.js"></script>
-<script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-<!-- Core plugin JavaScript-->
-<script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
-
-<!-- Custom scripts for all pages-->
-<script src="../js/sb-admin-2.min.js"></script>
-
-<!-- Page level plugins -->
-<script src="../vendor/chart.js/Chart.min.js"></script>
-
-<!-- Page level custom scripts -->
-<script src="../js/demo/chart-area-demo.js"></script>
-<script src="../js/demo/chart-pie-demo.js"></script>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="../js/users.js"></script>
 
 </html>
+
+<div class="modal fade" id="addLocation" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-primary">
+        <h5 class="modal-title text-white" id="exampleModalLabel">Add User</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="mt-4 mb-4">
+          <div id="alert"></div>
+        </div>
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="form-group">
+              <label for="country">Country Name</label>
+              <select class="form-control" id="country" onchange="onchange_country(this.value)">
+                <option selected disabled>Select Country</option>
+                <?php
+                $query = $dbconn->prepare("SELECT * FROM country ");
+                $query->execute();
+                while ($row1 = $query->fetch(PDO::FETCH_ASSOC)) {
+                ?>
+                  <option value="<?php echo $row1['country_code'] ?>"><?php echo $row1['country_name'] ?></option>
+                <?php } ?>
+              </select>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="form-group">
+              <label for="region">Region Name</label>
+              <select class="form-control" id="region" onchange="onchange_region(this.value)">
+                <option selected disabled>Select Region</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="form-group">
+              <label for="province">Province Name</label>
+              <select class="form-control" id="province" onchange="onchange_province(this.value)">
+                <option selected disabled>Select Province</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="form-group">
+              <label for="city">City/Municipality Name</label>
+              <select class="form-control" id="city" onchange="onchange_city(this.value)">
+                <option selected disabled>Select City/Municipality</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="form-group">
+              <label for="barangay">Barangay Name</label>
+              <select class="form-control" id="barangay">
+                <option selected disabled>Select Barangay</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-2">
+            <div class="form-group">
+              <label for="username_brgy">Username</label>
+              <input class="form-control" type="text" name="username_brgy" id="username_brgy">
+            </div>
+          </div>
+          <div class="col-lg-2">
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input class="form-control" type="password" name="password" id="password">
+            </div>
+          </div>
+          <div class="col-lg-2">
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input class="form-control" type="email" name="email" id="new_email">
+            </div>
+          </div>
+          <div class="col-lg-2">
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input class="form-control" type="text" name="phone" id="phone" placeholder="ex. +639123456789"
+                maxlength="13">
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="form-group">
+              <label for="account_type">Account Type</label>
+              <select class="form-control" name="account_type" id="account_type">
+                <!-- <option value="05">Country's Office</option> -->
+                <!-- <option value="04">Region's Office</option> -->
+                <!-- <option value="03">Province's Office</option> -->
+                <!-- <option value="02">Mayor's Office</option> -->
+                <option value="01">Barangay</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="saveUser()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="editUser" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content" id="display_edit">
+
+
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $('#user_dataTable').DataTable();
+  //   $('#tableLocation').DataTable({
+  //     responsive: {
+  //     details: {
+  //       type: 'column'
+  //     }
+  //   },
+  //   columnDefs: [{
+  //     className: 'control',
+  //     orderable: false,
+  //     targets: 0
+  //   }],
+  //   order: [1, 'asc']
+  // });
+</script>

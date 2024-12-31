@@ -26,13 +26,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   if ($pass != $confirmPass) {
     die('Passwords do not match!!');
   }
-
+  // echo $mobileNum;
   // construct new user
   $user = new User('', $username, $fullName, $barangay, $email, (int)$mobileNum, $pass, false, $role);
 
   // insert to database
   global $pdo;
-  $sql = 'insert into user_policy (username, full_name, email_add, mobile_no, passwrd, accessLevel, barangay) values (:username, :fullname, :email, :mobileNum, :password, :role, :barangay)';
+  $sql = 'insert into user_policy (username, fullName, email, mobileNo, password, accessLevel, barangay) values (:username, :fullname, :email, :mobileNum, :password, :role, :barangay)';
   try {
     $stmt = $pdo->prepare($sql);
     $stmt->execute([

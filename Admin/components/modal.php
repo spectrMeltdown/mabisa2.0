@@ -31,7 +31,7 @@ function createModal(string $btnTxt, string $title, string $content, string $for
                       <button type="button" class="btn btn-secondary" data-dismiss="modal">
                         ' . $cancelBtnTxt . '
                       </button>
-                      <button ' . (empty($formAttrs) ? 'type="button"' : 'type="submit"') . ' class="btn btn-primary" ' . (empty($formAttrs) ? 'data-dismiss="modal"' : '') . '>
+                      <button ' . (empty($formAttrs) ? 'type="button"' : 'type="submit"') . ' class="btn btn-primary">
                         ' . $saveBtnTxt . '
                       </button>
                     </div>
@@ -42,8 +42,9 @@ function createModal(string $btnTxt, string $title, string $content, string $for
 
               ' . $script . '
             <script>
-              document.getElementById("myModal").addEventListener("hidden.bs.modal", function () {
-                document.getElementById("modalForm").reset();
+              document.querySelector("#myModal") .addEventListener("click", function() {
+                const modal = document.querySelector("#myModal");
+                const bsModal = bootstrap.Modal.getInstance(modal);
               });
             </script>
               <!-- The Save Modal -->
