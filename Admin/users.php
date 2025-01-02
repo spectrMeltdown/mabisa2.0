@@ -15,7 +15,7 @@ require_once '../db/db.php';
 
 <head>
   <?php require 'common/head.php' ?>
-  <script src="own.js"></script>
+  <script src="../js/own.js"></script>
 </head>
 
 <body id="page-top">
@@ -60,8 +60,8 @@ require_once '../db/db.php';
               <div class="table-responsive">
                 <table class="table table-bordered" id="user_dataTable" width="100%" cellspacing="0">
                   <?php
-                  // $stmt = $dbconn->prepare("SELECT COUNT(*) FROM pos.received_from where area_code=? and cmp_code=? ");
-                  $stmt = $dbconn->prepare("SELECT COUNT(*) FROM account where account_type!=00");
+                  // $stmt = $pdo->prepare("SELECT COUNT(*) FROM pos.received_from where area_code=? and cmp_code=? ");
+                  $stmt = $pdo->prepare("SELECT COUNT(*) FROM user_policy");
                   $stmt->execute();
                   $count = $stmt->fetchColumn();
 
@@ -69,43 +69,36 @@ require_once '../db/db.php';
                   ?>
                     <thead>
                       <tr>
-                        <th>Id</th>
+                        <th>Fullname</th>
                         <th>Username</th>
-                        <th>Password</th>
-                        <th>Date</th>
-                        <th>Location</th>
+                        <th>Role</th>
+                        <th>Barangay</th>
                         <th>Action</th>
                       </tr>
                     </thead>
                     <?php if ($count > 10) { ?>
                       <tfoot>
                         <tr>
-                          <th>Id</th>
+                          <th>Fullname</th>
                           <th>Username</th>
-                          <th>Password</th>
-                          <th>Date</th>
-                          <th>Location</th>
+                          <th>Role</th>
+                          <th>Barangay</th>
                           <th>Action</th>
                         </tr>
                       </tfoot>
                     <?php } ?>
                     <tbody>
                       <?php
-                      // $query = $dbconn->prepare("SELECT * FROM pos.received_from where area_code=? and cmp_code=? order by brand_name");
-                      $query = $dbconn->prepare("SELECT a.id,a.username,a.password,a.date,a.account_type,b.country_name,c.region_name,d.province_name,e.city_name,f.barangay_name FROM account as a inner join country as b on a.country_code=b.country_code inner join region as c on a.region_code=c.region_code inner join province as d on a.province_code=d.province_code inner join city as e on a.city_code=e.city_code inner join barangay as f on a.barangay_code=f.barangay_code where a.account_type!=00");
-                      // $query->bindParam(1, $area_code);
-                      // $query->bindParam(2, $cmp_code);
+                      require_once '../models/role_model.php';
+                      $query = $pdo->prepare("select * from user_policy");
                       $query->execute();
                       while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
                       ?>
                         <tr>
-                          <td><?php echo $row['id'] ?></td>
+                          <td><?php echo $row['fullName'] ?></td>
                           <td><?php echo $row['username'] ?></td>
-                          <td><?php echo $row['password'] ?></td>
-                          <td><?php echo $row['date'] ?></td>
-                          <td>
-                            <?php echo $row['barangay_name'] . ', ' . $row['city_name'] . ', ' . $row['province_name'] . ', ' . $row['region_name'] . ', ' . $row['country_name'] ?>
-                          </td>
+                          <td><?php echo getRole($row['accessLevel'])->toString() ?></td>
+                          <td><?php echo $row['barangay'] ?></td>
                           <td>
                             <a href="#" class="btn btn-sm btn-info btn-circle"
                               onclick="edit_user('<?php echo $row['id'] ?>')" data-toggle="modal" data-target="#editUser">
@@ -138,7 +131,7 @@ require_once '../db/db.php';
       <!-- End of Main Content -->
 
       <!-- Footer -->
-      <?php include '../lib/footer.php' ?>
+
       <!-- End of Footer -->
 
     </div>
@@ -147,8 +140,7 @@ require_once '../db/db.php';
   </div>
   <!-- End of Page Wrapper -->
 
-  <?php include '../lib/bot.php' ?>
-  <script src="user.js"></script>
+  <script src="../js/user.js"></script>
 
 </body>
 
@@ -174,7 +166,7 @@ require_once '../db/db.php';
               <select class="form-control" id="country" onchange="onchange_country(this.value)">
                 <option selected disabled>Select Country</option>
                 <?php
-                $query = $dbconn->prepare("SELECT * FROM country ");
+                $query = $pdo->prepare("SELECT * FROM country ");
                 $query->execute();
                 while ($row1 = $query->fetch(PDO::FETCH_ASSOC)) {
                 ?>
@@ -233,7 +225,7 @@ require_once '../db/db.php';
           <div class="col-lg-2">
             <div class="form-group">
               <label for="email">Email</label>
-              <input class="form-control" type="email" name="email" id="new_email">
+              <input class="form-control" type="email" name="email" id="email">
             </div>
           </div>
           <div class="col-lg-2">
