@@ -2,7 +2,7 @@
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
   <!-- Sidebar - Brand -->
   <a class="sidebar-brand d-flex align-items-center justify-content-center"
-    href="<?= isset($indexMain) ? '../index_main.php' : 'index_main.php' ?>">
+    href="<?= isset($indexMain) ? 'index_main.php' : '../index_main.php' ?>">
     <div class="sidebar-brand-icon">
       <i><img src="<?= isset($indexMain) ? 'Logo.png' : '../Logo.png' ?>" height="60 px" /></i>
     </div>
@@ -13,8 +13,8 @@
   <hr class="sidebar-divider my-0" />
 
   <!-- Nav Item - Dashboard -->
-  <li class="nav-item">
-    <a class="nav-link" href="<?= isset($indexMain) ? '../index_main.php' : 'index_main.php' ?>">
+  <li class="nav-item <?= isset($indexMain) ? 'active' : '' ?>">
+    <a class="nav-link" href="<?= isset($indexMain) ? 'index_main.php' : '../index_main.php' ?>">
       <i class="fas fa-fw fa-tachometer-alt"></i>
       <span>Dashboard</span></a>
   </li>
@@ -26,8 +26,8 @@
   <div class="sidebar-heading">Criteria Management</div>
 
   <!-- Nav Item - Criteria -->
-  <li class="nav-item">
-    <a class="nav-link collapsed" href=" href=" <?= isset($indexMain) ? 'Admin/criteria.php' : 'criteria.php' ?>"">
+  <li class="nav-item <?= isset($isSetupCriteriaPhp) ? 'active' : '' ?>">
+    <a class="nav-link collapsed" href="<?= isset($indexMain) ? 'Admin/criteria.php' : 'criteria.php' ?>">
       <i class="fas fa-fw fa-cog"></i>
       <span>Set-Up Criteria</span>
     </a>
@@ -37,7 +37,7 @@
   </li>
 
   <!-- Nav Item - Utilities Collapse Menu -->
-  <li class="nav-item">
+  <li class="nav-item <?= isset($isCriteriaPhp) ? 'active' : '' ?>">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true"
       aria-controls="collapseUtilities">
       <i class="fas fa-fw fa-wrench"></i>
@@ -72,27 +72,27 @@
   <div class="sidebar-heading">Barangay Management</div>
 
   <!-- Nav Item - Tables -->
-  <li class="nav-item">
+  <li class="nav-item <?= isset($isBarAssessmentPhp) ? 'active' : '' ?>">
     <a class="nav-link" href="<?= isset($indexMain) ? 'Admin/bar_assessment.php' : 'bar_assessment.php' ?>">
-      <i class="fas fa-fw fa-table"></i>
+      <i class="fas fa-fw fa-edit"></i>
       <span>Barangay Assessment</span></a>
   </li>
 
-  <li class="nav-item">
+  <li class="nav-item <?= isset($isLocationPhp) ? 'active' : '' ?>">
     <a class="nav-link" href="<?= isset($indexMain) ? 'Admin/location.php' : 'location.php' ?>">
-      <i class="fas fa-fw fa-table"></i>
+      <i class="fas fa-fw fa-location"></i>
       <span>Location</span></a>
   </li>
 
-  <li class="nav-item active">
+  <li class="nav-item <?= isset($isUsersPhp) ? 'active' : '' ?>">
     <a class="nav-link" href="<?= isset($indexMain) ? 'Admin/users.php' : 'users.php' ?>">
       <i class="fas fa-fw fa-users"></i>
       <span>Users</span></a>
   </li>
 
-  <li class="nav-item">
+  <li class="nav-item <?= isset($isReports) ? 'active' : '' ?>">
     <a class="nav-link" href="<?= isset($indexMain) ? 'Admin/reports.php' : 'reports.php' ?>">
-      <i class="fas fa-fw fa-table"></i>
+      <i class="fas fa-fw fa-line-chart"></i>
       <span>Generate Report</span></a>
   </li>
 

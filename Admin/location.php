@@ -14,7 +14,9 @@ require_once '../db/db.php';
 <html lang="en">
 
 <head>
-  <?php require 'common/head.php' ?>
+  <?php
+  $isLocationPhp = true;
+  require 'common/head.php' ?>
 </head>
 
 <body id="page-top">
@@ -224,10 +226,10 @@ require_once '../db/db.php';
             </div>
           </div>
           <script>
-          function selectGovernance(option) {
-            document.getElementById("dropdownMenuButton").textContent =
-              option;
-          }
+            function selectGovernance(option) {
+              document.getElementById("dropdownMenuButton").textContent =
+                option;
+            }
           </script>
 
           <!-- Content Row -->

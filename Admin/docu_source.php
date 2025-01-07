@@ -21,7 +21,9 @@ require_once '../db/db.php';
   <!-- Page Wrapper -->
   <div id="wrapper">
     <!-- Sidebar -->
-    <?php require 'common/sidebar.php' ?>
+    <?php
+    $isCriteriaPhp = true;
+    require 'common/sidebar.php' ?>
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
@@ -318,104 +320,104 @@ require_once '../db/db.php';
             </div>
 
             <script>
-            // Initialize variables
-            let rows = [];
-            let editRowIndex = null;
+              // Initialize variables
+              let rows = [];
+              let editRowIndex = null;
 
-            // Function to add a new row
-            function addRow() {
-              const documentName = document
-                .getElementById("document")
-                .value.trim();
-              const source = document.getElementById("source").value.trim();
+              // Function to add a new row
+              function addRow() {
+                const documentName = document
+                  .getElementById("document")
+                  .value.trim();
+                const source = document.getElementById("source").value.trim();
 
-              if (documentName === "" || source === "") {
-                if (documentName === "") {
-                  document.getElementById("document-error").innerHTML =
-                    "Please enter a document name";
+                if (documentName === "" || source === "") {
+                  if (documentName === "") {
+                    document.getElementById("document-error").innerHTML =
+                      "Please enter a document name";
+                  } else {
+                    document.getElementById("document-error").innerHTML = "";
+                  }
+
+                  if (source === "") {
+                    document.getElementById("source-error").innerHTML =
+                      "Please enter a source";
+                  } else {
+                    document.getElementById("source-error").innerHTML = "";
+                  }
                 } else {
-                  document.getElementById("document-error").innerHTML = "";
+                  const newRow = {
+                    id: rows.length + 1,
+                    document: documentName,
+                    source,
+                  };
+                  rows.push(newRow);
+                  renderTable();
+                  document.getElementById("add-row-form").reset();
+                  $("#addRowModal").modal("hide");
                 }
-
-                if (source === "") {
-                  document.getElementById("source-error").innerHTML =
-                    "Please enter a source";
-                } else {
-                  document.getElementById("source-error").innerHTML = "";
-                }
-              } else {
-                const newRow = {
-                  id: rows.length + 1,
-                  document: documentName,
-                  source,
-                };
-                rows.push(newRow);
-                renderTable();
-                document.getElementById("add-row-form").reset();
-                $("#addRowModal").modal("hide");
               }
-            }
 
-            // Function to edit a row
-            function editRow(index) {
-              editRowIndex = index;
-              const row = rows[index];
-              document.getElementById("edit-document").value = row.document;
-              document.getElementById("edit-source").value = row.source;
-              $("#editRowModal").modal("show");
-            }
+              // Function to edit a row
+              function editRow(index) {
+                editRowIndex = index;
+                const row = rows[index];
+                document.getElementById("edit-document").value = row.document;
+                document.getElementById("edit-source").value = row.source;
+                $("#editRowModal").modal("show");
+              }
 
-            // Function to save changes to a row
-            function saveChanges() {
-              const documentName = document
-                .getElementById("edit-document")
-                .value.trim();
-              const source = document
-                .getElementById("edit-source")
-                .value.trim();
+              // Function to save changes to a row
+              function saveChanges() {
+                const documentName = document
+                  .getElementById("edit-document")
+                  .value.trim();
+                const source = document
+                  .getElementById("edit-source")
+                  .value.trim();
 
-              if (documentName === "" || source === "") {
-                if (documentName === "") {
-                  document.getElementById("edit-document-error").innerHTML =
-                    "Please enter a document name";
+                if (documentName === "" || source === "") {
+                  if (documentName === "") {
+                    document.getElementById("edit-document-error").innerHTML =
+                      "Please enter a document name";
+                  } else {
+                    document.getElementById("edit-document-error").innerHTML =
+                      "";
+                  }
+
+                  if (source === "") {
+                    document.getElementById("edit-source-error").innerHTML =
+                      "Please enter a source";
+                  } else {
+                    document.getElementById("edit-source-error").innerHTML =
+                      "";
+                  }
                 } else {
-                  document.getElementById("edit-document-error").innerHTML =
-                    "";
+                  rows[editRowIndex].document = documentName;
+                  rows[editRowIndex].source = source;
+                  renderTable();
+                  $("#editRowModal").modal("hide");
                 }
+              }
 
-                if (source === "") {
-                  document.getElementById("edit-source-error").innerHTML =
-                    "Please enter a source";
-                } else {
-                  document.getElementById("edit-source-error").innerHTML =
-                    "";
-                }
-              } else {
-                rows[editRowIndex].document = documentName;
-                rows[editRowIndex].source = source;
-                renderTable();
+              // Function to cancel editing a row
+              function cancelEdit() {
                 $("#editRowModal").modal("hide");
               }
-            }
 
-            // Function to cancel editing a row
-            function cancelEdit() {
-              $("#editRowModal").modal("hide");
-            }
+              // Function to delete a row
+              function deleteRow(index) {
+                rows.splice(index, 1);
+                renderTable();
+              }
 
-            // Function to delete a row
-            function deleteRow(index) {
-              rows.splice(index, 1);
-              renderTable();
-            }
-
-            // Function to render the table
-            function renderTable() {
-              const tableBody = document.getElementById("table-body");
-              tableBody.innerHTML = "";
-              rows.forEach((row, index) => {
-                const rowElement = document.createElement("tr");
-                rowElement.innerHTML = `
+              // Function to render the table
+              function renderTable() {
+                const tableBody = document.getElementById("table-body");
+                tableBody.innerHTML = "";
+                rows.forEach((row, index) => {
+                  const rowElement = document.createElement("tr");
+                  rowElement.innerHTML = `
                       <td>${row.id}</td>
                       <td>${row.document}</td>
                       <td>${row.source}</td>
@@ -424,35 +426,35 @@ require_once '../db/db.php';
                         <button class="btn btn-danger btn-sm" onclick="deleteRow(${index})">Delete</button>
                       </td>
                     `;
-                tableBody.appendChild(rowElement);
-              });
-            }
+                  tableBody.appendChild(rowElement);
+                });
+              }
 
-            // Add event listeners
-            document
-              .getElementById("add-row-btn")
-              .addEventListener("click", (e) => {
-                e.preventDefault();
-                addRow();
-              });
+              // Add event listeners
+              document
+                .getElementById("add-row-btn")
+                .addEventListener("click", (e) => {
+                  e.preventDefault();
+                  addRow();
+                });
 
-            document
-              .getElementById("add-row-form")
-              .addEventListener("submit", (e) => {
-                e.preventDefault();
-                addRow();
-              });
+              document
+                .getElementById("add-row-form")
+                .addEventListener("submit", (e) => {
+                  e.preventDefault();
+                  addRow();
+                });
 
-            document
-              .getElementById("save-row-btn")
-              .addEventListener("click", (e) => {
-                e.preventDefault();
-                saveChanges();
-              });
+              document
+                .getElementById("save-row-btn")
+                .addEventListener("click", (e) => {
+                  e.preventDefault();
+                  saveChanges();
+                });
 
-            document
-              .getElementById("cancel-edit")
-              .addEventListener("click", cancelEdit);
+              document
+                .getElementById("cancel-edit")
+                .addEventListener("click", cancelEdit);
             </script>
           </div>
 

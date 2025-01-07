@@ -24,7 +24,9 @@ require_once '../db/db.php';
   <div id="wrapper">
 
     <!-- Sidebar -->
-    <?php require 'common/sidebar.php' ?>
+    <?php
+    $isUsersPhp = true;
+    require 'common/sidebar.php' ?>
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->

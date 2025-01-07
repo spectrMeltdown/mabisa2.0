@@ -21,7 +21,9 @@ require_once '../db/db.php';
   <!-- Page Wrapper -->
   <div id="wrapper">
     <!-- Sidebar -->
-    <?php require 'common/sidebar.php' ?>
+    <?php
+    $isBarAssessmentPhp = true;
+    require 'common/sidebar.php' ?>
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
@@ -224,10 +226,10 @@ require_once '../db/db.php';
             </div>
           </div>
           <script>
-          function selectGovernance(option) {
-            document.getElementById("dropdownMenuButton").textContent =
-              option;
-          }
+            function selectGovernance(option) {
+              document.getElementById("dropdownMenuButton").textContent =
+                option;
+            }
           </script>
 
           <!-- Content Row -->

@@ -21,7 +21,9 @@ require_once '../db/db.php';
   <!-- Page Wrapper -->
   <div id="wrapper">
     <!-- Sidebar -->
-    <?php require 'common/sidebar.php' ?>
+    <?php
+    $isCriteriaPhp = true;
+    require 'common/sidebar.php' ?>
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->

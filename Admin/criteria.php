@@ -14,14 +14,18 @@ require_once '../db/db.php';
 <html lang="en">
 
 <head>
-  <?php require 'common/head.php' ?>
+  <?php
+  $isSetupCriteriaPhp = true;
+  require 'common/head.php' ?>
 </head>
 
 <body id="page-top">
   <!-- Page Wrapper -->
   <div id="wrapper">
     <!-- Sidebar -->
-    <?php require 'common/sidebar.php' ?>
+    <?php
+    $isSetupCriteriaPhp = true;
+    require 'common/sidebar.php' ?>
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
@@ -244,9 +248,9 @@ require_once '../db/db.php';
           <input type="text" id="versionInput" class="form-control d-inline-block" style="width: 200px" readonly />
 
           <script>
-          function updateVersion(selectedVersion) {
-            document.getElementById("versionInput").value = selectedVersion;
-          }
+            function updateVersion(selectedVersion) {
+              document.getElementById("versionInput").value = selectedVersion;
+            }
           </script>
 
           <div class="dropdown d-inline-block fluid">
@@ -272,36 +276,36 @@ require_once '../db/db.php';
           <input type="text" id="governanceInput" class="form-control d-inline-block" style="width: 200px" readonly />
 
           <script>
-          function updateGovernance(selectedGovernance) {
-            document.getElementById("governanceInput").value =
-              selectedGovernance;
-          }
+            function updateGovernance(selectedGovernance) {
+              document.getElementById("governanceInput").value =
+                selectedGovernance;
+            }
           </script>
 
           <!-- Content Row -->
           <script>
-          function toggleSubRequirement(select, row) {
-            const subRequirementCell = row.querySelector(
-              ".sub-requirement-cell"
-            );
-            if (select.value !== "") {
-              // Create a select element for sub-requirements
-              subRequirementCell.innerHTML = `
+            function toggleSubRequirement(select, row) {
+              const subRequirementCell = row.querySelector(
+                ".sub-requirement-cell"
+              );
+              if (select.value !== "") {
+                // Create a select element for sub-requirements
+                subRequirementCell.innerHTML = `
                                     <select class="form-select" placeholder="Select Sub-requirement">
                                         <option value="">No Sub-requirement</option>
                                         <option value="sub-option1">Sub Option 1</option>
                                         <option value="sub-option2">Sub Option 2</option>
                                         <option value="sub-option3">Sub Option 3</option>
                                     </select>`;
-            } else {
-              subRequirementCell.innerHTML = "";
+              } else {
+                subRequirementCell.innerHTML = "";
+              }
             }
-          }
 
-          function addRow() {
-            const table = document.querySelector(".table tbody");
-            const newRow = document.createElement("tr");
-            newRow.innerHTML = `
+            function addRow() {
+              const table = document.querySelector(".table tbody");
+              const newRow = document.createElement("tr");
+              newRow.innerHTML = `
                                 <td>
                                     <select class="form-select" name="indicatorNew">
                                         <option value="">Select Indicator</option>
@@ -334,17 +338,17 @@ require_once '../db/db.php';
                                     <button class="btn btn-danger btn-sm" onclick="deleteRow(this)">Delete</button>
                                 </td>
                             `;
-            table.appendChild(newRow);
-          }
+              table.appendChild(newRow);
+            }
 
-          function deleteRow(button) {
-            const row = button.closest("tr");
-            row.parentNode.removeChild(row);
-          }
+            function deleteRow(button) {
+              const row = button.closest("tr");
+              row.parentNode.removeChild(row);
+            }
 
-          document.addEventListener("DOMContentLoaded", function() {
-            // Initial setup if needed
-          });
+            document.addEventListener("DOMContentLoaded", function() {
+              // Initial setup if needed
+            });
           </script>
 
           <div class="container mt-5">

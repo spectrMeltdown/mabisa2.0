@@ -14,7 +14,9 @@ require_once '../db/db.php';
 <html lang="en">
 
 <head>
-  <?php require 'common/head.php' ?>
+  <?php
+  $isCriteriaPhp = true;
+  require 'common/head.php' ?>
 </head>
 
 <body id="page-top">
@@ -241,12 +243,12 @@ require_once '../db/db.php';
           <button class="btn btn-success" id="saveRows">Save</button>
 
           <script>
-          // get the table body element
-          const tableBody = document.getElementById("tableBody");
+            // get the table body element
+            const tableBody = document.getElementById("tableBody");
 
-          // function to add a new row
-          function addRow() {
-            const newRow = `
+            // function to add a new row
+            function addRow() {
+              const newRow = `
                           <tr>
                             <td><input type="text" placeholder="Core/Essential"></td>
                             <td><input type="text" placeholder="Definition"></td>
@@ -257,45 +259,45 @@ require_once '../db/db.php';
                             </td>
                           </tr>
                         `;
-            tableBody.innerHTML += newRow;
-          }
-
-          // function to delete a row
-          function deleteRow(btn) {
-            const row = btn.parentNode.parentNode;
-            tableBody.removeChild(row);
-          }
-
-          // function to edit a row (not implemented, you can add your own logic here)
-          function editRow(btn) {
-            console.log("Edit row functionality not implemented");
-          }
-
-          // function to save the added rows
-          function saveRows() {
-            const rows = tableBody.rows;
-            const data = [];
-            for (let i = 0; i < rows.length; i++) {
-              const row = rows[i];
-              const cells = row.cells;
-              const rowData = {
-                column1: cells[0].getElementsByTagName("input")[0].value,
-                column2: cells[1].getElementsByTagName("input")[0].value,
-                column3: cells[2].getElementsByTagName("input")[0].value,
-              };
-              data.push(rowData);
+              tableBody.innerHTML += newRow;
             }
-            console.log("Saved data:", data);
-            // You can send the data to your server or perform any other action here
-          }
 
-          // add event listeners to the buttons
-          document
-            .getElementById("addRow")
-            .addEventListener("click", addRow);
-          document
-            .getElementById("saveRows")
-            .addEventListener("click", saveRows);
+            // function to delete a row
+            function deleteRow(btn) {
+              const row = btn.parentNode.parentNode;
+              tableBody.removeChild(row);
+            }
+
+            // function to edit a row (not implemented, you can add your own logic here)
+            function editRow(btn) {
+              console.log("Edit row functionality not implemented");
+            }
+
+            // function to save the added rows
+            function saveRows() {
+              const rows = tableBody.rows;
+              const data = [];
+              for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const cells = row.cells;
+                const rowData = {
+                  column1: cells[0].getElementsByTagName("input")[0].value,
+                  column2: cells[1].getElementsByTagName("input")[0].value,
+                  column3: cells[2].getElementsByTagName("input")[0].value,
+                };
+                data.push(rowData);
+              }
+              console.log("Saved data:", data);
+              // You can send the data to your server or perform any other action here
+            }
+
+            // add event listeners to the buttons
+            document
+              .getElementById("addRow")
+              .addEventListener("click", addRow);
+            document
+              .getElementById("saveRows")
+              .addEventListener("click", saveRows);
           </script>
 
           <!-- Content Row -->
