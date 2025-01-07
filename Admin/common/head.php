@@ -30,4 +30,14 @@
   crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 <!-- Custom -->
-<link href="../css/sb-admin-2.min.css" rel="stylesheet" />
+<?php
+if (!isset($indexMain)) :
+?>
+  <link href="../css/sb-admin-2.min.css" rel="stylesheet" />
+<?php
+else:
+?>
+  <link href="css/sb-admin-2.min.css" rel="stylesheet" />
+<?php
+endif
+?>

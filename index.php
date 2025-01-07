@@ -112,7 +112,7 @@
                                                     Me</label>
                                             </div>
                                         </div>
-                                        <a href="index_main.html" class="btn btn-primary btn-user btn-block">Login</a>
+                                        <a href="index_main.php" class="btn btn-primary btn-user btn-block">Login</a>
                                         <!--<button type="submit" name="login" id="login" class="btn btn-primary btn-user btn-block">
                                             Login
                                         </button>-->
