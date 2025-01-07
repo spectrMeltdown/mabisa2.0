@@ -1,7 +1,8 @@
 <!-- Sidebar -->
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
   <!-- Sidebar - Brand -->
-  <a class="sidebar-brand d-flex align-items-center justify-content-center" href="../index_main.php">
+  <a class="sidebar-brand d-flex align-items-center justify-content-center"
+    href="<?= isset($indexMain) ? '../index_main.php' : 'index_main.php' ?>">
     <div class="sidebar-brand-icon">
       <i><img src="<?= isset($indexMain) ? 'Logo.png' : '../Logo.png' ?>" height="60 px" /></i>
     </div>
@@ -13,7 +14,7 @@
 
   <!-- Nav Item - Dashboard -->
   <li class="nav-item">
-    <a class="nav-link" href="../index_main.php">
+    <a class="nav-link" href="<?= isset($indexMain) ? '../index_main.php' : 'index_main.php' ?>">
       <i class="fas fa-fw fa-tachometer-alt"></i>
       <span>Dashboard</span></a>
   </li>
@@ -26,7 +27,7 @@
 
   <!-- Nav Item - Criteria -->
   <li class="nav-item">
-    <a class="nav-link collapsed" href="Criteria.php">
+    <a class="nav-link collapsed" href=" href=" <?= isset($indexMain) ? 'Admin/criteria.php' : 'criteria.php' ?>"">
       <i class="fas fa-fw fa-cog"></i>
       <span>Set-Up Criteria</span>
     </a>
@@ -78,19 +79,19 @@
   </li>
 
   <li class="nav-item">
-    <a class="nav-link" href="location.php">
+    <a class="nav-link" href="<?= isset($indexMain) ? 'Admin/location.php' : 'location.php' ?>">
       <i class="fas fa-fw fa-table"></i>
       <span>Location</span></a>
   </li>
 
   <li class="nav-item active">
-    <a class="nav-link" href="users.php">
+    <a class="nav-link" href="<?= isset($indexMain) ? 'Admin/users.php' : 'users.php' ?>">
       <i class="fas fa-fw fa-users"></i>
       <span>Users</span></a>
   </li>
 
   <li class="nav-item">
-    <a class="nav-link" href="reports.php">
+    <a class="nav-link" href="<?= isset($indexMain) ? 'Admin/reports.php' : 'reports.php' ?>">
       <i class="fas fa-fw fa-table"></i>
       <span>Generate Report</span></a>
   </li>
