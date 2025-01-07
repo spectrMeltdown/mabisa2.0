@@ -93,7 +93,7 @@
   <li class="nav-item <?= isset($isReports) ? 'active' : '' ?>">
     <a class="nav-link" href="<?= isset($indexMain) ? 'Admin/reports.php' : 'reports.php' ?>">
       <i class="fas fa-fw fa-line-chart"></i>
-      <span>Generate Report</span></a>
+      <span>Reports</span></a>
   </li>
 
   <!-- Divider -->
