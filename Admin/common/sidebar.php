@@ -80,7 +80,7 @@
 
   <li class="nav-item <?= isset($isLocationPhp) ? 'active' : '' ?>">
     <a class="nav-link" href="<?= isset($indexMain) ? 'Admin/location.php' : 'location.php' ?>">
-      <i class="fas fa-fw fa-location"></i>
+      <i class="fas fa-fw fa-map-marker-alt"></i>
       <span>Location</span></a>
   </li>
 
@@ -92,7 +92,7 @@
 
   <li class="nav-item <?= isset($isReports) ? 'active' : '' ?>">
     <a class="nav-link" href="<?= isset($indexMain) ? 'Admin/reports.php' : 'reports.php' ?>">
-      <i class="fas fa-fw fa-line-chart"></i>
+      <i class="fas fa-fw fa-chart-line"></i>
       <span>Reports</span></a>
   </li>
 

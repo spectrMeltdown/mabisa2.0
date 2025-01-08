@@ -10,30 +10,36 @@
     <meta name="author" content="">
 
     <title>MABISA | Aloran</title>
-    <link rel="icon" href="images/favicon.png"/>
+    <link rel="icon" href="images/favicon.png" />
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 
     <!-- Custom styles for this template-->
-    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="css/sb-admin-2.css" rel="stylesheet">
     <style type="text/css">
         @media (max-width: 768px) {
-          .mv_hide {
-            display: none; /* hide the div for mobile view */
-          }
+            .mv_hide {
+                display: none;
+                /* hide the div for mobile view */
+            }
         }
+
         .image-container {
             text-align: center;
         }
 
         .image-container img {
-            margin: 0 2px; /* Adjust the margin as needed */
+            margin: 0 2px;
+            /* Adjust the margin as needed */
         }
 
         /* Make text smaller */
-        h2, h5, label, .form-control {
+        h2,
+        h5,
+        label,
+        .form-control {
             font-size: 0.8em !important;
         }
 
@@ -47,7 +53,6 @@
             padding: 0.25rem 0.5rem !important;
             font-size: 0.8em !important;
         }
-        
     </style>
 </head>
 
@@ -62,7 +67,7 @@
 
         <!-- Outer Row -->
         <div class="row justify-content-center">
-        <!-- <div class="row"> -->
+            <!-- <div class="row"> -->
 
             <div class="col-xl-6 col-lg-8 col-md-8">
                 <div class="card o-hidden border-0 shadow-lg my-10" style="border-radius: 2%; background-color:#4e73df">
@@ -73,7 +78,7 @@
                                 <br>
                                 <div class="col-lg-12 text-center" style="padding-right: 0px;"> <!-- Center the content and add padding -->
                                     <div class="p-5" style="color: white">
-                                    <h2> <b style="font-size: 30px;">Vision</b></h2>
+                                        <h2> <b style="font-size: 30px;">Vision</b></h2>
                                         <h5 class="text-justify">A strongly determined and highly trusted Department committed to capacitate and nurture local government units, public order and safety institutions to sustain peaceful, progressive, and resilient communities where people live happily.</h5>
                                     </div>
                                 </div>
@@ -88,16 +93,16 @@
                             <div class="col-lg-6" style="background-color: #ffffff">
                                 <div class="p-5">
                                     <div class="text-center">
-                                    <br>
-                                    
+                                        <br>
+
                                         <img src="images/index.png" width="200" height="60">
                                     </div>
-                                    
+
                                     <form class="user mt-4" action="actions/login.php" method="post">
                                         <div class="form-group">
                                             <label for="username"><b>Username:</b></label>
                                             <input type="text" class="form-control form-control-user"
-                                                id="username" name="username" 
+                                                id="username" name="username"
                                                 placeholder="Enter Username...">
                                         </div>
                                         <div class="form-group">
@@ -116,19 +121,19 @@
                                         <!--<button type="submit" name="login" id="login" class="btn btn-primary btn-user btn-block">
                                             Login
                                         </button>-->
-                                      
+
                                     </form>
                                     <div class="text-center">
                                         <small style="font-size: 10px;">Note: This website is for the LGU of ALORAN only.</small> <!-- Centered text -->
                                     </div>
                                     <br>
-                               
+
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            
+
             </div>
 
         </div>
