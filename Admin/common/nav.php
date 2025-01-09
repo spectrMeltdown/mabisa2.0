@@ -1,3 +1,7 @@
+<?php
+
+?>
+
 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
   <!-- Sidebar Toggle (Topbar) -->
   <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
@@ -53,7 +57,7 @@
         </h6>
         <a class="dropdown-item d-flex align-items-center" href="#">
           <div class="dropdown-list-image mr-3">
-            <img class="rounded-circle" src="img/undraw_profile_1.svg" alt="...">
+            <img class="rounded-circle" src="<?= $pathPrepend ?>img/undraw_profile_1.svg" alt="...">
             <div class="status-indicator bg-success"></div>
           </div>
           <div class="font-weight-bold">

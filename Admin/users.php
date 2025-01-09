@@ -15,7 +15,7 @@ require_once '../db/db.php';
 
 <head>
   <?php require 'common/head.php' ?>
-  <script src="../js/own.js"></script>
+  <script src="../js/users.js" defer></script>
 </head>
 
 <body id="page-top">
@@ -43,19 +43,14 @@ require_once '../db/db.php';
         <div class="container-fluid">
 
           <!-- Page Heading -->
-          <!-- <h1 class="h3 mb-2 text-gray-800">Tables</h1>
-                    <p class="mb-4">DataTables is a third party plugin that is used to generate the demo table below.
-                        For more information about DataTables, please visit the <a target="_blank"
-                            href="https://datatables.net">official DataTables documentation</a>.</p> -->
 
-          <!-- DataTales Example -->
           <div class="card shadow mb-4">
             <div class="card-header py-3">
               <div style="float: left;">
-                <h6 class="m-0 font-weight-bold text-primary">Users</h6>
+                <h3 class="m-0 font-weight-bold text-primary">Users</h3>
               </div>
               <div style="float: right;">
-                <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#addLocation">Add User</button>
+                <button class="btn btn-sm btn-primary add-user-btn" data-toggle="modal" data-target="#crud-user">Add User</button>
               </div>
             </div>
             <div class="card-body" id="viewLocation">
@@ -102,12 +97,13 @@ require_once '../db/db.php';
                           <td><?php echo getRole($row['accessLevel'])->toString() ?></td>
                           <td><?php echo $row['barangay'] ?></td>
                           <td>
-                            <a href="#" class="btn btn-sm btn-info btn-circle"
-                              onclick="edit_user('<?php echo $row['id'] ?>')" data-toggle="modal" data-target="#editUser">
+                            <a href="#edit-user" class="btn btn-sm btn-info btn-circle edit-user-btn"
+                              data-toggle="modal" data-target="#crud-user" data-id="<?= $row['id'] ?>">
                               <i class="fas fa-edit"></i>
                             </a>
-                            <a href="#" class="btn btn-sm btn-danger btn-circle"
-                              onclick="delete_user('<?php echo $row['id'] ?>')">
+                            <a href="#delete-user"
+                              data-toggle="modal" data-target="#delete-user"
+                              class="btn btn-sm btn-danger btn-circle delete-btn" data-id="<?= $row['id'] ?>">
                               <i class="fas fa-trash"></i>
                             </a>
                           </td>
@@ -132,7 +128,7 @@ require_once '../db/db.php';
     <!-- End of Content Wrapper -->
   </div>
   <!-- End of Page Wrapper -->
-  <script src="../js/user.js"></script>
+  <?php require 'components/crud_user_dialog.php' ?>
 </body>
 
 </html>

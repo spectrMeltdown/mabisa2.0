@@ -26,7 +26,6 @@
     "contributors": [
         "David Miller (https://davidmiller.io/)"
     ],
-
     "dependencies": {
         "@fortawesome/fontawesome-free": "5.15.3",
         "bootstrap": "4.6.0",

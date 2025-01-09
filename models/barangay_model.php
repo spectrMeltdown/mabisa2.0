@@ -43,6 +43,7 @@ enum Barangay: string
   case Zamora = "Zamora";
 }
 
+// convert string to a barangay object
 function getBarangay($data): ?Barangay
 {
   foreach (Barangay::cases() as $barangay) {
