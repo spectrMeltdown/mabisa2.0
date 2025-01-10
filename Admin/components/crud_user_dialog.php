@@ -15,7 +15,7 @@
           </div>
         </div>
 
-        <form id="modal-content" class="d-none user-form-submit">
+        <form id="modal-content" class="d-none user-form-submit" data-edit-mode="true">
           <!-- for displaying error -->
           <div class="mt-4 mb-4">
             <div id="alert"></div>
