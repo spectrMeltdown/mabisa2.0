@@ -35,7 +35,6 @@ try {
     'barangay' => $row['barangay'] ?? 'N/A',
     'email' => $row['email'] ?? '',
     'mobileNo' => (int)($row['mobileNo'] ?? 0),
-    'password' => $row['password'] ?? '',
     'policyRead' => (bool)($row['policyRead'] ?? false),
     'role' => isset($row['accessLevel']) ? getRole($row['accessLevel'])?->toString() : '--'
   ];

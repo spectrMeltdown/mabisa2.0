@@ -15,7 +15,7 @@
           </div>
         </div>
 
-        <form id="modal-content" class="d-none">
+        <form id="modal-content" class="d-none user-form-submit">
           <!-- for displaying error -->
           <div class="mt-4 mb-4">
             <div id="alert"></div>
@@ -54,7 +54,7 @@
             </div>
           </div>
 
-          <div class="mb-3 col-lg-6 form-group">
+          <div class="mb-3 col-lg-6 form-group" id="confirmPassField">
             <label for="confirmPass" class="form-label">Confirm password</label>
             <div class="d-flex">
               <input max="100" type="password" class="form-control" name="confirmPass" id="confirmPass" required autocomplete="new-password" />
@@ -97,7 +97,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" onclick="saveUser()">Save</button>
+        <button type="button" class="btn btn-primary" id="save-user-btn">Save</button>
       </div>
     </div>
   </div>

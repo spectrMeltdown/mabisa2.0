@@ -1,4 +1,8 @@
 "use strict"
+const modalLabel = document.getElementById('modalLabel');
+const passLabel = document.getElementById('passwordLabel');
+let origPassLabel = '';
+let origModalLabel = '';
 // import $ from 'jquery';
 // stopped using jquery because i'm practicing javascript lol
 
@@ -56,31 +60,33 @@ document.getElementById('confirmPassEye').addEventListener('click', function () 
 // for showing modal after clicking edit btn
 // using document.addEventListener is better than document.querySelectorAll().forEach() 
 // because the latter only works when the element in query is static (not dynamically added/removed)
-document.addEventListener('click', async (event) => {
-  if (event.target.classList.contains('edit-user-btn')) {
-
+// reset the form element in crud user dialog
+$('#crud-user').on('show.bs.modal', function (event) {
+  if ($(event.relatedTarget).hasClass('edit-user-btn')) {
+    console.log('editing');
     // Change the h5 with id 'modalLabel' under the modal with id="crud-user" to "Edit user"
-    const modalLabel = document.getElementById('modalLabel');
-    const origModalLabel = modalLabel.textContent;
+    origModalLabel = modalLabel.textContent;
     modalLabel.textContent = 'Edit User';  // Update the modal label text
 
-// Change the h5 with id 'modalLabel' under the modal with id="crud-user" to "Edit user"
-const passLabel = document.getElementById('passwordLabel');
-const origPassLabel = passLabel.textContent;
-passLabel.textContent = 'New Password';  // Update the modal label text
+    // Change the h5 with id 'modalLabel' under the modal with id="crud-user" to "Edit user"
+    origPassLabel = passLabel.textContent;
+    passLabel.textContent = 'New Password';  // Update the modal label text
+
+    // hide confirm password because we are editing
+    $('#confirmPassField').css('display', 'none');
 
     // // Show the edit modal crud-user
     // const modal = new bootstrap.Modal(document.getElementById('crud-user'));
     // modal.show();
 
-    const userID = event.target.dataset.id;  // Get the user ID from the clicked button
+    const userID = $(event.relatedTarget).data('id');  // Get the user ID from the clicked button
 
     // Show loading spinner and hide content initially
     // document.getElementById('loadingSpinner').style.display = 'block';
     // document.getElementById('modal-content').style.display = 'none';
 
     // GET request to ../api/get_user.php
-    await fetch(`../api/get_user.php?id=${userID}`)
+    fetch(`../api/get_user.php?id=${userID}`)
     .then(response => response.json())
     .then(data => {
       // Assuming 'data' contains the user info for filling the modal
@@ -91,8 +97,6 @@ passLabel.textContent = 'New Password';  // Update the modal label text
       document.getElementById('username').value = user.email  || '';
       document.getElementById('email').value = user.email  || '';
       document.getElementById('mobileNum').value = user.mobileNo  || '';
-      document.getElementById('pass').value = user.password  || '';
-      document.getElementById('confirmPass').value = user.password  || '';
 
       // Handle the 'role' select element
       const roleSelect = document.getElementById('role');
@@ -112,8 +116,8 @@ passLabel.textContent = 'New Password';  // Update the modal label text
       // Handle the 'barangay' select element
       const barangaySelect = document.getElementById('barangay');
       const barangayDiv = document.getElementById('barangayDiv');
+      console.log(`barangay was: ${user.barangay}`);
       if (user.barangay && user.barangay !== 'N/A') {
-        console.log(user.barangay);
         barangayDiv.style.display = 'inline-block';
         const barangayOption = Array.from(barangaySelect.options).find(option => option.text === user.barangay);
         if (barangayOption) {
@@ -141,23 +145,61 @@ passLabel.textContent = 'New Password';  // Update the modal label text
       document.getElementById('modal-content').classList.remove('d-none');
     });
   }
-  else if (event.target.classList.contains('.add-user-btn')) {
+  else if ($(event.relatedTarget).hasClass('add-user-btn')) {
+    console.log('adding');
     // Show the edit modal crud-user
-    const modal = new bootstrap.Modal(document.getElementById('crud-user'));
-    modal.show();
   }
-});
-
-$('#crud-user').on('hidden.bs.modal', function () {
-  console.log('entered here');
 })
 
 // reset the form element in crud user dialog
-// document.getElementById('crud-user').addEventListener('hidden.bs.modal', function () {
-//   console.log('entered here');
-//   const form = this.querySelector('form');
-//   if (form) form.reset();
-//   // revert the text to original
-//   modalLabel.textContent = origModalLabel;
-//   passLabel.textContent = origPassLabel;
-// });
+$('#crud-user').on('hidden.bs.modal', function (e) {
+  const form = this.querySelector('form');
+  if (form) form.reset();
+
+  // revert the text to original
+  modalLabel.textContent = origModalLabel;
+  passLabel.textContent = origPassLabel;
+
+  // hide barangay option
+  const barangayDiv = document.getElementById('barangayDiv');
+  barangayDiv.style.display = 'none';
+
+  // display confirm pass again
+  $('#confirmPassField').css('display', 'inline-block');
+})
+
+
+$('.user-form-submit').on('submit', function(e) {
+  e.preventDefault();
+  
+  // check if password is long enough
+  const password = $('#pass').val().trim();  
+	if (password.length < 8) {
+    $('#alert').html('<div class="alert alert-danger alert-dismissible fade show" role="alert">'+
+		  '<strong>Error!</strong> Password must atleast 8 letters or numbers.'+
+		  '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'+
+      '<span aria-hidden="true">&times;</span>'+
+		  '</button>'+
+      '</div>');
+      $ok = 0;
+    }
+    
+    // check if passwords match
+    const confirmPass = $('#confirmPass').val().trim();
+    if (password !== confirmPass) {
+    // display validation error
+    return;
+  }
+
+  // get values
+  const username = $('#username').val().trim();
+  const fullName = $('#fullName').val().trim();
+  const email = $('#email').val().trim();
+  const mobileNum = $('#mobileNum').val().trim();
+  const role = $('#role').val().trim();
+  const barangay = $('#barangay').val().trim();
+  $.ajax({
+    type: 'POST',
+    url: '../api/',
+  });
+})
