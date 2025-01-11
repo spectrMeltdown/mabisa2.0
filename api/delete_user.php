@@ -1,30 +1,53 @@
 <?php
-error_reporting(E_ALL ^ E_NOTICE);
-date_default_timezone_set('Asia/Manila');
-session_set_cookie_params(0);
-session_start();
 
-// if(!$_SESSION['idno']){ header('location:../actions/logout.php'); }
-require_once '../../dbconn.php';
-$dbconn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-$dbconn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-$dbconn->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+declare(strict_types=1);
+require_once '../db/db.php';
+require_once '../auth/check_permissions.php'; // Ensure this checks admin privileges
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+  // Ensure `id` is passed in the request
+  if (empty($_POST['id'])) {
+    http_response_code(400); // Bad Request
+    echo 'Missing user ID.';
+    exit;
+  }
 
-if (!$dbconn) {
-  die("ERROR: Unable to connect to database.");
+  $userId = trim($_POST['id']);
+
+  // Validate UUID format using a regex
+  if (!preg_match('/^[a-f0-9\-]{36}$/i', $userId)) {
+    http_response_code(400); // Bad Request
+    echo 'Invalid user ID format.';
+    exit;
+  }
+
+  // Ensure the user has proper authorization
+  // if (!checkAdminPermission()) { // Adjust based on your authentication logic
+  //   http_response_code(403); // Forbidden
+  //   echo 'You are not authorized to delete users.';
+  //   exit;
+  // }
+
+  global $pdo;
+  $sql = 'DELETE FROM user_policy WHERE id = :id';
+
+  try {
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':id', $userId, PDO::PARAM_STR);
+
+    if ($stmt->execute()) {
+      if ($stmt->rowCount() > 0) {
+        echo ''; // Blank response indicates success
+      } else {
+        http_response_code(404); // Not Found
+        echo 'User not found or already deleted.';
+      }
+    } else {
+      http_response_code(500); // Internal Server Error
+      echo 'Failed to delete user. Please try again.';
+    }
+  } catch (Exception $e) {
+    http_response_code(500); // Internal Server Error
+    echo 'An error occurred: ' . $e->getMessage();
+  }
 }
-
-$date_ = date('Y-m-d');
-$time_ = date('H:i:s');
-$year_ = date('Y');
-?>
-<?
-if (isset($_POST['delete'])) {
-  $val = $_POST['val'];
-  $query = $dbconn->prepare("DELETE FROM account where id=?");
-  $query->bindParam(1, $val);
-  $query->execute();
-?>
-
-<?php } ?>
