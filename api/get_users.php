@@ -5,6 +5,8 @@ require_once '../db/db.php';
 require_once '../models/user_model.php';
 require_once '../models/role_model.php';
 
+header('Content-Type: application/json');
+
 function getAllUsers(): array
 {
   global $pdo;
@@ -32,3 +34,5 @@ function getAllUsers(): array
 
   return $users;
 }
+
+echo json_encode(getAllUsers());

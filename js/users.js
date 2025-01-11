@@ -1,8 +1,11 @@
 "use strict";
+
 const modalLabel = document.getElementById("modalLabel");
 const passLabel = document.getElementById("passwordLabel");
 let origPassLabel = "Password";
 let origModalLabel = "Add user";
+let currentUserID;
+const defaultAlert = '<div class="alert"></div>';
 // import $ from 'jquery';
 // stopped using jquery because i'm practicing javascript lol
 
@@ -24,30 +27,11 @@ document.querySelector("#role").addEventListener("change", (event) => {
 });
 
 // show/hide in password field
-document.getElementById("passEye").addEventListener("click", function () {
-  console.log("eye toggled");
-  const passwordInput = document.getElementById("pass");
-  const icon = this.querySelector("i");
-
-  // Toggle the input type
-  if (passwordInput.type === "password") {
-    passwordInput.type = "text";
-    icon.classList.remove("fa-eye");
-    icon.classList.add("fa-eye-slash");
-  } else {
-    passwordInput.type = "password";
-    icon.classList.remove("fa-eye-slash");
-    icon.classList.add("fa-eye");
-  }
-});
-
-// show/hide password in confirm pass field
-document
-  .getElementById("confirmPassEye")
-  .addEventListener("click", function () {
-    console.log("eye toggled (confirm pass)");
-    const passwordInput = document.getElementById("confirmPass");
-    const icon = this.querySelector("i");
+document.addEventListener("DOMContentLoaded", (e) => {
+  document.getElementById("passEye").addEventListener("click", function () {
+    console.log("eye toggled");
+    const passwordInput = document.getElementById("pass");
+    const icon = this.children[0];
 
     // Toggle the input type
     if (passwordInput.type === "password") {
@@ -60,6 +44,27 @@ document
       icon.classList.add("fa-eye");
     }
   });
+
+  // show/hide password in confirm pass field
+  document
+    .getElementById("confirmPassEye")
+    .addEventListener("click", function () {
+      console.log("eye toggled (confirm pass)");
+      const passwordInput = document.getElementById("confirmPass");
+      const icon = this.children[0];
+      console.log(icon.classList);
+      // Toggle the input type
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+      } else {
+        passwordInput.type = "password";
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+      }
+    });
+});
 
 // for showing modal after clicking edit btn
 // using document.addEventListener is better than document.querySelectorAll().forEach()
@@ -83,14 +88,14 @@ $("#crud-user").on("show.bs.modal", function (event) {
     // const modal = new bootstrap.Modal(document.getElementById('crud-user'));
     // modal.show();
 
-    const userID = $(event.relatedTarget).data("id"); // Get the user ID from the clicked button
+    currentUserID = $(event.relatedTarget).data("id"); // Get the user ID from the clicked button
 
     // Show loading spinner and hide content initially
     // document.getElementById('loadingSpinner').style.display = 'block';
     // document.getElementById('modal-content').style.display = 'none';
 
     // GET request to ../api/get_user.php
-    fetch(`../api/get_user.php?id=${userID}`)
+    fetch(`../api/get_user.php?id=${currentUserID}`)
       .then((response) => response.json())
       .then((data) => {
         // Assuming 'data' contains the user info for filling the modal
@@ -183,11 +188,31 @@ $("#crud-user").on("hidden.bs.modal", function (e) {
 
   // display confirm pass again
   $("#confirmPassField").css("display", "inline-block");
+
+  // remove the userID
+  currentUserID = undefined;
+
+  //hide alerts
+  $("#alert").html(defaultAlert);
 });
 
 // when submitting the form
-$("#save-user-btn").on("click", function (e) {
-  console.log("user form submitted");
+$("#save-user-btn").on("click", async (e) => {
+  // get all users to compare existing usernames & emails
+  const users = await fetch(`../api/get_users.php`).then((response) => {
+    if (!response.ok) {
+      $("#alert").html(
+        '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
+          "<strong>Error!</strong> Network error!." +
+          '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+          '<span aria-hidden="true">&times;</span>' +
+          "</button>" +
+          "</div>",
+      );
+      throw new Error("Network problem!");
+    }
+    return response.json();
+  });
   let ok = true;
   const editMode = Boolean($(this).data("edit-mode"));
   e.preventDefault();
@@ -217,7 +242,7 @@ $("#save-user-btn").on("click", function (e) {
   }
 
   // check if passwords match
-  if (password !== confirmPass && !editMode) {
+  if (!editMode && password !== confirmPass) {
     $("#alert").html(
       '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
         "<strong>Error!</strong> Passwords do not match." +
@@ -233,6 +258,30 @@ $("#save-user-btn").on("click", function (e) {
     $("#alert").html(
       '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
         "<strong>Error!</strong> Username cannot be empty." +
+        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+        '<span aria-hidden="true">&times;</span>' +
+        "</button>" +
+        "</div>",
+    );
+    ok = false;
+  }
+
+  if (!editMode && users.some((user) => user.username === username)) {
+    $("#alert").html(
+      '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
+        "<strong>Error!</strong> Username already taken." +
+        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+        '<span aria-hidden="true">&times;</span>' +
+        "</button>" +
+        "</div>",
+    );
+    ok = false;
+  }
+
+  if (!editMode && users.some((user) => user.email === email)) {
+    $("#alert").html(
+      '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
+        "<strong>Error!</strong> Email already taken." +
         '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
         '<span aria-hidden="true">&times;</span>' +
         "</button>" +
@@ -293,7 +342,7 @@ $("#save-user-btn").on("click", function (e) {
     console.log("form not ok!");
     return;
   }
-  $("#alert").html('<div class="alert"></div>');
+  $("#alert").html(defaultAlert);
   $.ajax({
     type: "POST",
     url: "../api/create_user.php",
@@ -307,7 +356,8 @@ $("#save-user-btn").on("click", function (e) {
       barangay: barangay,
     },
     success: function (result) {
-      if (result !== "") {
+      // check if null, empty, false, 0, infinity, etc
+      if (!result) {
         $("#crud-user").modal("hide");
         location.reload();
         $("#main-toast-container").append(
