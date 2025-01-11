@@ -27,4 +27,6 @@ $pathPrepend = isset($indexMain) ? '' : '../';
 <link href="<?= $pathPrepend ?>css/sb-admin-2.min.css" rel="stylesheet" />
 <script src="<?= $pathPrepend ?>js/sb-admin-2.min.js"></script>
 
+<script src="<?= $pathPrepend ?>js/toast.js"></script>
+
 <title>MABISA - Admin</title>

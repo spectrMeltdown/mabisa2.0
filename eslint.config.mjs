@@ -1,8 +1,8 @@
-const globals = require("globals");
-const pluginJs = require("@eslint/js");
+import globals from "globals";
+import pluginJs from "@eslint/js";
 
 /** @type {import('eslint').Linter.Config[]} */
-module.exports = [
+const config = [
   {
     files: ["**/*.js"],
     languageOptions: {
@@ -16,3 +16,5 @@ module.exports = [
   },
   pluginJs.configs.recommended,
 ];
+
+export default config;

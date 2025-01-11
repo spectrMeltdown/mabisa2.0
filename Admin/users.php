@@ -16,6 +16,7 @@ require_once '../db/db.php';
 <head>
   <?php require 'common/head.php' ?>
   <script src="../js/users.js" defer></script>
+  <script src="../js/confirmation.js" defer></script>
 </head>
 
 <body id="page-top">
@@ -102,8 +103,7 @@ require_once '../db/db.php';
                               <i class="fas fa-edit"></i>
                             </a>
                             <a href="#delete-user"
-                              data-toggle="modal" data-target="#delete-user"
-                              class="btn btn-sm btn-danger btn-circle delete-btn" data-id="<?= $row['id'] ?>">
+                              class="btn btn-sm btn-danger btn-circle delete-user-btn" data-id="<?= $row['id'] ?>">
                               <i class="fas fa-trash"></i>
                             </a>
                           </td>
