@@ -109,7 +109,10 @@ if ($barangay_id) {
     <div id="wrapper">
 
         <!--sidebar start  -->
-        <?php include '../common/sidebar.php' ?>
+        <?php
+        $isBarAssessmentPhp = true;
+        include '../common/sidebar.php' ?>
+
         <!-- sidebar end -->
 
         <!-- Content Wrapper -->
@@ -129,7 +132,7 @@ if ($barangay_id) {
                             <h4>Barangay Details</h4>
                             <p><strong>Barangay ID:</strong> <?php echo htmlspecialchars($barangay_id); ?></p>
                             <p><strong>Barangay Name:</strong> <?php echo htmlspecialchars($barangay_name); ?></p>
-                            <a href="./bar_assessment" class="btn btn-secondary">Back</a>
+                            <a href="./bar_assessment.php" class="btn btn-secondary">Back</a>
                         </div>
                     </div>
                     <?php if (!empty($area_description)): ?>
@@ -183,98 +186,100 @@ if ($barangay_id) {
                                                                 <td> <?php
                                                                 $status = $responses->getStatus($barangay_id, $minReq['keyctr'], $area_desc['keyctr'], $indicator['indicator_code'], $minReq['reqs_code']);
 
-                                                                if (!$status):
-                                                                    if ($role === 'Secretary'):
-                                                                        ?>
+                                                                if (!$status): ?>
 
-                                                                            <form method="POST" action="./bar_assessment/user_actions/upload.php"
-                                                                                enctype="multipart/form-data"
-                                                                                id="uploadForm_<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <input type="hidden" name="barangay_id"
-                                                                                    value="<?php echo htmlspecialchars($barangay_id, ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <input type="hidden" name="req_keyctr"
-                                                                                    value="<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <input type="hidden" name="desc_ctr"
-                                                                                    value="<?php echo htmlspecialchars($area_desc['keyctr'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <input type="hidden" name="indicator_code"
-                                                                                    value="<?php echo htmlspecialchars($indicator['indicator_code'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <input type="hidden" name="reqs_code"
-                                                                                    value="<?php echo htmlspecialchars($minReq['reqs_code'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <input type="file" name="file"
-                                                                                    id="fileInput_<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>"
-                                                                                    style="display: none;" required>
-                                                                                <button type="button" class="btn btn-primary mb-3"
+                                                                    <!-- Case: Secretary Role -->
+                                                                    <?php if ($role === 'Secretary'): ?>
+                                                                        <form method="POST" action="./bar_assessment/user_actions/upload.php"
+                                                                              enctype="multipart/form-data"
+                                                                              id="uploadForm_<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>">
+                                                                            <input type="hidden" name="barangay_id"
+                                                                                   value="<?php echo htmlspecialchars($barangay_id, ENT_QUOTES, 'UTF-8'); ?>">
+                                                                            <input type="hidden" name="req_keyctr"
+                                                                                   value="<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>">
+                                                                            <input type="hidden" name="desc_ctr"
+                                                                                   value="<?php echo htmlspecialchars($area_desc['keyctr'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                                            <input type="hidden" name="indicator_code"
+                                                                                   value="<?php echo htmlspecialchars($indicator['indicator_code'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                                            <input type="hidden" name="reqs_code"
+                                                                                   value="<?php echo htmlspecialchars($minReq['reqs_code'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                                            <input type="file" name="file"
+                                                                                   id="fileInput_<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>"
+                                                                                   style="display: none;" required>
+                                                                            <button type="button" class="btn btn-primary mb-3"
                                                                                     onclick="document.getElementById('fileInput_<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>').click();">
-                                                                                    Upload a File
-                                                                                </button>
-                                                                            </form>
-
-                                                                            <script>
-                                                                                document.getElementById('fileInput_<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>').addEventListener('change', function () {
+                                                                                Upload a File
+                                                                            </button>
+                                                                        </form>
+                                                                
+                                                                        <script>
+                                                                            document.getElementById('fileInput_<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>')
+                                                                                .addEventListener('change', function () {
                                                                                     if (this.files.length > 0) {
                                                                                         document.getElementById('uploadForm_<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>').submit();
                                                                                     }
                                                                                 });
-                                                                            </script>
-
-                                                                            <?php
-                                                                    endif;
-                                                                else:
-
-                                                                    ?>
-                                                                        <form method="POST" action="./bar_assessment/admin_actions/view.php"
-                                                                            target="_blank">
+                                                                        </script>
+                                                                    <?php elseif ($role === 'Admin'): ?>
+                                                                        <!-- Case: Admin Role -->
+                                                                        <p>No Uploads Yet</p>
+                                                                    <?php endif; ?>
+                                                                
+                                                                <?php else: ?>
+                                                                
+                                                                    <!-- Case: File is Present -->
+                                                                    <form method="POST" action="./bar_assessment/admin_actions/view.php" target="_blank">
+                                                                        <input type="hidden" name="barangay_id"
+                                                                               value="<?php echo htmlspecialchars($barangay_id, ENT_QUOTES, 'UTF-8'); ?>">
+                                                                        <input type="hidden" name="req_keyctr"
+                                                                               value="<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>">
+                                                                        <input type="hidden" name="desc_ctr"
+                                                                               value="<?php echo htmlspecialchars($area_desc['keyctr'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                                        <input type="hidden" name="indicator_code"
+                                                                               value="<?php echo htmlspecialchars($indicator['indicator_code'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                                        <input type="hidden" name="reqs_code"
+                                                                               value="<?php echo htmlspecialchars($minReq['reqs_code'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                                        <button type="submit" class="btn btn-success mb-3">View File</button>
+                                                                    </form>
+                                                                
+                                                                    <!-- Additional Options for Secretary -->
+                                                                    <?php if ($role === 'Secretary'): ?>
+                                                                        <form method="POST" action="./bar_assessment/user_actions/delete.php" onsubmit="return confirmDelete(event);">
                                                                             <input type="hidden" name="barangay_id"
-                                                                                value="<?php echo htmlspecialchars($barangay_id, ENT_QUOTES, 'UTF-8'); ?>">
+                                                                                   value="<?php echo htmlspecialchars($barangay_id, ENT_QUOTES, 'UTF-8'); ?>">
                                                                             <input type="hidden" name="req_keyctr"
-                                                                                value="<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>">
+                                                                                   value="<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>">
                                                                             <input type="hidden" name="desc_ctr"
-                                                                                value="<?php echo htmlspecialchars($area_desc['keyctr'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                                                   value="<?php echo htmlspecialchars($area_desc['keyctr'], ENT_QUOTES, 'UTF-8'); ?>">
                                                                             <input type="hidden" name="indicator_code"
-                                                                                value="<?php echo htmlspecialchars($indicator['indicator_code'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                                                   value="<?php echo htmlspecialchars($indicator['indicator_code'], ENT_QUOTES, 'UTF-8'); ?>">
                                                                             <input type="hidden" name="reqs_code"
-                                                                                value="<?php echo htmlspecialchars($minReq['reqs_code'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                                            <button type="submit" class="btn btn-success mb-3">View File</button>
+                                                                                   value="<?php echo htmlspecialchars($minReq['reqs_code'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                                            <button type="submit" class="btn btn-danger mb-3">Delete</button>
                                                                         </form>
-
-                                                                        <?php if ($role === 'Secretary'): ?>
-                                                                            <form method="POST" action="./bar_assessment/user_actions/delete.php"
-                                                                                onsubmit="return confirmDelete(event);">
-                                                                                <input type="hidden" name="barangay_id"
-                                                                                    value="<?php echo htmlspecialchars($barangay_id, ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <input type="hidden" name="req_keyctr"
-                                                                                    value="<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <input type="hidden" name="desc_ctr"
-                                                                                    value="<?php echo htmlspecialchars($area_desc['keyctr'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <input type="hidden" name="indicator_code"
-                                                                                    value="<?php echo htmlspecialchars($indicator['indicator_code'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <input type="hidden" name="reqs_code"
-                                                                                    value="<?php echo htmlspecialchars($minReq['reqs_code'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <button type="submit" class="btn btn-danger mb-3">Delete</button>
-                                                                            </form>
-
-                                                                            <script>
-                                                                                function confirmDelete(event) {
-                                                                                    const confirmed = confirm("Are you sure you want to delete this item?");
-                                                                                    if (!confirmed) {
-                                                                                        event.preventDefault();
-                                                                                    }
-                                                                                    return confirmed;
+                                                                
+                                                                        <script>
+                                                                            function confirmDelete(event) {
+                                                                                const confirmed = confirm("Are you sure you want to delete this item?");
+                                                                                if (!confirmed) {
+                                                                                    event.preventDefault();
                                                                                 }
-                                                                            </script>
-                                                                        <?php endif; ?>
+                                                                                return confirmed;
+                                                                            }
+                                                                        </script>
+                                                                    <?php endif; ?>
+                                                                
+                                                                <?php endif; ?>
+                                                                
+                                                                <!-- Status Icon -->
+                                                                <td>
+                                                                    <?php if (!$status): ?>
+                                                                        <i class="fas fa-times" style="color: red;"></i>
+                                                                    <?php else: ?>
+                                                                        <i class="fas fa-check" style="color: rgb(38, 235, 3);"></i>
                                                                     <?php endif; ?>
                                                                 </td>
-
-                                                                <td>
-                                                                    <?php
-                                                                    if (!$status):
-                                                                        echo ('No Upload Yet');
-                                                                    else:
-                                                                        echo ('Uploaded');
-                                                                    endif;
-                                                                    ?>
-                                                                </td>
+                                                                
 
                                                             </tr>
                                                         <?php endforeach; ?>
@@ -312,7 +317,7 @@ if ($barangay_id) {
                                             $allComments = $comments->show_comments($barangay_id);
                                             if (!empty($allComments)) {
                                                 foreach ($allComments as $comment) {
-                                              echo "
+                                                    echo "
                                                 <div class='comment-item mb-2'>
                                                     <strong>" . htmlspecialchars($comment['name']) . ":</strong>
                                                     <p>" . nl2br(htmlspecialchars($comment['comment'])) . "</p>
