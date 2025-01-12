@@ -1,122 +1,111 @@
 <?php
-error_reporting(E_ALL ^ E_NOTICE);
-date_default_timezone_set('Asia/Manila');
-session_set_cookie_params(0);
-session_start();
-
-// if (!$_SESSION['id']) {
-//   header('location:../actions/logout.php');
-// }
+require_once 'bar_assessment/responses.php';
 require_once '../db/db.php';
+
+
+$responsesObj = new Responses($pdo);
+$responses = $responsesObj->show_responses();
+
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
+<head>    
   <?php require 'common/head.php' ?>
 </head>
 
 <body id="page-top">
-  <!-- Page Wrapper -->
-  <div id="wrapper">
-    <!-- Sidebar -->
-    <?php
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!--sidebar start  -->
+        <?php
     $isBarAssessmentPhp = true;
-    require 'common/sidebar.php' ?>
-    <!-- End of Sidebar -->
+    include 'common/sidebar.php' ?>
+        <!-- sidebar end -->
 
-    <!-- Content Wrapper -->
-    <div id="content-wrapper" class="d-flex flex-column">
-      <!-- Main Content -->
-      <div id="content">
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
 
-        <!-- Topbar -->
-        <?php require 'common/nav.php' ?>
-        <!-- End of Topbar -->
-        <!-- Begin Page Content -->
-        <div class="container-fluid">
-          <!-- Page Heading -->
-          <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Create Criteria</h1>
-            <div class="d-sm-flex align-items-center justify-content-between mb-4">
-              <div class="container mt-5"></div>
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Topbar -->
+                <?php include 'common/nav.php' ?>
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+
+                    <!-- Page Heading -->
+
+                    <!-- End of Page Heading -->
+
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <div style="float: left;">
+                                <h3 class="m-0 font-weight-bold text-primary">Barangay Assessment</h3>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Barangay</th>
+                                            <th>Last Transaction</th>
+                                            <th>Actions</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        if (!empty($responses)) {
+                                            foreach ($responses as $row) {
+
+
+                                                echo "<tr>";
+                                                echo "<td>" . htmlspecialchars($row['barangay']) . "</td>";
+                                                echo "<td>" . htmlspecialchars($row['dateUploaded']) . "</td>";
+                                                echo "<td>";
+                                                echo "<a href='bar_assessment/show_bar_response.php?barangay_id=" . htmlspecialchars($row['barangay_id']) . "' class='btn btn-primary btn-sm'>View</a>";
+                                                echo "</td>";
+                                                echo "<td>" . htmlspecialchars($row['status']) . "</td>";
+                                                echo "</tr>";
+                                            }
+                                        }
+                                        ?>
+                                    </tbody>
+                                </table>
+                                <tbody>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End of Page Content -->
+
+
             </div>
-          </div>
-          <script>
-          function selectGovernance(option) {
-            document.getElementById("dropdownMenuButton").textContent =
-              option;
-          }
-          </script>
-
-          <!-- Content Row -->
-          <div class="row">
-            <form>
-              <div class="form-group"></div>
-              <!-- Save Criteria -->
-              <!-- Button to open the modal -->
-              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-                Open Modal
-              </button>
-
-              <!-- The Modal -->
-              <div class="modal fade" id="myModal">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <!-- Modal Header -->
-                    <div class="modal-header">
-                      <h4 class="modal-title">Modal Title</h4>
-                      <button type="button" class="close" data-dismiss="modal">
-                        &times;
-                      </button>
-                    </div>
-
-                    <!-- Modal Body -->
-                    <div class="modal-body">
-                      <!-- Your modal content here -->
-                      <p>This is the modal body.</p>
-                    </div>
-
-                    <!-- Modal Footer -->
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                        Close
-                      </button>
-                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#saveModal">
-                        Save
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- The Save Modal -->
-              <div class="modal fade" id="saveModal">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <!-- Modal Header -->
-                    <div class="modal-header">
-                      <h4 class="modal-title">Save Successful</h4>
-                      <button type="button" class="close" data-dismiss="modal">
-                        &times;
-                      </button>
-                    </div>
-
-                    <!-- Modal Body -->
-                    <div class="modal-body">
-                      <p>Saved successfully!</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- End of Main Content -->
-            </form>
-          </div>
+            <!-- End of Main Content -->
         </div>
-      </div>
+
     </div>
-  </div>
+    </div>
+</body>
+
+
+
+
+
+
+
+
+
+
+</body>
+
 </body>
 
 </html>
