@@ -404,21 +404,15 @@ function validateEmail(email) {
 $(".delete-user-btn").on("click", async (e) => {
   const shouldDelete = await showConfirmationDialog();
   if (shouldDelete) {
-    const userID = e.data("id");
+    const userID = $(e.target).data("id");
     $.ajax({
       type: "POST",
       url: "../api/delete_user.php",
       data: {
-        username: username,
-        fullName: fullName,
-        email: email,
-        mobileNum: mobileNum,
-        pass: password,
-        role: role,
-        barangay: barangay,
+        id: userID,
       },
       success: function (result) {
-        if (result !== "") {
+        if (!result) {
           $("#crud-user").modal("hide");
           location.reload();
           $("#main-toast-container").append(

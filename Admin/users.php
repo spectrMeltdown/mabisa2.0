@@ -129,6 +129,7 @@ require_once '../db/db.php';
   </div>
   <!-- End of Page Wrapper -->
   <?php require 'components/crud_user_dialog.php' ?>
+  <?php require 'components/confirmation_dialog.php' ?>
 </body>
 
 </html>

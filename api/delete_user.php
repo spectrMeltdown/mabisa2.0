@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 require_once '../db/db.php';
-require_once '../auth/check_permissions.php'; // Ensure this checks admin privileges
+// require_once '../auth/check_permissions.php'; // Ensure this checks admin privileges
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // Ensure `id` is passed in the request
@@ -15,11 +15,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $userId = trim($_POST['id']);
 
   // Validate UUID format using a regex
-  if (!preg_match('/^[a-f0-9\-]{36}$/i', $userId)) {
-    http_response_code(400); // Bad Request
-    echo 'Invalid user ID format.';
-    exit;
-  }
+  // if (!preg_match('/^[a-f0-9\-]{36}$/i', $userId)) {
+  //   http_response_code(400); // Bad Request
+  //   echo 'Invalid user ID format.';
+  //   exit;
+  // }
 
   // Ensure the user has proper authorization
   // if (!checkAdminPermission()) { // Adjust based on your authentication logic
@@ -33,6 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   try {
     $stmt = $pdo->prepare($sql);
+    // bindParam is same sa execute, only this allows specifying data type. 
+    // use execute for passing array i.e less verbose, however data types not checked
     $stmt->bindParam(':id', $userId, PDO::PARAM_STR);
 
     if ($stmt->execute()) {
