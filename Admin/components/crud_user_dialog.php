@@ -25,18 +25,18 @@
           <div class="row">
             <div class="mb-3 form-group col-lg-6">
               <label for="fullName" class="form-label">Full Name</label>
-              <input max="100" type="text" class="form-control" name="fullName" id="fullName" required autocomplete="name" />
+              <input maxlength="100" type="text" class="form-control" name="fullName" id="fullName" required autocomplete="name" />
             </div>
             <div class="mb-3 form-group col-lg-6">
               <label for="username" class="form-label">Username</label>
-              <input max="100" type="text" class="form-control" name="username" id="username" required autocomplete="username" />
+              <input maxlength="100" type="text" class="form-control" name="username" id="username" required autocomplete="username" />
             </div>
           </div>
 
           <div class="row">
             <div class="mb-3 form-group col-lg-6">
               <label for="email" class="form-label">Email</label>
-              <input max="100" type="email" class="form-control" name="email" id="email" required autocomplete="email" />
+              <input maxlength="100" type="email" class="form-control" name="email" id="email" required autocomplete="email" />
             </div>
             <div class="mb-3 form-group col-lg-6">
               <label for="mobileNum" class="form-label">Mobile Number</label>
@@ -47,7 +47,7 @@
           <div class="mb-3 col-lg-6 form-group">
             <label for="pass" class="form-label" id="passwordLabel">Password</label>
             <div class="d-flex">
-              <input max="100" type="password" class="form-control" name="pass" id="pass" required autocomplete="new-password" />
+              <input maxlength="100" type="password" class="form-control" name="pass" id="pass" required autocomplete="new-password" />
               <button type="button" id="passEye" class="btn btn-outline-secondary d-inline-block">
                 <i class="fa fa-eye"></i> <!-- Add Font Awesome for the icon -->
               </button>
@@ -57,7 +57,7 @@
           <div class="mb-3 col-lg-6 form-group" id="confirmPassField">
             <label for="confirmPass" class="form-label">Confirm password</label>
             <div class="d-flex">
-              <input max="100" type="password" class="form-control" name="confirmPass" id="confirmPass" required autocomplete="new-password" />
+              <input maxlength="100" type="password" class="form-control" name="confirmPass" id="confirmPass" required autocomplete="new-password" />
               <button type="button" id="confirmPassEye" class="btn btn-outline-secondary">
                 <i class="fa fa-eye"></i> <!-- Add Font Awesome for the icon -->
               </button>

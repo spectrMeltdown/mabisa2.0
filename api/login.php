@@ -4,7 +4,7 @@ declare(strict_types=1);
 // ini_set('display_errors', 0); // Disable error display
 // ini_set('log_errors', 1);    // Enable error logging
 // require_once '../models/user_model.php';
-require_once '../models/role_model.php';
+// require_once '../models/role_model.php';
 require_once '../db/db.php';
 
 try {
@@ -13,7 +13,7 @@ try {
   }
 
   if (!isset($_POST['username'], $_POST['password'])) {
-    throw new Exception('Username or password not found!');
+    throw new Exception('Username or password not read!');
   }
 
   // Example query

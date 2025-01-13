@@ -36,17 +36,17 @@
             content: '
               <div class="mb-3 form-group">
                 <label for="fullName" class="form-label">Full Name</label>
-                <input max="100" type="text" class="form-control" name="fullName" id="fullName" placeholder="e.g John Doe ..." required/>
+                <input maxlength="100" type="text" class="form-control" name="fullName" id="fullName" placeholder="e.g John Doe ..." required/>
               </div>
 
               <div class="mb-3 form-group">
                 <label for="username" class="form-label">Username</label>
-                <input max="100" type="text" class="form-control" name="username" id="username" placeholder="e.g John Doe ..." required/>
+                <input maxlength="100" type="text" class="form-control" name="username" id="username" placeholder="e.g John Doe ..." required/>
               </div>
               
               <div class="mb-3 form-group">
                 <label for="email" class="form-label">Email</label>
-                <input max="100" type="email" class="form-control" name="email" id="email" placeholder="abc@mail.com" required/>
+                <input maxlength="100" type="email" class="form-control" name="email" id="email" placeholder="abc@mail.com" required/>
               </div>
 
               <div class="mb-3 form-group">
@@ -56,12 +56,12 @@
 
               <div class="mb-3 form-group">
                 <label for="pass" class="form-label">Password</label>
-                <input max="100" type="password" class="form-control" name="pass" id="pass" placeholder="" required/>
+                <input maxlength="100" type="password" class="form-control" name="pass" id="pass" placeholder="" required/>
               </div>
 
               <div class="mb-3 form-group">
                 <label for="confirmPass" class="form-label">Confirm password</label>
-                <input max="100" type="password" class="form-control" name="confirmPass" id="confirmPass" placeholder="" required/>
+                <input maxlength="100" type="password" class="form-control" name="confirmPass" id="confirmPass" placeholder="" required/>
               </div>
 
               <div class="mb-3 form-group">

@@ -1,6 +1,11 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
+// if the user is already logged in, redirect to the dashboard instead
+if (!empty($_COOKIE['id'])) {
+    header('location:dashboard.php');
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -87,12 +92,12 @@ date_default_timezone_set('Asia/Manila');
                             </div>
                             <div class="col-lg-6" style="background-color: #ffffff">
                                 <div class="p-5">
-                                    <div class="text-center">
+                                    <div class="text-center mb-3">
                                         <br>
                                         <img src="images/index.png" width="200" height="60">
                                     </div>
-                                    <div class="alert mt-3"></div>
-                                    <form class="user mt-4" id="loginForm">
+                                    <div id="alert" class="alert"></div>
+                                    <form class="user" id="loginForm">
                                         <div class="form-group">
                                             <label for="username"><b>Username:</b></label>
                                             <input type="text" class="form-control form-control-user"
@@ -101,8 +106,19 @@ date_default_timezone_set('Asia/Manila');
                                         </div>
                                         <div class="form-group">
                                             <label for="password"><b>Password:</b></label>
-                                            <input type="password" id="password" name="password" class="form-control form-control-user"
-                                                id="exampleInputPassword" placeholder="Password" autocomplete="current-password">
+                                            <div class="d-flex">
+                                                <input max=100 type="password" id="password" name="password" class="form-control form-control-user"
+                                                    id="exampleInputPassword" placeholder="Password" autocomplete="current-password">
+                                                <div class="mx-1"></div>
+                                                <button
+                                                    type="button"
+                                                    id="passEye"
+                                                    class="btn btn-outline-secondary d-inline-block rounded-circle p-0"
+                                                    style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                                                    <i class="fa fa-eye"></i>
+                                                </button>
+
+                                            </div>
                                         </div>
                                         <div class="form-group">
                                             <div class="custom-control custom-checkbox small">

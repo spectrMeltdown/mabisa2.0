@@ -17,7 +17,7 @@ require_once '../db/db.php';
 <head>
   <?php require 'common/head.php' ?>
   <script src="../js/settings.js" defer></script>
-  <script src="../js/confirmation.js" defer></script>
+  <script src="../js/util/confirmation.js" defer></script>
 </head>
 
 <body id="page-top">
