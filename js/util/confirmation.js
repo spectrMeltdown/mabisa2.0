@@ -1,3 +1,6 @@
+"use strict";
+
+// show a confirmation dialog, returns bool
 async function showConfirmationDialog(message) {
   if (message) {
     $("#confirmMessage").text(message);

@@ -290,7 +290,7 @@ $("#save-user-btn").on("click", async (e) => {
     ok = false;
   }
 
-  if (validateEmail(email) == false) {
+  if (!validEmail(email)) {
     $("#alert").html(
       '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
         "<strong>Error!</strong> Invalid Email format." +
@@ -346,7 +346,7 @@ $("#save-user-btn").on("click", async (e) => {
   $.ajax({
     type: "POST",
     url: "../api/create_user.php",
-    data: {
+    data: JSON.stringify({
       username: username,
       fullName: fullName,
       email: email,
@@ -354,7 +354,7 @@ $("#save-user-btn").on("click", async (e) => {
       pass: password,
       role: role,
       barangay: barangay,
-    },
+    }),
     success: function (result) {
       // check if null, empty, false, 0, infinity, etc
       if (!result) {
@@ -394,11 +394,6 @@ phoneInput.addEventListener("keydown", function (e) {
     this.setSelectionRange(3, 3); // Move cursor after +63
   }
 });
-
-function validateEmail(email) {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
 
 // handle user delete btn
 $(".delete-user-btn").on("click", async (e) => {

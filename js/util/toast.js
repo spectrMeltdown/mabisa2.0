@@ -1,4 +1,6 @@
-function addToast(title, body, small='', imgSrc='') {
+"use strict";
+// adds a toast to the toast container
+function addToast(title, body, small = "", imgSrc = "") {
   let id = self.crypto.randomUUID();
   return `
   <div id='${id}' class="toast" role="alert" aria-live="assertive" aria-atomic="true">

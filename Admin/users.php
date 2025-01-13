@@ -1,12 +1,13 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
-session_set_cookie_params(0);
-session_start();
+// ensure the user is still logged in, redirect if not
+// use empty to check for all cases (variable unset, blank string, etc). Negation of the variable also works, but may display warning.
+if (empty($_COOKIE['id'])) {
+  header('location:logged_out.php');
+  exit;
+}
 
-// if (!$_SESSION['id']) {
-//   header('location:../actions/logout.php');
-// }
 require_once '../db/db.php';
 ?>
 
@@ -16,7 +17,9 @@ require_once '../db/db.php';
 <head>
   <?php require 'common/head.php' ?>
   <script src="../js/users.js" defer></script>
-  <script src="../js/confirmation.js" defer></script>
+  <script src="../js/util/confirmation.js" defer></script>
+  <script src="../js/util/alert.js" defer></script>
+  <script src="../js/util/input-validation.js" defer></script>
 </head>
 
 <body id="page-top">

@@ -1,4 +1,11 @@
 <?php
+// ensure the user is still logged in, redirect if not
+// use empty to check for all cases (variable unset, blank string, etc). Negation of the variable also works, but may display warning.
+if (empty($_COOKIE['id'])) {
+    header('location:logged_out.php');
+    exit;
+}
+
 require_once 'bar_assessment/responses.php';
 require_once '../db/db.php';
 
@@ -11,8 +18,8 @@ $responses = $responsesObj->show_responses();
 <!DOCTYPE html>
 <html lang="en">
 
-<head>    
-  <?php require 'common/head.php' ?>
+<head>
+    <?php require 'common/head.php' ?>
 </head>
 
 <body id="page-top">
@@ -22,8 +29,8 @@ $responses = $responsesObj->show_responses();
 
         <!--sidebar start  -->
         <?php
-    $isBarAssessmentPhp = true;
-    include 'common/sidebar.php' ?>
+        $isBarAssessmentPhp = true;
+        include 'common/sidebar.php' ?>
         <!-- sidebar end -->
 
         <!-- Content Wrapper -->

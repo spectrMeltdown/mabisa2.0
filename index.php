@@ -1,23 +1,15 @@
+<?php
+error_reporting(E_ALL ^ E_NOTICE);
+date_default_timezone_set('Asia/Manila');
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>MABISA | Aloran</title>
-    <link rel="icon" href="images/favicon.png" />
-
-    <!-- Custom fonts for this template-->
-    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
-
-    <!-- Custom styles for this template-->
-    <link href="css/sb-admin-2.css" rel="stylesheet">
+    <?php
+    $root = true;
+    require 'Admin/common/head.php' ?>
     <style type="text/css">
         @media (max-width: 768px) {
             .mv_hide {
@@ -53,22 +45,26 @@
             padding: 0.25rem 0.5rem !important;
             font-size: 0.8em !important;
         }
+
+        body {
+            background-color: #f0f4f9;
+            background-size: cover;
+            /* Adjust according to your needs */
+            background-repeat: no-repeat;
+            background-position: center;
+            /* Center the background image */
+            margin: 0;
+        }
     </style>
+    <script src="js/index.js" defer></script>
+    <script src="js/util/alert.js" defer></script>
 </head>
 
-<body class="" style="background-color: #f0f4f9;
-            background-size: cover; /* Adjust according to your needs */
-            background-repeat: no-repeat;
-            background-position: center; /* Center the background image */
-            margin: 0;">
-
-    <!-- <div class="container"> -->
+<body>
     <div class="container-fluid d-flex justify-content-center align-items-center" style="min-height: 100vh;">
-
         <!-- Outer Row -->
         <div class="row justify-content-center">
             <!-- <div class="row"> -->
-
             <div class="col-xl-6 col-lg-8 col-md-8">
                 <div class="card o-hidden border-0 shadow-lg my-10" style="border-radius: 2%; background-color:#4e73df">
                     <div class="card-body p-0">
@@ -88,46 +84,42 @@
                                         <h5 class="text-justify">The Department shall promote peace and order, ensure public safety, strengthen capability of Local Government Units through active people's participation and professionalized corps and civil servants.</h5>
                                     </div>
                                 </div>
-
                             </div>
                             <div class="col-lg-6" style="background-color: #ffffff">
                                 <div class="p-5">
                                     <div class="text-center">
                                         <br>
-
                                         <img src="images/index.png" width="200" height="60">
                                     </div>
-
-                                    <form class="user mt-4" action="actions/login.php" method="post">
+                                    <div class="alert mt-3"></div>
+                                    <form class="user mt-4" id="loginForm">
                                         <div class="form-group">
                                             <label for="username"><b>Username:</b></label>
                                             <input type="text" class="form-control form-control-user"
                                                 id="username" name="username"
-                                                placeholder="Enter Username...">
+                                                placeholder="Username" autocomplete="username">
                                         </div>
                                         <div class="form-group">
                                             <label for="password"><b>Password:</b></label>
                                             <input type="password" id="password" name="password" class="form-control form-control-user"
-                                                id="exampleInputPassword" placeholder="Password">
+                                                id="exampleInputPassword" placeholder="Password" autocomplete="current-password">
                                         </div>
                                         <div class="form-group">
                                             <div class="custom-control custom-checkbox small">
-                                                <input type="checkbox" class="custom-control-input" id="customCheck">
-                                                <label class="custom-control-label text-grey" for="customCheck">Remember
+                                                <input type="checkbox" class="custom-control-input" id="rememberMe" name="rememberMe">
+                                                <label class="custom-control-label text-grey" for="rememberMe">Remember
                                                     Me</label>
                                             </div>
                                         </div>
-                                        <a href="index_main.php" class="btn btn-primary btn-user btn-block">Login</a>
-                                        <!--<button type="submit" name="login" id="login" class="btn btn-primary btn-user btn-block">
+                                        <!-- dont make it type=submit, because we are using js to handle form submission -->
+                                        <button type="button" id="loginBtn" class="btn btn-primary btn-user btn-block">
                                             Login
-                                        </button>-->
-
+                                        </button>
                                     </form>
                                     <div class="text-center">
                                         <small style="font-size: 10px;">Note: This website is for the LGU of ALORAN only.</small> <!-- Centered text -->
                                     </div>
                                     <br>
-
                                 </div>
                             </div>
                         </div>

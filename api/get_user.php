@@ -18,7 +18,12 @@ try {
 
   // Example query
   $id = $_GET['id'];
-  $sql = "SELECT * FROM user_policy WHERE id=:id";
+  if ($id === 'self' && isset($_COOKIE['id'])) {
+    $id = $_COOKIE['id'];
+  } else {
+    throw new Exception('self id not found!');
+  }
+  $sql = "SELECT * FROM user_policy WHERE id=:id LIMIT 1";
   $stmt = $pdo->prepare($sql);
   $stmt->execute([':id' => $id]);
 

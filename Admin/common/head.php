@@ -1,5 +1,5 @@
 <?php
-$pathPrepend = isset($indexMain) ? '' : '../';
+$pathPrepend = isset($root) ? '' : '../';
 ?>
 
 <meta charset="utf-8" />
@@ -13,20 +13,20 @@ $pathPrepend = isset($indexMain) ? '' : '../';
   href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
   rel="stylesheet">
 
-<script src="<?= $pathPrepend ?>vendor/jquery/jquery.min.js"></script>
-<script src="<?= $pathPrepend ?>vendor/jquery-easing/jquery.easing.min.js"></script>
+<script src="<?= $pathPrepend ?>vendor/jquery/jquery.min.js" defer></script>
+<script src="<?= $pathPrepend ?>vendor/jquery-easing/jquery.easing.min.js" defer></script>
 
-<script src="<?= $pathPrepend ?>vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="<?= $pathPrepend ?>vendor/chart.js/Chart.bundle.min.js"></script>
+<script src="<?= $pathPrepend ?>vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+<script src="<?= $pathPrepend ?>vendor/chart.js/Chart.bundle.min.js" defer></script>
 
 <link href="<?= $pathPrepend ?>vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" />
-<script src="<?= $pathPrepend ?>vendor/datatables/jquery.datatables.min.js"></script>
+<script src="<?= $pathPrepend ?>vendor/datatables/jquery.datatables.min.js" defer></script>
 
-<script src="<?= $pathPrepend ?>vendor/fontawesome-free/js/all.min.js"></script>
+<script src="<?= $pathPrepend ?>vendor/fontawesome-free/js/all.min.js" defer></script>
 
 <link href="<?= $pathPrepend ?>css/sb-admin-2.min.css" rel="stylesheet" />
-<script src="<?= $pathPrepend ?>js/sb-admin-2.min.js"></script>
+<script src="<?= $pathPrepend ?>js/sb-admin-2.min.js" defer></script>
 
-<script src="<?= $pathPrepend ?>js/toast.js"></script>
+<script src="<?= $pathPrepend ?>js/util/toast.js" defer></script>
 
 <title>MABISA - Admin</title>
