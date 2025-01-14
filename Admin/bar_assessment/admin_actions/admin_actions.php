@@ -33,23 +33,16 @@ class Admin_Actions
         return $stmt->execute();
     }
 
-    public function viewFile($barangay_id, $req_keyctr, $desc_ctr, $indicator_code, $reqs_code)
+    public function viewFile($file_id)
 {
     $query = "SELECT file 
               FROM barangay_assessment_files 
-              WHERE barangay_id = :barangay_id
-              AND req_keyctr = :req_keyctr
-              AND desc_keyctr = :desc_ctr
-              AND indicator_code = :indicator_code
-              AND reqs_code = :reqs_code";
+              WHERE file_id = :file_id";
 
     $stmt = $this->pdo->prepare($query);
     $stmt->execute([
-        ':barangay_id' => $barangay_id,
-        ':req_keyctr' => $req_keyctr,
-        ':desc_ctr' => $desc_ctr,
-        ':indicator_code' => $indicator_code,
-        ':reqs_code' => $reqs_code,
+        ':file_id' => $file_id,
+        
     ]);
 
     $file = $stmt->fetch(PDO::FETCH_ASSOC);

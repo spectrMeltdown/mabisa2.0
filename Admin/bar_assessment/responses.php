@@ -38,16 +38,16 @@ class Responses
         return $responses;
     }
 
-    public function getStatus($barangay_id, $req_keyctr, $desc_ctr, $indicator_code, $reqs_code): bool
+    public function getData($barangay_id, $req_keyctr, $desc_ctr, $indicator_code, $reqs_code)
     {
-        $query = "SELECT 1 FROM barangay_assessment_files
+        $query = "SELECT * FROM barangay_assessment_files
                   WHERE barangay_id = :barangay_id 
                   AND req_keyctr = :req_keyctr
                   AND desc_keyctr = :desc_ctr
                   AND indicator_code = :indicator_code 
                   AND reqs_code = :reqs_code 
                   LIMIT 1";
-    
+        
         $stmt = $this->pdo->prepare($query);
         $stmt->execute([
             ':barangay_id' => $barangay_id,
@@ -57,9 +57,12 @@ class Responses
             ':reqs_code' => $reqs_code
         ]);
     
-        
-        return (bool) $stmt->fetch();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+      
+        return $result;
     }
+    
     
     
 

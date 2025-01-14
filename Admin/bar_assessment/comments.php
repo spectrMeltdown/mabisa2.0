@@ -65,12 +65,12 @@ class Comments
     }
       
 
-    public function show_comments(string $barangay_id): array
+    public function show_comments(string $file_id): array
 {
     try {
-        $sql = "SELECT comments FROM barangay_assessment WHERE barangay_id = :barangay_id";
+        $sql = "SELECT comments FROM barangay_assessment_files WHERE file_id = :file_id";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindParam(':barangay_id', $barangay_id, PDO::PARAM_STR);
+        $stmt->bindParam(':file_id', $file_id, PDO::PARAM_STR);
         $stmt->execute();
 
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
