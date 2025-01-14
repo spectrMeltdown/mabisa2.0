@@ -7,22 +7,23 @@ require_once '../models/user_model.php';
 require_once '../models/role_model.php';
 require_once '../db/db.php';
 
-try {
-  if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-    throw new Exception('Invalid request method');
-  }
+$isGetMethod = $_SERVER['REQUEST_METHOD'] === 'GET';
 
-  if (!isset($_GET['id'])) {
+function getUser(string $id)
+{
+  global $pdo;
+  global $isGetMethod;
+  global $customUserID;
+
+  if (!isset($_GET['id']) && !$isGetMethod) {
     throw new Exception('No id provided!');
   }
 
-  // Example query
-  $id = $_GET['id'];
   if ($id === 'self' && isset($_COOKIE['id'])) {
+    // echo "was a cookie id!";
     $id = $_COOKIE['id'];
-  } else {
-    throw new Exception('self id not found!');
   }
+
   $sql = "SELECT * FROM user_policy WHERE id=:id LIMIT 1";
   $stmt = $pdo->prepare($sql);
   $stmt->execute([':id' => $id]);
@@ -44,7 +45,22 @@ try {
     'role' => isset($row['accessLevel']) ? getRole($row['accessLevel'])?->toString() : '--'
   ];
 
-  echo json_encode($response);
+  if (isset($customUserID)) {
+    return $response;
+  }
+  return json_encode($response);
+}
+
+try {
+  if (!$isGetMethod && !isset($customUserID)) {
+    throw new Exception('Invalid request method');
+  }
+  if (isset($customUserID)) {
+    global $userData;
+    $userData = getUser($customUserID);
+  } else {
+    echo getUser($_GET['id']);
+  }
 } catch (Exception $e) {
   http_response_code(500); // Set HTTP 500 response code
   echo json_encode(['error' => $e->getMessage()]);

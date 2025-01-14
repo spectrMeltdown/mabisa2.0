@@ -22,7 +22,7 @@ try {
   $rememeberMe = $_POST['rememberMe'];
   $sql = 'SELECT id FROM user_policy WHERE username=:username and password=:password LIMIT 1';
   $stmt = $pdo->prepare($sql);
-  $stmt->execute([':username' => $username, ':password' => $password]);
+  $stmt->execute([':username' => $username, ':password' => password_hash($password, PASSWORD_BCRYPT)]);
 
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
   if (!$row) {

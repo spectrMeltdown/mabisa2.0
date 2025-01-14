@@ -6,6 +6,7 @@ let origPassLabel = "Password";
 let origModalLabel = "Add user";
 let currentUserID;
 const defaultAlert = '<div class="alert"></div>';
+let editMode = undefined;
 // import $ from 'jquery';
 // stopped using jquery because i'm practicing javascript lol
 
@@ -70,7 +71,9 @@ document
 // reset the form element in crud user dialog
 $("#crud-user").on("show.bs.modal", function (event) {
   if ($(event.relatedTarget).hasClass("edit-user-btn")) {
-    console.log("editing");
+    // console.log("editing");
+    editMode = true;
+
     // Change the h5 with id 'modalLabel' under the modal with id="crud-user" to "Edit user"
     origModalLabel = modalLabel.textContent;
     modalLabel.textContent = "Edit User"; // Update the modal label text
@@ -81,27 +84,17 @@ $("#crud-user").on("show.bs.modal", function (event) {
 
     // hide confirm password because we are editing
     $("#confirmPassField").css("display", "none");
-
-    // // Show the edit modal crud-user
-    // const modal = new bootstrap.Modal(document.getElementById('crud-user'));
-    // modal.show();
-
     currentUserID = $(event.relatedTarget).data("id"); // Get the user ID from the clicked button
-
-    // Show loading spinner and hide content initially
-    // document.getElementById('loadingSpinner').style.display = 'block';
-    // document.getElementById('modal-content').style.display = 'none';
 
     // GET request to ../api/get_user.php
     fetch(`../api/get_user.php?id=${currentUserID}`)
       .then((response) => response.json())
-      .then((data) => {
+      .then((user) => {
         // Assuming 'data' contains the user info for filling the modal
-        // console.log('Data is: ' + JSON.stringify(data));
-        const user = data; // Assuming the response is an array, and we take the first user
+        // console.log("Data is: " + JSON.stringify(user));
         // Fill in the form inputs with the response data
         document.getElementById("fullName").value = user.fullName || "";
-        document.getElementById("username").value = user.email || "";
+        document.getElementById("username").value = user.username || "";
         document.getElementById("email").value = user.email || "";
         document.getElementById("mobileNum").value =
           `+63${user.mobileNo}` || "";
@@ -159,7 +152,8 @@ $("#crud-user").on("show.bs.modal", function (event) {
         document.getElementById("modal-content").classList.remove("d-none");
       });
   } else if ($(event.relatedTarget).hasClass("add-user-btn")) {
-    console.log("adding");
+    // console.log("adding");
+    editMode = false;
     // Set default value to +63 on page load
     phoneInput.value = "+63";
     // Hide the loading spinner and show the modal content
@@ -212,10 +206,9 @@ $("#save-user-btn").on("click", async (e) => {
     return response.json();
   });
   let ok = true;
-  const editMode = Boolean($(this).data("edit-mode"));
   e.preventDefault();
 
-  console.log($("#username").val());
+  // console.log($("#username").val());
   // get input values
   const username = $("#username").val()?.trim();
   const fullName = $("#fullName").val()?.trim();
@@ -227,7 +220,7 @@ $("#save-user-btn").on("click", async (e) => {
   const password = $("#pass").val()?.trim();
 
   // check if password is long enough
-  if (password.length < 8) {
+  if (!(password === "") && password.length < 8) {
     $("#alert").html(
       '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
         "<strong>Error!</strong> Password must at least 8 letters or numbers." +
@@ -264,7 +257,10 @@ $("#save-user-btn").on("click", async (e) => {
     ok = false;
   }
 
-  if (!editMode && users.some((user) => user.username === username)) {
+  if (
+    !editMode &&
+    users.some((user) => user.username === username && user.id != currentUserID)
+  ) {
     $("#alert").html(
       '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
         "<strong>Error!</strong> Username already taken." +
@@ -276,7 +272,10 @@ $("#save-user-btn").on("click", async (e) => {
     ok = false;
   }
 
-  if (!editMode && users.some((user) => user.email === email)) {
+  if (
+    !editMode &&
+    users.some((user) => user.email === email && user.id != currentUserID)
+  ) {
     $("#alert").html(
       '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
         "<strong>Error!</strong> Email already taken." +
@@ -341,31 +340,60 @@ $("#save-user-btn").on("click", async (e) => {
     return;
   }
   $("#alert").html(defaultAlert);
-  $.ajax({
-    type: "POST",
-    url: "../api/create_user.php",
-    data: JSON.stringify({
-      username: username,
-      fullName: fullName,
-      email: email,
-      mobileNum: mobileNum,
-      pass: password,
-      role: role,
-      barangay: barangay,
-    }),
-    success: function (result) {
-      // check if null, empty, false, 0, infinity, etc
-      if (!result) {
-        $("#crud-user").modal("hide");
-        location.reload();
-        $("#main-toast-container").append(
-          addToast("Success!", "User created successfully."),
-        );
-      } else {
-        console.log("error!: " + result);
-      }
-    },
-  });
+  if (!editMode) {
+    $.ajax({
+      type: "POST",
+      url: "../api/create_user.php",
+      data: {
+        username: username,
+        fullName: fullName,
+        email: email,
+        mobileNum: mobileNum,
+        pass: password,
+        role: role,
+        barangay: barangay,
+      },
+      success: function (result) {
+        // check if null, empty, false, 0, infinity, etc
+        if (!result) {
+          $("#crud-user").modal("hide");
+          location.reload();
+          $("#main-toast-container").append(
+            addToast("Success!", "User created successfully."),
+          );
+        } else {
+          console.log("error!: " + result);
+        }
+      },
+    });
+  } else {
+    $.ajax({
+      type: "POST",
+      url: "../api/edit_user.php",
+      data: {
+        id: currentUserID,
+        username: username,
+        fullName: fullName,
+        email: email,
+        mobileNum: mobileNum,
+        pass: password,
+        role: role,
+        barangay: barangay,
+      },
+      success: function (result) {
+        // check if null, empty, false, 0, infinity, etc
+        if (!result) {
+          $("#crud-user").modal("hide");
+          location.reload();
+          $("#main-toast-container").append(
+            addToast("Success!", "User successfully edited."),
+          );
+        } else {
+          console.log("error!: " + result);
+        }
+      },
+    });
+  }
 });
 
 const phoneInput = document.getElementById("mobileNum");

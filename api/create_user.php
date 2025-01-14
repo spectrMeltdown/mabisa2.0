@@ -3,6 +3,7 @@
 declare(strict_types=1);
 require_once '../models/user_model.php';
 require_once '../db/db.php';
+require_once 'logging.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   /** @var string */

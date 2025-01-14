@@ -7,6 +7,9 @@ if (empty($_COOKIE['id'])) {
   header('location:logged_out.php');
   exit;
 }
+require '../api/logging.php';
+// if (roleAccess()) {
+// }
 
 require_once '../db/db.php';
 ?>
@@ -91,8 +94,9 @@ require_once '../db/db.php';
                     <tbody>
                       <?php
                       require_once '../models/role_model.php';
-                      $query = $pdo->prepare("select * from user_policy");
-                      $query->execute();
+                      $query = $pdo->prepare("select * from user_policy where id != :id");
+                      writeLog($userData);
+                      $query->execute([':id' => $userData['id']]);
                       while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
                       ?>
                         <tr>

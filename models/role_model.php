@@ -1,4 +1,6 @@
 <?php
+require_once '../api/logging.php';
+
 enum UserRole: int
 {
   case Admin = 0;
@@ -20,6 +22,17 @@ function getRole(int $data): ?UserRole
   foreach (UserRole::cases() as $role) {
     if ($data === $role->value) {
       return $role;
+    }
+  }
+  return null;
+}
+
+function getAccessLevel(string $paramRole): int
+{
+  foreach (UserRole::cases() as $role) {
+    writeLog($role->name);
+    if ($paramRole === $role->name) {
+      return $role->value;
     }
   }
   return null;
