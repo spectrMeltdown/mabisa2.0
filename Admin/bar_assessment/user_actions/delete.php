@@ -7,20 +7,14 @@ try {
     $user = new User_Actions($pdo);
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset(
-        $_POST['barangay_id'], 
-        $_POST['req_keyctr'], 
-        $_POST['desc_ctr'], 
-        $_POST['indicator_code'], 
-        $_POST['reqs_code']
+        $_POST['file_id'], 
+       
     )) {
-        $barangay_id = $_POST['barangay_id'];
-        $req_keyctr = $_POST['req_keyctr'];
-        $desc_ctr = $_POST['desc_ctr'];
-        $indicator_code = $_POST['indicator_code'];
-        $reqs_code = $_POST['reqs_code'];
+        $file_id = $_POST['file_id'];
+       
 
         try {
-            $delete = $user->deleteFile($barangay_id, $req_keyctr, $desc_ctr, $indicator_code, $reqs_code);
+            $delete = $user->deleteFile($file_id);
 
           
         } catch (Exception $e) {
