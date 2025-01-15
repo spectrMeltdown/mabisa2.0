@@ -12,11 +12,11 @@ $("#loginBtn").on("click", (e) => {
   const password = $("#password").val().trim();
   const rememberMe = $("#rememberMe").prop("checked");
 
-  if (!pass) {
+  if (!password) {
     addAlert("alert", "Password cannot be empty.");
     ok = false;
   }
-  if (!uname) {
+  if (!username) {
     addAlert("alert", "Username cannot be empty.");
     ok = false;
   }
@@ -29,14 +29,14 @@ $("#loginBtn").on("click", (e) => {
     method: "POST",
     // when passing data to php via js, don't use json because php $_POST doesn't read that (there is a workaround to reading json
     // in php, but lets just stick with this m'kay?)
-    // headers: {
-    //   "Content-Type": "application/x-www-form-urlencoded",
-    // },
-    body: {
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({
       username: username,
       password: password,
       rememberMe: rememberMe,
-    },
+    }),
   })
     .then(async (res) => {
       if (res.ok) {

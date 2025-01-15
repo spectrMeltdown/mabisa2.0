@@ -19,7 +19,7 @@ try {
 
   if (!isset($_POST['username'], $_POST['password'])) {
     writeLog('vars not read!');
-    throw new Exception('Username or password not read!');
+    throw new Exception('Username or password not read! (Contact developer)');
   }
 
   // Example query
@@ -33,15 +33,15 @@ try {
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
   if (!$row) {
     writeLog('user not found!');
-    throw new Exception('User not found.');
+    throw new Exception('This account doesn\'t exist.');
   }
   if (empty($row['password'])) {
     writeLog('empty password');
-    throw new Exception('Login error. Try resetting password.');
+    throw new Exception('Account login error. Try resetting the password.');
   }
   if (!password_verify($password, $row['password'])) {
-    // NOTE: Intentionally saying username or password for security purposes
     writeLog('failed in pass_verify');
+    // NOTE: Intentionally saying username or password for security purposes
     throw new Exception('Username or password incorrect.');
   }
 
@@ -59,6 +59,6 @@ try {
 
   echo json_encode($response);
 } catch (Exception $e) {
-  http_response_code(500); // Set HTTP 500 response code
+  // http_response_code(500); // Set HTTP 500 response code
   echo json_encode(['error' => $e->getMessage()]);
 }

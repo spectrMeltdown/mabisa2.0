@@ -1,6 +1,8 @@
 <?php
 
 declare(strict_types=1);
+// ini_set('display_errors', 0); // Disable error display
+// header('Content-Type: application/json');
 require_once '../models/user_model.php';
 require_once '../db/db.php';
 require_once 'logging.php';
@@ -48,6 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // blank means everything went okay
     echo '';
   } catch (\Throwable $th) {
-    echo  $th;
+    echo json_encode($th);
   }
 }

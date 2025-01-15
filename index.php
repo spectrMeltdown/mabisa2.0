@@ -97,10 +97,10 @@ if (!empty($_COOKIE['id'])) {
                                         <img src="images/index.png" width="200" height="60">
                                     </div>
                                     <div id="alert" class="alert"></div>
-                                    <form class="user" id="loginForm" method="post" action="api/login.php">
+                                    <form class="user" id="loginForm">
                                         <div class="form-group">
                                             <label for="username"><b>Username:</b></label>
-                                            <input value="will" type="text" class="form-control form-control-user"
+                                            <input value="willow" type="text" class="form-control form-control-user"
                                                 id="username" name="username"
                                                 placeholder="Username" autocomplete="username">
                                         </div>
@@ -108,7 +108,7 @@ if (!empty($_COOKIE['id'])) {
                                             <label for="password"><b>Password:</b></label>
                                             <div class="d-flex">
                                                 <input
-                                                    value="aaaa"
+                                                    value="willow123"
                                                     max=100 type="password" id="password" name="password" class="form-control form-control-user"
                                                     id="exampleInputPassword" placeholder="Password" autocomplete="current-password">
                                                 <div class="mx-1"></div>
@@ -130,7 +130,7 @@ if (!empty($_COOKIE['id'])) {
                                             </div>
                                         </div>
                                         <!-- dont make it type=submit, because we are using js to handle form submission -->
-                                        <button type="submit" id="loginBtn" class="btn btn-primary btn-user btn-block">
+                                        <button type="button" id="loginBtn" class="btn btn-primary btn-user btn-block">
                                             Login
                                         </button>
                                     </form>

@@ -2,7 +2,7 @@
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header bg-primary">
-        <h5 class="modal-title text-white" id="modalLabel">Add User</h5>
+        <h5 class="modal-title text-white" id="modalLabel">New User</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -82,15 +82,19 @@
               ?>
             </select>
           </div>
-
-          <h6 class="modal-title text-white" id="barangayAssignmentsLabel"></h6>
-          <ul class="container-fluid" id="barangayAssignmentsList">
-          </ul>
-
-          <a href="#edit-user" class="btn-primary btn-sm"
-            data-toggle="modal" data-target="#crud-user">
-            Assign barangays <i class="fas fa-arrow-circle-right"></i>
-          </a>
+          <hr>
+          <div class="col" id="auditorRoleAssignment" style="display: none">
+            <h5 class="modal-title" id="barangayAssignmentsLabel">Assigned Barangays</h5>
+            <p class="text-align-center mt-2" id="noBarangayAssignments" style="font-size: 14px;">
+            <div class="spinner-border spinner-border-sm mr-2" role="status">
+            </div>
+            Loading...</p>
+            <ul class="container-fluid mb-2" id="barangayAssignmentsList" style="display: none">
+            </ul>
+            <button type="button" class="btn-primary btn-sm" id="barangaySelectBtn">
+              Assign barangays <i class="fas fa-arrow-circle-right"></i>
+            </button>
+          </div>
 
           <div class="mb-3 form-group max-w-100 mx-auto" id="barangayDiv" style="display: none;">
             <label for="barangay" class="form-label">Barangay</label>

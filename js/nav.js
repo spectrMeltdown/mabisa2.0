@@ -22,20 +22,22 @@ document
             } catch (error) {
               // console.error(res.text());
             }
+            console.error("res was not okay!" + (await res.text()));
             throw "Error";
+          } else {
+            console.log("res was okay!" + (await res.text()));
           }
-          console.error(await res.text());
           // return await res.json();
         })
         .catch((e) => {
-          console.error(e);
+          console.error("Error was:" + e);
           throw e; //stop the chain
         })
         .then((data) => {
           if (data !== undefined && data.error) {
-            console.log(data.error);
+            console.log("Data error:" + data.error);
           } else {
-            // location.href = "../index.php";
+            location.href = "../index.php";
           }
         });
     }

@@ -3,45 +3,77 @@
 const modalLabel = document.getElementById("modalLabel");
 const passLabel = document.getElementById("passwordLabel");
 let origPassLabel = "Password";
-let origModalLabel = "Add user";
+let origModalLabel = "New user";
+let auditorBarangays = [];
 let currentUserID;
 const defaultAlert = '<div class="alert"></div>';
 let editMode = undefined;
 // import $ from 'jquery';
 // stopped using jquery because i'm practicing javascript lol
 
+function toggleAuditor(shouldReveal) {
+  const auditorRoleAssignment = document.getElementById(
+    "auditorRoleAssignment",
+  );
+  // const multiBarangayBtn = document.getElementById("barangaySelectBtn");
+  // const multiBarangayLabel = document.getElementById(
+  //   "barangayAssignmentsLabel",
+  // );
+  // const multiBarangayList = document.getElementById("barangayAssignmentsList");
+  // const noBarangaysSelectedLabel = document.getElementById(
+  //   "noBarangayAssignments",
+  // );
+  if (shouldReveal) {
+    auditorRoleAssignment.style.display = "block";
+    // multiBarangayBtn.style.display = "block";
+    // multiBarangayLabel.style.display = "block";
+    // multiBarangayList.style.display = "block";
+    // noBarangaysSelectedLabel.style.display = "block";
+  } else {
+    auditorRoleAssignment.style.display = "none";
+    // multiBarangayBtn.style.display = "none";
+    // multiBarangayLabel.style.display = "none";
+    // multiBarangayList.style.display = "none";
+    // noBarangaysSelectedLabel.style.display = "none";
+  }
+}
+
+function toggleSecretary(shouldReveal) {
+  const barangayDivSelector = document.getElementById("barangayDiv");
+  const barangay = document.getElementById("barangay");
+  if (shouldReveal) {
+    barangayDivSelector.style.display = "block";
+    barangay.setAttribute("required", "true");
+  } else {
+    barangayDivSelector.style.display = "none";
+    barangay.removeAttribute("required");
+  }
+}
+
 // for adding user
 // listen when the admin changes selection, and display additional inputs
 document.querySelector("#role").addEventListener("change", (event) => {
   console.log("Changed role");
   let selectedOption = event.target.value;
-  let barangayDivSelector = document.getElementById("barangayDiv");
-  let barangay = document.getElementById("barangay");
-  let multiBarangay = document.getElementById("barangaySelectBtn");
   // console.log(`${selectedOption}`);
+
   // secretary
   if (selectedOption == 2) {
-    // hide all barangay selector btn
-    multiBarangay.style.display = "none";
-    // show single barangay selector
-    barangayDivSelector.style.display = "block";
-    barangay.setAttribute("required", "true");
+    toggleAuditor(false);
+    toggleSecretary(true);
   }
+
   // auditor
-  else if ((selectedOption = 1)) {
-    // show barangay selector btn
-    multiBarangay.style.display = "inline-block";
-    // hide single barangay selector
-    barangayDivSelector.style.display = "none";
-    barangay.removeAttribute("required");
+  else if (selectedOption == 1) {
+    toggleAuditor(true);
+    toggleSecretary(false);
+    fetch("");
   }
+
   // admin
   else {
-    // hide barangay selector btn
-    multiBarangay.style.display = "none";
-    // hide barangay
-    barangayDivSelector.style.display = "none";
-    barangay.removeAttribute("required");
+    toggleAuditor(false);
+    toggleSecretary(false);
   }
 });
 

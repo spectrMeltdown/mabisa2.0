@@ -1,11 +1,10 @@
 <?php
 
 declare(strict_types=1);
+// ini_set('display_errors', 0); // Disable error display
 require_once '../db/db.php';
 require_once '../models/user_model.php';
 require_once '../models/role_model.php';
-
-header('Content-Type: application/json');
 
 function getAllUsers(): array
 {
