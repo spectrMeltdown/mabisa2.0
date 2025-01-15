@@ -14,14 +14,32 @@ let editMode = undefined;
 // listen when the admin changes selection, and display additional inputs
 document.querySelector("#role").addEventListener("change", (event) => {
   console.log("Changed role");
-  const selectedOption = event.target.value;
-  const barangayDivSelector = document.querySelector("#barangayDiv");
-  const barangay = document.querySelector("#barangay");
+  let selectedOption = event.target.value;
+  let barangayDivSelector = document.getElementById("barangayDiv");
+  let barangay = document.getElementById("barangay");
+  let multiBarangay = document.getElementById("barangaySelectBtn");
   // console.log(`${selectedOption}`);
+  // secretary
   if (selectedOption == 2) {
+    // hide all barangay selector btn
+    multiBarangay.style.display = "none";
+    // show single barangay selector
     barangayDivSelector.style.display = "block";
     barangay.setAttribute("required", "true");
-  } else {
+  }
+  // auditor
+  else if ((selectedOption = 1)) {
+    // show barangay selector btn
+    multiBarangay.style.display = "inline-block";
+    // hide single barangay selector
+    barangayDivSelector.style.display = "none";
+    barangay.removeAttribute("required");
+  }
+  // admin
+  else {
+    // hide barangay selector btn
+    multiBarangay.style.display = "none";
+    // hide barangay
     barangayDivSelector.style.display = "none";
     barangay.removeAttribute("required");
   }

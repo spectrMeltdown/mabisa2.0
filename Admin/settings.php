@@ -82,7 +82,7 @@ require_once '../db/db.php';
                   </li>
                   <li class="list-group-item d-flex justify-content-between align-items-center">
                     <span><strong>Full Name:</strong> <span id="fullName">Loading...</span></span>
-                    <button class="btn btn-sm btn edit-btn" data-field="fullName">Edit</button>
+                    <button class="btn btn-sm btn-secondary edit-btn" data-field="fullName">Edit</button>
                   </li>
                   <li class="list-group-item d-flex justify-content-between align-items-center">
                     <span><strong>Mobile Number:</strong> <span id="mobileNum">Loading...</span></span>
@@ -123,7 +123,6 @@ require_once '../db/db.php';
         <!-- End of Content Wrapper -->
       </div>
       <!-- End of Page Wrapper -->
-      <?php require 'components/confirmation_dialog.php' ?>
 </body>
 
 </html>

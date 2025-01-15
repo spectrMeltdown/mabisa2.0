@@ -8,7 +8,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <!-- loading Spinner (hidden initially) -->
+        <!-- loading Spinner-->
         <div id="loadingSpinner" class="d-flex justify-content-center">
           <div class="spinner-border text-primary" role="status">
             <span class="sr-only">Loading...</span>
@@ -44,29 +44,33 @@
             </div>
           </div>
 
-          <div class="mb-3 col-lg-6 form-group">
-            <label for="pass" class="form-label" id="passwordLabel">Password</label>
-            <div class="d-flex">
-              <input maxlength="100" type="password" class="form-control" name="pass" id="pass" required autocomplete="new-password" />
-              <button type="button" id="passEye" class="btn btn-outline-secondary d-inline-block">
-                <i class="fa fa-eye"></i> <!-- Add Font Awesome for the icon -->
-              </button>
+          <div class="row">
+            <div class="mb-3 col-lg-6 form-group">
+              <label for="pass" class="form-label" id="passwordLabel">Password</label>
+              <div class="d-flex">
+                <input maxlength="100" type="password" class="form-control" name="pass" id="pass" required autocomplete="new-password" />
+                <div class="p-1"></div>
+                <button type="button" id="passEye" class="btn btn-outline-secondary d-inline-block">
+                  <i class="fa fa-eye"></i> <!-- Add Font Awesome for the icon -->
+                </button>
+              </div>
             </div>
-          </div>
 
-          <div class="mb-3 col-lg-6 form-group" id="confirmPassField">
-            <label for="confirmPass" class="form-label">Confirm password</label>
-            <div class="d-flex">
-              <input maxlength="100" type="password" class="form-control" name="confirmPass" id="confirmPass" required autocomplete="new-password" />
-              <button type="button" id="confirmPassEye" class="btn btn-outline-secondary">
-                <i class="fa fa-eye"></i> <!-- Add Font Awesome for the icon -->
-              </button>
+            <div class="mb-3 col-lg-6 form-group" id="confirmPassField">
+              <label for="confirmPass" class="form-label">Confirm password</label>
+              <div class="d-flex">
+                <input maxlength="100" type="password" class="form-control" name="confirmPass" id="confirmPass" required autocomplete="new-password" />
+                <div class="p-1"></div>
+                <button type="button" id="confirmPassEye" class="btn btn-outline-secondary">
+                  <i class="fa fa-eye"></i> <!-- Add Font Awesome for the icon -->
+                </button>
+              </div>
             </div>
           </div>
 
           <div class="mb-3 form-group">
             <label for="role" class="form-label">Role</label>
-            <select class="form-select" name="role" id="role" required>
+            <select class="custom-select" name="role" id="role" required>
               <option value="" disabled selected hidden>Select one</option>
               <?php
               require_once "../models/role_model.php";
@@ -78,6 +82,15 @@
               ?>
             </select>
           </div>
+
+          <h6 class="modal-title text-white" id="barangayAssignmentsLabel"></h6>
+          <ul class="container-fluid" id="barangayAssignmentsList">
+          </ul>
+
+          <a href="#edit-user" class="btn-primary btn-sm"
+            data-toggle="modal" data-target="#crud-user">
+            Assign barangays <i class="fas fa-arrow-circle-right"></i>
+          </a>
 
           <div class="mb-3 form-group max-w-100 mx-auto" id="barangayDiv" style="display: none;">
             <label for="barangay" class="form-label">Barangay</label>

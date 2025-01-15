@@ -35,3 +35,53 @@ async () => {
     }
   });
 };
+
+// clicking the change profile pic button
+document.getElementById("changeProfileBtn").addEventListener("click", () => {
+  const fileInput = document.getElementById("fileInput");
+  fileInput.value = ""; // Clear previous selection
+  fileInput.click(); // Trigger the file selector
+});
+
+document
+  .getElementById("fileInput")
+  .addEventListener("change", async (event) => {
+    const file = event.target.files[0];
+
+    if (!file) {
+      return; // No file selected
+    }
+
+    // Check file size (<= 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      document.getElementById("alertDiv").innerText =
+        "File size must not exceed 2MB.";
+      document.getElementById("alertDiv").style.display = "block";
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("profileImage", file);
+
+    try {
+      const response = await fetch("uploadProfile.php", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        document.getElementById("alertDiv").innerText = error;
+        document.getElementById("alertDiv").style.display = "block";
+        return;
+      }
+
+      // If successful, clear alert div
+      document.getElementById("alertDiv").style.display = "none";
+      alert("Profile picture updated successfully!");
+    } catch (error) {
+      document.getElementById("alertDiv").innerText =
+        "An error occurred while uploading. Please try again.";
+      document.getElementById("alertDiv").style.display = "block";
+    }
+  });

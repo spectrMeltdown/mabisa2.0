@@ -28,5 +28,6 @@ $pathPrepend = isset($root) ? '' : '../';
 <script src="<?= $pathPrepend ?>js/sb-admin-2.min.js" defer></script>
 
 <script src="<?= $pathPrepend ?>js/util/toast.js" defer></script>
+<script src="<?= $pathPrepend ?>js/util/confirmation.js" defer></script><!-- keep on all pages, because it is for logout -->
 
 <title>MABISA - Admin</title>

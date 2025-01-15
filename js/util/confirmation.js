@@ -1,10 +1,14 @@
 "use strict";
 
 // show a confirmation dialog, returns bool
-async function showConfirmationDialog(message) {
-  if (message) {
-    $("#confirmMessage").text(message);
-  }
+async function showConfirmationDialog(
+  message,
+  cancelText = "Cancel",
+  confirmText = "Confirm",
+) {
+  if (message) $("#confirmMessage").text(message);
+  if (cancelText) $("#cancelBtn").text(cancelText);
+  if (confirmText) $("#confirmBtn").text(confirmText);
 
   const confirmationModal = new bootstrap.Modal(
     document.getElementById("confirmModal"),

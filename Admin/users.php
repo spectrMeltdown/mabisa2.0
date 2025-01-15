@@ -65,8 +65,8 @@ require_once '../db/db.php';
                 <table class="table table-bordered" id="user_dataTable" width="100%" cellspacing="0">
                   <?php
                   // $stmt = $pdo->prepare("SELECT COUNT(*) FROM pos.received_from where area_code=? and cmp_code=? ");
-                  $stmt = $pdo->prepare("SELECT COUNT(*) FROM user_policy");
-                  $stmt->execute();
+                  $stmt = $pdo->prepare("SELECT COUNT(*) FROM user_policy where id != :id");
+                  $stmt->execute([':id' => $userData['id']]);
                   $count = $stmt->fetchColumn();
 
                   if ($count != 0) {
@@ -95,7 +95,7 @@ require_once '../db/db.php';
                       <?php
                       require_once '../models/role_model.php';
                       $query = $pdo->prepare("select * from user_policy where id != :id");
-                      writeLog($userData);
+                      // writeLog($userData);
                       $query->execute([':id' => $userData['id']]);
                       while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
                       ?>
@@ -120,7 +120,9 @@ require_once '../db/db.php';
                   <?php } else { ?>
                     <tbody>
                       <tr>
-                        <td>No Results Found..</td>
+                        <td>
+                          <p class="text-center">Nothing found..</p>
+                        </td>
                       </tr>
                     </tbody>
                   <?php } ?>
@@ -136,7 +138,6 @@ require_once '../db/db.php';
   </div>
   <!-- End of Page Wrapper -->
   <?php require 'components/crud_user_dialog.php' ?>
-  <?php require 'components/confirmation_dialog.php' ?>
 </body>
 
 </html>

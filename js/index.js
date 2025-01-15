@@ -8,8 +8,8 @@ $("#loginBtn").on("click", (e) => {
   loading = true;
 
   let ok = true;
-  const uname = $("#username").val().trim();
-  const pass = $("#password").val().trim();
+  const username = $("#username").val().trim();
+  const password = $("#password").val().trim();
   const rememberMe = $("#rememberMe").prop("checked");
 
   if (!pass) {
@@ -29,22 +29,35 @@ $("#loginBtn").on("click", (e) => {
     method: "POST",
     // when passing data to php via js, don't use json because php $_POST doesn't read that (there is a workaround to reading json
     // in php, but lets just stick with this m'kay?)
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: new URLSearchParams({
-      username: uname,
-      password: pass,
+    // headers: {
+    //   "Content-Type": "application/x-www-form-urlencoded",
+    // },
+    body: {
+      username: username,
+      password: password,
       rememberMe: rememberMe,
-    }),
+    },
   })
-    .then((res) => res.json())
+    .then(async (res) => {
+      if (res.ok) {
+        console.error("HTTP error:", res.text);
+        const data = await res.json();
+        console.log(data);
+        return data;
+      }
+      console.error("HTTP error:", res.text);
+      throw new Error(`Error: Status ${res.status}}`);
+    })
     .catch((e) => console.log(e))
     .then((user) => {
       console.log("user is: " + JSON.stringify(user));
+
       // show error on #alert if invalid
-      if (user.error) {
-        addAlert("alert", user.error);
+      if (user === undefined ? true : user.error) {
+        addAlert(
+          "alert",
+          user === undefined ? "Sorry, an unknown error occurred." : user.error,
+        );
         loading = false;
         return;
       }

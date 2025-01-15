@@ -1,9 +1,10 @@
 <?php
 $customUserID = 'self';
 $userData;
-require '../api/get_user.php'; // this will provide userData array
+require $pathPrepend . 'api/get_user.php'; // this will provide userData array
 ?>
 
+<script src="<?= $pathPrepend ?>js/nav.js" defer></script>
 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
   <!-- Sidebar Toggle (Topbar) -->
   <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
@@ -79,7 +80,7 @@ require '../api/get_user.php'; // this will provide userData array
       <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
         aria-haspopup="true" aria-expanded="false">
         <span class="mr-2 mt-3 d-none d-lg-inline text-gray-600 small" style="font-size: 15px"><?= $userData['fullName'] ?? '' ?><br>
-          <p style="font-size: 12px"><?= $userData['role'] ?? '' ?></p>
+          <p class="text-right" style="font-size: 12px"><?= $userData['role'] ?? '' ?> &nbsp;</p>
         </span>
         <!-- TODO: render the user profile pic below -->
         <img class="img-profile rounded-circle"
@@ -96,12 +97,13 @@ require '../api/get_user.php'; // this will provide userData array
           Activity Log
         </a>
         <div class="dropdown-divider"></div>
-        <a class="dropdown-item" href="<?= $pathPrepend ?>index.php" data-bs-toggle="modal" data-target="#logoutModal">
+        <a class="dropdown-item" id="logoutBtn">
           <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-600"></i>
-          Logout
+          <span style="pointer-events: none;">Logout</span>
         </a>
       </div>
     </li>
   </ul>
 </nav>
+<?php require isset($root) ? 'Admin/components/confirmation_dialog.php' : 'components/confirmation_dialog.php' ?>
 <!-- End of Topbar -->
