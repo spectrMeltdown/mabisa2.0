@@ -11,20 +11,20 @@ class Comments
     }
 
     public function add_comment(
-        string $barangay_id,
+        string $file_id,
         string $commentName,
         string $commentText
     ): array {
     
         try {
-            $sql = "SELECT comments FROM barangay_assessment WHERE barangay_id = :barangay_id";
+            $sql = "SELECT comments FROM barangay_assessment_files WHERE file_id = :file_id";
             $stmt = $this->pdo->prepare($sql);
-            $stmt->bindParam(':barangay_id', $barangay_id, PDO::PARAM_STR);
+            $stmt->bindParam(':file_id', $file_id, PDO::PARAM_STR);
             $stmt->execute();
     
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!$row) {
-                return ['success' => false, 'message' => 'Barangay not found'];
+                return ['success' => false, 'message' => 'Barangay not found', 'file_id' => $file_id, 'name' => $commentName];
             }
     
             $comments = json_decode($row['comments'], true) ?: [];
@@ -40,10 +40,10 @@ class Comments
             ];
     
             $updatedComments = json_encode($comments);
-            $updateSql = "UPDATE barangay_assessment SET comments = :comments WHERE barangay_id = :barangay_id";
+            $updateSql = "UPDATE barangay_assessment_files SET comments = :comments WHERE file_id = :file_id";
             $updateStmt = $this->pdo->prepare($updateSql);
             $updateStmt->bindParam(':comments', $updatedComments, PDO::PARAM_STR);
-            $updateStmt->bindParam(':barangay_id', $barangay_id, PDO::PARAM_STR);
+            $updateStmt->bindParam(':file_id', $file_id, PDO::PARAM_STR);
     
             if ($updateStmt->execute()) {
                 echo "<script>

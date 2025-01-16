@@ -14,8 +14,20 @@
                 </div>
             </div>
             <div class="modal-footer">
+                <?php if ($role === 'Admin'): ?>
+                    <form method="post" action="./bar_assessment/admin_actions/comments.php" class="mt-4">
+                        <input type="hidden" name="file_id" value="<?= htmlspecialchars($file_id) ?>">
+                        <input type="hidden" name="name" value="<?= htmlspecialchars($name) ?>">
+                        <div class="mb-3">
+                            <label for="commentText" class="form-label">Your Comment</label>
+                            <textarea class="form-control" id="commentText" name="commentText" rows="3" required></textarea>
+                        </div>
+                        <div class="row">
+                            <button type="submit" class="btn btn-primary">Post Comment</button>
+                        </div>
+                    </form>
+                <?php endif; ?>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="confirmBtn">Confirm</button>
             </div>
         </div>
     </div>
