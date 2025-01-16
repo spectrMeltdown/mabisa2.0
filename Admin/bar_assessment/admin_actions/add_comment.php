@@ -1,6 +1,6 @@
 <?php
-require 'comments.php';
-require_once '../db/db.php';
+require '../comments.php';
+require_once '../../../db/db.php';
 
 $comments = new Comments($pdo);
 

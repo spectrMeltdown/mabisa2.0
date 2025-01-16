@@ -8,7 +8,7 @@ require_once '../../db/db.php';
 $barangay_id = isset($_GET['barangay_id']) ? $_GET['barangay_id'] : null;
 $barangay_name = isset($_GET['brgyname']) ? $_GET['brgyname'] : null;
 $name = 'admin'; //temporary only
-$role = 'Admin'; //temporary only
+$role = 'Secretary'; //temporary only
 
 $responses = new Responses($pdo);
 $admin = new Admin_Actions($pdo);
@@ -350,45 +350,52 @@ if ($barangay_id) {
                                                                     if ($data):
                                                                         ?>
 
-                                                                        <button type="button" class="btn btn-primary" data-toggle="modal"
-                                                                            data-target="#commentModal"
-                                                                            data-fileid="<?php echo $data['file_id']; ?>"
-                                                                            data-role="<?php echo $role; ?>" data-name="<?php echo $name; ?>">
-                                                                            Comments
-                                                                        </button>
-
-                                                                        <script>
-                                                                            $(document).ready(function () {
-                                                                                $('#commentModal').on('show.bs.modal', function (event) {
-                                                                                    const button = $(event.relatedTarget);
-                                                                                    const file_id = button.data("fileid");
-                                                                                    const role = button.data("role");
-                                                                                    const name = button.data("name");
-                                                                                    console.log('File ID:', file_id);
-                                                                                    console.log('Role:', role);
-                                                                                    console.log('Name:', name);
-
-                                                                                    $('#modalFileId').val(file_id);
+<button type="button" class="btn btn-primary" data-toggle="modal"
+    data-target="#commentModal"
+    data-fileid="<?php echo htmlspecialchars($data['file_id']); ?>"
+    data-role="<?php echo htmlspecialchars($role); ?>"
+    data-name="<?php echo htmlspecialchars($name); ?>">
+    Comments
+</button>
 
 
-                                                                                    fetchComments(file_id);
-                                                                                });
+<script>
+    $(document).ready(function () {
+        $('#commentModal').on('show.bs.modal', function (event) {
+            const button = $(event.relatedTarget); 
+            const file_id = button.data("fileid"); 
+            const role = button.data("role");
+            const name = button.data("name");
 
-                                                                                function fetchComments(file_id) {
-                                                                                    $.ajax({
-                                                                                        url: 'bar_assessment/fetch_comments.php',
-                                                                                        type: 'POST',
-                                                                                        data: { file_id: file_id },
-                                                                                        success: function (response) {
-                                                                                            $('.modal-body .bg-light').html(response);
-                                                                                        },
-                                                                                        error: function () {
-                                                                                            console.error('Failed to fetch comments.');
-                                                                                        }
-                                                                                    });
-                                                                                }
-                                                                            });
-                                                                        </script>
+            console.log('File ID:', file_id);
+            console.log('Role:', role);
+            console.log('Name:', name);
+
+           
+            $('#modalFileId').val(file_id);
+
+            $('#commentModal form input[name="file_id"]').val(file_id);
+            $('#commentModal form input[name="name"]').val(name);
+
+            fetchComments(file_id);
+        });
+
+        function fetchComments(file_id) {
+            $.ajax({
+                url: 'bar_assessment/fetch_comments.php',
+                type: 'POST',
+                data: { file_id: file_id },
+                success: function (response) {
+                    $('#commentsContainer').html(response); 
+                },
+                error: function () {
+                    console.error('Failed to fetch comments.');
+                }
+            });
+        }
+    });
+</script>
+
                                                                         <?php
                                                                     endif;
                                                                     ?>
