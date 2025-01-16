@@ -1,6 +1,6 @@
 <?php
 require_once './comments.php';
-require_once '../db/db.php';
+require_once '../../db/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['file_id'])) {
     $file_id = $_POST['file_id'];
