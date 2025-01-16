@@ -2,7 +2,7 @@
 require_once './responses.php';
 require_once './comments.php';
 require_once './admin_actions/admin_actions.php';
-require_once '../db/db.php';
+require_once '../../db/db.php';
 
 
 $barangay_id = isset($_GET['barangay_id']) ? $_GET['barangay_id'] : null;
@@ -84,7 +84,7 @@ if ($barangay_id) {
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <base href="">
+    <base href="../">
 
 
     <title>MABISA</title>
@@ -97,7 +97,7 @@ if ($barangay_id) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <!-- Custom styles for this template-->
-    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="../css/sb-admin-2.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
@@ -116,7 +116,7 @@ if ($barangay_id) {
         <!--sidebar start  -->
         <?php
         $isBarAssessmentPhp = true;
-        include 'common/sidebar.php' ?>
+        include '../common/sidebar.php' ?>
 
         <!-- sidebar end -->
 
@@ -127,7 +127,7 @@ if ($barangay_id) {
             <div id="content">
 
                 <!-- Topbar -->
-                <?php include 'common/nav.php' ?>
+              
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
