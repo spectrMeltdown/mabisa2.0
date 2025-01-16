@@ -9,27 +9,27 @@ class Admin_Actions
         $this->pdo = $pdo;
     }
 
-    public function approve(string $barangay_id): bool
+    public function approve(string $file_id): bool
     {
         $sql = "
-        UPDATE barangay_assessment
+        UPDATE barangay_assessment_files
         SET status = 'approved'
-        WHERE barangay_id = :barangay_id;
+        WHERE file_id = :file_id;
         ";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindParam(':barangay_id', $barangay_id);
+        $stmt->bindParam(':file_id', $file_id);
         return $stmt->execute();
     }
 
-    public function decline(string $barangay_id): bool
+    public function decline(string $file_id): bool
     {
         $sql = "
-        UPDATE barangay_assessment
+        UPDATE barangay_assessment_files
         SET status = 'declined'
-        WHERE barangay_id = :barangay_id;
+        WHERE file_id = :file_id;
         ";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindParam(':barangay_id', $barangay_id);
+        $stmt->bindParam(':file_id', $file_id);
         return $stmt->execute();
     }
 
