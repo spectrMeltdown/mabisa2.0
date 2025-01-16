@@ -9,7 +9,7 @@ let currentUserID;
 const defaultAlert = '<div class="alert"></div>';
 let editMode = undefined;
 // import $ from 'jquery';
-// stopped using jquery because i'm practicing javascript lol
+// stopped using jquery because i'm practicing javascript hehe
 
 function toggleAuditor(shouldReveal) {
   const auditorRoleAssignment = document.getElementById(
@@ -54,6 +54,9 @@ function toggleSecretary(shouldReveal) {
 // listen when the admin changes selection, and display additional inputs
 document.querySelector("#role").addEventListener("change", (event) => {
   console.log("Changed role");
+  if (loading) return;
+  toggleLoading();
+
   let selectedOption = event.target.value;
   // console.log(`${selectedOption}`);
 
@@ -67,7 +70,45 @@ document.querySelector("#role").addEventListener("change", (event) => {
   else if (selectedOption == 1) {
     toggleAuditor(true);
     toggleSecretary(false);
-    fetch("");
+    const loading = document.getElementById("barangayAssignmentsLoading");
+    const list = document.getElementById("barangayAssignmentsList");
+    const none = document.getElementById("noBarangayAssignments");
+    if (editMode) {
+      console.log("editing auditor");
+      fetch("../api/user_assignments.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          id: "",
+        }),
+      });
+    } else {
+      console.log("new auditor");
+      fetch("../api/user_assignments.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw "Error loading.";
+          }
+          return res.json();
+        })
+        .catch((e) => {
+          console.log(e);
+          throw e;
+        })
+        .then((data) => {
+          if (data && data.error) {
+            addAlert(data.error);
+            return;
+          }
+        });
+    }
   }
 
   // admin
@@ -75,6 +116,7 @@ document.querySelector("#role").addEventListener("change", (event) => {
     toggleAuditor(false);
     toggleSecretary(false);
   }
+  toggleLoading();
 });
 
 // show/hide in password field
@@ -120,6 +162,9 @@ document
 // because the latter only works when the element in query is static (not dynamically added/removed)
 // reset the form element in crud user dialog
 $("#crud-user").on("show.bs.modal", function (event) {
+  if (loading) return;
+  toggleLoading();
+
   if ($(event.relatedTarget).hasClass("edit-user-btn")) {
     // console.log("editing");
     editMode = true;
@@ -212,6 +257,7 @@ $("#crud-user").on("show.bs.modal", function (event) {
     document.getElementById("modal-content").classList.remove("d-none");
     // Show the edit modal crud-user
   }
+  toggleLoading();
 });
 
 // reset the form element in crud user dialog
@@ -240,6 +286,8 @@ $("#crud-user").on("hidden.bs.modal", function (e) {
 
 // when submitting the form
 $("#save-user-btn").on("click", async (e) => {
+  if (loading) return;
+  toggleLoading();
   // get all users to compare existing usernames & emails
   const users = await fetch(`../api/get_users.php`).then((response) => {
     if (!response.ok) {
@@ -387,6 +435,7 @@ $("#save-user-btn").on("click", async (e) => {
 
   if (!ok) {
     console.log("form not ok!");
+    toggleLoading();
     return;
   }
   $("#alert").html(defaultAlert);
@@ -444,6 +493,7 @@ $("#save-user-btn").on("click", async (e) => {
       },
     });
   }
+  toggleLoading();
 });
 
 const phoneInput = document.getElementById("mobileNum");
@@ -473,6 +523,9 @@ phoneInput.addEventListener("keydown", function (e) {
 
 // handle user delete btn
 $(".delete-user-btn").on("click", async (e) => {
+  if (loading) return;
+  toggleLoading();
+
   const shouldDelete = await showConfirmationDialog();
   if (shouldDelete) {
     const userID = $(e.target).data("id");
@@ -495,4 +548,5 @@ $(".delete-user-btn").on("click", async (e) => {
       },
     });
   }
+  toggleLoading();
 });

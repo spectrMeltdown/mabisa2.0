@@ -1,20 +1,18 @@
 "use strict";
-let loading = false;
 
 document
   .getElementById("logoutBtn")
   .addEventListener("click", async (event) => {
     if (loading) return;
     loading = true;
+
     const shouldLogout = await showConfirmationDialog(
       "Are you sure you want to logout?",
       "No",
       "Yes",
     );
     if (shouldLogout) {
-      fetch(
-        (location.href.includes("dashboard") ? "" : "../") + "api/logout.php",
-      )
+      fetch("../api/logout.php")
         .then(async (res) => {
           if (!res.ok) {
             try {
@@ -37,7 +35,7 @@ document
           if (data !== undefined && data.error) {
             console.log("Data error:" + data.error);
           } else {
-            location.href = "../index.php";
+            location.href = "login.php";
           }
         });
     }

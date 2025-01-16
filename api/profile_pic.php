@@ -1,4 +1,16 @@
 <?php
+
+declare(strict_types=1);
+// header('Content-Type: application/json; charset=utf-8');
+// ini_set('display_errors', 0); // Disable error display
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
+// ini_set('log_errors', 1);    // Enable error logging
+// require_once '../models/user_model.php';
+// require_once '../models/role_model.php';
+require_once '../db/db.php';
+require 'logging.php';
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
   http_response_code(405); // Method Not Allowed
   echo 'Invalid request method.';
@@ -61,9 +73,7 @@ if (!move_uploaded_file($file['tmp_name'], $filePath)) {
 
 // Update the database
 try {
-  $pdo = new PDO('mysql:host=localhost;dbname=your_database', 'username', 'password');
-  $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
+  global $pdo;
   $stmt = $pdo->prepare('UPDATE user_policy SET profile_image = :image WHERE id = :id');
   $stmt->execute([':image' => $filePath, ':id' => $userId]);
 } catch (Exception $e) {

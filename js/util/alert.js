@@ -1,6 +1,6 @@
 "use strict";
 
-function addAlert(id, msg, title = "Error: ") {
+function addAlert(msg, title = "Error: ", id = "alert") {
   $(`#${id}`).html(
     '<div id="' +
       `#${id}` +

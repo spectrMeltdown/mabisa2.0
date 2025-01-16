@@ -53,7 +53,7 @@ date_default_timezone_set('Asia/Manila');
             <div class="card-body">
               <h1 class="card-title mb-3">You are logged out</h1>
               <p class="card-text text-muted mb-4">If you’d like to continue, please log in.</p>
-              <a href="../index.php" class="btn btn-primary btn-lg">Go to login page <i class="fas fa-arrow-circle-right    "></i></a>
+              <a href="../index.php" class="btn btn-primary btn-lg">Go to login page <i class="fas fa-arrow-circle-right"></i></a>
             </div>
           </div>
         </div>

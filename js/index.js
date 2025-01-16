@@ -1,6 +1,4 @@
 "use strict";
-// for debouncing
-let loading = false;
 
 $("#loginBtn").on("click", (e) => {
   console.log("login btn pressed");
@@ -13,11 +11,11 @@ $("#loginBtn").on("click", (e) => {
   const rememberMe = $("#rememberMe").prop("checked");
 
   if (!password) {
-    addAlert("alert", "Password cannot be empty.");
+    addAlert("Password cannot be empty.");
     ok = false;
   }
   if (!username) {
-    addAlert("alert", "Username cannot be empty.");
+    addAlert("Username cannot be empty.");
     ok = false;
   }
   if (!ok) {
@@ -25,7 +23,7 @@ $("#loginBtn").on("click", (e) => {
     return;
   }
   resetAlert("alert");
-  fetch("api/login.php", {
+  fetch("../api/login.php", {
     method: "POST",
     // when passing data to php via js, don't use json because php $_POST doesn't read that (there is a workaround to reading json
     // in php, but lets just stick with this m'kay?)
@@ -55,7 +53,6 @@ $("#loginBtn").on("click", (e) => {
       // show error on #alert if invalid
       if (user === undefined ? true : user.error) {
         addAlert(
-          "alert",
           user === undefined ? "Sorry, an unknown error occurred." : user.error,
         );
         loading = false;

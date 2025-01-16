@@ -3,9 +3,9 @@
 declare(strict_types=1);
 // ini_set('display_errors', 0); // Disable error display
 // ini_set('log_errors', 1);    // Enable error logging
-require_once $pathPrepend . 'models/user_model.php';
-require_once $pathPrepend . 'models/role_model.php';
-require_once $pathPrepend . 'db/db.php';
+require_once '../models/user_model.php';
+require_once '../models/role_model.php';
+require_once '../db/db.php';
 
 $isGetMethod = $_SERVER['REQUEST_METHOD'] === 'GET';
 
@@ -19,7 +19,7 @@ function getUser(string $id)
     throw new Exception('No id provided!');
   }
 
-  if ($id === 'self' && isset($_COOKIE['id'])) {
+  if ($id === 'self') {
     // echo "was a cookie id!";
     $id = $_COOKIE['id'];
   }

@@ -4,7 +4,7 @@
       <div class="modal-header bg-primary">
         <h5 class="modal-title text-white" id="modalLabel">New User</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span aria-hidden="true" class="text-white">&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -86,7 +86,7 @@
           <div class="col" id="auditorRoleAssignment" style="display: none">
             <h5 class="modal-title" id="barangayAssignmentsLabel">Assigned Barangays</h5>
             <p class="text-align-center mt-2" id="noBarangayAssignments" style="font-size: 14px;">
-            <div class="spinner-border spinner-border-sm mr-2" role="status">
+            <div class="spinner-border spinner-border-sm mr-2" id="barangayAssignmentsLoading" role="status">
             </div>
             Loading...</p>
             <ul class="container-fluid mb-2" id="barangayAssignmentsList" style="display: none">
@@ -97,7 +97,7 @@
           </div>
 
           <div class="mb-3 form-group max-w-100 mx-auto" id="barangayDiv" style="display: none;">
-            <label for="barangay" class="form-label">Barangay</label>
+            <label for="barangay" class="form-label">Barangay: </label>
             <select class="form-select" name="barangay" id="barangay">
               <option value="" disabled selected hidden>Select one</option>
               <?php

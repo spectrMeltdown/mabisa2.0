@@ -4,7 +4,7 @@
       <div class="modal-header bg-primary">
         <h5 class="modal-title text-white" id="modalLabel">Select Barangays</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span aria-hidden="true" class="text-white">&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -23,7 +23,7 @@
           <!-- actual content -->
           <ul class="list-group" id="barangayAssignmentsList">
             <?php
-            require '../../db/db.php';
+            require '../db/db.php';
             $sql = 'select * from barangay where auditorID = null';
             $query = $pdo->prepare($sql);
             $query->execute();

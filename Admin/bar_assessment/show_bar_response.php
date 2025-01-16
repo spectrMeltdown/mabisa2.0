@@ -2,7 +2,7 @@
 require_once './responses.php';
 require_once './comments.php';
 require_once './admin_actions/admin_actions.php';
-require_once '../../db/db.php';
+require_once '../db/db.php';
 
 
 $barangay_id = isset($_GET['barangay_id']) ? $_GET['barangay_id'] : null;
@@ -32,7 +32,6 @@ try {
                 alert('Action " . $action . " was successfully performed for Barangay: " . $barangay_id . "');
                 window.location.href = document.referrer;
                 </script>";
-
             } else {
                 echo "Failed to perform action '$action'.";
             }
@@ -85,20 +84,20 @@ if ($barangay_id) {
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <base href="../">
+    <base href="">
 
 
-    <title>MABISA - Admin</title>
+    <title>MABISA</title>
 
     <!-- Custom fonts for this template-->
-    <link href="../vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <!-- Custom styles for this template-->
-    <link href="../css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
@@ -117,7 +116,7 @@ if ($barangay_id) {
         <!--sidebar start  -->
         <?php
         $isBarAssessmentPhp = true;
-        include '../common/sidebar.php' ?>
+        include 'common/sidebar.php' ?>
 
         <!-- sidebar end -->
 
@@ -128,7 +127,7 @@ if ($barangay_id) {
             <div id="content">
 
                 <!-- Topbar -->
-                <?php include '../common/nav.php' ?>
+                <?php include 'common/nav.php' ?>
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
@@ -207,9 +206,9 @@ if ($barangay_id) {
                                                                 <td><?php echo htmlspecialchars($minReq['reqs_code']); ?></td>
                                                                 <td><?php echo nl2br(htmlspecialchars($minReq['description'])); ?></td>
                                                                 <td> <?php
-                                                                $data = $responses->getData($barangay_id, $minReq['keyctr'], $area_desc['keyctr'], $indicator['indicator_code'], $minReq['reqs_code']);
+                                                                        $data = $responses->getData($barangay_id, $minReq['keyctr'], $area_desc['keyctr'], $indicator['indicator_code'], $minReq['reqs_code']);
 
-                                                                if (!$data): ?>
+                                                                        if (!$data): ?>
 
                                                                         <!-- Case: Secretary Role -->
                                                                         <?php if ($role === 'Secretary'): ?>
@@ -237,7 +236,7 @@ if ($barangay_id) {
 
                                                                             <script>
                                                                                 document.getElementById('fileInput_<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>')
-                                                                                    .addEventListener('change', function () {
+                                                                                    .addEventListener('change', function() {
                                                                                         if (this.files.length > 0) {
                                                                                             document.getElementById('uploadForm_<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>').submit();
                                                                                         }
@@ -300,46 +299,48 @@ if ($barangay_id) {
                                                                 </td>
 
                                                                 <td>
-                                                                <?php
+                                                                    <?php
                                                                     if ($data):
-                                                                        ?>
-                                                                 
-                                                                 <button type="button" class="btn btn-primary" data-toggle="modal"
-                                                                        data-target="#commentModal"
-                                                                        data-fileid="<?php echo $data['file_id']; ?>">
-                                                                        Comments
-                                                                    </button>
+                                                                    ?>
 
-                                                                    <script>
-                                                                        $(document).ready(function () {
-                                                                            $('#commentModal').on('show.bs.modal', function (event) {
-                                                                                const button = $(event.relatedTarget);
-                                                                                const fileID = button.data("fileid");
-                                                                                console.log('File ID:', fileID);
+                                                                        <button type="button" class="btn btn-primary" data-toggle="modal"
+                                                                            data-target="#commentModal"
+                                                                            data-fileid="<?php echo $data['file_id']; ?>">
+                                                                            Comments
+                                                                        </button>
 
-                                                                                $('#modalFileId').val(fileID);
+                                                                        <script>
+                                                                            $(document).ready(function() {
+                                                                                $('#commentModal').on('show.bs.modal', function(event) {
+                                                                                    const button = $(event.relatedTarget);
+                                                                                    const fileID = button.data("fileid");
+                                                                                    console.log('File ID:', fileID);
 
-                                                                                fetchComments(fileID);
-                                                                            });
+                                                                                    $('#modalFileId').val(fileID);
 
-                                                                            function fetchComments(fileID) {
-                                                                                $.ajax({
-                                                                                    url: 'bar_assessment/fetch_comments.php',
-                                                                                    type: 'POST',
-                                                                                    data: { file_id: fileID },
-                                                                                    success: function (response) {
-                                                                                        $('.modal-body .bg-light').html(response);
-                                                                                    },
-                                                                                    error: function () {
-                                                                                        console.error('Failed to fetch comments.');
-                                                                                    }
+                                                                                    fetchComments(fileID);
                                                                                 });
-                                                                            }
-                                                                        });
-                                                                    </script>
 
-                                                                 
-                                                                 <?php
+                                                                                function fetchComments(fileID) {
+                                                                                    $.ajax({
+                                                                                        url: 'bar_assessment/fetch_comments.php',
+                                                                                        type: 'POST',
+                                                                                        data: {
+                                                                                            file_id: fileID
+                                                                                        },
+                                                                                        success: function(response) {
+                                                                                            $('.modal-body .bg-light').html(response);
+                                                                                        },
+                                                                                        error: function() {
+                                                                                            console.error('Failed to fetch comments.');
+                                                                                        }
+                                                                                    });
+                                                                                }
+                                                                            });
+                                                                        </script>
+
+
+                                                                    <?php
                                                                     endif;
 
                                                                     ?>
@@ -458,7 +459,7 @@ if ($barangay_id) {
 
     <!-- Include Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <?php require '../components/comment_section.php' ?>
+    <?php require 'components/comment_section.php' ?>
 </body>
 
 </html>

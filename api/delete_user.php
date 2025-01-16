@@ -3,7 +3,7 @@
 declare(strict_types=1);
 require_once '../db/db.php';
 // ini_set('display_errors', 0); // Disable error display
-// require_once '../auth/check_permissions.php'; // Ensure this checks admin privileges
+// require_once 'auth/check_permissions.php'; // Ensure this checks admin privileges
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // Ensure `id` is passed in the request

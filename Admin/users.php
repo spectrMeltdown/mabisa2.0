@@ -7,7 +7,7 @@ if (empty($_COOKIE['id'])) {
   header('location:logged_out.php');
   exit;
 }
-require '../api/logging.php';
+// require '../api/logging.php';
 // if (roleAccess()) {
 // }
 

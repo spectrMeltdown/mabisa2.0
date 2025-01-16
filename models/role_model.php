@@ -1,5 +1,5 @@
 <?php
-require_once $pathPrepend . 'api/logging.php';
+require_once '../api/logging.php';
 
 enum UserRole: int
 {

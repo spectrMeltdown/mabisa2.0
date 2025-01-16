@@ -66,7 +66,8 @@ require_once '../db/db.php';
                 <div class="d-flex flex-column justify-content-center align-items-center mb-4 mw-75">
                   <img id="profilePic" src="../img/undraw_profile_2.svg" class="rounded-circle" alt="Profile Picture" width="150" height="150">
                   <button class="btn btn-primary mt-2 mw-25" id="changePicBtn">Change Profile Picture</button>
-                  <input type="file" id="profilePicInput" accept="image/*" style="display: none;">
+                  <input type="file" id="fileInput" accept="image/jpeg,image/png,image/gif,image/svg+xml,image/webp" style="display: none;">
+                  <div id="alertDiv" style="color: red; display: none;"></div>
                 </div>
                 <br>
 
@@ -103,7 +104,7 @@ require_once '../db/db.php';
                 <div class="modal-header">
                   <h5 class="modal-title" id="editModalLabel">Edit <span id="fieldLabel"></span></h5>
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true" class="text-white">&times;</span>
                   </button>
                 </div>
                 <div class="modal-body">

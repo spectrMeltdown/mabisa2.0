@@ -1,15 +1,17 @@
 "use strict";
-
+// get user data onload
 async () => {
   const user = await fetch("../api/get_user.php?id=self").then((res) =>
     res.json(),
   );
 
+  // assign user data to display fields
   $("#username").text = user["username"];
   $("#email").text = user["email"];
   $("#fullName").text = user["fullName"];
   $("#mobileNum").text = user["mobileNum"];
 
+  // register delete button event handler
   $("#deleteAccountBtn").on("click", async (e) => {
     const shouldDelete = await showConfirmationDialog();
     if (shouldDelete) {
@@ -37,12 +39,17 @@ async () => {
 };
 
 // clicking the change profile pic button
-document.getElementById("changeProfileBtn").addEventListener("click", () => {
+document.getElementById("changePicBtn").addEventListener("click", () => {
+  if (loading) return;
+  loading = true;
+
   const fileInput = document.getElementById("fileInput");
   fileInput.value = ""; // Clear previous selection
   fileInput.click(); // Trigger the file selector
+  loading = false;
 });
 
+// to change the file input
 document
   .getElementById("fileInput")
   .addEventListener("change", async (event) => {
@@ -64,7 +71,7 @@ document
     formData.append("profileImage", file);
 
     try {
-      const response = await fetch("uploadProfile.php", {
+      const response = await fetch("../api/profile_pic.php", {
         method: "POST",
         body: formData,
       });

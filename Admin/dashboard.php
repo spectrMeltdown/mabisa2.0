@@ -4,11 +4,11 @@ date_default_timezone_set('Asia/Manila');
 // ensure the user is still logged in, redirect if not
 // use empty to check for all cases (variable unset, blank string, etc). Negation of the variable also works, but may display warning.
 if (empty($_COOKIE['id'])) {
-  header('location: Admin/logged_out.php');
+  header('location: logged_out.php');
   exit;
 }
 
-require_once 'db/db.php';
+require_once '../db/db.php';
 ?>
 
 <!DOCTYPE html>
@@ -16,15 +16,14 @@ require_once 'db/db.php';
 
 <head>
   <?php
-  $root = true;
-  require 'Admin/common/head.php' ?>
+  require 'common/head.php' ?>
 </head>
 
 <body id="page-top">
   <!-- Page Wrapper -->
   <div id="wrapper">
     <!-- Sidebar -->
-    <?php require 'Admin/common/sidebar.php' ?>
+    <?php require 'common/sidebar.php' ?>
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
@@ -32,7 +31,7 @@ require_once 'db/db.php';
       <!-- Main Content -->
       <div id="content">
         <!-- Topbar -->
-        <?php require 'Admin/common/nav.php' ?>
+        <?php require 'common/nav.php' ?>
         <!-- End of Topbar -->
         <!-- Begin Page Content -->
         <div class="container-fluid">

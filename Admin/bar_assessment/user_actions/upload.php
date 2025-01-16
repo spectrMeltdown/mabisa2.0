@@ -1,12 +1,12 @@
 <?php
 require 'user_actions.php';
-require_once '../../../db/db.php';
+require_once '../db/db.php';
 
 
 $barangayAssessment = new User_Actions($pdo);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
-    
+
     $barangay_id = $_POST['barangay_id'];
     $req_keyctr = $_POST['req_keyctr'];
     $desc_ctr = $_POST['desc_ctr'];
@@ -25,11 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
             window.location.href = document.referrer;
         </script>";
         exit;
-    }
-     else {
+    } else {
         echo "<script>alert('Failed to upload the file.'); window.history.back();</script>";
     }
 } else {
     echo "<script>alert('Invalid request.'); window.history.back();</script>";
 }
-?>
