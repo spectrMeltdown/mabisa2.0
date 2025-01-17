@@ -40,9 +40,9 @@ function getUser(string $id)
     'fullName' => $row['fullName'] ?? '',
     'barangay' => $row['barangay'] ?? 'N/A',
     'email' => $row['email'] ?? '',
-    'mobileNo' => (int)($row['mobileNo'] ?? 0),
+    'mobileNum' => (int)($row['mobileNum'] ?? 0),
     'policyRead' => (bool)($row['policyRead'] ?? false),
-    'role' => isset($row['accessLevel']) ? getRole($row['accessLevel'])?->toString() : '--'
+    'role' => isset($row['role']) ? $row['role'] : '--'
   ];
 
   if (isset($customUserID)) {

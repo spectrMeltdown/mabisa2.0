@@ -1,7 +1,11 @@
 "use strict";
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const mobileNumRegex = /^\+639\d{9}$/;
 
-// returns true if valid
 function validEmail(email) {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
+}
+
+function validMobileNum(num) {
+  return mobileNumRegex.test(num);
 }

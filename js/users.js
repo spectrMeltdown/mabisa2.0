@@ -4,12 +4,26 @@ const modalLabel = document.getElementById("modalLabel");
 const passLabel = document.getElementById("passwordLabel");
 let origPassLabel = "Password";
 let origModalLabel = "New user";
-let auditorBarangays = [];
+let auditorBarangays = []; // should contain list of brgy ids that will be assigned with auditor
 let currentUserID;
 const defaultAlert = '<div class="alert"></div>';
 let editMode = undefined;
 // import $ from 'jquery';
 // stopped using jquery because i'm practicing javascript hehe
+
+$("#user_dataTable").DataTable({
+  language: {
+    emptyTable: "No users yet",
+  },
+  columns: [
+    { data: "Fullname" },
+    { data: "Username" },
+    { data: "Role" },
+    { data: "Barangay" },
+    { data: "Action" },
+  ],
+  data: $("#user-table-body").is(":empty") ? [] : null,
+});
 
 function toggleAuditor(shouldReveal) {
   const auditorRoleAssignment = document.getElementById(
@@ -31,6 +45,7 @@ function toggleAuditor(shouldReveal) {
     // noBarangaysSelectedLabel.style.display = "block";
   } else {
     auditorRoleAssignment.style.display = "none";
+    auditorBarangays = [];
     // multiBarangayBtn.style.display = "none";
     // multiBarangayLabel.style.display = "none";
     // multiBarangayList.style.display = "none";
@@ -47,59 +62,51 @@ function toggleSecretary(shouldReveal) {
   } else {
     barangayDivSelector.style.display = "none";
     barangay.removeAttribute("required");
+    barangay.value = "";
   }
 }
 
 // for adding user
 // listen when the admin changes selection, and display additional inputs
-document.querySelector("#role").addEventListener("change", (event) => {
+document.getElementById("role").addEventListener("change", (event) => {
   console.log("Changed role");
   if (loading) return;
   toggleLoading();
 
   let selectedOption = event.target.value;
-  // console.log(`${selectedOption}`);
+  console.log(`${selectedOption}`);
 
-  // secretary
-  if (selectedOption == 2) {
+  if (selectedOption == "Secretary") {
     toggleAuditor(false);
     toggleSecretary(true);
-  }
-
-  // auditor
-  else if (selectedOption == 1) {
+  } else if (selectedOption == "Auditor") {
     toggleAuditor(true);
     toggleSecretary(false);
     const loading = document.getElementById("barangayAssignmentsLoading");
     const list = document.getElementById("barangayAssignmentsList");
     const none = document.getElementById("noBarangayAssignments");
+
     if (editMode) {
       console.log("editing auditor");
+      console.log(currentUserID);
       fetch("../api/user_assignments.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
         body: new URLSearchParams({
-          id: "",
+          id: currentUserID,
         }),
-      });
-    } else {
-      console.log("new auditor");
-      fetch("../api/user_assignments.php", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
       })
         .then((res) => {
           if (!res.ok) {
+            console.error(res.text);
             throw "Error loading.";
           }
           return res.json();
         })
         .catch((e) => {
-          console.log(e);
+          console.error(e);
           throw e;
         })
         .then((data) => {
@@ -107,7 +114,46 @@ document.querySelector("#role").addEventListener("change", (event) => {
             addAlert(data.error);
             return;
           }
+          loading.style.display = "none";
+          console.log("Data is: " + JSON.stringify(data));
+          if (data.length === 0) {
+            none.style.display = "inline-block";
+          } else {
+            for (let entry in data) {
+              const row = document.createElement("li");
+              row.classList.add(
+                "list-group-item",
+                "d-flex",
+                "justify-content-between",
+                "align-items-center",
+              );
+              row.id = entry.brgyid ?? "--";
+              row.textContent = entry.brgyname ?? "--";
+              list.append(row);
+            }
+            list.style.display = "block";
+          }
         });
+    } else {
+      console.log("new auditor");
+      loading.style.display = "none";
+      if (auditorBarangays) {
+        for (let entry in auditorBarangays) {
+          const row = document.createElement("li");
+          row.classList.add(
+            "list-group-item",
+            "d-flex",
+            "justify-content-between",
+            "align-items-center",
+          );
+          row.id = entry.brgyid ?? "--";
+          row.textContent = entry.brgyname ?? "--";
+          list.append(row);
+        }
+        list.style.display = "block";
+      } else {
+        none.style.display = "block";
+      }
     }
   }
 
@@ -192,7 +238,7 @@ $("#crud-user").on("show.bs.modal", function (event) {
         document.getElementById("username").value = user.username || "";
         document.getElementById("email").value = user.email || "";
         document.getElementById("mobileNum").value =
-          `+63${user.mobileNo}` || "";
+          `+63${user.mobileNum}` || "";
 
         // Handle the 'role' select element
         const roleSelect = document.getElementById("role");
@@ -209,6 +255,7 @@ $("#crud-user").on("show.bs.modal", function (event) {
         );
         if (roleOption) {
           roleOption.selected = true;
+          roleSelect.value = roleOption.value;
         }
 
         // Handle the 'barangay' select element
@@ -237,14 +284,18 @@ $("#crud-user").on("show.bs.modal", function (event) {
         // Hide the loading spinner and show the modal content
         document.getElementById("loadingSpinner").classList.remove("d-flex");
         document.getElementById("loadingSpinner").classList.add("d-none");
-        document.getElementById("modal-content").classList.remove("d-none");
+        document
+          .getElementById("crud-user-modal-content")
+          .classList.remove("d-none");
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
         // Handle any errors (e.g., show an error message)
         document.getElementById("loadingSpinner").classList.remove("d-flex");
         document.getElementById("loadingSpinner").classList.add("d-none");
-        document.getElementById("modal-content").classList.remove("d-none");
+        document
+          .getElementById("crud-user-modal-content")
+          .classList.remove("d-none");
       });
   } else if ($(event.relatedTarget).hasClass("add-user-btn")) {
     // console.log("adding");
@@ -254,7 +305,9 @@ $("#crud-user").on("show.bs.modal", function (event) {
     // Hide the loading spinner and show the modal content
     document.getElementById("loadingSpinner").classList.remove("d-flex");
     document.getElementById("loadingSpinner").classList.add("d-none");
-    document.getElementById("modal-content").classList.remove("d-none");
+    document
+      .getElementById("crud-user-modal-content")
+      .classList.remove("d-none");
     // Show the edit modal crud-user
   }
   toggleLoading();
@@ -280,6 +333,11 @@ $("#crud-user").on("hidden.bs.modal", function (e) {
   // remove the userID
   currentUserID = undefined;
 
+  // hide the additional fields per role
+  toggleAuditor(false);
+  toggleSecretary(false);
+  auditorBarangays = [];
+
   //hide alerts
   $("#alert").html(defaultAlert);
 });
@@ -288,6 +346,7 @@ $("#crud-user").on("hidden.bs.modal", function (e) {
 $("#save-user-btn").on("click", async (e) => {
   if (loading) return;
   toggleLoading();
+
   // get all users to compare existing usernames & emails
   const users = await fetch(`../api/get_users.php`).then((response) => {
     if (!response.ok) {
@@ -304,7 +363,6 @@ $("#save-user-btn").on("click", async (e) => {
     return response.json();
   });
   let ok = true;
-  e.preventDefault();
 
   // console.log($("#username").val());
   // get input values
@@ -317,119 +375,137 @@ $("#save-user-btn").on("click", async (e) => {
   const confirmPass = $("#confirmPass").val()?.trim();
   const password = $("#pass").val()?.trim();
 
-  // check if password is long enough
-  if (!(password === "") && password.length < 8) {
-    $("#alert").html(
-      '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
-        "<strong>Error!</strong> Password must at least 8 letters or numbers." +
-        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
-        '<span aria-hidden="true">&times;</span>' +
-        "</button>" +
-        "</div>",
-    );
+  function resetFieldStates() {
+    $("#username").removeClass("is-invalid");
+    $("#username").find(".invalid-feedback").first().text("");
+    $("#fullName").removeClass("is-invalid");
+    $("#fullName").find(".invalid-feedback").first().text("");
+    $("#email").removeClass("is-invalid");
+    $("#email").find(".invalid-feedback").first().text("");
+    $("#mobileNum").removeClass("is-invalid");
+    $("#mobileNum").find(".invalid-feedback").first().text("");
+    $("#role").removeClass("is-invalid");
+    $("#role").find(".invalid-feedback").first().text("");
+    $("#barangay").removeClass("is-invalid");
+    $("#barangay").find(".invalid-feedback").first().text("");
+    $("#confirmPass").removeClass("is-invalid");
+    $("#confirmPass").find(".invalid-feedback").first().text("");
+    $("#pass").removeClass("is-invalid");
+    $("#pass").find(".invalid-feedback").first().text("");
+  }
+
+  function addError(element, message, customFeedbackElement) {
+    if (customFeedbackElement) {
+      element.find(".invalid-feedback").first().text(message);
+    } else {
+      element.next(".invalid-feedback").first().text(message);
+    }
+    element.addClass("is-invalid");
+  }
+
+  resetFieldStates();
+
+  // PASSWORD
+  if (!editMode && (password == "" || password == null)) {
+    addError($("#pass"), "Password cannot be empty.", $("#passField"));
+    ok = false;
+  }
+  if (!editMode && password.length < 8) {
+    addError($("#pass"), "Password must be at least 8 characters.");
+    ok = false;
+  }
+  if (!editMode && password.length > 100) {
+    addError($("#pass"), "Password too long.");
     ok = false;
   }
 
-  // check if passwords match
+  // CONFIRM PASS
+  if (!editMode && (confirmPass == "" || confirmPass == null)) {
+    addError(
+      $("#confirmPass"),
+      "Please type in the password again.",
+      $("#confirmPassField"),
+    );
+    ok = false;
+  }
   if (!editMode && password !== confirmPass) {
-    $("#alert").html(
-      '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
-        "<strong>Error!</strong> Passwords do not match." +
-        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
-        '<span aria-hidden="true">&times;</span>' +
-        "</button>" +
-        "</div>",
-    );
+    addError($("#confirmPass"), "Passwords do not match.");
     ok = false;
   }
 
+  // USERNAME
   if (username == "" || username == null) {
-    $("#alert").html(
-      '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
-        "<strong>Error!</strong> Username cannot be empty." +
-        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
-        '<span aria-hidden="true">&times;</span>' +
-        "</button>" +
-        "</div>",
-    );
+    addError($("#username"), "Username cannot be empty.");
     ok = false;
   }
-
+  if (username.length > 100) {
+    addError($("#pass"), "Username too long.");
+    ok = false;
+  }
   if (
     !editMode &&
     users.some((user) => user.username === username && user.id != currentUserID)
   ) {
-    $("#alert").html(
-      '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
-        "<strong>Error!</strong> Username already taken." +
-        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
-        '<span aria-hidden="true">&times;</span>' +
-        "</button>" +
-        "</div>",
-    );
+    addError($("#username"), "Username already taken.");
     ok = false;
   }
 
+  // FULLNAME
+  if (fullName == "" || fullName == null) {
+    addError($("#fullName"), "Name cannot be empty.");
+    ok = false;
+  }
+  if (fullName.length > 100) {
+    addError($("#fullName"), "Name too long.");
+    ok = false;
+  }
+
+  // EMAIL
+  if (!validEmail(email)) {
+    addError($("#email"), "Invalid email.");
+    ok = false;
+  }
   if (
     !editMode &&
     users.some((user) => user.email === email && user.id != currentUserID)
   ) {
-    $("#alert").html(
-      '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
-        "<strong>Error!</strong> Email already taken." +
-        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
-        '<span aria-hidden="true">&times;</span>' +
-        "</button>" +
-        "</div>",
-    );
+    addError($("#email"), "Email already taken.");
     ok = false;
   }
-
-  if (!validEmail(email)) {
-    $("#alert").html(
-      '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
-        "<strong>Error!</strong> Invalid Email format." +
-        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
-        '<span aria-hidden="true">&times;</span>' +
-        "</button>" +
-        "</div>",
-    );
+  if (email.length > 100) {
+    addError($("#email"), "Email too long.");
     ok = false;
   }
-
   if (email == "" || email == null) {
-    $("#alert").html(
-      '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
-        "<strong>Error!</strong> Email cannot be empty." +
-        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
-        '<span aria-hidden="true">&times;</span>' +
-        "</button>" +
-        "</div>",
-    );
+    addError($("#email"), "Email cannot be empty.");
     ok = false;
   }
 
+  // MOBILE NUMBER
+  if (!validMobileNum(mobileNum)) {
+    addError($("#mobileNum"), "Invalid mobile number.");
+    ok = false;
+  }
+  if (mobileNum == "+63" || mobileNum == "" || mobileNum == null) {
+    addError($("#mobileNum"), "Mobile number cannot be empty.");
+    ok = false;
+  }
+
+  // BARANGAY
   if ((barangay == "" || barangay == null) && role === "Secretary") {
-    $("#alert").html(
-      '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
-        "<strong>Error!</strong> Barangay cannot be empty." +
-        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
-        '<span aria-hidden="true">&times;</span>' +
-        "</button>" +
-        "</div>",
-    );
+    addError($("#barangay"), "Please select a barangay.");
     ok = false;
   }
 
+  // ROLE
   if (role == null || role == "Select one") {
-    $("#alert").html(
-      '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
-        "<strong>Error!</strong> Please select a role." +
-        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
-        '<span aria-hidden="true">&times;</span>' +
-        "</button>" +
-        "</div>",
-    );
+    addError($("#role"), "Please select a role.");
+    ok = false;
+  }
+
+  // FOR AUDITOR
+  if (role === "Auditor" && auditorBarangays.length == 0) {
+    addError($("#role"), "Please assign barangays to this auditor.");
     ok = false;
   }
 
@@ -438,20 +514,33 @@ $("#save-user-btn").on("click", async (e) => {
     toggleLoading();
     return;
   }
+
   $("#alert").html(defaultAlert);
+  const formData = new FormData($("#crud-user-modal-content").get(0));
+  // some extra work before submitting
+  switch (role) {
+    case "Admin":
+      formData.delete("barangay");
+      formData.delete("auditorBarangays");
+      break;
+    case "Secretary":
+      formData.delete("auditorBarangays");
+      break;
+    case "Auditor":
+      formData.delete("barangay");
+      formData.append("auditorBarangays", JSON.stringify(auditorBarangays));
+      break;
+    default:
+      console.error("Unknown role when saving the user!");
+  }
   if (!editMode) {
+    console.log("not edit mode");
     $.ajax({
       type: "POST",
       url: "../api/create_user.php",
-      data: {
-        username: username,
-        fullName: fullName,
-        email: email,
-        mobileNum: mobileNum,
-        pass: password,
-        role: role,
-        barangay: barangay,
-      },
+      data: formData, // Use 'data' instead of 'body'
+      processData: false, // Prevent jQuery from processing the FormData
+      contentType: false, // Prevent jQuery from setting content type
       success: function (result) {
         // check if null, empty, false, 0, infinity, etc
         if (!result) {
@@ -466,19 +555,13 @@ $("#save-user-btn").on("click", async (e) => {
       },
     });
   } else {
+    formData.append("id", currentUserID);
     $.ajax({
       type: "POST",
       url: "../api/edit_user.php",
-      data: {
-        id: currentUserID,
-        username: username,
-        fullName: fullName,
-        email: email,
-        mobileNum: mobileNum,
-        pass: password,
-        role: role,
-        barangay: barangay,
-      },
+      data: formData, // Use 'data' instead of 'body'
+      processData: false, // Prevent jQuery from processing the FormData
+      contentType: false, // Prevent jQuery from setting content type
       success: function (result) {
         // check if null, empty, false, 0, infinity, etc
         if (!result) {
@@ -526,9 +609,15 @@ $(".delete-user-btn").on("click", async (e) => {
   if (loading) return;
   toggleLoading();
 
-  const shouldDelete = await showConfirmationDialog();
+  const shouldDelete = await showConfirmationDialog(
+    "Are you sure you want to delete this user?",
+    "No",
+    "Yes",
+  );
   if (shouldDelete) {
-    const userID = $(e.target).data("id");
+    // use currenttarget instead of target, ot use closest()
+    const userID = $(e.currentTarget).data("id");
+    console.log("ID to remove:" + userID);
     $.ajax({
       type: "POST",
       url: "../api/delete_user.php",
@@ -550,3 +639,69 @@ $(".delete-user-btn").on("click", async (e) => {
   }
   toggleLoading();
 });
+
+document.getElementById("barangaySelectBtn").addEventListener("click", (e) => {
+  // show the dialog
+});
+
+document
+  .getElementById("barangaySelectorDialog")
+  .addEventListener("show.bs.modal", (e) => {
+    // fix the css backdrop on the first modal when second modal is being overlayed
+    $(".modal-backdrop")
+      .last()
+      .css(
+        "z-index",
+        parseInt($(".modal-backdrop").last().css("z-index")) + 10,
+      );
+    $(this).css("z-index", parseInt($(this).css("z-index")) + 10);
+
+    // elements in the dialog
+    const loading = document.getElementById("barSelectorLoadingSpinner");
+    const list = document.getElementById("barangaySelectList");
+    const none = document.getElementById("barSelectNoneText");
+
+    // get available user_assignments and populate the checklist
+    // fetch("../api/user_assignments.php", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/x-www-form-urlencoded",
+    //   },
+    // })
+    //   .then((res) => {
+    //     if (!res.ok) {
+    //       console.error(res.text);
+    //       throw "Error loading.";
+    //     }
+    //     return res.json();
+    //   })
+    //   .catch((e) => {
+    //     console.error(e);
+    //     throw e;
+    //   })
+    //   .then((data) => {
+    //     if (data && data.error) {
+    //       addAlert(data.error);
+    //       return;
+    //     }
+    //     loading.style.display = "none";
+    //     console.log("Data is: " + JSON.stringify(data));
+    //     if (data.length === 0) {
+    //       none.style.display = "inline-block";
+    //     } else {
+    //       for (let entry in data) {
+    //         const row = document.createElement("li");
+    //         row.classList.add(
+    //           "list-group-item",
+    //           "d-flex",
+    //           "justify-content-between",
+    //           "align-items-center",
+    //         );
+    //         row.id = entry.brgyid ?? "--";
+    //         row.textContent = entry.brgyname ?? "--";
+    //         list.append(row);
+    //       }
+    //       list.style.display = "block";
+    //     }
+    //   });
+  });

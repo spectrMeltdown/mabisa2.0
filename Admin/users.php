@@ -48,9 +48,7 @@ require_once '../db/db.php';
 
         <!-- Begin Page Content -->
         <div class="container-fluid">
-
           <!-- Page Heading -->
-
           <div class="card shadow mb-4">
             <div class="card-header py-3">
               <div style="float: left;">
@@ -60,9 +58,9 @@ require_once '../db/db.php';
                 <button class="btn btn-sm btn-primary add-user-btn" data-toggle="modal" data-target="#crud-user">Add User</button>
               </div>
             </div>
-            <div class="card-body" id="viewLocation">
+            <div class="card-body">
               <div class="table-responsive">
-                <table class="table table-bordered" id="user_dataTable" width="100%" cellspacing="0">
+                <table class="table table-striped table-bordered" id="user_dataTable" width="100%" cellspacing="0">
                   <?php
                   // $stmt = $pdo->prepare("SELECT COUNT(*) FROM pos.received_from where area_code=? and cmp_code=? ");
                   $stmt = $pdo->prepare("SELECT COUNT(*) FROM user_policy where id != :id");
@@ -91,7 +89,7 @@ require_once '../db/db.php';
                         </tr>
                       </tfoot>
                     <?php } ?>
-                    <tbody>
+                    <tbody id='user-table-body'>
                       <?php
                       require_once '../models/role_model.php';
                       $query = $pdo->prepare("select * from user_policy where id != :id");
@@ -102,7 +100,7 @@ require_once '../db/db.php';
                         <tr>
                           <td><?php echo $row['fullName'] ?></td>
                           <td><?php echo $row['username'] ?></td>
-                          <td><?php echo getRole($row['accessLevel'])->toString() ?></td>
+                          <td><?php echo $row['role'] ?></td>
                           <td><?php echo $row['barangay'] ?></td>
                           <td>
                             <a href="#edit-user" class="btn btn-sm btn-info btn-circle edit-user-btn"
@@ -121,7 +119,7 @@ require_once '../db/db.php';
                     <tbody>
                       <tr>
                         <td>
-                          <p class="text-center">Nothing found..</p>
+                          <p class="text-center">No users yet.</p>
                         </td>
                       </tr>
                     </tbody>
@@ -138,6 +136,7 @@ require_once '../db/db.php';
   </div>
   <!-- End of Page Wrapper -->
   <?php require 'components/crud_user_dialog.php' ?>
+  <?php require 'components/barangay_selector_dialog.php' ?>
 </body>
 
 </html>

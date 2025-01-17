@@ -1,9 +1,11 @@
 <?php
 
 declare(strict_types=1);
+// error_reporting(E_ALL ^ E_NOTICE);
 // ini_set('display_errors', 0); // Disable error display
 // ini_set('log_errors', 1);    // Enable error logging
 require_once '../db/db.php';
+require 'logging.php';
 
 try {
   global $pdo;
@@ -15,38 +17,40 @@ try {
   $sql;
   $params = [];
   if (!empty($_POST['id'])) {
-    $sql = 'select id, name, auditorID from refbarangay inner join user_policy on refbarangay.auditor == user_policy.id where user_policy.id = :id';
+    $id;
+    $sql = 'select brgyid, brgyname, auditor 
+    from refbarangay 
+    inner join user_policy 
+    on refbarangay.auditor = user_policy.id 
+    where user_policy.id = :id';
+
     if ($_POST['id'] === 'self') {
+      $id = $_COOKIE['id'];
     } else {
       $id = $_POST['id'];
     }
+
+    $params[':id'] = $id;
+  } else {
+    $sql = 'select brgyid, brgyname, auditor 
+    from refbarangay 
+    where auditor is null';
   }
 
-  $stmt = $pdo->prepare($sql);
-  $stmt->execute($params);
-
-  $row = $stmt->fetch(PDO::FETCH_ASSOC);
-  if (!$row) {
-    throw new Exception('User not found');
+  $stmt;
+  if ($params) {
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+  } else {
+    $stmt = $pdo->query($sql);
   }
-
-  // Build the response
-  $response = [
-    'id' => (string)$row['id'],
-    'username' => $row['username'] ?? '',
-    'fullName' => $row['fullName'] ?? '',
-    'barangay' => $row['barangay'] ?? 'N/A',
-    'email' => $row['email'] ?? '',
-    'mobileNo' => (int)($row['mobileNo'] ?? 0),
-    'policyRead' => (bool)($row['policyRead'] ?? false),
-    'role' => isset($row['accessLevel']) ? getRole($row['accessLevel'])?->toString() : '--'
-  ];
+  $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
   if (isset($customUserID)) {
-    return $response;
+    return $result;
   }
-  return json_encode($response);
+  echo json_encode($result);
 } catch (Exception $e) {
-  http_response_code(500); // Set HTTP 500 response code
+  writeLog('Exception!' . $e);
   echo json_encode(['error' => $e->getMessage()]);
 }

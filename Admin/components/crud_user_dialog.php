@@ -15,21 +15,23 @@
           </div>
         </div>
 
-        <form id="modal-content" class="d-none user-form-submit" data-edit-mode="true">
+        <form id="crud-user-modal-content" class="d-none" data-edit-mode="true" novalidate>
           <!-- for displaying error -->
-          <div class="mt-4 mb-4">
-            <div id="alert"></div>
-          </div>
+          <div id="alert"></div>
 
           <!-- actual content -->
           <div class="row">
             <div class="mb-3 form-group col-lg-6">
               <label for="fullName" class="form-label">Full Name</label>
               <input maxlength="100" type="text" class="form-control" name="fullName" id="fullName" required autocomplete="name" />
+              <div class="invalid-feedback">
+              </div>
             </div>
             <div class="mb-3 form-group col-lg-6">
               <label for="username" class="form-label">Username</label>
               <input maxlength="100" type="text" class="form-control" name="username" id="username" required autocomplete="username" />
+              <div class="invalid-feedback">
+              </div>
             </div>
           </div>
 
@@ -37,15 +39,19 @@
             <div class="mb-3 form-group col-lg-6">
               <label for="email" class="form-label">Email</label>
               <input maxlength="100" type="email" class="form-control" name="email" id="email" required autocomplete="email" />
+              <div class="invalid-feedback">
+              </div>
             </div>
             <div class="mb-3 form-group col-lg-6">
               <label for="mobileNum" class="form-label">Mobile Number</label>
               <input title="Please enter a valid phone number." maxLength="13" maxLength="11" type="tel" class="form-control" name="mobileNum" id="mobileNum" pattern="^\+?[0-9]*$" inputmode="numeric" required autocomplete="tel" />
+              <div class="invalid-feedback">
+              </div>
             </div>
           </div>
 
           <div class="row">
-            <div class="mb-3 col-lg-6 form-group">
+            <div class="mb-3 col-lg-6 form-group" id="passField">
               <label for="pass" class="form-label" id="passwordLabel">Password</label>
               <div class="d-flex">
                 <input maxlength="100" type="password" class="form-control" name="pass" id="pass" required autocomplete="new-password" />
@@ -53,6 +59,8 @@
                 <button type="button" id="passEye" class="btn btn-outline-secondary d-inline-block">
                   <i class="fa fa-eye"></i> <!-- Add Font Awesome for the icon -->
                 </button>
+              </div>
+              <div class="invalid-feedback">
               </div>
             </div>
 
@@ -65,6 +73,8 @@
                   <i class="fa fa-eye"></i> <!-- Add Font Awesome for the icon -->
                 </button>
               </div>
+              <div class="invalid-feedback">
+              </div>
             </div>
           </div>
 
@@ -76,24 +86,32 @@
               require_once "../models/role_model.php";
               $options = '';
               foreach (UserRole::cases() as $role) {
-                $options .= '<option value="' . htmlspecialchars($role->value) . '">' . htmlspecialchars($role->toString()) . '</option>';
+                $options .= '<option value="' . htmlspecialchars($role->value) . '">' . htmlspecialchars($role->value) . '</option>';
               }
               echo $options;
               ?>
             </select>
+            <div class="invalid-feedback">
+            </div>
           </div>
           <hr>
           <div class="col" id="auditorRoleAssignment" style="display: none">
             <h5 class="modal-title" id="barangayAssignmentsLabel">Assigned Barangays</h5>
-            <p class="text-align-center mt-2" id="noBarangayAssignments" style="font-size: 14px;">
-            <div class="spinner-border spinner-border-sm mr-2" id="barangayAssignmentsLoading" role="status">
+            <div id="barangayAssignmentsLoading">
+              <p class="text-align-center mt-2" style="font-size: 14px;">Loading...</p>
+              <div class="spinner-border spinner-border-sm mr-2" role="status">
+              </div>
             </div>
-            Loading...</p>
-            <ul class="container-fluid mb-2" id="barangayAssignmentsList" style="display: none">
+            <div id="noBarangayAssignments" class="container" style="display: none">
+              <p class="text-align-center mt-2" style="font-size: 14px;">No assignments yet.</p>
+            </div>
+            <ul class="container-fluid" id="barangayAssignmentsList" style="display: none">
             </ul>
-            <button type="button" class="btn-primary btn-sm" id="barangaySelectBtn">
-              Assign barangays <i class="fas fa-arrow-circle-right"></i>
+            <button type="button" class="btn btn-success btn-sm mt-2" id="barangaySelectBtn" data-toggle="modal" data-target="#barangaySelectorDialog">
+              <i class="fas fa-plus-circle"></i>&nbsp;Add
             </button>
+            <div class="invalid-feedback">
+            </div>
           </div>
 
           <div class="mb-3 form-group max-w-100 mx-auto" id="barangayDiv" style="display: none;">
@@ -109,6 +127,8 @@
               echo $options;
               ?>
             </select>
+            <div class="invalid-feedback">
+            </div>
           </div>
         </form>
       </div>

@@ -6,6 +6,7 @@ declare(strict_types=1);
 require_once '../models/user_model.php';
 require_once '../db/db.php';
 require_once 'logging.php';
+require 'util/update_assignments.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   /** @var string */
@@ -24,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $role = $_POST['role'];
   /** @var string */
   $barangay = isset($_POST['barangay']) ? $_POST['barangay'] : 'N/A';
+  $auditorBarangays = $_POST['auditorBarangays'] ?? null;
 
   //check if passwords match
   // if ($pass != $confirmPass) {
@@ -33,22 +35,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // construct new user
   $user = new User('', $username, $fullName, $barangay, $email, (int)$mobileNum, $pass, false, $role);
 
+
   // insert to database
   global $pdo;
-  $sql = 'insert into user_policy (username, fullName, email, mobileNo, password, accessLevel, barangay) values (:username, :fullname, :email, :mobileNum, :password, :role, :barangay)';
+  $sql = 'insert into user_policy (username, fullName, email, mobileNum, password, role, barangay) values (:username, :fullname, :email, :mobileNum, :password, :role, :barangay)';
   try {
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
       ':username' => $user->username,
       ':fullname' => $user->fullName,
       ':email' => $user->email,
-      ':mobileNum' => $user->mobileNum,
+      ':mobileNum' => substr((string)$user->mobileNum, 2),
       ':password' => password_hash($user->password, PASSWORD_BCRYPT),
       ':role' => $user->role,
       ':barangay' => $user->barangay,
     ]);
+    updateUserAssignments($id, $auditorBarangays, $pdo);
     // blank means everything went okay
-    echo '';
   } catch (\Throwable $th) {
     echo json_encode($th);
   }

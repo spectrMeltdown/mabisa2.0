@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 require_once '../db/db.php';
+require 'logging.php';
 // ini_set('display_errors', 0); // Disable error display
 // require_once 'auth/check_permissions.php'; // Ensure this checks admin privileges
 
@@ -9,6 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // Ensure `id` is passed in the request
   if (empty($_POST['id'])) {
     http_response_code(400); // Bad Request
+    writeLog('Missing user ID.');
     echo 'Missing user ID.';
     exit;
   }
@@ -51,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
   } catch (Exception $e) {
     http_response_code(500); // Internal Server Error
+    writeLog($e->getMessage());
     echo 'An error occurred: ' . $e->getMessage();
   }
 }

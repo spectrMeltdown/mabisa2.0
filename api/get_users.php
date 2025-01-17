@@ -16,7 +16,7 @@ function getAllUsers(): array
   $users = [];
   while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $barangay = isset($row['barangay']) ? $row['barangay'] : 'N/A';
-    $role = isset($row['accessLevel']) ? getRole($row['accessLevel'])?->toString() : '--';
+    $role = isset($row['role']) ? $row['role'] : '--';
 
     $users[] = new User(
       (string)$row['id'],
@@ -24,7 +24,7 @@ function getAllUsers(): array
       $row['fullName'],
       $barangay,
       $row['email'],
-      (int)$row['mobileNo'],
+      (int)$row['mobileNum'],
       $row['password'],
       (bool)$row['policyRead'],
       $role

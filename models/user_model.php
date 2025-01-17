@@ -30,7 +30,7 @@ class User
   }
 
   // __toString method to define how to convert the object to a string
-  // public function __toString(): string
+  // public function __value: string
   // {
   //   return "User [ID: {$this->id}, Username: {$this->username}, Full Name: {$this->fullName}, Email: {$this->email}]";
   // }

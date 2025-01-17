@@ -9,40 +9,42 @@
       </div>
       <div class="modal-body">
         <!-- loading Spinner -->
-        <div id="loadingSpinner" class="d-flex justify-content-center">
+        <div id="barSelectorLoadingSpinner" class="d-none justify-content-center">
           <div class="spinner-border text-primary" role="status">
             <span class="sr-only">Loading...</span>
           </div>
         </div>
 
-        <form id="modal-content" class="d-none user-form-submit">
+        <form id="barangay-select-modal-content" class="needs-validation" novalidate>
           <!-- for displaying error -->
           <div class="mt-4 mb-4">
             <div id="alert"></div>
           </div>
           <!-- actual content -->
-          <ul class="list-group" id="barangayAssignmentsList">
+          <!-- TODO: might migrate to js later, unless un-assignment of the auditor barangays will be done in the main crud dialog-->
+          <ul class="list-group" id="barangaySelectList">
             <?php
             require '../db/db.php';
-            $sql = 'select * from barangay where auditorID = null';
+            $sql = 'select brgyid, brgyname, auditor from refbarangay where auditor is null';
             $query = $pdo->prepare($sql);
             $query->execute();
-            if ($query->fetch(PDO::FETCH_ASSOC) != null):
+            if ($query->fetch(PDO::FETCH_ASSOC)):
               while ($row = $query->fetch(PDO::FETCH_ASSOC)):
             ?>
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                   <div class="custom-control custom-checkbox small">
-                    <input type="checkbox" class="custom-control-input" id="<?= $row['id'] ?>">
-                    <label class="custom-control-label text-grey" for="<?= $row['id'] ?>"><?= $row['name'] ?></label>
+                    <input type="checkbox" class="custom-control-input" id="<?= $row['brgyid'] ?>">
+                    <label class="custom-control-label text-grey" for="<?= $row['brgyid'] ?>"><?= $row['brgyname'] ?></label>
                   </div>
                 </li>
               <?php
               endwhile;
-            else:
               ?>
-
-            <?php endif; ?>
           </ul>
+        <?php else:
+        ?>
+          <h6 id="barSelectNoneText" style="display: none;">Error getting barangays. Try again later.</h6>
+        <?php endif; ?>
         </form>
       </div>
       <div class="modal-footer">

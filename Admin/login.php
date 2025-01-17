@@ -60,7 +60,7 @@ if (!empty($_COOKIE['id'])) {
             margin: 0;
         }
     </style>
-    <script src="../js/index.js" defer></script>
+    <script src="../js/login.js" defer></script>
     <script src="../js/util/alert.js" defer></script>
 </head>
 
@@ -99,7 +99,7 @@ if (!empty($_COOKIE['id'])) {
                                     <form class="user" id="loginForm">
                                         <div class="form-group">
                                             <label for="username"><b>Username:</b></label>
-                                            <input value="willow" type="text" class="form-control form-control-user"
+                                            <input type="text" class="form-control form-control-user"
                                                 id="username" name="username"
                                                 placeholder="Username" autocomplete="username">
                                         </div>
@@ -107,7 +107,6 @@ if (!empty($_COOKIE['id'])) {
                                             <label for="password"><b>Password:</b></label>
                                             <div class="d-flex">
                                                 <input
-                                                    value="willow123"
                                                     max=100 type="password" id="password" name="password" class="form-control form-control-user"
                                                     id="exampleInputPassword" placeholder="Password" autocomplete="current-password">
                                                 <div class="mx-1"></div>
