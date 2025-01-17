@@ -1,6 +1,6 @@
 <?php
 require 'admin_actions.php';
-require_once '../db/db.php';
+require_once '../../../db/db.php';
 
 try {
     $admin = new Admin_Actions($pdo);

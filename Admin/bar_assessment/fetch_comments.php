@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['file_id'])) {
             </div>";
         }
     } else {
-        echo "<p>No comments yet. Be the first to comment!</p>";
+        echo "<p>No comments yet.</p>";
     }
 } else {
     echo "<p>Invalid request.</p>";

@@ -1,6 +1,6 @@
 <?php
 require 'user_actions.php';
-require_once '../db/db.php';
+require_once '../../../db/db.php';
 
 
 $barangayAssessment = new User_Actions($pdo);
