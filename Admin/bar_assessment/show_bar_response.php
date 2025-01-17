@@ -8,7 +8,7 @@ require_once '../../db/db.php';
 $barangay_id = isset($_GET['barangay_id']) ? $_GET['barangay_id'] : null;
 $barangay_name = isset($_GET['brgyname']) ? $_GET['brgyname'] : null;
 $name = 'admin'; //temporary only
-$role = 'Admin'; //temporary only
+$role = 'Secretary'; //temporary only
 
 $responses = new Responses($pdo);
 $admin = new Admin_Actions($pdo);
@@ -108,6 +108,7 @@ if ($barangay_id) {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="../js/bar-assessment.js"></script>
 
 </head>
 
@@ -207,12 +208,16 @@ if ($barangay_id) {
 
                                                             <tr>
                                                                 <td style="text-align: center; vertical-align: middle;">
-                                                                    <?php echo htmlspecialchars($minReq['reqs_code']); ?></td>
-                                                                <td><?php echo nl2br(htmlspecialchars($minReq['description'])); ?></td>
-                                                                <td style="text-align: center; vertical-align: middle;"> <?php
-                                                                $data = $responses->getData($barangay_id, $minReq['keyctr'], $area_desc['keyctr'], $indicator['indicator_code'], $minReq['reqs_code']);
+                                                                    <?php echo htmlspecialchars($minReq['reqs_code']); ?>
+                                                                </td>
+                                                                <td style="vertical-align: middle;">
+                                                                    <?php echo nl2br(htmlspecialchars($minReq['description'])); ?>
+                                                                </td>
+                                                                <td class="data-cell-upload-view"
+                                                                    style="text-align: center; vertical-align: middle;"> <?php
+                                                                    $data = $responses->getData($barangay_id, $minReq['keyctr'], $area_desc['keyctr'], $indicator['indicator_code'], $minReq['reqs_code']);
 
-                                                                if (!$data): ?>
+                                                                    if (!$data): ?>
 
                                                                         <!-- Case: Secretary Role -->
                                                                         <?php if ($role === 'Secretary'): ?>
@@ -268,30 +273,22 @@ if ($barangay_id) {
 
                                                                         <!-- Additional Options for Secretary -->
                                                                         <?php if ($role === 'Secretary'): ?>
-                                                                            <form method="POST" action="./bar_assessment/user_actions/delete.php"
-                                                                                onsubmit="return confirmDelete(event);">
-                                                                                <input type="hidden" name="file_id"
-                                                                                    value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <button type="submit" class="btn btn-danger mb-3" title="Delete">
+                                                                            <form id="deleteForm"
+                                                                                data-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                                                <button type="button" class="btn btn-danger mb-3" title="Delete"
+                                                                                    onclick="confirmDelete(this)">
                                                                                     <i class="fa fa-trash"></i>
                                                                                 </button>
                                                                             </form>
 
-                                                                            <script>
-                                                                                function confirmDelete(event) {
-                                                                                    const confirmed = confirm("Are you sure you want to delete this item?");
-                                                                                    if (!confirmed) {
-                                                                                        event.preventDefault();
-                                                                                    }
-                                                                                    return confirmed;
-                                                                                }
-                                                                            </script>
+
                                                                         <?php endif; ?>
 
                                                                     <?php endif; ?>
 
                                                                     <!-- Status Icon -->
-                                                                <td style="text-align: center; vertical-align: middle;">
+                                                                <td class="data-cell-status"
+                                                                    style="text-align: center; vertical-align: middle;">
                                                                     <?php if (!empty($data)): ?>
                                                                         <?php if ($data['status'] === 'approved'): ?>
                                                                             <i class="fa-solid fa-check text-success" title="Approved"></i>
@@ -303,7 +300,8 @@ if ($barangay_id) {
                                                                     <?php endif; ?>
                                                                 </td>
 
-                                                                <td style="text-align: center; vertical-align: middle;">
+                                                                <td class="data-cell-date-uploaded"
+                                                                    style="text-align: center; vertical-align: middle;">
                                                                     <?php
                                                                     if ($data):
                                                                         echo htmlspecialchars($data['date_uploaded']);
@@ -315,80 +313,53 @@ if ($barangay_id) {
 
                                                                 <?php if ($role === 'Admin'): ?>
                                                                     <td>
-                                                                    <div class="column">
-                                            <div class="column">
-                                                <div class="col-lg-6" >
-                                                    <form method="POST">
-                                                        <input type="hidden" name="file_id"
-                                                            value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                        <input type="hidden" name="action" value="approve">
-                                                        <button type="submit" class="btn btn-success mb-3"
-                                                            style="background-color: #28a745; border: none; color: white; padding: 5px; font-size: 15px; border-radius: 5px; cursor: pointer;">
-                                                            Approve
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                                <div class="col-lg-6" >
-                                                    <form method="POST">
-                                                        <input type="hidden" name="file_id"
-                                                            value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                        <input type="hidden" name="action" value="decline">
-                                                        <button type="submit" class="btn btn-danger btn-sm"
-                                                            style="background-color: #dc3545; border: none; color: white; padding: 5px; font-size: 15px; border-radius: 5px; cursor: pointer;">
-                                                            Decline
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
+                                                                        <div class="column">
+                                                                            <div class="column">
+                                                                                <div class="col-lg-6">
+                                                                                    <form method="POST">
+                                                                                        <input type="hidden" name="file_id"
+                                                                                            value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                                                        <input type="hidden" name="action" value="approve">
+                                                                                        <button type="submit" class="btn btn-success mb-3"
+                                                                                            style="background-color: #28a745; border: none; color: white; padding: 5px; font-size: 15px; border-radius: 5px; cursor: pointer;">
+                                                                                            Approve
+                                                                                        </button>
+                                                                                    </form>
+                                                                                </div>
+                                                                                <div class="col-lg-6">
+                                                                                    <form method="POST">
+                                                                                        <input type="hidden" name="file_id"
+                                                                                            value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                                                        <input type="hidden" name="action" value="decline">
+                                                                                        <button type="submit" class="btn btn-danger btn-sm"
+                                                                                            style="background-color: #dc3545; border: none; color: white; padding: 5px; font-size: 15px; border-radius: 5px; cursor: pointer;">
+                                                                                            Decline
+                                                                                        </button>
+                                                                                    </form>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
                                                                     </td>
 
                                                                 <?php endif; ?>
 
-                                                                <td style="text-align: center; vertical-align: middle;">
+                                                                <td class="data-cell-comments"
+                                                                    style="text-align: center; vertical-align: middle;">
                                                                     <?php
                                                                     if ($data):
                                                                         ?>
 
                                                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                                                             data-target="#commentModal"
-                                                                            data-fileid="<?php echo $data['file_id']; ?>"
-                                                                            data-role="<?php echo $role; ?>" data-name="<?php echo $name; ?>">
+                                                                            data-fileid="<?php echo htmlspecialchars($data['file_id']); ?>"
+                                                                            data-role="<?php echo htmlspecialchars($role); ?>"
+                                                                            data-name="<?php echo htmlspecialchars($name); ?>">
                                                                             Comments
                                                                         </button>
 
-                                                                        <script>
-                                                                            $(document).ready(function () {
-                                                                                $('#commentModal').on('show.bs.modal', function (event) {
-                                                                                    const button = $(event.relatedTarget);
-                                                                                    const file_id = button.data("fileid");
-                                                                                    const role = button.data("role");
-                                                                                    const name = button.data("name");
-                                                                                    console.log('File ID:', file_id);
-                                                                                    console.log('Role:', role);
-                                                                                    console.log('Name:', name);
-
-                                                                                    $('#modalFileId').val(file_id);
 
 
-                                                                                    fetchComments(file_id);
-                                                                                });
 
-                                                                                function fetchComments(file_id) {
-                                                                                    $.ajax({
-                                                                                        url: 'bar_assessment/fetch_comments.php',
-                                                                                        type: 'POST',
-                                                                                        data: { file_id: file_id },
-                                                                                        success: function (response) {
-                                                                                            $('.modal-body .bg-light').html(response);
-                                                                                        },
-                                                                                        error: function () {
-                                                                                            console.error('Failed to fetch comments.');
-                                                                                        }
-                                                                                    });
-                                                                                }
-                                                                            });
-                                                                        </script>
                                                                         <?php
                                                                     endif;
                                                                     ?>
@@ -414,84 +385,7 @@ if ($barangay_id) {
                     <?php endif; ?>
 
                     <!-- End of Page Content -->
-                    <div>
-                        <div class="card shadow mb-4">
-                            <div class="card-body">
-                                <!-- Comment Section -->
-                                <div id="commentSection" class="mt-5">
-                                    <h3>Comments</h3>
 
-                                    <!-- Display Comments -->
-                                    <div id="commentsDisplay">
-                                        <div class="mb-3 p-3 bg-light border rounded">
-                                            <?php
-                                            $comments = new Comments($pdo);
-                                            $allComments = $comments->show_comments($barangay_id);
-                                            if (!empty($allComments)) {
-                                                foreach ($allComments as $comment) {
-                                                    echo "
-                                                <div class='comment-item mb-2'>
-                                                    <strong>" . htmlspecialchars($comment['name']) . ":</strong>
-                                                    <p>" . nl2br(htmlspecialchars($comment['comment'])) . "</p>
-                                                    <small class='text-muted'>" . date('F j, Y, g:i a', $comment['timestamp']) . "</small>
-                                                </div>";
-                                                }
-                                            } else {
-                                                echo "<p>No comments yet. Be the first to comment!</p>";
-                                            }
-                                            ?>
-                                        </div>
-                                    </div>
-                                     <?php if ($role === 'Admin'): ?>
-                                        <!-- Add Comment Form -->
-                                        <form method="post" action="./bar_assessment/admin_actions/add_comment.php"
-                                            class="mt-4">
-                                            <!-- Hidden field for barangay_id -->
-                                            <input type="hidden" name="barangay"
-                                                value="<?= htmlspecialchars($barangay_id) ?>">
-                                            <input type="hidden" name="name" value="<?= htmlspecialchars($name) ?>">
-                                            <div class="mb-3">
-                                                <label for="commentText" class="form-label">Your Comment</label>
-                                                <textarea class="form-control" id="commentText" name="commentText" rows="3"
-                                                    required></textarea>
-                                            </div>
-                                            <div class="row">
-                                                <button type="submit" class="btn btn-primary">Post Comment</button>
-                                            </div>
-                                        </form>
-
-                                        <!-- Approval Part -->
-                                        <div class="row">
-                                            <div class="row">
-                                                <div class="col-lg-6" style="padding: 10px;">
-                                                    <form method="POST">
-                                                        <input type="hidden" name="file_id"
-                                                            value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                        <input type="hidden" name="action" value="approve">
-                                                        <button type="submit" class="btn btn-success mb-3"
-                                                            style="background-color: #28a745; border: none; color: white; padding: 15px; font-size: 18px; border-radius: 5px; cursor: pointer; width: 100%;">
-                                                            Approve
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                                <div class="col-lg-6" style="padding: 10px;">
-                                                    <form method="POST">
-                                                        <input type="hidden" name="file_id"
-                                                            value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                        <input type="hidden" name="action" value="decline">
-                                                        <button type="submit" class="btn btn-danger btn-sm"
-                                                            style="background-color: #dc3545; border: none; color: white; padding: 15px; font-size: 18px; border-radius: 5px; cursor: pointer; width: 100%;">
-                                                            Decline
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
             <!-- End of Main Content -->

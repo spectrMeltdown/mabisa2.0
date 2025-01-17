@@ -1,27 +1,30 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 require 'user_actions.php';
-require_once '../db/db.php';
+require_once '../../../db/db.php';
+
+header('Content-Type: application/json');
 
 try {
-
     $user = new User_Actions($pdo);
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset(
-        $_POST['file_id'],
+    $data = json_decode(file_get_contents('php://input'), true);
 
-    )) {
-        $file_id = $_POST['file_id'];
-
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($data['file_id'])) {
+        $file_id = $data['file_id'];
 
         try {
             $delete = $user->deleteFile($file_id);
+            echo json_encode(['success' => true, 'message' => 'File deleted successfully.']);
         } catch (Exception $e) {
-            echo "<script>alert('Error: " . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . "'); window.history.back();</script>";
+            echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
         }
     } else {
-        echo "<script>alert('Invalid request. Missing required parameters.'); window.history.back();</script>";
+        echo json_encode(['success' => false, 'message' => 'Invalid request. Missing required parameters.']);
     }
 } catch (PDOException $e) {
-    echo "<p class='text-danger'>Database connection failed: " . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . "</p>";
+    echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . $e->getMessage()]);
     exit;
 }

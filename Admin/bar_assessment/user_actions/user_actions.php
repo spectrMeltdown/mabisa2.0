@@ -10,49 +10,95 @@ class User_Actions
     }
 
 
-    public function uploadFile($barangay_id, $req_keyctr, $desc_ctr, $indicator_code, $reqs_code, $fileContent) {
-               $query = "INSERT INTO barangay_assessment_files 
-                  (barangay_id, req_keyctr, desc_keyctr, indicator_code, reqs_code, file, date_uploaded, comments) 
-                  VALUES 
-                  (:barangay_id, :req_keyctr, :desc_ctr, :indicator_code, :reqs_code, :file, NOW(), '{}')";
-        $stmt = $this->pdo->prepare($query);
+    public function uploadFile($barangay_id, $req_keyctr, $desc_ctr, $indicator_code, $reqs_code, $fileContent)
+    {
+        try {
+            $this->pdo->beginTransaction();
 
-        $result = $stmt->execute([
-            ':barangay_id' => $barangay_id,
-            ':req_keyctr' => $req_keyctr,
-            ':desc_ctr' => $desc_ctr,
-            ':indicator_code' => $indicator_code,
-            ':reqs_code' => $reqs_code,
-            ':file' => $fileContent, 
-        ]);
-    
-        return $result;
+            $query1 = "INSERT INTO barangay_assessment_files 
+                        (barangay_id, req_keyctr, desc_keyctr, indicator_code, reqs_code, file, date_uploaded, comments, status) 
+                        VALUES 
+                        (:barangay_id, :req_keyctr, :desc_ctr, :indicator_code, :reqs_code, :file, NOW(), '{}', 'pending')";
+            $stmt1 = $this->pdo->prepare($query1);
+
+            $stmt1->execute([
+                ':barangay_id' => $barangay_id,
+                ':req_keyctr' => $req_keyctr,
+                ':desc_ctr' => $desc_ctr,
+                ':indicator_code' => $indicator_code,
+                ':reqs_code' => $reqs_code,
+                ':file' => $fileContent,
+            ]);
+
+            $query2 = "UPDATE barangay_assessment 
+                       SET last_modified = NOW() 
+                       WHERE barangay_id = :barangay_id";
+            $stmt2 = $this->pdo->prepare($query2);
+
+            $stmt2->execute([
+                ':barangay_id' => $barangay_id,
+            ]);
+
+            $this->pdo->commit();
+
+            return true;
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+
+            throw new Exception("Failed to upload file and update barangay_assessment: " . $e->getMessage());
+        }
     }
-    
+
+
 
     public function deleteFile($file_id): bool
     {
-        $query = "DELETE FROM barangay_assessment_files
-                  WHERE file_id = :file_id";
-    
-        $stmt = $this->pdo->prepare($query);
-    
-        $stmt->execute([
-            ':file_id' => $file_id,
-            
-        ]);
-    
-        if ($stmt->rowCount() > 0) {
-            echo "<script>
-                alert('Deleted');
-                window.location.href = document.referrer;
-            </script>";
-            exit;
-        } else {
-            throw new Exception("No matching record found.");
+        try {
+            $this->pdo->beginTransaction();
+
+            $query1 = "SELECT barangay_id FROM barangay_assessment_files WHERE file_id = :file_id";
+            $stmt1 = $this->pdo->prepare($query1);
+            $stmt1->execute([':file_id' => $file_id]);
+            $barangay = $stmt1->fetch(PDO::FETCH_ASSOC);
+
+            if (!$barangay) {
+                throw new Exception("Barangay ID not found for the provided file_id.");
+            }
+
+            $barangay_id = $barangay['barangay_id'];
+
+            $query2 = "UPDATE barangay_assessment 
+                       SET last_modified = NOW() 
+                       WHERE barangay_id = :barangay_id";
+            $stmt2 = $this->pdo->prepare($query2);
+            $stmt2->execute([
+                ':barangay_id' => $barangay_id,
+            ]);
+
+            $query3 = "DELETE FROM barangay_assessment_files
+                       WHERE file_id = :file_id";
+            $stmt3 = $this->pdo->prepare($query3);
+            $stmt3->execute([
+                ':file_id' => $file_id,
+            ]);
+
+            if ($stmt3->rowCount() === 0) {
+                throw new Exception("No matching record found for file deletion.");
+            }
+
+            $this->pdo->commit();
+
+            return true;
+        } catch (Exception $e) {
+
+            $this->pdo->rollBack();
+
+            throw new Exception("Failed to delete file and update barangay_assessment: " . $e->getMessage());
         }
     }
-    
-    
-    
+
+
+
+
+
 }
