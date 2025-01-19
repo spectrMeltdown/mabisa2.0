@@ -55,7 +55,10 @@ require_once '../db/db.php';
                 <h3 class="m-0 font-weight-bold text-primary">Users</h3>
               </div>
               <div style="float: right;">
-                <button class="btn btn-sm btn-primary add-user-btn" data-toggle="modal" data-target="#crud-user">Add User</button>
+                <div class="row">
+                  <button class="btn btn-sm btn-primary add-user-btn" data-toggle="modal" data-target="#crud-user">Add User</button>
+                  <button class="btn btn-sm btn-primary add-user-btn ml-2" data-toggle="modal" data-target="#roles">Manage roles</button>
+                </div>
               </div>
             </div>
             <div class="card-body">
