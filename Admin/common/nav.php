@@ -86,7 +86,7 @@ unset($customUserID);
         </span>
         <!-- TODO: render the user profile pic below -->
         <img class="img-profile rounded-circle"
-          src="<?= !empty($userData['profile_pic']) ? '' :  '../img/undraw_profile.svg' ?>" />
+          src="<?= !empty($userData['profilePic']) ? $userData['profilePic'] :  '../img/undraw_profile.svg' ?>" />
       </a>
       <!-- Dropdown - User Information -->
       <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">

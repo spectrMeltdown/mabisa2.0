@@ -42,7 +42,8 @@ function getUser(string $id)
     'email' => $row['email'] ?? '',
     'mobileNum' => (int)($row['mobileNum'] ?? 0),
     'policyRead' => (bool)($row['policyRead'] ?? false),
-    'role' => isset($row['role']) ? $row['role'] : '--'
+    'role' => isset($row['role']) ? $row['role'] : '--',
+    'profilePic' => $row['profile_image'] ?? '--',
   ];
 
   if (isset($customUserID)) {
