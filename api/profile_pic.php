@@ -56,7 +56,7 @@ if (!in_array($file['type'], $allowedTypes)) {
 }
 
 // Process the file (e.g., move to a permanent location)
-$uploadDir = 'uploads/';
+$uploadDir = '../uploads/';
 if (!is_dir($uploadDir)) {
   mkdir($uploadDir, 0755, true);
 }
