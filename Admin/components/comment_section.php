@@ -24,7 +24,7 @@
 
                 <!-- Add Comment Form -->
                 <?php if ($role === 'Admin'): ?>
-                    <form method="post" action="./bar_assessment/admin_actions/add_comment.php">
+                    <form method="post" action="../bar_assessment/admin_actions/add_comment.php">
                         <input type="hidden" name="file_id">
                         <input type="hidden" name="name">
                         <div class="form-group">

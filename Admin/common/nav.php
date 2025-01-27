@@ -1,12 +1,12 @@
 <?php
 $customUserID = 'self';
 $userData;
-require '../api/get_user.php'; // this will provide userData array
+require $pathPrepend.'api/get_user.php'; // this will provide userData array
 // unset after using
 unset($customUserID);
 ?>
 
-<script src="../js/nav.js" defer></script>
+<script src="<?= $pathPrepend ?>js/nav.js" defer></script>
 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
   <!-- Sidebar Toggle (Topbar) -->
   <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
@@ -62,7 +62,7 @@ unset($customUserID);
         </h6>
         <a class="dropdown-item d-flex align-items-center" href="#">
           <div class="dropdown-list-image mr-3">
-            <img class="rounded-circle" src="../img/undraw_profile_1.svg" alt="...">
+            <img class="rounded-circle" src="<?= $pathPrepend ?>img/undraw_profile_1.svg" alt="...">
             <div class="status-indicator bg-success"></div>
           </div>
           <div class="font-weight-bold">
@@ -86,7 +86,7 @@ unset($customUserID);
         </span>
         <!-- TODO: render the user profile pic below -->
         <img class="img-profile rounded-circle"
-          src="<?= !empty($userData['profilePic']) ? $userData['profilePic'] :  '../img/undraw_profile.svg' ?>" />
+          src="<?= !empty($userData['profile_pic']) ? '' : $pathPrepend.'img/undraw_profile.svg' ?>" />
       </a>
       <!-- Dropdown - User Information -->
       <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
@@ -107,5 +107,5 @@ unset($customUserID);
     </li>
   </ul>
 </nav>
-<?php require 'components/confirmation_dialog.php'; ?>
+<?php require (isset($isBarAss) ? '../' : '') .'components/confirmation_dialog.php'; ?>
 <!-- End of Topbar -->

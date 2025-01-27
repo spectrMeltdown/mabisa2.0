@@ -4,7 +4,7 @@
   <a class="sidebar-brand d-flex align-items-center justify-content-center"
     href="dashboard.php">
     <div class="sidebar-brand-icon">
-      <i><img src="../img/logo.png" height="60 px" /></i>
+      <i><img src="<?= $pathPrepend ?>img/logo.png" height="60 px" /></i>
     </div>
     <div class="sidebar-brand-text mx-3">MABISA</div>
   </a>

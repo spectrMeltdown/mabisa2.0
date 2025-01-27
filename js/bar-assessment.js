@@ -8,6 +8,7 @@ $(".delete-user-btn").on("click", (e) => {
 
 $(document).ready(function () {
   $('#commentModal').on('show.bs.modal', function (event) {
+        console.log('Modal is being shown');
     const button = $(event.relatedTarget);
     const file_id = button.data("fileid");
     const role = button.data("role");
@@ -28,7 +29,7 @@ $(document).ready(function () {
 
   function fetchComments(file_id) {
     $.ajax({
-      url: 'bar_assessment/fetch_comments.php',
+      url: '../bar_assessment/fetch_comments.php',
       type: 'POST',
       data: { file_id: file_id },
       success: function (response) {
@@ -40,6 +41,8 @@ $(document).ready(function () {
     });
   }
 });
+
+                                                        
 
 
 async function confirmDelete(button) {
