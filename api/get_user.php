@@ -3,9 +3,9 @@
 declare(strict_types=1);
 // ini_set('display_errors', 0); // Disable error display
 // ini_set('log_errors', 1);    // Enable error logging
-require_once '../models/user_model.php';
-require_once '../models/role_model.php';
-require_once '../db/db.php';
+require_once $pathPrepend.'models/user_model.php';
+require_once $pathPrepend.'models/role_model.php';
+require_once $pathPrepend.'db/db.php';
 
 $isGetMethod = $_SERVER['REQUEST_METHOD'] === 'GET';
 
@@ -42,7 +42,8 @@ function getUser(string $id)
     'email' => $row['email'] ?? '',
     'mobileNum' => (int)($row['mobileNum'] ?? 0),
     'policyRead' => (bool)($row['policyRead'] ?? false),
-    'role' => isset($row['role']) ? $row['role'] : '--'
+    'role' => isset($row['role']) ? $row['role'] : '--',
+    'profilePic' => $row['profile_image'] ?? '--',
   ];
 
   if (isset($customUserID)) {

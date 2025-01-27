@@ -16,8 +16,8 @@ require_once '../db/db.php';
 
 <head>
   <?php require 'common/head.php' ?>
-  <script src="../js/settings.js" defer></script>
   <script src="../js/util/confirmation.js" defer></script>
+  <script src="../js/settings.js" defer></script>
 </head>
 
 <body id="page-top">
@@ -64,7 +64,7 @@ require_once '../db/db.php';
               <div class="card-body">
                 <!-- Profile Picture Section -->
                 <div class="d-flex flex-column justify-content-center align-items-center mb-4 mw-75">
-                  <img id="profilePic" src="../img/undraw_profile_2.svg" class="rounded-circle" alt="Profile Picture" width="150" height="150">
+                  <img id="profilePic" src="" class="rounded-circle border border-primary" alt="Profile Picture" width="150" height="150">
                   <button class="btn btn-primary mt-2 mw-25" id="changePicBtn">Change Profile Picture</button>
                   <input type="file" id="fileInput" accept="image/jpeg,image/png,image/gif,image/svg+xml,image/webp" style="display: none;">
                   <div id="alertDiv" style="color: red; display: none;"></div>
@@ -75,19 +75,19 @@ require_once '../db/db.php';
                 <ul class="list-group mb-4">
                   <li class="list-group-item d-flex justify-content-between align-items-center">
                     <span><strong>Username:</strong> <span id="username">Loading...</span></span>
-                    <button class="btn btn-sm btn-secondary edit-btn" data-field="username">Edit</button>
+                    <button class="btn btn-sm btn-secondary edit-btn" id="username-edit">Edit</button>
                   </li>
                   <li class="list-group-item d-flex justify-content-between align-items-center">
                     <span><strong>Email:</strong> <span id="email">Loading...</span></span>
-                    <button class="btn btn-sm btn-secondary edit-btn" data-field="email">Edit</button>
+                    <button class="btn btn-sm btn-secondary edit-btn" id="email-edit">Edit</button>
                   </li>
                   <li class="list-group-item d-flex justify-content-between align-items-center">
                     <span><strong>Full Name:</strong> <span id="fullName">Loading...</span></span>
-                    <button class="btn btn-sm btn-secondary edit-btn" data-field="fullName">Edit</button>
+                    <button class="btn btn-sm btn-secondary edit-btn" id="fullName-edit">Edit</button>
                   </li>
                   <li class="list-group-item d-flex justify-content-between align-items-center">
                     <span><strong>Mobile Number:</strong> <span id="mobileNum">Loading...</span></span>
-                    <button class="btn btn-sm btn-secondary edit-btn" data-field="mobileNum">Edit</button>
+                    <button class="btn btn-sm btn-secondary edit-btn" id="mobileNum-edit">Edit</button>
                   </li>
                 </ul>
 
@@ -125,5 +125,6 @@ require_once '../db/db.php';
       </div>
       <!-- End of Page Wrapper -->
 </body>
+<?php require 'components/change_setting_dialog.php' ?>
 
 </html>

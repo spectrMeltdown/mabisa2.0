@@ -1,5 +1,5 @@
 <div class="modal fade" id="crud-user" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header bg-primary">
         <h5 class="modal-title text-white" id="modalLabel">New User</h5>
@@ -7,7 +7,7 @@
           <span aria-hidden="true" class="text-white">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body p-5">
         <!-- loading Spinner-->
         <div id="loadingSpinner" class="d-flex justify-content-center">
           <div class="spinner-border text-primary" role="status">
@@ -44,7 +44,7 @@
             </div>
             <div class="mb-3 form-group col-lg-6">
               <label for="mobileNum" class="form-label">Mobile Number</label>
-              <input title="Please enter a valid phone number." maxLength="13" maxLength="11" type="tel" class="form-control" name="mobileNum" id="mobileNum" pattern="^\+?[0-9]*$" inputmode="numeric" required autocomplete="tel" />
+              <input title="Please enter a valid phone number." maxLength="10" type="tel" class="form-control" name="mobileNum" id="mobileNum" pattern="^\+?[0-9]*$" inputmode="numeric" required autocomplete="tel" />
               <div class="invalid-feedback">
               </div>
             </div>
@@ -83,12 +83,12 @@
             <select class="custom-select" name="role" id="role" required>
               <option value="" disabled selected hidden>Select one</option>
               <?php
-              require_once "../models/role_model.php";
-              $options = '';
-              foreach (UserRole::cases() as $role) {
-                $options .= '<option value="' . htmlspecialchars($role->value) . '">' . htmlspecialchars($role->value) . '</option>';
-              }
-              echo $options;
+              // require_once "../models/role_model.php";
+              // $options = '';
+              // foreach (UserRole::cases() as $role) {
+              //   $options .= '<option value="' . htmlspecialchars($role->value) . '">' . htmlspecialchars($role->value) . '</option>';
+              // }
+              // echo $options;
               ?>
             </select>
             <div class="invalid-feedback">

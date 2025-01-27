@@ -3,6 +3,7 @@ functionalities/
 # composer
 composer.phar
 /vendor/
+/uploads/
 
 # Logs
 logs

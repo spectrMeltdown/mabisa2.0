@@ -1,4 +1,5 @@
 <?php
+$pathPrepend = '../../';
 require_once './responses.php';
 require_once './comments.php';
 require_once './admin_actions/admin_actions.php';
@@ -7,43 +8,11 @@ require_once '../../db/db.php';
 
 $barangay_id = isset($_GET['barangay_id']) ? $_GET['barangay_id'] : null;
 $barangay_name = isset($_GET['brgyname']) ? $_GET['brgyname'] : null;
-$name = 'admin'; //temporary only
-$role = 'Secretary'; //temporary only
+
+
 
 $responses = new Responses($pdo);
 $admin = new Admin_Actions($pdo);
-
-try {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        if (isset($_POST['action'], $_POST['file_id'])) {
-            $action = $_POST['action'];
-            $file_id = $_POST['file_id'];
-
-            if ($action === 'approve') {
-                $result = $admin->approve($file_id);
-            } elseif ($action === 'decline') {
-                $result = $admin->decline($file_id);
-            } else {
-                throw new Exception('Invalid action specified.');
-            }
-
-            if ($result) {
-                echo "<script>
-                alert('Action " . $action . " was successfully performed for Barangay: " . $barangay_id . "');
-                window.location.href = document.referrer;
-                </script>";
-
-            } else {
-                echo "Failed to perform action '$action'.";
-            }
-        } else {
-            throw new Exception('Invalid form data.');
-        }
-    }
-} catch (Exception $e) {
-    echo "Error: " . $e->getMessage();
-}
-
 
 if ($barangay_id) {
     $stmt = $pdo->prepare("SELECT brgyname FROM refbarangay WHERE brgyid = ?");
@@ -71,6 +40,7 @@ if ($barangay_id) {
 }
 
 
+
 ?>
 
 
@@ -80,47 +50,25 @@ if ($barangay_id) {
 
 <head>
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <base href="../">
+    <?php
+    $isBarAss = true;
+    require '../common/head.php' ?>
+<script src="../../vendor/jquery/jquery.min.js"></script>
+    <script src="../../js/bar-assessment.js"></script>
 
-
-    <title>MABISA - Admin</title>
-
-    <!-- Custom fonts for this template-->
-    <link href="../vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <!-- Custom styles for this template-->
-    <link href="../css/sb-admin-2.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-        crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="../js/bar-assessment.js"></script>
 
 </head>
 
 <body id="page-top">
-
     <!-- Page Wrapper -->
     <div id="wrapper">
 
         <!--sidebar start  -->
         <?php
-        $isBarAssessmentPhp = true;
-        include '../common/sidebar.php' ?>
+        $isBarAss = true;
+        include '../common/sidebar.php'
+
+            ?>
 
         <!-- sidebar end -->
 
@@ -131,7 +79,14 @@ if ($barangay_id) {
             <div id="content">
 
                 <!-- Topbar -->
+                <?php
 
+                include '../common/nav.php';
+               $role = $userData['role'];
+               $name = $userData['fullName'];
+
+                
+                ?>
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
@@ -141,7 +96,7 @@ if ($barangay_id) {
                             <h4>Barangay Details</h4>
                             <p><strong>Barangay ID:</strong> <?php echo htmlspecialchars($barangay_id); ?></p>
                             <p><strong>Barangay Name:</strong> <?php echo htmlspecialchars($barangay_name); ?></p>
-                            <a href="./bar_assessment.php" class="btn btn-secondary">Back</a>
+                            <a href="../bar_assessment.php" class="btn btn-secondary">Back</a>
                         </div>
                     </div>
                     <?php if (!empty($area_description)): ?>
@@ -221,7 +176,7 @@ if ($barangay_id) {
 
                                                                         <!-- Case: Secretary Role -->
                                                                         <?php if ($role === 'Secretary'): ?>
-                                                                            <form method="POST" action="./bar_assessment/user_actions/upload.php"
+                                                                            <form method="POST" action="../bar_assessment/user_actions/upload.php"
                                                                                 enctype="multipart/form-data"
                                                                                 id="uploadForm_<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>">
                                                                                 <input type="hidden" name="barangay_id"
@@ -261,7 +216,7 @@ if ($barangay_id) {
 
                                                                     <?php else: ?>
                                                                         <!-- Case: File is Present -->
-                                                                        <form method="POST" action="./bar_assessment/admin_actions/view.php"
+                                                                        <form method="POST" action="../bar_assessment/admin_actions/view.php"
                                                                             target="_blank">
                                                                             <input type="hidden" name="file_id"
                                                                                 value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
@@ -272,7 +227,10 @@ if ($barangay_id) {
 
 
                                                                         <!-- Additional Options for Secretary -->
-                                                                        <?php if ($role === 'Secretary'): ?>
+                                                                        <?php if ($role === 'Secretary'):
+                                                                            if($data['status'] != 'approved'):
+                                        
+                                                                            ?>
                                                                             <form id="deleteForm"
                                                                                 data-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
                                                                                 <button type="button" class="btn btn-danger mb-3" title="Delete"
@@ -281,7 +239,7 @@ if ($barangay_id) {
                                                                                 </button>
                                                                             </form>
 
-
+                                                                            <?php endif; ?>
                                                                         <?php endif; ?>
 
                                                                     <?php endif; ?>
@@ -291,11 +249,11 @@ if ($barangay_id) {
                                                                     style="text-align: center; vertical-align: middle;">
                                                                     <?php if (!empty($data)): ?>
                                                                         <?php if ($data['status'] === 'approved'): ?>
-                                                                            <i class="fa-solid fa-check text-success" title="Approved"></i>
+                                                                            <i class="fa fa-check text-success" title="Approved"></i>
                                                                         <?php elseif ($data['status'] === 'declined'): ?>
-                                                                            <i class="fa-solid fa-x text-danger" title="Declined"></i>
+                                                                            <i class="fa fa-x text-danger" title="Declined"></i>
                                                                         <?php else: ?>
-                                                                            <i class="fa-solid fa-hourglass-start" title="Waiting for Approval"></i>
+                                                                            <i class="fa fa-hourglass-start" title="Waiting for Approval"></i>
                                                                         <?php endif; ?>
                                                                     <?php endif; ?>
                                                                 </td>
@@ -312,11 +270,11 @@ if ($barangay_id) {
                                                                 </td>
 
                                                                 <?php if ($role === 'Admin'): ?>
-                                                                    <td>
+                                                                    <td style="text-align: center; vertical-align: middle;">
                                                                         <div class="column">
                                                                             <div class="column">
                                                                                 <div class="col-lg-6">
-                                                                                    <form method="POST">
+                                                                                    <form method="POST" action="admin_actions/change_status.php">
                                                                                         <input type="hidden" name="file_id"
                                                                                             value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
                                                                                         <input type="hidden" name="action" value="approve">
@@ -327,7 +285,7 @@ if ($barangay_id) {
                                                                                     </form>
                                                                                 </div>
                                                                                 <div class="col-lg-6">
-                                                                                    <form method="POST">
+                                                                                    <form method="POST" action="admin_actions/change_status.php">
                                                                                         <input type="hidden" name="file_id"
                                                                                             value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
                                                                                         <input type="hidden" name="action" value="decline">
@@ -341,6 +299,7 @@ if ($barangay_id) {
                                                                         </div>
                                                                     </td>
 
+
                                                                 <?php endif; ?>
 
                                                                 <td class="data-cell-comments"
@@ -351,14 +310,11 @@ if ($barangay_id) {
 
                                                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                                                             data-target="#commentModal"
-                                                                            data-fileid="<?php echo htmlspecialchars($data['file_id']); ?>"
-                                                                            data-role="<?php echo htmlspecialchars($role); ?>"
-                                                                            data-name="<?php echo htmlspecialchars($name); ?>">
+                                                                            data-fileid="<?= htmlspecialchars($data['file_id']); ?>"
+                                                                            data-role="<?= htmlspecialchars($role); ?>"
+                                                                            data-name="<?= htmlspecialchars($name); ?>">
                                                                             Comments
                                                                         </button>
-
-
-
 
                                                                         <?php
                                                                     endif;
@@ -392,10 +348,7 @@ if ($barangay_id) {
         </div>
     </div>
     </div>
-
-    <!-- Include Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <?php require '../components/comment_section.php' ?>
+    <?php require '../components/comment_section.php'; ?>
 </body>
 
 </html>

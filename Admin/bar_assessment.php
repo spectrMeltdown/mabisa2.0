@@ -1,6 +1,5 @@
 <?php
 // ensure the user is still logged in, redirect if not
-// use empty to check for all cases (variable unset, blank string, etc). Negation of the variable also works, but may display warning.
 if (empty($_COOKIE['id'])) {
     header('location:logged_out.php');
     exit;
@@ -8,7 +7,6 @@ if (empty($_COOKIE['id'])) {
 
 require_once 'bar_assessment/responses.php';
 require_once '../db/db.php';
-
 
 $responsesObj = new Responses($pdo);
 $responses = $responsesObj->show_responses();
@@ -20,6 +18,9 @@ $responses = $responsesObj->show_responses();
 
 <head>
     <?php require 'common/head.php' ?>
+    <script src="../vendor/jquery/jquery.min.js" ></script>
+    <script src="../js/bar-assessment.js"></script>
+
 </head>
 
 <body id="page-top">
@@ -46,10 +47,6 @@ $responses = $responsesObj->show_responses();
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
 
-                    <!-- Page Heading -->
-
-                    <!-- End of Page Heading -->
-
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
                             <div style="float: left;">
@@ -58,37 +55,37 @@ $responses = $responsesObj->show_responses();
                         </div>
                         <div class="card-body">
                             <div class="table table-responsive">
-                                <table class="table table-bordered">
+                                <table id="barangayTable" class="table table-bordered">
                                     <thead>
                                         <tr>
                                             <th>Barangay</th>
                                             <th>Last Transaction</th>
                                             <th>Actions</th>
-                                            <th>Status</th>
+                                            <th>Progress</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
                                         if (!empty($responses)) {
                                             foreach ($responses as $row) {
-
-
+                                                $progress = $responsesObj->getProgress($row['barangay_id']);
                                                 echo "<tr>";
                                                 echo "<td>" . htmlspecialchars($row['barangay']) . "</td>";
                                                 echo "<td>" . htmlspecialchars($row['dateUploaded']) . "</td>";
                                                 echo "<td>";
                                                 echo "<a href='bar_assessment/show_bar_response.php?barangay_id=" . htmlspecialchars($row['barangay_id']) . "' class='btn btn-primary btn-sm'>View</a>";
                                                 echo "</td>";
-                                                echo "<td>" . htmlspecialchars($row['status']) . "</td>";
+                                                echo "<td>" . htmlspecialchars($progress) . " %</td>";
                                                 echo "</tr>";
                                             }
                                         }
                                         ?>
                                     </tbody>
                                 </table>
-                                <tbody>
                             </div>
                         </div>
+
+
                     </div>
                 </div>
                 <!-- End of Page Content -->
@@ -100,19 +97,6 @@ $responses = $responsesObj->show_responses();
 
     </div>
     </div>
-</body>
-
-
-
-
-
-
-
-
-
-
-</body>
-
 </body>
 
 </html>

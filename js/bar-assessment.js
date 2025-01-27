@@ -5,9 +5,10 @@ $(".delete-user-btn").on("click", (e) => {
 
   console.log(`ID: ${userID}, Username: ${username}, Role: ${role}`);
 });
-
+// comment modal section
 $(document).ready(function () {
   $('#commentModal').on('show.bs.modal', function (event) {
+        console.log('Modal is being shown');
     const button = $(event.relatedTarget);
     const file_id = button.data("fileid");
     const role = button.data("role");
@@ -25,10 +26,10 @@ $(document).ready(function () {
 
     fetchComments(file_id);
   });
-
+// display comments
   function fetchComments(file_id) {
     $.ajax({
-      url: 'bar_assessment/fetch_comments.php',
+      url: '../bar_assessment/fetch_comments.php',
       type: 'POST',
       data: { file_id: file_id },
       success: function (response) {
@@ -41,7 +42,9 @@ $(document).ready(function () {
   }
 });
 
+                                                        
 
+//delete function
 async function confirmDelete(button) {
   console.log("Delete button clicked"); // Debugging log
   const confirmed = confirm("Are you sure you want to delete this content?");
@@ -123,3 +126,24 @@ async function confirmDelete(button) {
     alert('An unexpected error occurred. Please try again.');
   }
 }
+//responsive table for barangay_responses
+$(document).ready(function () {
+  $('#barangayTable').DataTable({
+      paging: true,       
+      pageLength: 10,       
+      lengthMenu: [5, 10, 25, 50],
+      searching: true,      
+      ordering: true,       
+      order: [[0, 'asc']],   
+      columnDefs: [
+          {
+              orderable: false, 
+              targets: [2],
+          },
+      ],
+      language: {
+          search: "Search Barangay:",
+          lengthMenu: "Show _MENU_ entries",
+      },
+  });
+});
