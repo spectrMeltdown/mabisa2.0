@@ -9,8 +9,7 @@ require_once '../../db/db.php';
 $barangay_id = isset($_GET['barangay_id']) ? $_GET['barangay_id'] : null;
 $barangay_name = isset($_GET['brgyname']) ? $_GET['brgyname'] : null;
 
-$name = 'admin'; //temporary only
-$role = 'Admin'; //temporary only
+
 
 $responses = new Responses($pdo);
 $admin = new Admin_Actions($pdo);
@@ -84,7 +83,12 @@ if ($barangay_id) {
                 <!-- Topbar -->
                 <?php
 
-                include '../common/nav.php' ?>
+                include '../common/nav.php';
+               $role = $userData['role'];
+               $name = $userData['fullName'];
+
+                
+                ?>
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
@@ -225,7 +229,10 @@ if ($barangay_id) {
 
 
                                                                         <!-- Additional Options for Secretary -->
-                                                                        <?php if ($role === 'Secretary'): ?>
+                                                                        <?php if ($role === 'Secretary'):
+                                                                            if($data['status'] != 'approved'):
+                                        
+                                                                            ?>
                                                                             <form id="deleteForm"
                                                                                 data-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
                                                                                 <button type="button" class="btn btn-danger mb-3" title="Delete"
@@ -234,7 +241,7 @@ if ($barangay_id) {
                                                                                 </button>
                                                                             </form>
 
-
+                                                                            <?php endif; ?>
                                                                         <?php endif; ?>
 
                                                                     <?php endif; ?>
