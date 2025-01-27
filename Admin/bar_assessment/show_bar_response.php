@@ -53,9 +53,7 @@ if ($barangay_id) {
     <?php
     $isBarAss = true;
     require '../common/head.php' ?>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="../../vendor/jquery/jquery.min.js"></script>
     <script src="../../js/bar-assessment.js"></script>
 
 
@@ -251,11 +249,11 @@ if ($barangay_id) {
                                                                     style="text-align: center; vertical-align: middle;">
                                                                     <?php if (!empty($data)): ?>
                                                                         <?php if ($data['status'] === 'approved'): ?>
-                                                                            <i class="fa-solid fa-check text-success" title="Approved"></i>
+                                                                            <i class="fa fa-check text-success" title="Approved"></i>
                                                                         <?php elseif ($data['status'] === 'declined'): ?>
-                                                                            <i class="fa-solid fa-x text-danger" title="Declined"></i>
+                                                                            <i class="fa fa-x text-danger" title="Declined"></i>
                                                                         <?php else: ?>
-                                                                            <i class="fa-solid fa-hourglass-start" title="Waiting for Approval"></i>
+                                                                            <i class="fa fa-hourglass-start" title="Waiting for Approval"></i>
                                                                         <?php endif; ?>
                                                                     <?php endif; ?>
                                                                 </td>
