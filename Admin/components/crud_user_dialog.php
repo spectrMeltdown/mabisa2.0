@@ -83,12 +83,12 @@
             <select class="custom-select" name="role" id="role" required>
               <option value="" disabled selected hidden>Select one</option>
               <?php
-              require_once "../models/role_model.php";
-              $options = '';
-              foreach (UserRole::cases() as $role) {
-                $options .= '<option value="' . htmlspecialchars($role->value) . '">' . htmlspecialchars($role->value) . '</option>';
-              }
-              echo $options;
+              // require_once "../models/role_model.php";
+              // $options = '';
+              // foreach (UserRole::cases() as $role) {
+              //   $options .= '<option value="' . htmlspecialchars($role->value) . '">' . htmlspecialchars($role->value) . '</option>';
+              // }
+              // echo $options;
               ?>
             </select>
             <div class="invalid-feedback">

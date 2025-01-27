@@ -1,15 +1,12 @@
-
-
 <!-- Sidebar -->
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
   <!-- Sidebar - Brand -->
   <a class="sidebar-brand d-flex align-items-center justify-content-center"
     href="dashboard.php">
     <div class="sidebar-brand-icon">
-      <i><img src="<?= $pathPrepend ?>img/logo.png" height="60 px" /></i>
+      <i><img src="<?= $pathPrepend ?>img/logo.png" height="60px" /></i>
     </div>
-    <div class="sidebar-brand-text mx-3">MABISA</d
-    iv>
+    <div class="sidebar-brand-text mx-3">MABISA</div>
   </a>
 
   <!-- Divider -->
@@ -30,7 +27,7 @@
 
   <!-- Nav Item - Criteria -->
   <li class="nav-item <?= isset($isSetupCriteriaPhp) ? 'active' : '' ?>">
-  <a class="nav-link collapsed" href="<?php echo isset($isBarAss) ? '../' : ''; ?>criteria.php">
+    <a class="nav-link collapsed" href="<?php echo isset($isBarAss) ? '../' : ''; ?>criteria.php">
       <i class="fas fa-fw fa-cog"></i>
       <span>Set-Up Criteria</span>
     </a>
