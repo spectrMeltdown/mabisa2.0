@@ -1,4 +1,5 @@
 <?php
+$pathPrepend = '../../';
 require_once './responses.php';
 require_once './comments.php';
 require_once './admin_actions/admin_actions.php';
@@ -7,43 +8,12 @@ require_once '../../db/db.php';
 
 $barangay_id = isset($_GET['barangay_id']) ? $_GET['barangay_id'] : null;
 $barangay_name = isset($_GET['brgyname']) ? $_GET['brgyname'] : null;
+
 $name = 'admin'; //temporary only
 $role = 'Admin'; //temporary only
 
 $responses = new Responses($pdo);
 $admin = new Admin_Actions($pdo);
-
-try {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        if (isset($_POST['action'], $_POST['file_id'])) {
-            $action = $_POST['action'];
-            $file_id = $_POST['file_id'];
-
-            if ($action === 'approve') {
-                $result = $admin->approve($file_id);
-            } elseif ($action === 'decline') {
-                $result = $admin->decline($file_id);
-            } else {
-                throw new Exception('Invalid action specified.');
-            }
-
-            if ($result) {
-                echo "<script>
-                alert('" . $action . "d successfully');
-                window.location.href = document.referrer;
-                </script>";
-
-            } else {
-                echo "Failed to perform action '$action'.";
-            }
-        } else {
-            throw new Exception('Invalid form data.');
-        }
-    }
-} catch (Exception $e) {
-    echo "Error: " . $e->getMessage();
-}
-
 
 if ($barangay_id) {
     $stmt = $pdo->prepare("SELECT brgyname FROM refbarangay WHERE brgyid = ?");
@@ -93,13 +63,12 @@ if ($barangay_id) {
 </head>
 
 <body id="page-top">
-
     <!-- Page Wrapper -->
     <div id="wrapper">
 
         <!--sidebar start  -->
         <?php
-        $isBarAssessmentPhp = true;
+        $isBarAss = true;
         include '../common/sidebar.php'
 
             ?>
@@ -296,11 +265,11 @@ if ($barangay_id) {
                                                                 </td>
 
                                                                 <?php if ($role === 'Admin'): ?>
-                                                                    <td   style="text-align: center; vertical-align: middle;">
+                                                                    <td style="text-align: center; vertical-align: middle;">
                                                                         <div class="column">
                                                                             <div class="column">
                                                                                 <div class="col-lg-6">
-                                                                                    <form method="POST">
+                                                                                    <form method="POST" action="admin_actions/change_status.php">
                                                                                         <input type="hidden" name="file_id"
                                                                                             value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
                                                                                         <input type="hidden" name="action" value="approve">
@@ -311,7 +280,7 @@ if ($barangay_id) {
                                                                                     </form>
                                                                                 </div>
                                                                                 <div class="col-lg-6">
-                                                                                    <form method="POST">
+                                                                                    <form method="POST" action="admin_actions/change_status.php">
                                                                                         <input type="hidden" name="file_id"
                                                                                             value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
                                                                                         <input type="hidden" name="action" value="decline">
@@ -324,6 +293,7 @@ if ($barangay_id) {
                                                                             </div>
                                                                         </div>
                                                                     </td>
+
 
                                                                 <?php endif; ?>
 
@@ -340,7 +310,7 @@ if ($barangay_id) {
                                                                             data-name="<?= htmlspecialchars($name); ?>">
                                                                             Comments
                                                                         </button>
-                                                                       
+
                                                                         <?php
                                                                     endif;
                                                                     ?>
@@ -373,7 +343,7 @@ if ($barangay_id) {
         </div>
     </div>
     </div>
-<?php require '../components/comment_section.php';?>
+    <?php require '../components/comment_section.php'; ?>
 </body>
 
 </html>
