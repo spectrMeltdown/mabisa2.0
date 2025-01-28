@@ -19,7 +19,7 @@ require_once '../db/db.php';
 
 <head>
   <?php require 'common/head.php' ?>
-  <script src="../js/users.js" defer></script>
+  <script src="../js/roles.js" defer></script>
   <script src="../js/util/confirmation.js" defer></script>
   <script src="../js/util/alert.js" defer></script>
   <script src="../js/util/input-validation.js" defer></script>
@@ -32,7 +32,6 @@ require_once '../db/db.php';
 
     <!-- Sidebar -->
     <?php
-    $isUsersPhp = true;
     require 'common/sidebar.php' ?>
     <!-- End of Sidebar -->
 
@@ -52,12 +51,11 @@ require_once '../db/db.php';
           <div class="card shadow mb-4">
             <div class="card-header py-3">
               <div style="float: left;">
-                <h3 class="m-0 font-weight-bold text-primary">Users</h3>
+                <h3 class="m-0 font-weight-bold text-primary">Roles</h3>
               </div>
               <div style="float: right;">
                 <div class="row">
-                  <button class="btn btn-sm btn-primary add-user-btn" data-toggle="modal" data-target="#crud-user">Add User</button>
-                  <a class="btn btn-sm btn-primary ml-2" href="roles.php" data-transition="view">Manage roles</a>
+                  <button class="btn btn-sm btn-primary add-user-btn" data-toggle="modal" data-target="#crud-user">Add Role</button>
                 </div>
               </div>
             </div>
@@ -66,52 +64,53 @@ require_once '../db/db.php';
                 <table class="table table-striped table-bordered" id="user_dataTable" width="100%" cellspacing="0">
                   <?php
                   // $stmt = $pdo->prepare("SELECT COUNT(*) FROM pos.received_from where area_code=? and cmp_code=? ");
-                  $stmt = $pdo->prepare("SELECT COUNT(*) FROM user_policy where id != :id");
-                  $stmt->execute([':id' => $userData['id']]);
+                  $stmt = $pdo->query("SELECT COUNT(*) FROM roles;");
                   $count = $stmt->fetchColumn();
 
                   if ($count != 0) {
                   ?>
                     <thead>
                       <tr>
-                        <th>Full Name</th>
-                        <th>Username</th>
                         <th>Role</th>
-                        <th>Barangay</th>
+                        <th>Permissions</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
                     <?php if ($count > 10) { ?>
                       <tfoot>
                         <tr>
-                          <th>Fullname</th>
-                          <th>Username</th>
                           <th>Role</th>
-                          <th>Barangay</th>
+                          <th>Access</th>
                           <th>Actions</th>
                         </tr>
                       </tfoot>
                     <?php } ?>
                     <tbody id='user-table-body'>
+                      <tr>
+                        <td>Admin</td>
+                        <td>Full Access</td>
+                        <td><i class="fas fa-question-circle" data-toggle="tooltip" data-placement="right" title="This is the default role. Cannot be deleted or modified."></i></td>
+                      </tr>
                       <?php
-                      require_once '../models/role_model.php';
-                      $query = $pdo->prepare("select * from user_policy where id != :id");
-                      // writeLog($userData);
-                      $query->execute([':id' => $userData['id']]);
+                      $query = $pdo->query("select * from roles");
                       while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
                       ?>
                         <tr>
-                          <td><?php echo $row['fullName'] ?></td>
-                          <td><?php echo $row['username'] ?></td>
-                          <td><?php echo $row['role'] ?></td>
-                          <td><?php echo $row['barangay'] ?></td>
+                          <td><?php echo $row['name'] ?></td>
+                          <td><?php
+                              $permissionsValue = 'No permissions found.';
+                              if ($row['permissions_id']) {
+                                $query = $pdo->query("select * from permissions inner join roles on roles.permissions_id = permissions.id");
+                              }
+                              echo $permissionsValue;
+                              ?></td>
                           <td>
-                            <a href="#edit-user" class="btn btn-sm btn-info btn-circle edit-user-btn"
-                              data-toggle="modal" data-target="#crud-user" data-id="<?= $row['id'] ?>">
+                            <a href="#edit-role" class="btn btn-sm btn-info btn-circle edit-role-btn"
+                              data-toggle="modal" data-target="#crud-role" data-id="<?= $row['id'] ?>">
                               <i class="fas fa-edit"></i>
                             </a>
-                            <a href="#delete-user"
-                              class="btn btn-sm btn-danger btn-circle delete-user-btn" data-id="<?= $row['id'] ?>">
+                            <a href="#delete-role"
+                              class="btn btn-sm btn-danger btn-circle delete-role-btn" data-id="<?= $row['id'] ?>">
                               <i class="fas fa-trash"></i>
                             </a>
                           </td>
@@ -122,7 +121,7 @@ require_once '../db/db.php';
                     <tbody>
                       <tr>
                         <td>
-                          <p class="text-center">No users yet.</p>
+                          <p class="text-center">No roles yet.</p>
                         </td>
                       </tr>
                     </tbody>

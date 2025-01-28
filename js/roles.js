@@ -13,15 +13,9 @@ let editMode = undefined;
 
 $("#user_dataTable").DataTable({
   language: {
-    emptyTable: "No users yet",
+    emptyTable: "No roles",
   },
-  columns: [
-    { data: "Fullname" },
-    { data: "Username" },
-    { data: "Role" },
-    { data: "Barangay" },
-    { data: "Action" },
-  ],
+  columns: [{ data: "Role" }, { data: "Permissions" }, { data: "Actions" }],
   data: $("#user-table-body").is(":empty") ? [] : null,
 });
 
@@ -705,27 +699,3 @@ document
     //     }
     //   });
   });
-
-// page transition
-// TODO: change this to use the 'pageshow' and 'pagehide' events instead
-
-// document.addEventListener("click", async (e) => {
-//   const link = e.target.closest('a[data-transition="view"]');
-//   if (!link) return;
-//   e.preventDefault();
-
-//   if (!document.startViewTransition) {
-//     console.log("View page transition not supported.");
-//     location.href = link.href;
-//     return;
-//   }
-//   document.startViewTransition(() => {
-//     document.body.classList.add("fade");
-//     new Promise((res) => {
-//       setTimeout(res, 300);
-//     }).then(() => {
-//       location.href = link.href;
-//       document.body.classList.remove("fade");
-//     });
-//   });
-// });
