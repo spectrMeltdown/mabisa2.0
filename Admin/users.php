@@ -78,7 +78,6 @@ require_once '../db/db.php';
                         <th>Full Name</th>
                         <th>Username</th>
                         <th>Role</th>
-                        <th>Barangay</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
@@ -88,13 +87,13 @@ require_once '../db/db.php';
                           <th>Full Name</th>
                           <th>Username</th>
                           <th>Role</th>
-                          <th>Barangay</th>
                           <th>Actions</th>
                         </tr>
                       </tfoot>
                     <?php } ?>
                     <tbody id='user-table-body'>
                       <?php
+                      require_once '../api/get_role_name.php';
                       $query = $pdo->prepare("select * from users where id != :id");
                       // writeLog($userData);
                       $query->execute([':id' => $userData['id']]);
@@ -103,7 +102,7 @@ require_once '../db/db.php';
                         <tr>
                           <td><?php echo $row['full_name'] ?></td>
                           <td><?php echo $row['username'] ?></td>
-                          <td><?php echo $row['role_name'] ?></td>
+                          <td><?php echo getRoleName($pdo, $row['role_id']) ?></td>
                           <td><?php echo $row['barangay'] ?></td>
                           <td>
                             <a href="#edit-user" class="btn btn-sm btn-info btn-circle edit-user-btn"

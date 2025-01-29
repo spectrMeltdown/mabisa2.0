@@ -37,14 +37,9 @@ $("#loginBtn").on("click", (e) => {
     }),
   })
     .then(async (res) => {
-      if (res.ok) {
-        // console.log("Raw text:", res.text);
-        const data = await res.json();
-        // console.log(data);
-        return data;
-      }
-      console.error("HTTP error:", res.text);
-      throw new Error(`Error: Status ${res.status}}`);
+      const text = await res.text();
+      console.log(text);
+      return JSON.parse(text);
     })
     .catch((e) => console.log(e))
     .then((user) => {

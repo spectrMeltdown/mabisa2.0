@@ -3,6 +3,7 @@
 declare(strict_types=1);
 // ini_set('display_errors', 0); // Disable error display
 require_once '../db/db.php';
+require_once 'get_role_name.php';
 
 function getAllUsers(): array
 {
@@ -10,24 +11,13 @@ function getAllUsers(): array
 
   $sql = "select * from users";
   $stmt = $pdo->query($sql);
-  /** @var User[] */
   $users = [];
-  while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $barangay = isset($row['barangay']) ? $row['barangay'] : 'N/A';
-    $role = isset($row['role']) ? $row['role'] : '--';
-
-    $users[] = [
-      (string)$row['id'],
-      $row['username'],
-      $row['full_name'],
-      $barangay,
-      $row['email'],
-      (int)$row['mobile_num'],
-      $row['password'],
-      $role
-    ];
+  while ($user = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    $roleName = getRoleName($pdo, $user['role_id']);
+    $user['role'] = $roleName;
+    unset($user['role_id']);
+    $users[] = $user;
   }
-
   return $users;
 }
 

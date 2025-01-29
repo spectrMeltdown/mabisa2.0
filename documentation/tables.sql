@@ -5,6 +5,10 @@ ON CASCADE operations are fine for small to medium sized applications
 
 create table permissions (
   id int AUTO_INCREMENT PRIMARY KEY,
+
+  super_admin_create BOOLEAN DEFAULT false,
+  super_admin_read BOOLEAN DEFAULT false,
+  super_admin_delete BOOLEAN DEFAULT false,
   
   users_create BOOLEAN DEFAULT false,
   users_delete BOOLEAN DEFAULT false,
@@ -44,7 +48,7 @@ create table permissions (
 CREATE TABLE roles (
     id int AUTO_INCREMENT PRIMARY KEY,
     name varchar(100) NOT NULL UNIQUE,
-    allow_barangay boolean NOT NULL,
+    allow_barangay boolean NOT NULL DEFAULT false,
     permissions_id int NOT NULL,
     last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (permissions_id) REFERENCES permissions(id)
@@ -54,18 +58,20 @@ CREATE TABLE roles (
 CREATE TABLE users (
 	id int AUTO_INCREMENT PRIMARY KEY, -- no need to specify not null on primary keys because they already non nullable in nature
   full_name varchar(100) NOT NULL,
+  username varchar(100) NOT NULL UNIQUE,
   password varchar(100) NOT NULL,
   email varchar(100) NOT NULL UNIQUE,
   mobile_num varchar(10) NOT NULL UNIQUE,
   role_id int,
   is_disabled boolean NOT NULL DEFAULT false,
-  profile_pic varchar(200) ,
+  profile_pic varchar(200),
   last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE SET NULL -- don't set to role name, because they can change
 );
 
-
-
+-- alter table users
+-- add username varchar(100) not null unique
+-- after full_name;
 
 CREATE TABLE user_roles_barangay (
 	user_id int NOT NULL,

@@ -1,18 +1,19 @@
 "use strict";
 
-$("#user_dataTable").DataTable({
-  language: {
-    emptyTable: "No users yet",
-  },
-  columns: [
-    { data: "Fullname" },
-    { data: "Username" },
-    { data: "Role" },
-    { data: "Barangay" },
-    { data: "Action" },
-  ],
-  data: $("#user-table-body").is(":empty") ? [] : null,
-});
+if ($("#user_dataTable").find("p").length === 0) {
+  // Initialize DataTable if no <p> element is found
+  $("#user_dataTable").DataTable({
+    language: {
+      emptyTable: "No matching records found.",
+    },
+    columns: [
+      { data: "Fullname" },
+      { data: "Username" },
+      { data: "Role" },
+      { data: "Action" },
+    ],
+  });
+}
 
 // handle user delete btn
 $(".delete-user-btn").on("click", async (e) => {

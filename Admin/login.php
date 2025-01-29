@@ -147,5 +147,3 @@ if (!empty($_COOKIE['id'])) {
         </div>
 
     </div>
-
-    <!-- Bootstrap core

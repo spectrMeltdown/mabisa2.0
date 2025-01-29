@@ -78,21 +78,32 @@
             </div>
           </div>
 
-          <div class="mb-3 form-group">
-            <label for="role" class="form-label">Role</label>
-            <select class="custom-select" name="role" id="role" required>
-              <option value="" disabled selected hidden>Select one</option>
-              <?php
-              // $options = '';
-              // foreach (UserRole::cases() as $role) {
-              //   $options .= '<option value="' . htmlspecialchars($role->value) . '">' . htmlspecialchars($role->value) . '</option>';
-              // }
-              // echo $options;
-              ?>
-            </select>
-            <div class="invalid-feedback">
+          <?php
+          require_once '../../db/db.php';
+          global $pdo;
+
+          if (true):
+          ?>
+            <div class="mb-3 form-group">
+              <label for="role" class="form-label">Role</label>
+              <select class="custom-select" name="role" id="role" required>
+                <option value="" disabled selected hidden>Select one</option>
+                <?php
+                // $options = '';
+                // foreach (UserRole::cases() as $role) {
+                //   $options .= '<option value="' . htmlspecialchars($role->value) . '">' . htmlspecialchars($role->value) . '</option>';
+                // }
+                // echo $options;
+                ?>
+              </select>
+              <div class="invalid-feedback">
+              </div>
             </div>
-          </div>
+          <?php else: ?>
+            <div class="mb-3">
+              <h6>No roles available. Please add some roles first.</h6>
+            </div>
+          <?php endif; ?>
           <hr>
           <div class="col" id="auditorRoleAssignment" style="display: none">
             <h5 class="modal-title" id="barangayAssignmentsLabel">Assigned Barangays</h5>

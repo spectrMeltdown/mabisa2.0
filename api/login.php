@@ -47,7 +47,7 @@ try {
     'id' => (string)$row['id'],
   ];
 
-  setcookie('id', $row['id'], [
+  setcookie('id', (string)$row['id'], [
     'expires' => $rememberMe ? time() + (86400 * 14) : 0, // 2 weeks if user chose remember me
     'path' => '/',
     'secure' => true, // Ensure it's HTTPS
