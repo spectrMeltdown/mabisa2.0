@@ -6,8 +6,6 @@ declare(strict_types=1);
 // ini_set('display_startup_errors', 1);
 // error_reporting(E_ALL);
 // ini_set('log_errors', 1);    // Enable error logging
-// require_once '../models/user_model.php';
-// require_once '../models/role_model.php';
 require_once '../db/db.php';
 require 'logging.php';
 

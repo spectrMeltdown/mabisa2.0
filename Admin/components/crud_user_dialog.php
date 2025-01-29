@@ -83,7 +83,6 @@
             <select class="custom-select" name="role" id="role" required>
               <option value="" disabled selected hidden>Select one</option>
               <?php
-              // require_once "../models/role_model.php";
               // $options = '';
               // foreach (UserRole::cases() as $role) {
               //   $options .= '<option value="' . htmlspecialchars($role->value) . '">' . htmlspecialchars($role->value) . '</option>';
@@ -119,12 +118,10 @@
             <select class="form-select" name="barangay" id="barangay">
               <option value="" disabled selected hidden>Select one</option>
               <?php
-              require_once "../models/barangay_model.php";
-              $options = '';
-              foreach (Barangay::cases() as $barangay) {
-                $options .= '<option value="' . htmlspecialchars($barangay->value) . '">' . htmlspecialchars($barangay->value) . '</option>';
-              }
-              echo $options;
+              global $pdo;
+              $result = $pdo->query('SELECT brgyname FROM refbarangay;');
+              if ($result->rowCount() <= 0):
+              endif
               ?>
             </select>
             <div class="invalid-feedback">

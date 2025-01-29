@@ -20,6 +20,7 @@ require_once '../db/db.php';
 <head>
   <?php require 'common/head.php' ?>
   <script src="../js/users.js" defer></script>
+  <script src="../js/crud-user.js" defer></script>
   <script src="../js/util/confirmation.js" defer></script>
   <script src="../js/util/alert.js" defer></script>
   <script src="../js/util/input-validation.js" defer></script>
@@ -94,7 +95,6 @@ require_once '../db/db.php';
                     <?php } ?>
                     <tbody id='user-table-body'>
                       <?php
-                      require_once '../models/role_model.php';
                       $query = $pdo->prepare("select * from user_policy where id != :id");
                       // writeLog($userData);
                       $query->execute([':id' => $userData['id']]);
