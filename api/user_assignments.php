@@ -20,9 +20,9 @@ try {
     $id;
     $sql = 'select brgyid, brgyname, auditor 
     from refbarangay 
-    inner join user_policy 
-    on refbarangay.auditor = user_policy.id 
-    where user_policy.id = :id';
+    inner join users 
+    on refbarangay.auditor = users.id 
+    where users.id = :id';
 
     if ($_POST['id'] === 'self') {
       $id = $_COOKIE['id'];

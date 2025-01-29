@@ -9,13 +9,13 @@ require 'util/update_assignments.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   /** @var string */
-  $fullName = trim($_POST['fullName']);
+  $fullName = trim($_POST['full_name']);
   /** @var string */
   $username = trim($_POST['username']);
   /** @var string */
   $email = trim($_POST['email']);
   /** @var string */
-  $mobileNum = trim($_POST['mobileNum']);
+  $mobileNum = trim($_POST['mobile_num']);
   /** @var string */
   $pass = trim($_POST['pass']);
   // /** @var string */
@@ -35,14 +35,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // insert to database
   global $pdo;
-  $sql = 'insert into user_policy (username, fullName, email, mobileNum, password, role, barangay) values (:username, :fullname, :email, :mobileNum, :password, :role, :barangay)';
+  $sql = 'insert into users (username, full_name, email, mobile_num, password, role, barangay) values (:username, :full_name, :email, :mobile_num, :password, :role, :barangay)';
   try {
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
       ':username' => $username,
-      ':fullname' => $fullName,
+      ':full_name' => $fullName,
       ':email' => $email,
-      ':mobileNum' => substr($mobileNum, 2),
+      ':mobile_num' => substr($mobileNum, 2),
       ':password' => password_hash($password, PASSWORD_BCRYPT),
       ':role' => $role,
       ':barangay' => $barangay,

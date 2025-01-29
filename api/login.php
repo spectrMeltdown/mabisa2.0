@@ -24,7 +24,7 @@ try {
   $username = $_POST['username'];
   $password = $_POST['password'];
   $rememberMe = empty($_POST['rememberMe']) ? false : $_POST['rememberMe'];
-  $sql = 'SELECT id, password FROM user_policy WHERE username = :username LIMIT 1';
+  $sql = 'SELECT id, password FROM users WHERE username = :username LIMIT 1';
   $stmt = $pdo->prepare($sql);
   $stmt->execute([':username' => $username]);
 

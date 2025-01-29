@@ -72,7 +72,7 @@ if (!move_uploaded_file($file['tmp_name'], $filePath)) {
 // Update the database
 try {
   global $pdo;
-  $stmt = $pdo->prepare('UPDATE user_policy SET profile_image = :image WHERE id = :id');
+  $stmt = $pdo->prepare('UPDATE users SET profile_pic = :image WHERE id = :id');
   $stmt->execute([':image' => $filePath, ':id' => $userId]);
 } catch (Exception $e) {
   http_response_code(500);

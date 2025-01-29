@@ -23,7 +23,7 @@ function getUser(string $id)
     $id = $_COOKIE['id'];
   }
 
-  $sql = "SELECT * FROM user_policy WHERE id=:id LIMIT 1";
+  $sql = "SELECT * FROM users WHERE id=:id LIMIT 1";
   $stmt = $pdo->prepare($sql);
   $stmt->execute([':id' => $id]);
 
@@ -36,13 +36,12 @@ function getUser(string $id)
   $response = [
     'id' => (string)$row['id'],
     'username' => $row['username'] ?? '',
-    'fullName' => $row['fullName'] ?? '',
+    'fullName' => $row['full_name'] ?? '',
     'barangay' => $row['barangay'] ?? 'N/A',
     'email' => $row['email'] ?? '',
-    'mobileNum' => (int)($row['mobileNum'] ?? 0),
-    'policyRead' => (bool)($row['policyRead'] ?? false),
+    'mobile_num' => (int)($row['mobile_num'] ?? 0),
     'role' => isset($row['role']) ? $row['role'] : '--',
-    'profilePic' => $row['profile_image'] ?? '--',
+    'profilePic' => $row['profile_pic'] ?? '--',
   ];
 
   if (isset($customUserID)) {

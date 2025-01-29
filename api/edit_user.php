@@ -10,13 +10,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   /** @var string */
   $id = $_POST['id'];
   /** @var string */
-  $fullName = trim($_POST['fullName']);
+  $fullName = trim($_POST['full_name']);
   /** @var string */
   $username = trim($_POST['username']);
   /** @var string */
   $email = trim($_POST['email']);
   /** @var string */
-  $mobileNum = substr(trim($_POST['mobileNum']), 3);
+  $mobileNum = substr(trim($_POST['mobile_num']), 3);
   /** @var string */
   $pass = !empty($_POST['pass']) ? trim($_POST['pass']) : null;
   // /** @var string */
@@ -30,13 +30,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // writeLog($role);
   // insert to database
   global $pdo;
-  $sql = 'update user_policy set username = :username, fullName = :fullName, email = :email, mobileNum = :mobileNum, role = :role, barangay = :barangay';
+  $sql = 'update users set username = :username, full_name = :full_name, email = :email, mobile_num = :mobile_num, role = :role, barangay = :barangay';
   $parameters = [
     ':id' => $id,
     ':username' => $username,
-    ':fullName' => $fullName,
+    ':full_name' => $fullName,
     ':email' => $email,
-    ':mobileNum' => $mobileNum,
+    ':mobile_num' => $mobileNum,
     ':role' => $role,
     ':barangay' => $barangay,
   ];

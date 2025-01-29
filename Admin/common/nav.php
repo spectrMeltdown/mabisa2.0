@@ -1,7 +1,7 @@
 <?php
 $customUserID = 'self';
 $userData;
-require $pathPrepend.'api/get_user.php'; // this will provide userData array
+require $pathPrepend . 'api/get_user.php'; // this will provide userData array
 // unset after using
 unset($customUserID);
 ?>
@@ -81,12 +81,12 @@ unset($customUserID);
     <li class="nav-item dropdown no-arrow">
       <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
         aria-haspopup="true" aria-expanded="false">
-        <span class="mr-2 mt-3 d-none d-lg-inline text-gray-600 small" style="font-size: 15px"><?= $userData['fullName'] ?? '' ?><br>
+        <span class="mr-2 mt-3 d-none d-lg-inline text-gray-600 small" style="font-size: 15px"><?= $userData['full_name'] ?? '' ?><br>
           <p class="text-right" style="font-size: 12px"><?= $userData['role'] ?? '' ?> &nbsp;</p>
         </span>
         <!-- TODO: render the user profile pic below -->
         <img class="img-profile rounded-circle"
-          src="<?= !empty($userData['profile_pic']) ? '' : $pathPrepend.'img/undraw_profile.svg' ?>" />
+          src="<?= !empty($userData['profile_pic']) ? '' : $pathPrepend . 'img/undraw_profile.svg' ?>" />
       </a>
       <!-- Dropdown - User Information -->
       <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
@@ -107,5 +107,5 @@ unset($customUserID);
     </li>
   </ul>
 </nav>
-<?php require (isset($isBarAss) ? '../' : '') .'components/confirmation_dialog.php'; ?>
+<?php require (isset($isBarAss) ? '../' : '') . 'components/confirmation_dialog.php'; ?>
 <!-- End of Topbar -->

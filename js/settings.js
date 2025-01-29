@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   // assign user data to display fields
   $("#username").text(user["username"]);
   $("#email").text(user["email"]);
-  $("#fullName").text(user["fullName"]);
+  $("#fullName").text(user["full_name"]);
   $("#mobileNum").text("+63" + user["mobileNum"]);
   $("#profilePic").attr(
     "src",

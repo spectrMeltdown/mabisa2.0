@@ -53,7 +53,7 @@ if ($barangay_id) {
     <?php
     $isBarAss = true;
     require '../common/head.php' ?>
-<script src="../../vendor/jquery/jquery.min.js"></script>
+    <script src="../../vendor/jquery/jquery.min.js"></script>
     <script src="../../js/bar-assessment.js"></script>
 
 
@@ -68,7 +68,7 @@ if ($barangay_id) {
         $isBarAss = true;
         include '../common/sidebar.php'
 
-            ?>
+        ?>
 
         <!-- sidebar end -->
 
@@ -82,10 +82,10 @@ if ($barangay_id) {
                 <?php
 
                 include '../common/nav.php';
-               $role = $userData['role'];
-               $name = $userData['fullName'];
+                $role = $userData['role'];
+                $name = $userData['full_name'];
 
-                
+
                 ?>
                 <!-- End of Topbar -->
 
@@ -170,9 +170,9 @@ if ($barangay_id) {
                                                                 </td>
                                                                 <td class="data-cell-upload-view"
                                                                     style="text-align: center; vertical-align: middle;"> <?php
-                                                                    $data = $responses->getData($barangay_id, $minReq['keyctr'], $area_desc['keyctr'], $indicator['indicator_code'], $minReq['reqs_code']);
+                                                                                                                            $data = $responses->getData($barangay_id, $minReq['keyctr'], $area_desc['keyctr'], $indicator['indicator_code'], $minReq['reqs_code']);
 
-                                                                    if (!$data): ?>
+                                                                                                                            if (!$data): ?>
 
                                                                         <!-- Case: Secretary Role -->
                                                                         <?php if ($role === 'Secretary'): ?>
@@ -201,7 +201,7 @@ if ($barangay_id) {
 
                                                                             <script>
                                                                                 document.getElementById('fileInput_<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>')
-                                                                                    .addEventListener('change', function () {
+                                                                                    .addEventListener('change', function() {
                                                                                         if (this.files.length > 0) {
                                                                                             document.getElementById('uploadForm_<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>').submit();
                                                                                         }
@@ -228,16 +228,16 @@ if ($barangay_id) {
 
                                                                         <!-- Additional Options for Secretary -->
                                                                         <?php if ($role === 'Secretary'):
-                                                                            if($data['status'] != 'approved'):
-                                        
-                                                                            ?>
-                                                                            <form id="deleteForm"
-                                                                                data-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <button type="button" class="btn btn-danger mb-3" title="Delete"
-                                                                                    onclick="confirmDelete(this)">
-                                                                                    <i class="fa fa-trash"></i>
-                                                                                </button>
-                                                                            </form>
+                                                                                                                                    if ($data['status'] != 'approved'):
+
+                                                                        ?>
+                                                                                <form id="deleteForm"
+                                                                                    data-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                                                    <button type="button" class="btn btn-danger mb-3" title="Delete"
+                                                                                        onclick="confirmDelete(this)">
+                                                                                        <i class="fa fa-trash"></i>
+                                                                                    </button>
+                                                                                </form>
 
                                                                             <?php endif; ?>
                                                                         <?php endif; ?>
@@ -306,7 +306,7 @@ if ($barangay_id) {
                                                                     style="text-align: center; vertical-align: middle;">
                                                                     <?php
                                                                     if ($data):
-                                                                        ?>
+                                                                    ?>
 
                                                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                                                             data-target="#commentModal"
@@ -316,7 +316,7 @@ if ($barangay_id) {
                                                                             Comments
                                                                         </button>
 
-                                                                        <?php
+                                                                    <?php
                                                                     endif;
                                                                     ?>
                                                                 </td>

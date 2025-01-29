@@ -67,7 +67,7 @@ require_once '../db/db.php';
                 <table class="table table-striped table-bordered" id="user_dataTable" width="100%" cellspacing="0">
                   <?php
                   // $stmt = $pdo->prepare("SELECT COUNT(*) FROM pos.received_from where area_code=? and cmp_code=? ");
-                  $stmt = $pdo->prepare("SELECT COUNT(*) FROM user_policy where id != :id");
+                  $stmt = $pdo->prepare("SELECT COUNT(*) FROM users where id != :id");
                   $stmt->execute([':id' => $userData['id']]);
                   $count = $stmt->fetchColumn();
 
@@ -85,7 +85,7 @@ require_once '../db/db.php';
                     <?php if ($count > 10) { ?>
                       <tfoot>
                         <tr>
-                          <th>Fullname</th>
+                          <th>Full Name</th>
                           <th>Username</th>
                           <th>Role</th>
                           <th>Barangay</th>
@@ -95,15 +95,15 @@ require_once '../db/db.php';
                     <?php } ?>
                     <tbody id='user-table-body'>
                       <?php
-                      $query = $pdo->prepare("select * from user_policy where id != :id");
+                      $query = $pdo->prepare("select * from users where id != :id");
                       // writeLog($userData);
                       $query->execute([':id' => $userData['id']]);
                       while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
                       ?>
                         <tr>
-                          <td><?php echo $row['fullName'] ?></td>
+                          <td><?php echo $row['full_name'] ?></td>
                           <td><?php echo $row['username'] ?></td>
-                          <td><?php echo $row['role'] ?></td>
+                          <td><?php echo $row['role_name'] ?></td>
                           <td><?php echo $row['barangay'] ?></td>
                           <td>
                             <a href="#edit-user" class="btn btn-sm btn-info btn-circle edit-user-btn"

@@ -8,7 +8,7 @@ function getAllUsers(): array
 {
   global $pdo;
 
-  $sql = "select * from user_policy";
+  $sql = "select * from users";
   $stmt = $pdo->query($sql);
   /** @var User[] */
   $users = [];
@@ -19,12 +19,11 @@ function getAllUsers(): array
     $users[] = [
       (string)$row['id'],
       $row['username'],
-      $row['fullName'],
+      $row['full_name'],
       $barangay,
       $row['email'],
-      (int)$row['mobileNum'],
+      (int)$row['mobile_num'],
       $row['password'],
-      (bool)$row['policyRead'],
       $role
     ];
   }
