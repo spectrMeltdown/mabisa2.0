@@ -32,6 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // }
 
   global $pdo;
+  // TODO: check first if there is more than one admin left. Only delete
+  // if true, otherwise, return deletion error "Cannot delete last admin."
   $sql = 'DELETE FROM user_policy WHERE id = :id';
 
   try {

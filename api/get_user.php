@@ -3,9 +3,8 @@
 declare(strict_types=1);
 // ini_set('display_errors', 0); // Disable error display
 // ini_set('log_errors', 1);    // Enable error logging
-require_once $pathPrepend.'models/user_model.php';
-require_once $pathPrepend.'models/role_model.php';
-require_once $pathPrepend.'db/db.php';
+require_once 'logging.php';
+require_once (isset($isBarAss) ? '../' : '') . '../db/db.php';
 
 $isGetMethod = $_SERVER['REQUEST_METHOD'] === 'GET';
 
@@ -63,6 +62,7 @@ try {
     echo getUser($_GET['id']);
   }
 } catch (Exception $e) {
+  writeLog($e);
   http_response_code(500); // Set HTTP 500 response code
   echo json_encode(['error' => $e->getMessage()]);
 }

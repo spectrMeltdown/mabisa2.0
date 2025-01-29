@@ -3,8 +3,6 @@
 declare(strict_types=1);
 // ini_set('display_errors', 0); // Disable error display
 require_once '../db/db.php';
-require_once '../models/user_model.php';
-require_once '../models/role_model.php';
 
 function getAllUsers(): array
 {
@@ -18,7 +16,7 @@ function getAllUsers(): array
     $barangay = isset($row['barangay']) ? $row['barangay'] : 'N/A';
     $role = isset($row['role']) ? $row['role'] : '--';
 
-    $users[] = new User(
+    $users[] = [
       (string)$row['id'],
       $row['username'],
       $row['fullName'],
@@ -28,7 +26,7 @@ function getAllUsers(): array
       $row['password'],
       (bool)$row['policyRead'],
       $role
-    );
+    ];
   }
 
   return $users;

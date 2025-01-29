@@ -3,7 +3,6 @@
 declare(strict_types=1);
 // ini_set('display_errors', 0); // Disable error display
 // header('Content-Type: application/json');
-require_once '../models/user_model.php';
 require_once '../db/db.php';
 require_once 'logging.php';
 require 'util/update_assignments.php';
@@ -33,8 +32,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // }
   // echo $mobileNum;
   // construct new user
-  $user = new User('', $username, $fullName, $barangay, $email, (int)$mobileNum, $pass, false, $role);
-
 
   // insert to database
   global $pdo;
@@ -42,13 +39,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   try {
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
-      ':username' => $user->username,
-      ':fullname' => $user->fullName,
-      ':email' => $user->email,
-      ':mobileNum' => substr((string)$user->mobileNum, 2),
-      ':password' => password_hash($user->password, PASSWORD_BCRYPT),
-      ':role' => $user->role,
-      ':barangay' => $user->barangay,
+      ':username' => $username,
+      ':fullname' => $fullName,
+      ':email' => $email,
+      ':mobileNum' => substr($mobileNum, 2),
+      ':password' => password_hash($password, PASSWORD_BCRYPT),
+      ':role' => $role,
+      ':barangay' => $barangay,
     ]);
     updateUserAssignments($id, $auditorBarangays, $pdo);
     // blank means everything went okay

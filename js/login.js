@@ -1,7 +1,7 @@
 "use strict";
 
 $("#loginBtn").on("click", (e) => {
-  console.log("login btn pressed");
+  // console.log("login btn pressed");
   if (loading) return;
   loading = true;
 
@@ -38,9 +38,9 @@ $("#loginBtn").on("click", (e) => {
   })
     .then(async (res) => {
       if (res.ok) {
-        console.error("HTTP error:", res.text);
+        // console.log("Raw text:", res.text);
         const data = await res.json();
-        console.log(data);
+        // console.log(data);
         return data;
       }
       console.error("HTTP error:", res.text);

@@ -1,0 +1,1 @@
+- after logout then pressing back button, the page will still display the contents, and only redirects to ci
