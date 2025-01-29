@@ -11,7 +11,6 @@ class Responses
 
     public function show_responses(): array
     {
-        // Join barangay_assessment_files with refbarangay to fetch brgyname
         $sql = "SELECT 
                     refbarangay.brgyname AS barangay, 
                     barangay_assessment.barangay_id, 
@@ -37,23 +36,17 @@ class Responses
         return $responses;
     }
 
-    public function getData($barangay_id, $req_keyctr, $desc_ctr, $indicator_code, $reqs_code)
+    public function getData($barangay_id, $criteria_keyctr)
     {
         $query = "SELECT * FROM barangay_assessment_files
                   WHERE barangay_id = :barangay_id 
-                  AND req_keyctr = :req_keyctr
-                  AND desc_keyctr = :desc_ctr
-                  AND indicator_code = :indicator_code 
-                  AND reqs_code = :reqs_code 
+                  AND criteria_keyctr = :criteria_keyctr
                   LIMIT 1";
         
         $stmt = $this->pdo->prepare($query);
         $stmt->execute([
             ':barangay_id' => $barangay_id,
-            ':req_keyctr' => $req_keyctr,
-            ':desc_ctr' => $desc_ctr,
-            ':indicator_code' => $indicator_code,
-            ':reqs_code' => $reqs_code
+            ':criteria_keyctr' => $criteria_keyctr           
         ]);
     
         $result = $stmt->fetch(PDO::FETCH_ASSOC);

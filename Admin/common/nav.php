@@ -68,7 +68,7 @@ unset($customUserID);
           <div class="font-weight-bold">
             <div class="text-truncate">Hi there! I am wondering if you can help me with a
               problem I've been having.</div>
-            <div class="small text-gray-500">Emily Fowler · 58m</div>
+            <div class="small text-gray-500">Tony Fowler · 58m</div>
           </div>
         </a>
         <a class="dropdown-item text-center small text-gray-500" href="#">Read More Messages</a>
