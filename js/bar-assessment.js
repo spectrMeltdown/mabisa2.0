@@ -54,7 +54,7 @@ async function confirmDelete(button) {
   const file_id = form.getAttribute('data-id');
 
   try {
-    const response = await fetch('./bar_assessment/user_actions/delete.php', {
+    const response = await fetch('../bar_assessment/user_actions/delete.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ file_id })
@@ -75,27 +75,19 @@ async function confirmDelete(button) {
           row.querySelector('.data-cell-comments').innerHTML = ''; // Clear comments
           row.querySelector('.data-cell-date-uploaded').innerHTML = ''; // Clear date uploaded
           const formHtml = `
-                     <form method="POST" action="./bar_assessment/user_actions/upload.php"
-                                                                                enctype="multipart/form-data"
-                                                                                id="uploadForm_<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <input type="hidden" name="barangay_id"
-                                                                                    value="<?php echo htmlspecialchars($barangay_id, ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <input type="hidden" name="req_keyctr"
-                                                                                    value="<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <input type="hidden" name="desc_ctr"
-                                                                                    value="<?php echo htmlspecialchars($area_desc['keyctr'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <input type="hidden" name="indicator_code"
-                                                                                    value="<?php echo htmlspecialchars($indicator['indicator_code'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <input type="hidden" name="reqs_code"
-                                                                                    value="<?php echo htmlspecialchars($minReq['reqs_code'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <input type="file" name="file"
-                                                                                    id="fileInput_<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>"
-                                                                                    style="display: none;" required>
-                                                                                <button type="button" class="btn btn-primary" title="Upload"
-                                                                                    onclick="document.getElementById('fileInput_<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>').click();">
-                                                                                    <i class="fa fa-upload"></i>
-                                                                                </button>
-                                                                            </form>`; // Show upload button
+          <form action="../bar_assessment/user_actions/upload.php" method="POST"
+                enctype="multipart/form-data" id="uploadForm-<?php echo htmlspecialchars($current_row, ENT_QUOTES, 'UTF-8'); ?>">
+              <input type="hidden" name="barangay_id"
+                     value="<?php echo htmlspecialchars($barangay_id, ENT_QUOTES, 'UTF-8'); ?>">
+              <input type="hidden" name="criteria_keyctr"
+                     value="<?php echo htmlspecialchars($row['keyctr'], ENT_QUOTES, 'UTF-8'); ?>">
+              <input type="file" name="file" id="file-<?php echo htmlspecialchars($current_row, ENT_QUOTES, 'UTF-8'); ?>"
+                     class="file-input" style="display: none;" required>
+              <button type="button" class="btn btn-primary" title="Upload"
+                      onclick="document.getElementById('file-<?php echo htmlspecialchars($current_row, ENT_QUOTES, 'UTF-8'); ?>').click();">
+                  <i class="fa fa-upload"></i>
+              </button>
+          </form>`;
           row.querySelector('.data-cell-upload-view').innerHTML = formHtml;
           const uploadButton = document.getElementById("uploadButton_${<?php echo json_encode($current_req_keyctr); ?>}");
           if (uploadButton) {

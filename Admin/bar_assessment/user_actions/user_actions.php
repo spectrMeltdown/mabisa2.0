@@ -10,23 +10,20 @@ class User_Actions
     }
 
 
-    public function uploadFile($barangay_id, $req_keyctr, $desc_ctr, $indicator_code, $reqs_code, $fileContent)
+    public function uploadFile($barangay_id, $criteria_keyctr, $fileContent)
     {
         try {
             $this->pdo->beginTransaction();
 
             $query1 = "INSERT INTO barangay_assessment_files 
-                        (barangay_id, req_keyctr, desc_keyctr, indicator_code, reqs_code, file, date_uploaded, comments, status) 
+                        (barangay_id, criteria_keyctr ,file, date_uploaded, comments, status) 
                         VALUES 
-                        (:barangay_id, :req_keyctr, :desc_ctr, :indicator_code, :reqs_code, :file, NOW(), '{}', 'pending')";
+                        (:barangay_id, :criteria_keyctr, :file, NOW(), '{}', 'pending')";
             $stmt1 = $this->pdo->prepare($query1);
 
             $stmt1->execute([
                 ':barangay_id' => $barangay_id,
-                ':req_keyctr' => $req_keyctr,
-                ':desc_ctr' => $desc_ctr,
-                ':indicator_code' => $indicator_code,
-                ':reqs_code' => $reqs_code,
+                ':criteria_keyctr' => $criteria_keyctr,
                 ':file' => $fileContent,
             ]);
 
