@@ -23,8 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   /** @var string */
   $role = $_POST['role'];
   /** @var string */
-  $barangay = isset($_POST['barangay']) ? $_POST['barangay'] : 'N/A';
-  $auditorBarangays = $_POST['auditorBarangays'] ?? null;
 
   //check if passwords match
   // if ($pass != $confirmPass) {

@@ -20,10 +20,11 @@ require_once '../db/db.php';
 <head>
   <?php require 'common/head.php' ?>
   <script src="../js/roles.js" defer></script>
-  <script src="../js/crud-user.js" defer></script>
+  <script src="../js/crud-role.js" defer></script>
   <script src="../js/util/confirmation.js" defer></script>
   <script src="../js/util/alert.js" defer></script>
   <script src="../js/util/input-validation.js" defer></script>
+  <script src="../js/util/phone_prepend.js" defer></script>
 </head>
 
 <body id="page-top">
@@ -55,14 +56,13 @@ require_once '../db/db.php';
                 <h3 class="m-0 font-weight-bold text-primary">Roles</h3>
               </div>
               <div style="float: right;">
-                <div class="row">
-                  <button class="btn btn-sm btn-primary add-user-btn" data-toggle="modal" data-target="#crud-user">Add Role</button>
-                </div>
+                <a href="roles_change.php" class="btn btn-sm btn-primary">Add role</a>
+                <a onclick="history.back()" class="btn btn-sm btn-secondary">Go back</a>
               </div>
             </div>
             <div class="card-body">
               <div class="table-responsive">
-                <table class="table table-striped table-bordered" id="user_dataTable" width="100%" cellspacing="0">
+                <table class="table table-striped table-bordered" id="roles_dataTable" width="100%" cellspacing="0">
                   <?php
                   // $stmt = $pdo->prepare("SELECT COUNT(*) FROM pos.received_from where area_code=? and cmp_code=? ");
                   $stmt = $pdo->query("SELECT COUNT(*) FROM roles;");
@@ -81,39 +81,64 @@ require_once '../db/db.php';
                       <tfoot>
                         <tr>
                           <th>Role</th>
-                          <th>Access</th>
+                          <th>Permissions</th>
                           <th>Actions</th>
                         </tr>
                       </tfoot>
                     <?php } ?>
-                    <tbody id='user-table-body'>
-                      <tr>
-                        <td>Admin</td>
-                        <td>Full Access</td>
-                        <td><i class="fas fa-question-circle" data-toggle="tooltip" data-placement="right" title="This is the default role. Cannot be deleted or modified."></i></td>
-                      </tr>
+                    <tbody id='roles-table-body'>
                       <?php
                       $query = $pdo->query("select * from roles");
-                      while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+                      $rows = $query->fetchAll(PDO::FETCH_ASSOC);
+                      foreach ($rows as $row) {
                       ?>
                         <tr>
                           <td><?php echo $row['name'] ?></td>
                           <td><?php
-                              $permissionsValue = 'No permissions found.';
+                              require_once '../api/logging.php';
+                              $permissionsValue = '';
                               if ($row['permissions_id']) {
-                                $query = $pdo->query("select * from permissions inner join roles on roles.permissions_id = permissions.id");
+                                $query = $pdo->prepare("select * from permissions where id = :permissions_id limit 1");
+                                $query->execute([':permissions_id' => $row['permissions_id']]);
+                                $permissions = $query->fetch(PDO::FETCH_ASSOC);
+                                // remove first item (id)
+                                array_shift($permissions);
+                                // remove last item (last modified)
+                                array_pop($permissions);
+                                //get all keys where value is true (or 1 in this case)
+                                $keys = array_keys(array_filter($permissions, function ($permission) {
+                                  return $permission == 1;
+                                }));
+                                $permissionsValue = '<ul>';
+                                // append to one string
+                                foreach ($keys as $key) {
+                                  $permissionsValue .= ('<li>' . $key . '</li>');
+                                }
+                                $permissionsValue .= '<ul>';
+                              } else {
+                                $permissionsValue = 'No permissions found.';
                               }
                               echo $permissionsValue;
                               ?></td>
                           <td>
-                            <a href="#edit-role" class="btn btn-sm btn-info btn-circle edit-role-btn"
-                              data-toggle="modal" data-target="#crud-role" data-id="<?= $row['id'] ?>">
-                              <i class="fas fa-edit"></i>
-                            </a>
-                            <a href="#delete-role"
-                              class="btn btn-sm btn-danger btn-circle delete-role-btn" data-id="<?= $row['id'] ?>">
-                              <i class="fas fa-trash"></i>
-                            </a>
+                            <?php
+                            if (!($row['name'] === 'Super Admin')):
+                            ?>
+                              <a href="#edit-role" class="btn btn-sm btn-info btn-circle edit-role-btn"
+                                data-toggle="modal" data-target="#crud-role" data-id="<?= $row['id'] ?>">
+                                <i class="fas fa-edit"></i>
+                              </a>
+                              <a href="#delete-role"
+                                class="btn btn-sm btn-danger btn-circle delete-role-btn" data-id="<?= $row['id'] ?>">
+                                <i class="fas fa-trash"></i>
+                              </a>
+                            <?php
+                            else:
+                            ?>
+                              <i class="fas fa-question-circle" style="font-size: 20px" data-toggle="tooltip" data-placement="left" title="Super admin cannot be modified/deleted."></i>
+                            <?php
+                            endif;
+                            ?>
                           </td>
                         </tr>
                       <?php } ?>
@@ -138,8 +163,7 @@ require_once '../db/db.php';
     <!-- End of Content Wrapper -->
   </div>
   <!-- End of Page Wrapper -->
-  <?php require 'components/crud_user_dialog.php' ?>
-  <?php require 'components/barangay_selector_dialog.php' ?>
+  <?php require 'components/crud_role_dialog.php' ?>
 </body>
 
 </html>

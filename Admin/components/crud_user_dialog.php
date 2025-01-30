@@ -79,21 +79,30 @@
           </div>
 
           <?php
-          require_once '../../db/db.php';
+          require_once '../db/db.php';
+          require_once '../api/get_role_name.php';
           global $pdo;
-
-          if (true):
+          $query = $pdo->query('select * from roles');
+          $roles = $query->fetchAll(PDO::FETCH_ASSOC);
+          // If not super admin, then remove option to add a super admin
+          if (!($userData['role'] === 'Super Admin')) {
+            echo '<script>console.log("not a super admin!")</script>';
+            $roles = array_values($roles, function ($role) {
+              return $role !== 'Super Admin';
+            });
+          }
+          if (!empty($roles)):
           ?>
             <div class="mb-3 form-group">
               <label for="role" class="form-label">Role</label>
               <select class="custom-select" name="role" id="role" required>
                 <option value="" disabled selected hidden>Select one</option>
                 <?php
-                // $options = '';
-                // foreach (UserRole::cases() as $role) {
-                //   $options .= '<option value="' . htmlspecialchars($role->value) . '">' . htmlspecialchars($role->value) . '</option>';
-                // }
-                // echo $options;
+                $options = '';
+                foreach ($roles as $role) {
+                  $options .= '<option value="' . htmlspecialchars($role['id']) . '">' . htmlspecialchars($role['name']) . '</option>';
+                }
+                echo $options;
                 ?>
               </select>
               <div class="invalid-feedback">

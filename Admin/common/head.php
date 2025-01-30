@@ -29,8 +29,9 @@ $pathPrepend = isset($isInFolder) ? '../../' : '../'
 
 <!-- Datatables Bootstrap 4 -->
 <link href="<?= $pathPrepend ?>vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" />
-<script src="<?= $pathPrepend ?>vendor/datatables/dataTables.bootstrap4.min.js" defer></script>
+<!-- jquery datatables must come first!! -->
 <script src="<?= $pathPrepend ?>vendor/datatables/jquery.datatables.min.js" defer></script>
+<script src="<?= $pathPrepend ?>vendor/datatables/dataTables.bootstrap4.min.js" defer></script>
 
 <!-- Template css -->
 <link href="<?= $pathPrepend ?>css/sb-admin-2.min.css" rel="stylesheet" />

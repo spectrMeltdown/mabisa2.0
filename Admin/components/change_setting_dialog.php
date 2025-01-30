@@ -23,7 +23,7 @@
           <div class="container">
             <p id="changeProfileSettingSubtitle"></p>
             <div class="mb-3 form-group">
-              <input maxlength="100" type="text" class="form-control" name="fullName" id="fullName" required />
+              <input maxlength="100" type="text" class="form-control" name="newValue" id="newValue" required />
               <div class="invalid-feedback">
               </div>
             </div>

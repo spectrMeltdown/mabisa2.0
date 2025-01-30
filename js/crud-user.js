@@ -108,8 +108,7 @@ $("#crud-user").on("show.bs.modal", function (event) {
   } else if ($(event.relatedTarget).hasClass("add-user-btn")) {
     // console.log("adding");
     editMode = false;
-    // Set default value to +63 on page load
-    phoneInput.value = "+63";
+    addPhonePrepend();
     // Hide the loading spinner and show the modal content
     document.getElementById("loadingSpinner").classList.remove("d-flex");
     document.getElementById("loadingSpinner").classList.add("d-none");
@@ -152,102 +151,104 @@ $("#crud-user").on("hidden.bs.modal", function (e) {
 
 // for adding user
 // listen when the admin changes selection, and display additional inputs
-document.getElementById("role").addEventListener("change", (event) => {
-  console.log("Changed role");
-  if (loading) return;
-  toggleLoading();
+if (document.getElementById("role")) {
+  document.getElementById("role").addEventListener("change", (event) => {
+    console.log("Changed role");
+    if (loading) return;
+    toggleLoading();
 
-  let selectedOption = event.target.value;
-  console.log(`${selectedOption}`);
+    let selectedOption = event.target.value;
+    console.log(`${selectedOption}`);
 
-  if (selectedOption == "Secretary") {
-    toggleAuditor(false);
-    toggleSecretary(true);
-  } else if (selectedOption == "Auditor") {
-    toggleAuditor(true);
-    toggleSecretary(false);
-    const loading = document.getElementById("barangayAssignmentsLoading");
-    const list = document.getElementById("barangayAssignmentsList");
-    const none = document.getElementById("noBarangayAssignments");
+    if (selectedOption == "Secretary") {
+      toggleAuditor(false);
+      toggleSecretary(true);
+    } else if (selectedOption == "Auditor") {
+      toggleAuditor(true);
+      toggleSecretary(false);
+      const loading = document.getElementById("barangayAssignmentsLoading");
+      const list = document.getElementById("barangayAssignmentsList");
+      const none = document.getElementById("noBarangayAssignments");
 
-    if (editMode) {
-      console.log("editing auditor");
-      console.log(currentUserID);
-      fetch("../api/user_assignments.php", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-          id: currentUserID,
-        }),
-      })
-        .then((res) => {
-          if (!res.ok) {
-            console.error(res.text);
-            throw "Error loading.";
-          }
-          return res.json();
+      if (editMode) {
+        console.log("editing auditor");
+        console.log(currentUserID);
+        fetch("../api/user_assignments.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams({
+            id: currentUserID,
+          }),
         })
-        .catch((e) => {
-          console.error(e);
-          throw e;
-        })
-        .then((data) => {
-          if (data && data.error) {
-            addAlert(data.error);
-            return;
-          }
-          loading.style.display = "none";
-          console.log("Data is: " + JSON.stringify(data));
-          if (data.length === 0) {
-            none.style.display = "inline-block";
-          } else {
-            for (let entry in data) {
-              const row = document.createElement("li");
-              row.classList.add(
-                "list-group-item",
-                "d-flex",
-                "justify-content-between",
-                "align-items-center",
-              );
-              row.id = entry.brgyid ?? "--";
-              row.textContent = entry.brgyname ?? "--";
-              list.append(row);
+          .then((res) => {
+            if (!res.ok) {
+              console.error(res.text);
+              throw "Error loading.";
             }
-            list.style.display = "block";
-          }
-        });
-    } else {
-      console.log("new auditor");
-      loading.style.display = "none";
-      if (auditorBarangays) {
-        for (let entry in auditorBarangays) {
-          const row = document.createElement("li");
-          row.classList.add(
-            "list-group-item",
-            "d-flex",
-            "justify-content-between",
-            "align-items-center",
-          );
-          row.id = entry.brgyid ?? "--";
-          row.textContent = entry.brgyname ?? "--";
-          list.append(row);
-        }
-        list.style.display = "block";
+            return res.json();
+          })
+          .catch((e) => {
+            console.error(e);
+            throw e;
+          })
+          .then((data) => {
+            if (data && data.error) {
+              addAlert(data.error);
+              return;
+            }
+            loading.style.display = "none";
+            console.log("Data is: " + JSON.stringify(data));
+            if (data.length === 0) {
+              none.style.display = "inline-block";
+            } else {
+              for (let entry in data) {
+                const row = document.createElement("li");
+                row.classList.add(
+                  "list-group-item",
+                  "d-flex",
+                  "justify-content-between",
+                  "align-items-center",
+                );
+                row.id = entry.brgyid ?? "--";
+                row.textContent = entry.brgyname ?? "--";
+                list.append(row);
+              }
+              list.style.display = "block";
+            }
+          });
       } else {
-        none.style.display = "block";
+        console.log("new auditor");
+        loading.style.display = "none";
+        if (auditorBarangays) {
+          for (let entry in auditorBarangays) {
+            const row = document.createElement("li");
+            row.classList.add(
+              "list-group-item",
+              "d-flex",
+              "justify-content-between",
+              "align-items-center",
+            );
+            row.id = entry.brgyid ?? "--";
+            row.textContent = entry.brgyname ?? "--";
+            list.append(row);
+          }
+          list.style.display = "block";
+        } else {
+          none.style.display = "block";
+        }
       }
     }
-  }
 
-  // admin
-  else {
-    toggleAuditor(false);
-    toggleSecretary(false);
-  }
-  toggleLoading();
-});
+    // admin
+    else {
+      toggleAuditor(false);
+      toggleSecretary(false);
+    }
+    toggleLoading();
+  });
+}
 
 // show/hide in password field
 document.getElementById("passEye").addEventListener("click", function () {
@@ -522,29 +523,4 @@ $("#save-user-btn").on("click", async (e) => {
     });
   }
   toggleLoading();
-});
-
-const phoneInput = document.getElementById("mobileNum");
-// Ensure the input always starts with +63
-phoneInput.addEventListener("input", function (e) {
-  if (!this.value.startsWith("+63")) {
-    this.value = "+63" + this.value.slice(3); // Re-add +63 if it's removed
-  }
-});
-// Optional: Prevent cursor from jumping to the start of the input
-phoneInput.addEventListener("focus", function () {
-  if (this.selectionStart < 3) {
-    this.setSelectionRange(3, 3); // Set cursor after +63
-  }
-});
-// Ensure typing starts after +63
-phoneInput.addEventListener("keydown", function (e) {
-  if (
-    this.selectionStart < 3 &&
-    e.key !== "ArrowRight" &&
-    e.key !== "ArrowLeft"
-  ) {
-    e.preventDefault(); // Prevent modifying +63
-    this.setSelectionRange(3, 3); // Move cursor after +63
-  }
 });
