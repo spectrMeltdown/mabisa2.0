@@ -5,7 +5,7 @@
 <meta name="author" content="" />
 
 <?php
-$pathPrepend = isset($isBarAss) ? '../../' : '../'
+$pathPrepend = isset($isInFolder) ? '../../' : '../'
 ?>
 
 <!-- Font -->

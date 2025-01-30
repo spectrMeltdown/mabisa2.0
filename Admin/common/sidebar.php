@@ -14,7 +14,7 @@
 
   <!-- Nav Item - Dashboard -->
   <li class="nav-item <?= '' ?>">
-    <a class="nav-link" href="<?php echo isset($isBarAss) ? '../' : ''; ?>dashboard.php">
+    <a class="nav-link" href="<?php echo isset($isInFolder) ? '../' : ''; ?>dashboard.php">
       <i class="fas fa-fw fa-tachometer-alt"></i>
       <span>Dashboard</span></a>
   </li>
@@ -27,7 +27,7 @@
 
   <!-- Nav Item - Criteria -->
   <li class="nav-item <?= isset($isSetupCriteriaPhp) ? 'active' : '' ?>">
-    <a class="nav-link collapsed" href="<?php echo isset($isBarAss) ? '../' : ''; ?>criteria.php">
+    <a class="nav-link collapsed" href="<?php echo isset($isInFolder) ? '../' : ''; ?>criteria/">
       <i class="fas fa-fw fa-cog"></i>
       <span>Set-Up Criteria</span>
     </a>
@@ -46,21 +46,21 @@
     <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
       <div class="bg-white py-2 collapse-inner rounded">
         <h6 class="collapse-header">Settings</h6>
-        <a class="collapse-item" href="<?php echo isset($isBarAss) ? '../' : ''; ?>area.php">Area</a>
+        <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>area.php">Area</a>
         <a class=" collapse-item"
-          href="<?php echo isset($isBarAss) ? '../' : ''; ?>area_description.php">Area Description</a>
+          href="<?php echo isset($isInFolder) ? '../' : ''; ?>area_description.php">Area Description</a>
         <a class="collapse-item"
           href="area_indicator.php">Area Indicators</a>
-        <a class="collapse-item" href="<?php echo isset($isBarAss) ? '../' : ''; ?>min_req.php">Minimum
+        <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>min_req.php">Minimum
           Requirements</a>
         <a class="collapse-item"
-          href="<?php echo isset($isBarAss) ? '../' : ''; ?>sub_req.php">Sub-Requirements</a>
-        <a class="collapse-item" href="<?php echo isset($isBarAss) ? '../' : ''; ?>category.php">Category</a>
-        <a class="collapse-item" href="<?php echo isset($isBarAss) ? '../' : ''; ?>version.php">Version</a>
-        <a class="collapse-item" href="<?php echo isset($isBarAss) ? '../' : ''; ?>docu_source.php">Document
+          href="<?php echo isset($isInFolder) ? '../' : ''; ?>sub_req.php">Sub-Requirements</a>
+        <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>category.php">Category</a>
+        <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>version.php">Version</a>
+        <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>docu_source.php">Document
           Source</a>
         <a class="collapse-item"
-          href="<?php echo isset($isBarAss) ? '../' : ''; ?>governance.php">Governance</a>
+          href="<?php echo isset($isInFolder) ? '../' : ''; ?>governance.php">Governance</a>
       </div>
     </div>
   </li>
@@ -72,26 +72,26 @@
   <div class="sidebar-heading">Barangay Management</div>
 
   <!-- Nav Item - Tables -->
-  <li class="nav-item <?= isset($isBarAssessmentPhp) ? 'active' : '' ?>">
-    <a class="nav-link" href="<?php echo isset($isBarAss) ? '../' : ''; ?>bar_assessment.php">
+  <li class="nav-item <?= isset($isInFolderessmentPhp) ? 'active' : '' ?>">
+    <a class="nav-link" href="<?php echo isset($isInFolder) ? '../' : ''; ?>bar_assessment.php">
       <i class="fas fa-fw fa-edit"></i>
       <span>Barangay Assessment</span></a>
   </li>
 
   <li class="nav-item <?= isset($isLocationPhp) ? 'active' : '' ?>">
-    <a class="nav-link" href="<?php echo isset($isBarAss) ? '../' : ''; ?>location.php">
+    <a class="nav-link" href="<?php echo isset($isInFolder) ? '../' : ''; ?>location.php">
       <i class="fas fa-fw fa-map-marker-alt"></i>
       <span>Location</span></a>
   </li>
 
   <li class="nav-item <?= isset($isUsersPhp) ? 'active' : '' ?>">
-    <a class="nav-link" href="<?php echo isset($isBarAss) ? '../' : ''; ?>users.php">
+    <a class="nav-link" href="<?php echo isset($isInFolder) ? '../' : ''; ?>users.php">
       <i class="fas fa-fw fa-users"></i>
       <span>Users</span></a>
   </li>
 
   <li class="nav-item <?= isset($isReports) ? 'active' : '' ?>">
-    <a class="nav-link" href="<?php echo isset($isBarAss) ? '../' : ''; ?>reports.php">
+    <a class="nav-link" href="<?php echo isset($isInFolder) ? '../' : ''; ?>reports.php">
       <i class="fas fa-fw fa-chart-line"></i>
       <span>Reports</span></a>
   </li>

@@ -107,5 +107,5 @@ unset($customUserID);
     </li>
   </ul>
 </nav>
-<?php require (isset($isBarAss) ? '../' : '') . 'components/confirmation_dialog.php'; ?>
+<?php require (isset($isInFolder) ? '../' : '') . 'components/confirmation_dialog.php'; ?>
 <!-- End of Topbar -->

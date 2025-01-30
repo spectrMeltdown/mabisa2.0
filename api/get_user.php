@@ -5,7 +5,7 @@ declare(strict_types=1);
 // ini_set('log_errors', 1);    // Enable error logging
 require_once 'logging.php';
 require_once 'get_role_name.php';
-require_once (isset($isBarAss) ? '../' : '') . '../db/db.php';
+require_once (isset($isInFolder) ? '../' : '') . '../db/db.php';
 
 $isGetMethod = $_SERVER['REQUEST_METHOD'] === 'GET';
 
