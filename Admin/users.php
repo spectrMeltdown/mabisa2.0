@@ -24,6 +24,7 @@ require_once '../db/db.php';
   <script src="../js/util/confirmation.js" defer></script>
   <script src="../js/util/alert.js" defer></script>
   <script src="../js/util/input-validation.js" defer></script>
+  <script src="../js/util/phone_prepend.js" defer></script>
 </head>
 
 <body id="page-top">

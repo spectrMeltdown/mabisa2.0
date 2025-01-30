@@ -16,8 +16,9 @@ require_once '../db/db.php';
 
 <head>
   <?php require 'common/head.php' ?>
-  <script src="../js/util/confirmation.js" defer></script>
   <script src="../js/settings.js" defer></script>
+  <script src="../js/util/confirmation.js" defer></script>
+  <script src="../js/util/phone_prepend.js" defer></script>
 </head>
 
 <body id="page-top">
@@ -98,7 +99,7 @@ require_once '../db/db.php';
           </div>
 
           <!-- Edit Modal -->
-          <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+          <!-- <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
@@ -118,7 +119,7 @@ require_once '../db/db.php';
                 </div>
               </div>
             </div>
-          </div>
+          </div> -->
           <!-- End of Main Content -->
         </div>
         <!-- End of Content Wrapper -->

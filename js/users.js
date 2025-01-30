@@ -6,11 +6,17 @@ if ($("#user_dataTable").find("p").length === 0) {
     language: {
       emptyTable: "No matching records found.",
     },
+    columnDefs: [
+      {
+        targets: [1], // Index of the column you want to exclude from search (0-based)
+        searchable: false, // Disable searching for this column
+      },
+    ],
     columns: [
       { data: "Fullname" },
       { data: "Username" },
       { data: "Role" },
-      { data: "Action" },
+      { data: "Actions" },
     ],
   });
 }
