@@ -1,7 +1,7 @@
 'use strict';
 
 // get user data onload
-document.addEventListener('DOMContentLoaded', async e => {
+document.addEventListener('DOMContentLoaded', async () => {
   const user = await fetch('../api/get_user.php?id=self')
     .then(res => res.json())
     .catch(e => {
@@ -14,9 +14,11 @@ document.addEventListener('DOMContentLoaded', async e => {
   $('#email').text(user['email']);
   $('#fullName').text(user['full_name']);
   $('#mobileNum').text('+63' + user['mobile_num']);
+
+  const profilePicExists = await fileExists(user['profile_pic']);
   $('#profilePic').attr(
     'src',
-    user['profile_pic'] ? user['profile_pic'] : '../img/undraw_profile_2.svg',
+    profilePicExists ? user['profile_pic'] : '../img/undraw_profile_2.svg',
   );
 
   // register delete button event handler

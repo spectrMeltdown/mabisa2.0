@@ -107,7 +107,7 @@ require_once '../db/db.php';
                 <div class="mb-3 form-group">
                   <input type="checkbox" name="allowBarangay" id="allowBarangay" value="true">
                   <div class="mr-1 d-inline-block"></div>
-                  <label for="roleName" class="form-label">Assign barangays?</label>
+                  <label for="roleName" class="form-label">Allow assigning of barangays?</label>
                 </div>
                 <div class="mb-3 form-group container-fluid" id="permissions">
                   <h6 class="mb-3">Permissions</h6>

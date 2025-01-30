@@ -56,7 +56,8 @@ require_once '../db/db.php';
                 <h3 class="m-0 font-weight-bold text-primary">Roles</h3>
               </div>
               <div style="float: right;">
-                <a href="roles_change.php" class="btn btn-sm btn-primary">Add Role</a>
+                <a href="roles_change.php" class="btn btn-sm btn-primary">Add role</a>
+                <a onclick="history.back()" class="btn btn-sm btn-secondary">Go back</a>
               </div>
             </div>
             <div class="card-body">
@@ -134,7 +135,7 @@ require_once '../db/db.php';
                             <?php
                             else:
                             ?>
-                              <p><i class="fas fa-question-circle mr-2"></i>Super admin cannot be modified/deleted.</p>
+                              <i class="fas fa-question-circle" style="font-size: 20px" data-toggle="tooltip" data-placement="left" title="Super admin cannot be modified/deleted."></i>
                             <?php
                             endif;
                             ?>
