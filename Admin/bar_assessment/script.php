@@ -1,7 +1,7 @@
 <?php
 
-include '../../db/db.php';
-
+$pathPrepend = isset($isBarAss) ? '../../' : '../';
+require_once $pathPrepend.'db/db.php';
 
 if (isset($_POST['add_maintenance_criteria_setup'])) {
 
@@ -12,9 +12,6 @@ if (isset($_POST['add_maintenance_criteria_setup'])) {
     $movdocs_reqs = $_POST['movdocs_reqs'];
     $trail = $_POST['trail'];
     $data_source = $_POST['data_source'];
-
-
-
 
 
     $insert_maintenance_criteria_setup = "
@@ -39,11 +36,17 @@ if (isset($_POST['add_maintenance_criteria_setup'])) {
     ";
 
 
-    if (mysqli_query($conn, $insert_maintenance_criteria_setup)) {
-        echo "<script>alert('New record created successfully'); window.location.href='index.php'</script>";
-    } else {
-        echo "Error: " . $insert_maintenance_criteria_setup . "<br>" . mysqli_error($conn);
+    try {
+        $stmt = $conn->prepare($insert_maintenance_criteria_setup);
+        if ($stmt->execute()) {
+            echo "<script>alert('New record created successfully'); window.location.href='index.php'</script>";
+        } else {
+            echo "Error executing query.";
+        }
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
     }
+    
 
 }
 
@@ -95,15 +98,18 @@ if (isset($_POST['update_maintenance_criteria_setup'])) {
 if (isset($_GET['delete_id'])) {
     $id = $_GET['delete_id'];
 
-    // sql to delete a record
-    $delete_maintenance_criteria_setup = "DELETE FROM maintenance_criteria_setup WHERE keyctr= $id";
+    try {
+        $stmt = $pdo->prepare("DELETE FROM maintenance_criteria_setup WHERE keyctr = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
 
-    if (mysqli_query($conn, $delete_maintenance_criteria_setup)) {
-        echo "<script>alert('Deleted successfully'); window.location.href='index.php'</script>";
-    } else {
-        echo "Error: " . $delete_maintenance_criteria_setup . "<br>" . mysqli_error($conn);
+        if ($stmt->execute()) {
+            echo "<script>alert('Deleted successfully'); window.location.href='index.php'</script>";
+        } else {
+            echo "Error executing query.";
+        }
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
     }
-
 }
 
 

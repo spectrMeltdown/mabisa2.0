@@ -8,7 +8,87 @@ if (empty($_COOKIE['id'])) {
   exit;
 }
 
-require_once '../db/db.php';
+include './bar_assessment/script.php';
+include '../db/db.php';
+
+$data = [];
+
+$maintenance_area_description_query = "
+    SELECT
+        maintenance_governance.*,
+        maintenance_category.description AS category,
+        maintenance_area.description AS area_description
+    FROM `maintenance_governance`
+    LEFT JOIN maintenance_category ON maintenance_governance.cat_code = maintenance_category.code
+    LEFT JOIN maintenance_area ON maintenance_governance.area_keyctr = maintenance_area.keyctr;
+";
+
+$stmt = $pdo->prepare($maintenance_area_description_query);
+$stmt->execute();
+$maintenance_area_description_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+if (!empty($maintenance_area_description_result)) {
+  foreach ($maintenance_area_description_result as $maintenance_area_description_row) {
+
+    // maintenance_governance
+    $maintenance_governance_query = "SELECT * FROM `maintenance_governance` WHERE desc_keyctr = :desc_keyctr";
+    $stmt = $pdo->prepare($maintenance_governance_query);
+    $stmt->execute(['desc_keyctr' => $maintenance_area_description_row['keyctr']]);
+    $maintenance_governance_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    if (!empty($maintenance_governance_result)) {
+      foreach ($maintenance_governance_result as $maintenance_governance_row) {
+
+        // maintenance_area_indicators
+        $maintenance_area_indicators_query = "SELECT * FROM `maintenance_area_indicators` WHERE governance_code = :governance_code";
+        $stmt = $pdo->prepare($maintenance_area_indicators_query);
+        $stmt->execute(['governance_code' => $maintenance_governance_row['keyctr']]);
+        $maintenance_area_indicators_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (!empty($maintenance_area_indicators_result)) {
+          foreach ($maintenance_area_indicators_result as $maintenance_area_indicators_row) {
+
+            // maintenance_criteria_setup
+            $maintenance_criteria_setup_query = "
+                            SELECT 
+                                msc.keyctr AS keyctr,
+                                mam.description,
+                                mam.reqs_code,
+                                msc.movdocs_reqs AS documentary_requirements,
+                                mds.srcdesc AS data_source
+                            FROM `maintenance_criteria_setup` msc 
+                            LEFT JOIN maintenance_criteria_version AS mcv ON msc.version_keyctr = mcv.keyctr
+                            LEFT JOIN maintenance_area_mininumreqs AS mam ON msc.minreqs_keyctr = mam.keyctr
+                            LEFT JOIN maintenance_document_source AS mds ON msc.data_source = mds.keyctr 
+                            WHERE msc.indicator_keyctr = :indicator_keyctr
+                            ORDER BY mam.reqs_code ASC
+                        ";
+            $stmt = $pdo->prepare($maintenance_criteria_setup_query);
+            $stmt->execute(['indicator_keyctr' => $maintenance_area_indicators_row['keyctr']]);
+            $maintenance_criteria_setup_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if (!empty($maintenance_criteria_setup_result)) {
+              foreach ($maintenance_criteria_setup_result as $maintenance_criteria_setup_row) {
+                $data[$maintenance_area_description_row['category'] . " " .
+                  $maintenance_area_description_row['area_description'] . ": " .
+                  $maintenance_area_description_row['description']][] = [
+                  'keyctr' => $maintenance_criteria_setup_row['keyctr'],
+                  'indicator_code' => $maintenance_area_indicators_row['indicator_code'],
+                  'indicator_description' => $maintenance_area_indicators_row['indicator_description'],
+                  'relevance_definition' => $maintenance_area_indicators_row['relevance_def'],
+                  'reqs_code' => $maintenance_criteria_setup_row['reqs_code'],
+                  'documentary_requirements' => $maintenance_criteria_setup_row['documentary_requirements'],
+                  'description' => $maintenance_criteria_setup_row['description'],
+                  'data_source' => $maintenance_criteria_setup_row['data_source'],
+                ];
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
 ?>
 
 <!DOCTYPE html>
@@ -28,12 +108,10 @@ require_once '../db/db.php';
     $isSetupCriteriaPhp = true;
     require 'common/sidebar.php' ?>
     <!-- End of Sidebar -->
-
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
       <!-- Main Content -->
       <div id="content">
-
         <!-- Topbar -->
         <?php require 'common/nav.php' ?>
         <!-- End of Topbar -->
@@ -65,13 +143,11 @@ require_once '../db/db.php';
             </ul>
           </div>
           <input type="text" id="versionInput" class="form-control d-inline-block" style="width: 200px" readonly />
-
           <script>
             function updateVersion(selectedVersion) {
               document.getElementById("versionInput").value = selectedVersion;
             }
           </script>
-
           <div class="dropdown d-inline-block fluid">
             <button class="btn btn-primary dropdown-toggle" type="button" id="governanceDropdown"
               data-bs-toggle="dropdown" aria-expanded="false" style="width: 200px">
@@ -93,217 +169,72 @@ require_once '../db/db.php';
             </ul>
           </div>
           <input type="text" id="governanceInput" class="form-control d-inline-block" style="width: 200px" readonly />
-
           <script>
             function updateGovernance(selectedGovernance) {
               document.getElementById("governanceInput").value =
                 selectedGovernance;
             }
           </script>
-
-          <!-- Content Row -->
-          <script>
-            function toggleSubRequirement(select, row) {
-              const subRequirementCell = row.querySelector(
-                ".sub-requirement-cell"
-              );
-              if (select.value !== "") {
-                // Create a select element for sub-requirements
-                subRequirementCell.innerHTML = `
-                                    <select class="form-select" placeholder="Select Sub-requirement">
-                                        <option value="">No Sub-requirement</option>
-                                        <option value="sub-option1">Sub Option 1</option>
-                                        <option value="sub-option2">Sub Option 2</option>
-                                        <option value="sub-option3">Sub Option 3</option>
-                                    </select>`;
-              } else {
-                subRequirementCell.innerHTML = "";
-              }
-            }
-
-            function addRow() {
-              const table = document.querySelector(".table tbody");
-              const newRow = document.createElement("tr");
-              newRow.innerHTML = `
-                                <td>
-                                    <select class="form-select" name="indicatorNew">
-                                        <option value="">Select Indicator</option>
-                                        <option value="indicator1">Indicator 1</option>
-                                        <option value="indicator2">Indicator 2</option>
-                                        <option value="indicator3">Indicator 3</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <select class="form-select" name="relevanceNew">
-                                        <option value="">Select Relevance/Definition</option>
-                                        <option value="relevance1">Relevance 1</option>
-                                        <option value="relevance2">Relevance 2</option>
-                                        <option value="relevance3">Relevance 3</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <select class="form-select" name="requirementNew" onchange="toggleSubRequirement(this, this.closest('tr'))">
-                                        <option value="">No Minimum Requirements</option>
-                                        <option value="option1">Option 1</option>
-                                        <option value="option2">Option 2</option>
-                                        <option value="option3">Option 3</option>
-                                    </select>
-                                </td>
-                                <td class="sub-requirement-cell"></td>
-                                <td>
-                                    <input type="checkbox" name="movNew" />
-                                </td>
-                                <td>
-                                    <button class="btn btn-danger btn-sm" onclick="deleteRow(this)">Delete</button>
-                                </td>
-                            `;
-              table.appendChild(newRow);
-            }
-
-            function deleteRow(button) {
-              const row = button.closest("tr");
-              row.parentNode.removeChild(row);
-            }
-
-            document.addEventListener("DOMContentLoaded", function() {
-              // Initial setup if needed
-            });
-          </script>
-
           <div class="container mt-5">
-            <button class="btn btn-success mb-3" onclick="addRow()">
-              Add Row
-            </button>
-
-            <table class="table table-bordered">
-              <thead>
-                <tr>
-                  <th>INDICATOR</th>
-                  <th>RELEVANCE/DEFINITION</th>
-                  <th class="min-requirements">MINIMUM REQUIREMENTS</th>
-                  <th>Sub Requirements</th>
-                  <th>MOV's</th>
-                  <!-- New column header -->
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <select class="form-select" name="indicator1">
-                      <option value="">Select Indicator</option>
-                      <option value="indicator1">Indicator 1</option>
-                      <option value="indicator2">Indicator 2</option>
-                      <option value="indicator3">Indicator 3</option>
-                    </select>
-                  </td>
-                  <td>
-                    <select class="form-select" name="relevance1">
-                      <option value="">Select Relevance/Definition</option>
-                      <option value="relevance1">Relevance 1</option>
-                      <option value="relevance2">Relevance 2</option>
-                      <option value="relevance3">Relevance 3</option>
-                    </select>
-                  </td>
-                  <td>
-                    <select class="form-select" name="requirement1"
-                      onchange="toggleSubRequirement(this, this.closest('tr'))">
-                      <option value="">No Minimum Requirements</option>
-                      <option value="option1">Option 1</option>
-                      <option value="option2">Option 2</option>
-                      <option value="option3">Option 3</option>
-                    </select>
-                  </td>
-                  <td class="sub-requirement-cell"></td>
-                  <td>
-                    <input type="checkbox" name="mov1" />
-                  </td>
-                  <td>
-                    <button class="btn btn-danger btn-sm" onclick="deleteRow(this)">
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <select class="form-select" name="indicator2">
-                      <option value="">Select Indicator</option>
-                      <option value="indicator1">Indicator 1</option>
-                      <option value="indicator2">Indicator 2</option>
-                      <option value="indicator3">Indicator 3</option>
-                    </select>
-                  </td>
-                  <td>
-                    <select class="form-select" name="relevance2">
-                      <option value="">Select Relevance/Definition</option>
-                      <option value="relevance1">Relevance 1</option>
-                      <option value="relevance2">Relevance 2</option>
-                      <option value="relevance3">Relevance 3</option>
-                    </select>
-                  </td>
-                  <td>
-                    <select class="form-select" name="requirement2"
-                      onchange="toggleSubRequirement(this, this.closest('tr'))">
-                      <option value="">No Minimum Requirements</option>
-                      <option value="option1">Option 1</option>
-                      <option value="option2">Option 2</option>
-                      <option value="option3">Option 3</option>
-                    </select>
-                  </td>
-                  <td class="sub-requirement-cell"></td>
-                  <td>
-                    <input type="checkbox" name="mov2" />
-                  </td>
-                  <td>
-                    <button class="btn btn-danger btn-sm" onclick="deleteRow(this)">
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <select class="form-select" name="indicator3">
-                      <option value="">Select Indicator</option>
-                      <option value="indicator1">Indicator 1</option>
-                      <option value="indicator2">Indicator 2</option>
-                      <option value="indicator3">Indicator 3</option>
-                    </select>
-                  </td>
-                  <td>
-                    <select class="form-select" name="relevance3">
-                      <option value="">Select Relevance/Definition</option>
-                      <option value="relevance1">Relevance 1</option>
-                      <option value="relevance2">Relevance 2</option>
-                      <option value="relevance3">Relevance 3</option>
-                    </select>
-                  </td>
-                  <td>
-                    <select class="form-select" name="requirement3"
-                      onchange="toggleSubRequirement(this, this.closest('tr'))">
-                      <option value="">No Minimum Requirements</option>
-                      <option value="option1">Option 1</option>
-                      <option value="option2">Option 2</option>
-                      <option value="option3">Option 3</option>
-                    </select>
-                  </td>
-                  <td class="sub-requirement-cell"></td>
-                  <td>
-                    <input type="checkbox" name="mov3" />
-                  </td>
-                  <td>
-                    <button class="btn btn-danger btn-sm" onclick="deleteRow(this)">
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <form action="./bar_assessment/add.php" method="get">
+              <button type="submit" class="btn btn-success mb-3">
+                Add Criteria
+              </button>
+            </form>
           </div>
+          <?php
+          $last_indicator = '';
+          foreach ($data as $key => $rows): ?>
+            <div class="card-header bg-primary text-center py-3">
+              <div class="card-body">
+                <h5 class="text-white"><?php echo htmlspecialchars($key); ?></h5>
+              </div>
+            </div>
+            <?php foreach ($rows as $row):
+              $current_row = $row['keyctr'];
+              ?>
+              <?php
+              $current_indicator = $row['indicator_code'] . " " . $row['indicator_description'];
+              if ($current_indicator !== $last_indicator):
+                ?>
+                <div class="row bg-info" style="margin: 0; padding: 10px 0;">
+                  <h6 class="col-lg-12 text-center text-white" style="margin: 0;">
+                    <?php echo htmlspecialchars($current_indicator); ?>
+                  </h6>
+                </div>
+                <?php
+                $last_indicator = $current_indicator;
+                ?>
+              <?php endif; ?>
+              <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
+                <thead class="bg-secondary text-white">
+                  <tr>
+                    <th style="width: 5%; text-align: center;">Action</th>
+                    <th style="width: 20%;text-align: center;">Relevant/Definition</th>
+                    <th style="width: 20%;text-align: center;">Minimum Requirements</th>
+                    <th style="width: 20%; text-align: center;"> Documentary Requirements/MOVs</th>
+                    <th style="width: 10%;text-align: center;"> Data Source</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <a href="./bar_assessment/edit.php?edit_id=<?php echo $row['keyctr'] ?>">Edit</a> |
+                      <a href="./bar_assessment/script.php?delete_id=<?php echo $row['keyctr'] ?>">Delete</a>
+                    </td>
+                    <td><?php echo $row['relevance_definition']; ?></td>
+                    <td><?php echo $row['reqs_code'] . " " . $row['description']; ?></td>
+                    <td><?php echo $row['documentary_requirements']; ?></td>
+                    <td><?php echo $row['data_source']; ?></td>
+                  </tr>
+                </tbody>
+              </table>
+            <?php endforeach; ?>
+          <?php endforeach; ?>
           <!-- End of Main Content -->
         </div>
       </div>
     </div>
   </div>
 </body>
-
 </html>

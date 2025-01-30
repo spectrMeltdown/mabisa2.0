@@ -1,5 +1,4 @@
 <?php
-$pathPrepend = '../../';
 require_once './responses.php';
 require_once './comments.php';
 require_once './admin_actions/admin_actions.php';
@@ -26,7 +25,7 @@ if ($barangay_id) {
     $stmt->bindParam(1, $barangay_id, PDO::PARAM_INT);
     $stmt->execute();
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+    $isBarAss = true;
     include 'script.php';
     $data = [];
 
@@ -140,7 +139,7 @@ if ($barangay_id) {
         $isBarAss = true;
         include '../common/sidebar.php'
 
-        ?>
+            ?>
 
         <!-- sidebar end -->
 
@@ -154,8 +153,8 @@ if ($barangay_id) {
                 <?php
 
                 include '../common/nav.php';
-                $role = $userData['role'];
-                $name = $userData['fullName'];
+                $role = 'Secretary';
+                $name = 'name';
 
 
                 ?>
@@ -178,96 +177,6 @@ if ($barangay_id) {
                             <div class="card-body">
                                 <h5 class="text-white"><?php echo htmlspecialchars($key); ?></h5>
                             </div>
-                            <div class="card-body">
-                                <?php
-                                $stmt = $pdo->prepare("SELECT * FROM maintenance_area_indicators WHERE desc_keyctr = ?");
-                                $stmt->bindParam(1, $area_desc['keyctr'], PDO::PARAM_INT);
-                                $stmt->execute();
-                                $indicators = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                                ?>
-                                <?php if (!empty($indicators)): ?>
-                                    <?php foreach ($indicators as $indicator): ?>
-                                        <div class="row bg-info">
-                                            <h6 class="col-lg-12 text-center text-white">
-                                                <?php echo htmlspecialchars($indicator['indicator_code'] . ' ' . $indicator['indicator_description']); ?>
-                                            </h6>
-                                        </div>
-
-                                        <!-- Query for maintenance_area_mininumreqs -->
-                                        <?php
-                                        $minReqStmt = $pdo->prepare("SELECT * FROM maintenance_area_mininumreqs WHERE indicator_code = ?");
-                                        $minReqStmt->bindParam(1, $indicator['indicator_code'], PDO::PARAM_STR);
-                                        $minReqStmt->execute();
-                                        $minRequirements = $minReqStmt->fetchAll(PDO::FETCH_ASSOC);
-                                        ?>
-                                        <?php if (!empty($minRequirements)): ?>
-                                            <div class="row mt-3">
-                                                <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
-                                                    <?php if ($role === 'Admin'): ?>
-                                                        <thead class="bg-secondary text-white">
-                                                            <tr>
-                                                                <th style="width: 9%; text-align: center;">Requirement Code</th>
-                                                                <th style="width: 25%;">Requirement Description</th>
-                                                                <th style="width: 9%;text-align: center;">Attachment</th>
-                                                                <th style="width: 6%;text-align: center;">Status</th>
-                                                                <th style="width: 10%; text-align: center;"> Last Modified</th>
-                                                                <th style="width: 7%;text-align: center;"> Approval</th>
-                                                                <th style="width: 9%;text-align: center;"> Comments</th>
-                                                            </tr>
-                                                        </thead>
-                                                    <?php endif; ?>
-                                                    <?php if ($role === 'Secretary'): ?>
-                                                        <thead class="bg-secondary text-white">
-                                                            <tr>
-                                                                <th style="width: 9%;">Requirement Code</th>
-                                                                <th style="width: 25%;">Requirement Description</th>
-                                                                <th style="width: 6%; text-align: center;">Attachment</th>
-                                                                <th style="width: 4%; text-align: center;">Status</th>
-                                                                <th style="width: 9%;"> Last Modified</th>
-                                                                <th style="width: 7%; text-align: center;"> Comments</th>
-                                                            </tr>
-                                                        </thead>
-                                                    <?php endif; ?>
-                                                    <tbody>
-                                                        <?php foreach ($minRequirements as $minReq):
-                                                            $current_req_keyctr = $minReq['keyctr']; ?>
-
-                                                            <tr>
-                                                                <td style="text-align: center; vertical-align: middle;">
-                                                                    <?php echo htmlspecialchars($minReq['reqs_code']); ?>
-                                                                </td>
-                                                                <td style="vertical-align: middle;">
-                                                                    <?php echo nl2br(htmlspecialchars($minReq['description'])); ?>
-                                                                </td>
-                                                                <td class="data-cell-upload-view"
-                                                                    style="text-align: center; vertical-align: middle;"> <?php
-                                                                                                                            $data = $responses->getData($barangay_id, $minReq['keyctr'], $area_desc['keyctr'], $indicator['indicator_code'], $minReq['reqs_code']);
-
-                                                                                                                            if (!$data): ?>
-
-                                                                        <!-- Case: Secretary Role -->
-                                                                        <?php if ($role === 'Secretary'): ?>
-                                                                            <form method="POST" action="../bar_assessment/user_actions/upload.php"
-                                                                                enctype="multipart/form-data"
-                                                                                id="uploadForm_<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <input type="hidden" name="barangay_id"
-                                                                                    value="<?php echo htmlspecialchars($barangay_id, ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <input type="hidden" name="req_keyctr"
-                                                                                    value="<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <input type="hidden" name="desc_ctr"
-                                                                                    value="<?php echo htmlspecialchars($area_desc['keyctr'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <input type="hidden" name="indicator_code"
-                                                                                    value="<?php echo htmlspecialchars($indicator['indicator_code'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <input type="hidden" name="reqs_code"
-                                                                                    value="<?php echo htmlspecialchars($minReq['reqs_code'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                <input type="file" name="file"
-                                                                                    id="fileInput_<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>"
-                                                                                    style="display: none;" required>
-                                                                                <button type="button" class="btn btn-primary" title="Upload"
-                                                                                    onclick="document.getElementById('fileInput_<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>').click();">
-                                                                                    <i class="fa fa-upload"></i>
-                                                                                </button>
-                                                                            </form>
                         </div>
 
                         <?php foreach ($rows as $row):
@@ -344,45 +253,6 @@ if ($barangay_id) {
                                                     </form>
 
 
-                                                                            <script>
-                                                                                document.getElementById('fileInput_<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>')
-                                                                                    .addEventListener('change', function() {
-                                                                                        if (this.files.length > 0) {
-                                                                                            document.getElementById('uploadForm_<?php echo htmlspecialchars($current_req_keyctr, ENT_QUOTES, 'UTF-8'); ?>').submit();
-                                                                                        }
-                                                                                    });
-                                                                            </script>
-
-
-                                                                        <?php elseif ($role === 'Admin'): ?>
-                                                                            <!-- Case: Admin Role -->
-                                                                            <p>No Uploads Yet</p>
-                                                                        <?php endif; ?>
-
-                                                                    <?php else: ?>
-                                                                        <!-- Case: File is Present -->
-                                                                        <form method="POST" action="../bar_assessment/admin_actions/view.php"
-                                                                            target="_blank">
-                                                                            <input type="hidden" name="file_id"
-                                                                                value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                                            <button type="submit" class="btn btn-success mb-3" title="View">
-                                                                                <i class="fa fa-eye"></i>
-                                                                            </button>
-                                                                        </form>
-
-
-                                                                        <!-- Additional Options for Secretary -->
-                                                                        <?php if ($role === 'Secretary'):
-                                                                                                                                    if ($data['status'] != 'approved'):
-
-                                                                        ?>
-                                                                                <form id="deleteForm"
-                                                                                    data-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                    <button type="button" class="btn btn-danger mb-3" title="Delete"
-                                                                                        onclick="confirmDelete(this)">
-                                                                                        <i class="fa fa-trash"></i>
-                                                                                    </button>
-                                                                                </form>
                                                     <script>
                                                         document.querySelectorAll(".file-input").forEach(input => {
                                                             input.addEventListener("change", function () {
@@ -441,46 +311,6 @@ if ($barangay_id) {
 
                                             ?>
 
-                                                                </td>
-
-                                                                <?php if ($role === 'Admin'): ?>
-                                                                    <td style="text-align: center; vertical-align: middle;">
-                                                                        <div class="column">
-                                                                            <div class="column">
-                                                                                <div class="col-lg-6">
-                                                                                    <form method="POST" action="admin_actions/change_status.php">
-                                                                                        <input type="hidden" name="file_id"
-                                                                                            value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                        <input type="hidden" name="action" value="approve">
-                                                                                        <button type="submit" class="btn btn-success mb-3"
-                                                                                            style="background-color: #28a745; border: none; color: white; padding: 5px; font-size: 15px; border-radius: 5px; cursor: pointer;">
-                                                                                            Approve
-                                                                                        </button>
-                                                                                    </form>
-                                                                                </div>
-                                                                                <div class="col-lg-6">
-                                                                                    <form method="POST" action="admin_actions/change_status.php">
-                                                                                        <input type="hidden" name="file_id"
-                                                                                            value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                        <input type="hidden" name="action" value="decline">
-                                                                                        <button type="submit" class="btn btn-danger btn-sm"
-                                                                                            style="background-color: #dc3545; border: none; color: white; padding: 5px; font-size: 15px; border-radius: 5px; cursor: pointer;">
-                                                                                            Decline
-                                                                                        </button>
-                                                                                    </form>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </td>
-
-
-                                                                <?php endif; ?>
-
-                                                                <td class="data-cell-comments"
-                                                                    style="text-align: center; vertical-align: middle;">
-                                                                    <?php
-                                                                    if ($data):
-                                                                    ?>
                                         </td>
                                         <td class="data-cell-comments" style="text-align: center; vertical-align: middle;">
                                             <?php
@@ -495,25 +325,6 @@ if ($barangay_id) {
                                                     Comments
                                                 </button>
 
-                                                                    <?php
-                                                                    endif;
-                                                                    ?>
-                                                                </td>
-                                                            </tr>
-                                                        <?php endforeach; ?>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        <?php else: ?>
-                                            <p class="text-white">No minimum requirements found for this indicator.</p>
-                                        <?php endif; ?>
-
-                                    <?php endforeach; ?>
-                                <?php else: ?>
-                                    <p class="text-white">No indicators found for this description.</p>
-                                <?php endif; ?>
-                            </div>
-                        <?php endforeach; ?>
                                                 <?php
                                             endif;
                                             ?>
@@ -526,13 +337,13 @@ if ($barangay_id) {
                     <?php endforeach; ?>
 
 
-                        <!-- End of Page Content -->
+                    <!-- End of Page Content -->
 
-                        </div>
                 </div>
-                <!-- End of Main Content -->
             </div>
+            <!-- End of Main Content -->
         </div>
+    </div>
     </div>
     <?php require '../components/comment_section.php'; ?>
 </body>
