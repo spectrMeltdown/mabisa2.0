@@ -7,9 +7,8 @@ if (empty($_COOKIE['id'])) {
   header('location:logged_out.php');
   exit;
 }
-
-include './bar_assessment/script.php';
-include '../db/db.php';
+$isInFolder = true;
+include '../script.php';
 
 $data = [];
 
@@ -96,8 +95,7 @@ if (!empty($maintenance_area_description_result)) {
 
 <head>
   <?php
-  $isSetupCriteriaPhp = true;
-  require 'common/head.php' ?>
+  require '../common/head.php' ?>
 </head>
 
 <body id="page-top">
@@ -105,15 +103,16 @@ if (!empty($maintenance_area_description_result)) {
   <div id="wrapper">
     <!-- Sidebar -->
     <?php
-    $isSetupCriteriaPhp = true;
-    require 'common/sidebar.php' ?>
+    include '../common/sidebar.php'
+
+      ?>
     <!-- End of Sidebar -->
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
       <!-- Main Content -->
       <div id="content">
         <!-- Topbar -->
-        <?php require 'common/nav.php' ?>
+        <?php require '../common/nav.php' ?>
         <!-- End of Topbar -->
         <!-- Begin Page Content -->
         <div class="container-fluid">
@@ -175,12 +174,12 @@ if (!empty($maintenance_area_description_result)) {
                 selectedGovernance;
             }
           </script>
-          <div class="container mt-5">
-            <form action="./bar_assessment/add.php" method="get">
-              <button type="submit" class="btn btn-success mb-3">
-                Add Criteria
-              </button>
-            </form>
+          <div class="container mt-5" style="padding-bottom: 20px">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+              data-bs-target="#addMaintenanceCriteriaModal">
+              Add Maintenance Criteria
+            </button>
+
           </div>
           <?php
           $last_indicator = '';
@@ -219,8 +218,10 @@ if (!empty($maintenance_area_description_result)) {
                 <tbody>
                   <tr>
                     <td>
-                      <a href="./bar_assessment/edit.php?edit_id=<?php echo $row['keyctr'] ?>">Edit</a> |
-                      <a href="./bar_assessment/script.php?delete_id=<?php echo $row['keyctr'] ?>">Delete</a>
+                      <button class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
+                        Edit
+                      </button>
+                      <a href="../script.php?delete_id=<?php echo $row['keyctr'] ?>">Delete</a>
                     </td>
                     <td><?php echo $row['relevance_definition']; ?></td>
                     <td><?php echo $row['reqs_code'] . " " . $row['description']; ?></td>
@@ -236,5 +237,41 @@ if (!empty($maintenance_area_description_result)) {
       </div>
     </div>
   </div>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+
+  <div id="modalContainer"></div>
+
+  <script>
+    $(document).on("click", ".open-modal", function () {
+      var edit_id = $(this).data("id");
+
+      // Load modal2.php dynamically
+      $.ajax({
+        url: "edit.php",
+        type: "POST",
+        data: { edit_id: edit_id },
+        success: function (response) {
+          $("#modalContainer").html(response); // Append modal HTML
+
+          // Ensure the modal script executes after adding it to DOM
+          setTimeout(function () {
+            var displayIdModal = new bootstrap.Modal(document.getElementById("displayIdModal"));
+            displayIdModal.show();
+          }, 200); // Small delay to ensure DOM update
+        },
+        error: function (xhr, status, error) {
+          console.log("Error: " + error);
+        }
+      });
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+  <?php include 'add.php' ?>
+  <?php include 'edit.php' ?>
 </body>
+
 </html>

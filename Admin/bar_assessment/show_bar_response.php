@@ -25,8 +25,8 @@ if ($barangay_id) {
     $stmt->bindParam(1, $barangay_id, PDO::PARAM_INT);
     $stmt->execute();
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $isBarAss = true;
-    include 'script.php';
+    $isInFolder = true;
+    include '../script.php';
     $data = [];
 
     $maintenance_area_description_query = "
@@ -122,7 +122,7 @@ if ($barangay_id) {
 <head>
 
     <?php
-    $isBarAss = true;
+    $isInFolder = true;
     require '../common/head.php' ?>
     <script src="../../vendor/jquery/jquery.min.js"></script>
     <script src="../../js/bar-assessment.js"></script>
@@ -136,7 +136,7 @@ if ($barangay_id) {
 
         <!--sidebar start  -->
         <?php
-        $isBarAss = true;
+        $isInFolder = true;
         include '../common/sidebar.php'
 
             ?>
@@ -201,11 +201,11 @@ if ($barangay_id) {
                                 <?php if ($role === 'Admin'): ?>
                                     <thead class="bg-secondary text-white">
                                         <tr>
-                                            <th style="width: 9%; text-align: center;">Requirement Code</th>
-                                            <th style="width: 25%;">Requirement Description</th>
+                                            <th style="width: 17%; text-align: center;">Requirement Code</th>
+                                            <th style="width: 17%;">Requirement Description</th>
                                             <th style="width: 9%;text-align: center;">Attachment</th>
                                             <th style="width: 6%;text-align: center;">Status</th>
-                                            <th style="width: 10%; text-align: center;"> Last Modified</th>
+                                            <th style="width: 9%; text-align: center;"> Last Modified</th>
                                             <th style="width: 7%;text-align: center;"> Approval</th>
                                             <th style="width: 9%;text-align: center;"> Comments</th>
                                         </tr>
@@ -279,13 +279,13 @@ if ($barangay_id) {
                                                 </form>
                                                 <?php if ($role === 'Secretary'):
                                                     if ($data['status'] != 'approved'): ?>
-                                                   <form id="deleteForm"
-                                                                                    data-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                                                    <button type="button" class="btn btn-danger mb-3" title="Delete"
-                                                                                        onclick="confirmDelete(this)">
-                                                                                        <i class="fa fa-trash"></i>
-                                                                                    </button>
-                                                                                </form>
+                                                        <form id="deleteForm"
+                                                            data-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                            <button type="button" class="btn btn-danger mb-3" title="Delete"
+                                                                onclick="confirmDelete(this)">
+                                                                <i class="fa fa-trash"></i>
+                                                            </button>
+                                                        </form>
 
                                                     <?php endif; ?>
                                                 <?php endif; ?>
@@ -312,6 +312,42 @@ if ($barangay_id) {
                                             ?>
 
                                         </td>
+
+                                        <?php if ($role === 'Admin'): ?>
+                                            <?php
+                                            if ($data):
+                                                ?>
+                                                <td style="text-align: center; vertical-align: middle;">
+                                                    <div class="column">
+                                                        <div class="column">
+                                                            <div class="col-lg-6">
+                                                                <form method="POST" action="admin_actions/change_status.php">
+                                                                    <input type="hidden" name="file_id"
+                                                                        value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                                    <input type="hidden" name="action" value="approve">
+                                                                    <button type="submit" class="btn btn-success mb-3"
+                                                                        style="background-color: #28a745; border: none; color: white; padding: 5px; font-size: 15px; border-radius: 5px; cursor: pointer;">
+                                                                        Approve
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                            <div class="col-lg-6">
+                                                                <form method="POST" action="admin_actions/change_status.php">
+                                                                    <input type="hidden" name="file_id"
+                                                                        value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                                    <input type="hidden" name="action" value="decline">
+                                                                    <button type="submit" class="btn btn-danger btn-sm"
+                                                                        style="background-color: #dc3545; border: none; color: white; padding: 5px; font-size: 15px; border-radius: 5px; cursor: pointer;">
+                                                                        Decline
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+
                                         <td class="data-cell-comments" style="text-align: center; vertical-align: middle;">
                                             <?php
                                             if ($data):

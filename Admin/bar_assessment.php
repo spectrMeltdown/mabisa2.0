@@ -30,7 +30,7 @@ $responses = $responsesObj->show_responses();
 
         <!--sidebar start  -->
         <?php
-        $isBarAssessmentPhp = true;
+        $isInFolderessmentPhp = true;
         include 'common/sidebar.php' ?>
         <!-- sidebar end -->
 
