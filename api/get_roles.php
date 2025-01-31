@@ -13,5 +13,5 @@ try {
   echo json_encode($users);
 } catch (\Throwable $th) {
   http_response_code(500);
-  echo json_encode(['error' => (string)$th]);
+  echo json_encode($th->getMessage());
 }

@@ -2,6 +2,7 @@
 $customUserID = 'self';
 $userData;
 require $pathPrepend . 'api/get_user.php'; // this will provide userData array
+require $pathPrepend . 'api/util/url_exists.php';
 // unset after using
 unset($customUserID);
 ?>
@@ -86,7 +87,7 @@ unset($customUserID);
         </span>
         <!-- TODO: render the user profile pic below -->
         <img class="img-profile rounded-circle"
-          src="<?= !empty($userData['profile_pic']) ? $userData['profile_pic'] : $pathPrepend . 'img/undraw_profile.svg' ?>" />
+          src="<?= urlExists($userData['profile_pic']) ? $userData['profile_pic'] : $pathPrepend . 'img/undraw_profile.svg' ?>" />
       </a>
       <!-- Dropdown - User Information -->
       <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">

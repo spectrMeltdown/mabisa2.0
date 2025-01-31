@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   $('#mobileNum').text('+63' + user['mobile_num']);
 
   const profilePicExists = await fileExists(user['profile_pic']);
+  console.log('Profile pic exists:' + profilePicExists);
   $('#profilePic').attr(
     'src',
     profilePicExists ? user['profile_pic'] : '../img/undraw_profile_2.svg',

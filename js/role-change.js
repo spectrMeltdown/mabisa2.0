@@ -1,57 +1,31 @@
 'use strict';
 
 const defaultAlert = '<div class="alert"></div>';
-let editMode = undefined;
-// $('#crud-user').on('show.bs.modal', function(event) {
-//   if (loading) return;
-//   toggleLoading();
 
-//   if ($(event.relatedTarget).hasClass('edit-user-btn')) {
+// get from url params
+const params = new URLSearchParams(location.search);
+const id = params.get('id');
+let editMode = id ? true : false;
 
-//   } else if ($(event.relatedTarget).hasClass('add-user-btn')) {
-//   }
-//   toggleLoading();
-// });
+$(function() {
+  $('.form-group').popover({
+    container: 'body',
+  });
+});
 
-// reset the form element in crud user dialog
-// $('#crud-user').on('hidden.bs.modal', () => {
-//   console.log('modal hidden');
-//   const form = this.querySelector('form');
-//   if (form) form.reset();
-
-//   // revert the text to original
-//   modalLabel.textContent = origModalLabel;
-//   passLabel.textContent = origPassLabel;
-
-//   // hide barangay option
-//   const barangayDiv = document.getElementById('barangayDiv');
-//   barangayDiv.style.display = 'none';
-
-//   // display confirm pass again
-//   $('#confirmPassField').css('display', 'inline-block');
-
-//   // remove the userID
-//   currentUserID = undefined;
-
-//   // hide the additional fields per role
-//   toggleAuditor(false);
-//   toggleSecretary(false);
-//   auditorBarangays = [];
-
-//   //hide alerts
-//   $('#alert').html(defaultAlert);
-// });
-
-// for adding user
-// listen when the admin changes selection, and display additional inputs
-// if (document.getElementById('role')) {
-//   document.getElementById('role').addEventListener('change', event => {
-//     console.log('Changed role');
-//     if (loading) return;
-//     toggleLoading();
-//     toggleLoading();
-//   });
-// }
+//cancel button confirmation
+$('#cancel-btn').on('click', async () => {
+  const confirm = await showConfirmationDialog(
+    'Are you sure? Your changes will not be saved.',
+    'No',
+    'Yes',
+  );
+  if (confirm) {
+    history.back();
+  } else {
+    console.log('cancelled');
+  }
+});
 
 // when submitting the form
 $('#save-role-btn').on('click', async () => {
@@ -169,7 +143,7 @@ $('#save-role-btn').on('click', async () => {
         if (!result) {
           alert('Role created successfully!');
           history.back(); // go back
-          location.reload(); // reload because it needs to get latest data
+          // location.reload(); // reload because it needs to get latest data
           // $('#main-toast-container').append(
           //   addToast('Success!', 'User created successfully.'),
           // );
@@ -179,9 +153,8 @@ $('#save-role-btn').on('click', async () => {
       },
     });
   } else {
-    // get from url params
-    const params = new URLSearchParams(location.search);
-    formData.append('id', params.get('id'));
+    // id from search params
+    formData.append('id', id);
     $.ajax({
       type: 'POST',
       url: '../api/edit_user.php',

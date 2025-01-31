@@ -132,25 +132,10 @@
             <div class="invalid-feedback">
             </div>
           </div>
-
-          <div class="mb-3 form-group max-w-100 mx-auto" id="barangayDiv" style="display: none;">
-            <label for="barangay" class="form-label">Barangay: </label>
-            <select class="form-select" name="barangay" id="barangay">
-              <option value="" disabled selected hidden>Select one</option>
-              <?php
-              global $pdo;
-              $result = $pdo->query('SELECT brgyname FROM refbarangay;');
-              if ($result->rowCount() <= 0):
-              endif
-              ?>
-            </select>
-            <div class="invalid-feedback">
-            </div>
-          </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cancel-btn">Cancel</button>
         <button type="button" class="btn btn-primary" id="save-user-btn">Save</button>
       </div>
     </div>

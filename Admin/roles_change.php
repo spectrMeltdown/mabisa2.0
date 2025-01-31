@@ -19,7 +19,7 @@ require_once '../db/db.php';
 
 <head>
   <?php require 'common/head.php' ?>
-  <script src="../js/crud-role.js" defer></script>
+  <script src="../js/role-change.js" defer></script>
   <script src="../js/util/confirmation.js" defer></script>
   <style>
     /* bigger checkboxes */
@@ -83,6 +83,7 @@ require_once '../db/db.php';
               <div style="float: right;">
                 <div class="row">
                   <button class="btn btn-sm btn-primary" id="save-role-btn">Save</button>
+                  <button class="btn btn-sm btn-secondary ml-2" id="cancel-btn">Cancel</button>
                 </div>
               </div>
             </div>
@@ -108,6 +109,7 @@ require_once '../db/db.php';
                   <input type="checkbox" name="allowBarangay" id="allowBarangay" value="true">
                   <div class="mr-1 d-inline-block"></div>
                   <label for="roleName" class="form-label">Allow assigning of barangays?</label>
+                  <i class="fas fa-question-circle" style="font-size: 15px" data-toggle="tooltip" data-placement="left" title="Barangay assignments can be done when creating or editing users."></i>
                 </div>
                 <div class="mb-3 form-group container-fluid" id="permissions">
                   <h6 class="mb-3">Permissions</h6>

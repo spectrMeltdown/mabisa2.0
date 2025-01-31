@@ -20,11 +20,11 @@ require_once '../db/db.php';
 <head>
   <?php require 'common/head.php' ?>
   <script src="../js/roles.js" defer></script>
-  <script src="../js/crud-role.js" defer></script>
+  <script src="../js/role-change.js" defer></script>
   <script src="../js/util/confirmation.js" defer></script>
   <script src="../js/util/alert.js" defer></script>
   <script src="../js/util/input-validation.js" defer></script>
-  <script src="../js/util/phone_prepend.js" defer></script>
+  <script src="../js/util/phone-prepend.js" defer></script>
 </head>
 
 <body id="page-top">
@@ -124,12 +124,11 @@ require_once '../db/db.php';
                             <?php
                             if (!($row['name'] === 'Super Admin')):
                             ?>
-                              <a href="#edit-role" class="btn btn-sm btn-info btn-circle edit-role-btn"
-                                data-toggle="modal" data-target="#crud-role" data-id="<?= $row['id'] ?>">
+                              <a href="roles_change.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-info btn-circle edit-role-btn">
                                 <i class="fas fa-edit"></i>
                               </a>
                               <a href="#delete-role"
-                                class="btn btn-sm btn-danger btn-circle delete-role-btn" data-id="<?= $row['id'] ?>">
+                                class="btn btn-sm btn-danger btn-circle delete-role-btn" data-id="<?= $row['id'] ?>" data-permissions-id="<?= $row['permissions_id'] ?>">
                                 <i class="fas fa-trash"></i>
                               </a>
                             <?php
@@ -162,8 +161,6 @@ require_once '../db/db.php';
     </div>
     <!-- End of Content Wrapper -->
   </div>
-  <!-- End of Page Wrapper -->
-  <?php require 'components/crud_role_dialog.php' ?>
 </body>
 
 </html>

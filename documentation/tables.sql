@@ -49,9 +49,9 @@ CREATE TABLE roles (
     id int AUTO_INCREMENT PRIMARY KEY,
     name varchar(100) NOT NULL UNIQUE,
     allow_barangay boolean NOT NULL DEFAULT false,
-    permissions_id int NOT NULL,
+    permissions_id int,
     last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (permissions_id) REFERENCES permissions(id)
+    FOREIGN KEY (permissions_id) REFERENCES permissions(id) ON DELETE SET NULL
 );
 
 

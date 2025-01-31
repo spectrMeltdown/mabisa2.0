@@ -18,8 +18,8 @@ require_once '../db/db.php';
   <?php require 'common/head.php' ?>
   <script src="../js/settings.js" defer></script>
   <script src="../js/util/confirmation.js" defer></script>
-  <script src="../js/util/phone_prepend.js" defer></script>
-  <script src="../js/util/file_link_exists.js" defer></script>
+  <script src="../js/util/phone-prepend.js" defer></script>
+  <script src="../js/util/file-link-exists.js" defer></script>
 </head>
 
 <body id="page-top">

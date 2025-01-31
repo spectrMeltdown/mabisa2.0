@@ -5,6 +5,17 @@
 <meta name="author" content="" />
 
 <?php
+/* 
+the following headers allow:
+- prevention of user info being leaked
+- page refresh when navigating back on browser (to show latest data in tables)
+
+no-cache doesn't really mean totally no cache if you're worried.
+*/
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
 $pathPrepend = isset($isBarAss) ? '../../' : '../'
 ?>
 
