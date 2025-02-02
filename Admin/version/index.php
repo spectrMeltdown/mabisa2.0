@@ -45,12 +45,12 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <!--Header-->
         <div class="container-fluid">
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Area Description</h1>
+            <h1 class="h3 mb-0 text-gray-800">Criteria Versions</h1>
           </div>
           <!-- Begin Page Content -->
           <div class="container mt-5" style="padding-bottom: 20px">
             <button type="button" class="btn btn-primary">
-              Add New Description
+              Add New Criteria Version
             </button>
           </div>
           <table class="table table-bordered" >
