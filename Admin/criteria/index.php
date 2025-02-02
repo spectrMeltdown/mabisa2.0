@@ -96,6 +96,8 @@ if (!empty($maintenance_area_description_result)) {
 <head>
   <?php
   require '../common/head.php' ?>
+
+  <script src="../../vendor/jquery/jquery.min.js"></script>
 </head>
 
 <body id="page-top">
@@ -175,11 +177,9 @@ if (!empty($maintenance_area_description_result)) {
             }
           </script>
           <div class="container mt-5" style="padding-bottom: 20px">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-              data-bs-target="#addMaintenanceCriteriaModal">
+            <button type="button" class="btn btn-primary" id="open-add-modal">
               Add Maintenance Criteria
             </button>
-
           </div>
           <?php
           $last_indicator = '';
@@ -237,28 +237,20 @@ if (!empty($maintenance_area_description_result)) {
       </div>
     </div>
   </div>
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 
   <div id="modalContainer"></div>
-
   <script>
-    $(document).on("click", ".open-modal", function () {
-      var edit_id = $(this).data("id");
-
-      // Load modal2.php dynamically
+    $(document).on("click", "#open-add-modal", function () {
       $.ajax({
-        url: "edit.php",
-        type: "POST",
-        data: { edit_id: edit_id },
+        url: "add.php",
+        type: "GET",
         success: function (response) {
-          $("#modalContainer").html(response); // Append modal HTML
-
-          // Ensure the modal script executes after adding it to DOM
+          $("#modalContainer").html(response);
           setTimeout(function () {
-            var displayIdModal = new bootstrap.Modal(document.getElementById("displayIdModal"));
-            displayIdModal.show();
-          }, 200); // Small delay to ensure DOM update
+            var addMaintenanceCriteriaModal = new bootstrap.Modal(document.getElementById("addMaintenanceCriteriaModal"));
+            addMaintenanceCriteriaModal.show();
+          }, 200);
         },
         error: function (xhr, status, error) {
           console.log("Error: " + error);
@@ -267,7 +259,28 @@ if (!empty($maintenance_area_description_result)) {
     });
   </script>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    $(document).on("click", ".open-modal", function () {
+      var edit_id = $(this).data("id");
+
+      $.ajax({
+        url: "edit.php",
+        type: "POST",
+        data: { edit_id: edit_id },
+        success: function (response) {
+          $("#modalContainer").html(response);
+          setTimeout(function () {
+            var displayIdModal = new bootstrap.Modal(document.getElementById("displayIdModal"));
+            displayIdModal.show();
+          }, 200);
+        },
+        error: function (xhr, status, error) {
+          console.log("Error: " + error);
+        }
+      });
+    });
+  </script>
+
 
 
   <?php include 'add.php' ?>

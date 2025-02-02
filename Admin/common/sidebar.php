@@ -46,21 +46,21 @@
     <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
       <div class="bg-white py-2 collapse-inner rounded">
         <h6 class="collapse-header">Settings</h6>
-        <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>area.php">Area</a>
+        <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>area/">Area</a>
         <a class=" collapse-item"
-          href="<?php echo isset($isInFolder) ? '../' : ''; ?>area_description.php">Area Description</a>
+          href="<?php echo isset($isInFolder) ? '../' : ''; ?>area_description/">Area Description</a>
         <a class="collapse-item"
-          href="area_indicator.php">Area Indicators</a>
-        <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>min_req.php">Minimum
+          href="<?php echo isset($isInFolder) ? '../' : ''; ?>area_indicator/">Area Indicators</a>
+        <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>min_req/">Minimum
           Requirements</a>
         <a class="collapse-item"
-          href="<?php echo isset($isInFolder) ? '../' : ''; ?>sub_req.php">Sub-Requirements</a>
-        <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>category.php">Category</a>
-        <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>version.php">Version</a>
-        <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>docu_source.php">Document
+          href="<?php echo isset($isInFolder) ? '../' : ''; ?>sub_req/">Sub-Requirements</a>
+        <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>category/">Category</a>
+        <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>version/">Version</a>
+        <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>docu_source/">Document
           Source</a>
         <a class="collapse-item"
-          href="<?php echo isset($isInFolder) ? '../' : ''; ?>governance.php">Governance</a>
+          href="<?php echo isset($isInFolder) ? '../' : ''; ?>governance/">Governance</a>
       </div>
     </div>
   </li>

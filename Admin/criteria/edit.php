@@ -22,7 +22,7 @@ try {
 }
 ?>
 
-<!-- Bootstrap Modal -->
+
 <div class="modal fade" id="displayIdModal" tabindex="-1" aria-labelledby="displayIdModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
