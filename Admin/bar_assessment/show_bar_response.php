@@ -8,7 +8,6 @@ $barangay_id = isset($_GET['barangay_id']) ? $_GET['barangay_id'] : null;
 $barangay_name = isset($_GET['brgyname']) ? $_GET['brgyname'] : null;
 
 $responses = new Responses($pdo);
-$admin = new Admin_Actions($pdo);
 
 if ($barangay_id) {
     $stmt = $pdo->prepare("SELECT brgyname FROM refbarangay WHERE brgyid = ?");
@@ -151,12 +150,9 @@ if ($barangay_id) {
 
                 <!-- Topbar -->
                 <?php
-
                 include '../common/nav.php';
-                $role = 'Secretary';
+                $role = 'Barangay Secretary';
                 $name = 'name';
-
-
                 ?>
                 <!-- End of Topbar -->
 
@@ -171,104 +167,101 @@ if ($barangay_id) {
                         </div>
                     </div>
                     <?php
-                    $last_indicator = '';
-                    foreach ($data as $key => $rows): ?>
+                    foreach ($data as $key => $rows):
+                        // Filter rows to include only those where the role matches the data_source or role is 'admin'
+                        $filtered_rows = array_filter($rows, function ($row) use ($role) {
+                            return $role === 'Barangay Admin' || $role === $row['data_source'];
+                        });
+
+                        // Skip rendering if no matching rows exist
+                        if (empty($filtered_rows)) {
+                            continue;
+                        }
+                        ?>
                         <div class="card-header bg-primary text-center py-3">
                             <div class="card-body">
                                 <h5 class="text-white"><?php echo htmlspecialchars($key); ?></h5>
                             </div>
                         </div>
 
-                        <?php foreach ($rows as $row):
-                            $current_row = $row['keyctr'];
-                            ?>
-                            <?php
+                        <?php
+                        $last_indicator = '';
+                        $table_started = false;
+
+                        foreach ($filtered_rows as $row):
                             $current_indicator = $row['indicator_code'] . " " . $row['indicator_description'];
 
                             if ($current_indicator !== $last_indicator):
+
+                                if ($table_started) {
+                                    echo "</tbody></table>";
+                                }
                                 ?>
+
                                 <div class="row bg-info" style="margin: 0; padding: 10px 0;">
                                     <h6 class="col-lg-12 text-center text-white" style="margin: 0;">
                                         <?php echo htmlspecialchars($current_indicator); ?>
                                     </h6>
                                 </div>
-                                <?php
-                                $last_indicator = $current_indicator;
-                                ?>
-                            <?php endif; ?>
 
-                            <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
-                                <?php if ($role === 'Admin'): ?>
+                                <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
                                     <thead class="bg-secondary text-white">
                                         <tr>
-                                            <th style="width: 17%; text-align: center;">Requirement Code</th>
-                                            <th style="width: 17%;">Requirement Description</th>
-                                            <th style="width: 9%;text-align: center;">Attachment</th>
-                                            <th style="width: 6%;text-align: center;">Status</th>
-                                            <th style="width: 9%; text-align: center;"> Last Modified</th>
-                                            <th style="width: 7%;text-align: center;"> Approval</th>
-                                            <th style="width: 9%;text-align: center;"> Comments</th>
+                                            <?php if ($role === 'Barangay Admin'): ?>
+                                                <th style="width: 17%; text-align: center;">Requirement Code</th>
+                                                <th style="width: 17%;">Requirement Description</th>
+                                                <th style="width: 9%; text-align: center;">Attachment</th>
+                                                <th style="width: 6%; text-align: center;">Status</th>
+                                                <th style="width: 9%; text-align: center;">Last Modified</th>
+                                                <th style="width: 7%; text-align: center;">Approval</th>
+                                                <th style="width: 9%; text-align: center;">Comments</th>
+                                            <?php elseif ($role === 'Barangay Secretary'): ?>
+                                                <th style="width: 17%;">Relevant/Definition</th>
+                                                <th style="width: 17%;">Requirement Description</th>
+                                                <th style="width: 6%; text-align: center;">Attachment</th>
+                                                <th style="width: 4%; text-align: center;">Status</th>
+                                                <th style="width: 9%;">Last Modified</th>
+                                                <th style="width: 7%; text-align: center;">Comments</th>
+                                            <?php endif; ?>
                                         </tr>
                                     </thead>
-                                <?php endif; ?>
+                                    <tbody>
 
-                                <?php if ($role === 'Secretary'): ?>
-                                    <thead class="bg-secondary text-white">
-                                        <tr>
-                                            <th style="width: 17%;">Relevant/Definition</th>
-                                            <th style="width: 17%;">Requirement Description</th>
-                                            <th style="width: 6%; text-align: center;">Attachment</th>
-                                            <th style="width: 4%; text-align: center;">Status</th>
-                                            <th style="width: 9%;"> Last Modified</th>
-                                            <th style="width: 7%; text-align: center;"> Comments</th>
-                                        </tr>
-                                    </thead>
-                                <?php endif; ?>
+                                        <?php
+                                        $last_indicator = $current_indicator;
+                                        $table_started = true;
+                            endif;
+                            ?>
 
-                                <tbody>
                                     <tr>
                                         <td><?php echo $row['relevance_definition']; ?></td>
                                         <td><?php echo $row['reqs_code'] . " " . $row['description']; ?></td>
+
                                         <?php
                                         $data = $responses->getData($barangay_id, $row['keyctr']);
                                         ?>
                                         <td class="data-cell-upload-view" style="text-align: center; vertical-align: middle;">
                                             <?php if (!$data): ?>
-                                                <!-- file is not present -->
-                                                <?php if ($role === 'Secretary'): ?>
+                                                <?php if ($role === 'Barangay Secretary'): ?>
                                                     <form action="../bar_assessment/user_actions/upload.php" method="POST"
-                                                        enctype="multipart/form-data" id="uploadForm-<?php echo $current_row; ?>">
+                                                        enctype="multipart/form-data" id="uploadForm-<?php echo $row['keyctr']; ?>">
                                                         <input type="hidden" name="barangay_id"
                                                             value="<?php echo htmlspecialchars($barangay_id, ENT_QUOTES, 'UTF-8'); ?>">
                                                         <input type="hidden" name="criteria_keyctr"
                                                             value="<?php echo htmlspecialchars($row['keyctr'], ENT_QUOTES, 'UTF-8'); ?>">
 
-                                                        <input type="file" name="file" id="file-<?php echo $current_row; ?>"
+                                                        <input type="file" name="file" id="file-<?php echo $row['keyctr']; ?>"
                                                             class="file-input" style="display: none;" required>
 
                                                         <button type="button" class="btn btn-primary" title="Upload"
-                                                            onclick="document.getElementById('file-<?php echo $current_row; ?>').click();">
+                                                            onclick="document.getElementById('file-<?php echo $row['keyctr']; ?>').click();">
                                                             <i class="fa fa-upload"></i>
                                                         </button>
                                                     </form>
-
-
-                                                    <script>
-                                                        document.querySelectorAll(".file-input").forEach(input => {
-                                                            input.addEventListener("change", function () {
-                                                                let formId = "uploadForm-" + this.id.split("-")[1];
-                                                                let form = document.getElementById(formId);
-                                                                if (form) {
-                                                                    form.submit();
-                                                                }
-                                                            });
-                                                        });
-                                                    </script>
-                                                <?php elseif ($role === 'Admin'): ?>
+                                                <?php elseif ($role === 'Barangay Admin'): ?>
                                                     <p>No Uploads Yet</p>
                                                 <?php endif; ?>
                                             <?php else: ?>
-                                                <!-- File is Present -->
                                                 <form method="POST" action="../bar_assessment/admin_actions/view.php"
                                                     target="_blank">
                                                     <input type="hidden" name="file_id"
@@ -277,21 +270,9 @@ if ($barangay_id) {
                                                         <i class="fa fa-eye"></i>
                                                     </button>
                                                 </form>
-                                                <?php if ($role === 'Secretary'):
-                                                    if ($data['status'] != 'approved'): ?>
-                                                        <form id="deleteForm"
-                                                            data-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                            <button type="button" class="btn btn-danger mb-3" title="Delete"
-                                                                onclick="confirmDelete(this)">
-                                                                <i class="fa fa-trash"></i>
-                                                            </button>
-                                                        </form>
-
-                                                    <?php endif; ?>
-                                                <?php endif; ?>
                                             <?php endif; ?>
                                         </td>
-                                        <!-- Status Icon -->
+
                                         <td class="data-cell-status" style="text-align: center; vertical-align: middle;">
                                             <?php if (!empty($data)): ?>
                                                 <?php if ($data['status'] === 'approved'): ?>
@@ -303,56 +284,32 @@ if ($barangay_id) {
                                                 <?php endif; ?>
                                             <?php endif; ?>
                                         </td>
+
                                         <td class="data-cell-date-uploaded" style="text-align: center; vertical-align: middle;">
-                                            <?php
-                                            if ($data):
-                                                echo htmlspecialchars($data['date_uploaded']);
-                                            endif;
-
-                                            ?>
-
+                                            <?php echo !empty($data) ? htmlspecialchars($data['date_uploaded']) : ''; ?>
                                         </td>
 
-                                        <?php if ($role === 'Admin'): ?>
-                                            <?php
-                                            if ($data):
-                                                ?>
-                                                <td style="text-align: center; vertical-align: middle;">
-                                                    <div class="column">
-                                                        <div class="column">
-                                                            <div class="col-lg-6">
-                                                                <form method="POST" action="admin_actions/change_status.php">
-                                                                    <input type="hidden" name="file_id"
-                                                                        value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                                    <input type="hidden" name="action" value="approve">
-                                                                    <button type="submit" class="btn btn-success mb-3"
-                                                                        style="background-color: #28a745; border: none; color: white; padding: 5px; font-size: 15px; border-radius: 5px; cursor: pointer;">
-                                                                        Approve
-                                                                    </button>
-                                                                </form>
-                                                            </div>
-                                                            <div class="col-lg-6">
-                                                                <form method="POST" action="admin_actions/change_status.php">
-                                                                    <input type="hidden" name="file_id"
-                                                                        value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                                    <input type="hidden" name="action" value="decline">
-                                                                    <button type="submit" class="btn btn-danger btn-sm"
-                                                                        style="background-color: #dc3545; border: none; color: white; padding: 5px; font-size: 15px; border-radius: 5px; cursor: pointer;">
-                                                                        Decline
-                                                                    </button>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            <?php endif; ?>
+                                        <?php if ($role === 'Barangay Admin' && $data): ?>
+                                            <td style="text-align: center; vertical-align: middle;">
+                                                <div class="column">
+                                                    <form method="POST" action="admin_actions/change_status.php">
+                                                        <input type="hidden" name="file_id"
+                                                            value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                        <input type="hidden" name="action" value="approve">
+                                                        <button type="submit" class="btn btn-success mb-3">Approve</button>
+                                                    </form>
+                                                    <form method="POST" action="admin_actions/change_status.php">
+                                                        <input type="hidden" name="file_id"
+                                                            value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                        <input type="hidden" name="action" value="decline">
+                                                        <button type="submit" class="btn btn-danger btn-sm">Decline</button>
+                                                    </form>
+                                                </div>
+                                            </td>
                                         <?php endif; ?>
 
                                         <td class="data-cell-comments" style="text-align: center; vertical-align: middle;">
-                                            <?php
-                                            if ($data):
-                                                ?>
-
+                                            <?php if ($data): ?>
                                                 <button type="button" class="btn btn-primary" data-toggle="modal"
                                                     data-target="#commentModal"
                                                     data-fileid="<?= htmlspecialchars($data['file_id']); ?>"
@@ -360,20 +317,19 @@ if ($barangay_id) {
                                                     data-name="<?= htmlspecialchars($name); ?>">
                                                     Comments
                                                 </button>
-
-                                                <?php
-                                            endif;
-                                            ?>
+                                            <?php endif; ?>
                                         </td>
-
                                     </tr>
-                                </tbody>
-                            </table>
-                        <?php endforeach; ?>
-                    <?php endforeach; ?>
 
+                                <?php endforeach; ?>
 
-                    <!-- End of Page Content -->
+                                <?php
+                                if ($table_started) {
+                                    echo "</tbody></table>";
+                                }
+                                ?>
+
+                            <?php endforeach; ?>
 
                 </div>
             </div>
