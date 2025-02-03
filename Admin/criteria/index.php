@@ -182,56 +182,69 @@ if (!empty($maintenance_area_description_result)) {
             </button>
           </div>
           <?php
-          $last_indicator = '';
-          foreach ($data as $key => $rows): ?>
-            <div class="card-header bg-primary text-center py-3">
-              <div class="card-body">
-                <h5 class="text-white"><?php echo htmlspecialchars($key); ?></h5>
-              </div>
-            </div>
-            <?php foreach ($rows as $row):
-              $current_row = $row['keyctr'];
-              ?>
-              <?php
-              $current_indicator = $row['indicator_code'] . " " . $row['indicator_description'];
-              if ($current_indicator !== $last_indicator):
-                ?>
-                <div class="row bg-info" style="margin: 0; padding: 10px 0;">
-                  <h6 class="col-lg-12 text-center text-white" style="margin: 0;">
+$last_indicator = '';
+foreach ($data as $key => $rows): ?>
+    <div class="card-header bg-primary text-center py-3">
+        <div class="card-body">
+            <h5 class="text-white"><?php echo htmlspecialchars($key); ?></h5>
+        </div>
+    </div>
+
+    <?php
+    $table_started = false; // Track if table has been started for current indicator
+    foreach ($rows as $row):
+        $current_indicator = $row['indicator_code'] . " " . $row['indicator_description'];
+
+        if ($current_indicator !== $last_indicator):
+            // Close previous table if it was opened
+            if ($table_started) {
+                echo "</tbody></table>";
+            }
+            ?>
+            <div class="row bg-info" style="margin: 0; padding: 10px 0;">
+                <h6 class="col-lg-12 text-center text-white" style="margin: 0;">
                     <?php echo htmlspecialchars($current_indicator); ?>
-                  </h6>
-                </div>
-                <?php
-                $last_indicator = $current_indicator;
-                ?>
-              <?php endif; ?>
-              <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
+                </h6>
+            </div>
+            
+            <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
                 <thead class="bg-secondary text-white">
-                  <tr>
-                    <th style="width: 5%; text-align: center;">Action</th>
-                    <th style="width: 20%;text-align: center;">Relevant/Definition</th>
-                    <th style="width: 20%;text-align: center;">Minimum Requirements</th>
-                    <th style="width: 20%; text-align: center;"> Documentary Requirements/MOVs</th>
-                    <th style="width: 10%;text-align: center;"> Data Source</th>
-                  </tr>
+                    <tr>
+                        <th style="width: 5%; text-align: center;">Action</th>
+                        <th style="width: 20%; text-align: center;">Relevant/Definition</th>
+                        <th style="width: 20%; text-align: center;">Minimum Requirements</th>
+                        <th style="width: 20%; text-align: center;">Documentary Requirements/MOVs</th>
+                        <th style="width: 10%; text-align: center;">Data Source</th>
+                    </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>
-                      <button class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
-                        Edit
-                      </button>
-                      <a href="../script.php?delete_id=<?php echo $row['keyctr'] ?>">Delete</a>
-                    </td>
-                    <td><?php echo $row['relevance_definition']; ?></td>
-                    <td><?php echo $row['reqs_code'] . " " . $row['description']; ?></td>
-                    <td><?php echo $row['documentary_requirements']; ?></td>
-                    <td><?php echo $row['data_source']; ?></td>
-                  </tr>
-                </tbody>
-              </table>
-            <?php endforeach; ?>
-          <?php endforeach; ?>
+            <?php
+            $last_indicator = $current_indicator;
+            $table_started = true;
+        endif;
+        ?>
+        <tr>
+            <td>
+                <button class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
+                    Edit
+                </button>
+                <a href="../script.php?delete_id=<?php echo $row['keyctr'] ?>">Delete</a>
+            </td>
+            <td><?php echo $row['relevance_definition']; ?></td>
+            <td><?php echo $row['reqs_code'] . " " . $row['description']; ?></td>
+            <td><?php echo $row['documentary_requirements']; ?></td>
+            <td><?php echo $row['data_source']; ?></td>
+        </tr>
+    <?php endforeach; ?>
+    
+    <?php
+    // Close last table if it was started
+    if ($table_started) {
+        echo "</tbody></table>";
+    }
+    ?>
+<?php endforeach; ?>
+
           <!-- End of Main Content -->
         </div>
       </div>

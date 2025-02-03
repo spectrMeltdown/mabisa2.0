@@ -23,7 +23,7 @@
                 </div>
 
                 <!-- Add Comment Form -->
-                <?php if ($role === 'Admin'): ?>
+                <?php if ($role === 'Barangay Admin'): ?>
                     <form method="post" action="../bar_assessment/admin_actions/add_comment.php">
                         <input type="hidden" name="file_id">
                         <input type="hidden" name="name">
