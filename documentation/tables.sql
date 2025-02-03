@@ -75,16 +75,15 @@ CREATE TABLE users (
 
 CREATE TABLE user_roles_barangay (
 	user_id int NOT NULL,
-	barangay_id varchar(10) NOT NULL, -- just following what was already set in the database
-  criteria_id bigint(20) UNSIGNED NOT NULL,-- just following what was already set in the database
-  reqs_code_id varchar(6) NOT NULL,-- just following what was already set in the database
-  reqs_code_id varchar(10) NOT NULL,-- just following what was already set in the database
+	barangay_id varchar(10), -- just following what was already set in the database
+  minimum_req_id bigint(20),-- just following what was already set in the database
+  permission_id int,
   last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (user_id, barangay_id, criteria_id, version_id), -- there must not exist a row with the 4 being the same
+  UNIQUE (user_id, barangay_id, minimum_req_id, permission_id), -- there must not exist a row with the 4 being the same. Using UNIQUE because primary keys cannot be null
 	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, 
-  FOREIGN KEY (barangay_id) REFERENCES refbarangay(brgyid),
-	FOREIGN KEY (criteria_id) REFERENCES maintenance_criteria_setup(keyctr),
-  FOREIGN KEY (version_id) REFERENCES maintenance_criteria_setup(version_keyctr)
+  FOREIGN KEY (barangay_id) REFERENCES refbarangay(brgyid) ON DELETE SET NULL,
+	FOREIGN KEY (minimum_req_id) REFERENCES maintenance_area_mininumreqs(keyctr) ON DELETE SET NULL,
+  FOREIGN KEY (permission_id) REFERENCES permissions(id) ON DELETE SET NULL
 );
 
 
