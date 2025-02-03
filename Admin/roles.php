@@ -56,7 +56,7 @@ require_once '../db/db.php';
                 <h3 class="m-0 font-weight-bold text-primary">Roles</h3>
               </div>
               <div style="float: right;">
-                <a href="roles_change.php" class="btn btn-sm btn-primary">Add role</a>
+                <a href="roles_update.php" class="btn btn-sm btn-primary">Add role</a>
                 <a onclick="history.back()" class="btn btn-sm btn-secondary">Go back</a>
               </div>
             </div>
@@ -74,6 +74,7 @@ require_once '../db/db.php';
                       <tr>
                         <th>Role</th>
                         <th>Permissions</th>
+                        <th>Barangay Assignments</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
@@ -82,6 +83,7 @@ require_once '../db/db.php';
                         <tr>
                           <th>Role</th>
                           <th>Permissions</th>
+                          <th>Barangay Assignments</th>
                           <th>Actions</th>
                         </tr>
                       </tfoot>
@@ -120,11 +122,12 @@ require_once '../db/db.php';
                               }
                               echo $permissionsValue;
                               ?></td>
+                          <td><?php echo ($row['allow_barangay'] == true ? 'Yes' : 'No') ?></td>
                           <td>
                             <?php
                             if (!($row['name'] === 'Super Admin')):
                             ?>
-                              <a href="roles_change.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-info btn-circle edit-role-btn">
+                              <a href="roles_update.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-info btn-circle edit-role-btn">
                                 <i class="fas fa-edit"></i>
                               </a>
                               <a href="#delete-role"

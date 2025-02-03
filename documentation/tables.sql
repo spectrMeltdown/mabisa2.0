@@ -77,9 +77,10 @@ CREATE TABLE user_roles_barangay (
 	user_id int NOT NULL,
 	barangay_id varchar(10) NOT NULL, -- just following what was already set in the database
   criteria_id bigint(20) UNSIGNED NOT NULL,-- just following what was already set in the database
-  version_id bigint(20) NOT NULL,-- just following what was already set in the database
+  reqs_code_id varchar(6) NOT NULL,-- just following what was already set in the database
+  reqs_code_id varchar(10) NOT NULL,-- just following what was already set in the database
   last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (user_id, barangay_id, criteria_id, version_id), -- there must not exists a row with the 4 being the same
+  PRIMARY KEY (user_id, barangay_id, criteria_id, version_id), -- there must not exist a row with the 4 being the same
 	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, 
   FOREIGN KEY (barangay_id) REFERENCES refbarangay(brgyid),
 	FOREIGN KEY (criteria_id) REFERENCES maintenance_criteria_setup(keyctr),

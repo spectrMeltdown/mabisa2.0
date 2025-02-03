@@ -11,7 +11,12 @@ $('#roles_dataTable').DataTable({
   //     searchable: false, // Disable search on
   //   },
   // ],
-  columns: [{ data: 'Role' }, { data: 'Permissions' }, { data: 'Actions' }],
+  columns: [
+    { data: 'Role' },
+    { data: 'Permissions' },
+    { data: 'Barangay Assignments' },
+    { data: 'Actions' },
+  ],
 });
 
 $('.delete-role-btn').on('click', async e => {

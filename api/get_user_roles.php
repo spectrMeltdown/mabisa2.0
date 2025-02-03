@@ -7,32 +7,32 @@ require_once '../db/db.php';
 
 try {
   if ($_SERVER['REQUEST_METHOD'] !== 'POST') throw new Exception('Invalid request.');
-  if (empty($_POST['role_id'])) throw new Exception('Invalid id.');
+  if (empty($_POST['id'])) throw new Exception('Invalid id.');
   global $pdo;
 
   /** @var int */
-  $id = $_POST['role_id'];
+  $id = $_POST['id'];
 
-  $query = $pdo->prepare("select * from permissions inner join roles on roles.id = permissions.id where roles.id = :id");
+  $query = $pdo->prepare("select * user_roles where id = :id");
   $query->execute([
     'id' => $id
   ]);
 
-  $rolePermissions = $query->fetch(PDO::FETCH_ASSOC);
+  $userRoles = $query->fetch(PDO::FETCH_ASSOC);
 
   // remove first item (id)
-  array_shift($rolePermissions);
+  array_shift($userRoles);
   // remove last item (last modified)
-  array_pop($rolePermissions);
+  array_pop($userRoles);
 
   //get all items where value is true (or 1 in this case)
-  $rolePermissions = array_filter($rolePermissions, function ($permission) {
+  $userRoles = array_filter($userRoles, function ($permission) {
     writeLog('Permission is:');
     writeLog($permission);
     return $permission == 1;
   });
 
-  echo json_encode($rolePermissions);
+  echo json_encode($userRoles);
 } catch (\Throwable $th) {
   http_response_code(500);
   echo json_encode($th->getMessage());

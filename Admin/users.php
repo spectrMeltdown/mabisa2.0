@@ -58,7 +58,7 @@ require_once '../db/db.php';
               </div>
               <div style="float: right;">
                 <div class="row">
-                  <button class="btn btn-sm btn-primary add-user-btn" data-toggle="modal" data-target="#crud-user">Add User</button>
+                  <a class="btn btn-sm btn-primary add-user-btn" href="users_update.php">Add User</a>
                   <a class="btn btn-sm btn-primary ml-2" href="roles.php" data-transition="view">Manage roles</a>
                 </div>
               </div>

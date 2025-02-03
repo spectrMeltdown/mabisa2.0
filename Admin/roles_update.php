@@ -69,7 +69,7 @@ require_once '../db/db.php';
                   <?php
                   if (empty($_GET['id'])):
                   ?>
-                    Create
+                    Add
                   <?php
                   else:
                   ?>
@@ -108,7 +108,7 @@ require_once '../db/db.php';
                 <div class="mb-3 form-group">
                   <input type="checkbox" name="allowBarangay" id="allowBarangay" value="true">
                   <div class="mr-1 d-inline-block"></div>
-                  <label for="roleName" class="form-label">Allow assigning of barangays?</label>
+                  <label for="allowBarangay" class="form-label">Allow assigning of barangays?</label>
                   <i class="fas fa-question-circle" style="font-size: 15px" data-toggle="tooltip" data-placement="left" title="Barangay assignments can be done when creating or editing users."></i>
                 </div>
                 <div class="mb-3 form-group container-fluid" id="permissions">

@@ -4,7 +4,8 @@ let origPassLabel = 'Password';
 let origModalLabel = 'New user';
 let selectedBarangays = [];
 let currentUserID;
-let roles = {};
+/** @var {array} */
+let roles = [];
 const defaultAlert = '<div class="alert"></div>';
 let editMode = undefined;
 
@@ -16,26 +17,39 @@ $('#cancel-btn').on('click', async () => {
     'Yes',
   );
   if (confirm) {
-    //testing
+    history.back();
   } else {
     console.log('cancelled');
   }
 });
 
-//fetch all roles and save them for later use
+// fetch all roles and save them for later use
 $.ajax({
   type: 'POST',
   url: '../api/get_roles.php',
-  success: e => {
-    console.log(e);
-    roles = e;
+  success: res => {
+    console.log('Roles is: ' + res);
+    roles = JSON.parse(res);
   },
   error: e => {
     console.log('Error getting roles: ' + e);
   },
 });
 
-// for showing modal after clicking edit btn
+// fetch all user_roles
+$.ajax({
+  type: 'POST',
+  url: '../api/get_user_roles.php',
+  success: res => {
+    console.log('User roles is: ' + res);
+    roles = JSON.parse(res);
+  },
+  error: e => {
+    console.log('Error getting roles: ' + e);
+  },
+});
+
+// for showing modal after clicking edit btn`
 // using document.addEventListener is better than document.querySelectorAll().forEach()
 // because the latter only works when the element in query is static (not dynamically added/removed)
 // reset the form element in crud user dialog
@@ -110,99 +124,26 @@ $('#crud-user').on('hidden.bs.modal', () => {
 // listen when the admin changes selection, and display additional inputs
 if (document.getElementById('role')) {
   document.getElementById('role').addEventListener('change', event => {
-    console.log('Changed role');
     if (loading) return;
     toggleLoading();
 
     let selectedOption = event.target.value;
     console.log(`${selectedOption}`);
 
-    if (selectedOption == 'Secretary') {
-      toggleAuditor(false);
-      toggleSecretary(true);
-    } else if (selectedOption == 'Auditor') {
-      toggleAuditor(true);
-      toggleSecretary(false);
-      const loading = document.getElementById('barangayAssignmentsLoading');
-      const list = document.getElementById('barangayAssignmentsList');
-      const none = document.getElementById('noBarangayAssignments');
-
-      if (editMode) {
-        console.log('editing auditor');
-        console.log(currentUserID);
-        fetch('../api/user_assignments.php', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: new URLSearchParams({
-            id: currentUserID,
-          }),
-        })
-          .then(res => {
-            if (!res.ok) {
-              console.error(res.text);
-              throw 'Error loading.';
-            }
-            return res.json();
-          })
-          .catch(e => {
-            console.error(e);
-            throw e;
-          })
-          .then(data => {
-            if (data && data.error) {
-              addAlert(data.error);
-              return;
-            }
-            loading.style.display = 'none';
-            console.log('Data is: ' + JSON.stringify(data));
-            if (data.length === 0) {
-              none.style.display = 'inline-block';
-            } else {
-              for (let entry in data) {
-                const row = document.createElement('li');
-                row.classList.add(
-                  'list-group-item',
-                  'd-flex',
-                  'justify-content-between',
-                  'align-items-center',
-                );
-                row.id = entry.brgyid ?? '--';
-                row.textContent = entry.brgyname ?? '--';
-                list.append(row);
-              }
-              list.style.display = 'block';
-            }
-          });
+    const index = roles.findIndex(item => item.id == selectedOption);
+    if (index !== -1 && roles[index].allow_barangay) {
+      $('#barangayAssignmentsLoading').css('display', 'none');
+      $('#barangaySelection').css('display', 'block');
+      if (!roles) {
+        $('#noBarangayAssignments').css('display', 'block');
       } else {
-        console.log('new auditor');
-        loading.style.display = 'none';
-        if (auditorBarangays) {
-          for (let entry in auditorBarangays) {
-            const row = document.createElement('li');
-            row.classList.add(
-              'list-group-item',
-              'd-flex',
-              'justify-content-between',
-              'align-items-center',
-            );
-            row.id = entry.brgyid ?? '--';
-            row.textContent = entry.brgyname ?? '--';
-            list.append(row);
-          }
-          list.style.display = 'block';
-        } else {
-          none.style.display = 'block';
-        }
+        $('#barangayAssignmentsList').html('<ul>');
+        $('#barangayAssignmentsList').css('display', 'block');
       }
+    } else {
+      $('#barangaySelection').css('display', 'none');
     }
 
-    // admin
-    else {
-      toggleAuditor(false);
-      toggleSecretary(false);
-    }
     toggleLoading();
   });
 }

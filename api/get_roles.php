@@ -7,8 +7,8 @@ require_once 'get_role_name.php';
 
 try {
   global $pdo;
-  $query = "select * from roles";
-  $query = $pdo->query($query);
+  $sql = "select * from roles";
+  $query = $pdo->query($sql);
   $users = $query->fetchAll(PDO::FETCH_ASSOC);
   echo json_encode($users);
 } catch (\Throwable $th) {
