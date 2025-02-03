@@ -88,6 +88,8 @@ $('#save-role-btn').on('click', async () => {
   if (loading) return;
   toggleLoading();
 
+  console.log('Edit mode: ' + editMode);
+
   // get all users to compare existing usernames & emails
   /** @type {array} */
   const roles = await fetch(`../api/get_roles.php`).then(async res => {
@@ -142,7 +144,7 @@ $('#save-role-btn').on('click', async () => {
 
   // get input values
   let formData = new FormData(document.querySelector('#crud-role-content'));
-  let permissions;
+  let permissions = [];
   const roleName = formData.get('roleName').trim();
   const allowBarangay = formData.get('allowBarangay');
   // if edit mode, use keys and fill them. Needed for unchecking the previously checked items
@@ -150,17 +152,23 @@ $('#save-role-btn').on('click', async () => {
     permissions = allPermissions;
     for (let key of formData.keys()) {
       key = key.trim();
-      if (key !== 'roleName' && key !== 'allowBarangay') {
-        permissions[key] = 1;
+      if (key != 'roleName') {
+        if (key != 'allowBarangay') {
+          console.log('adding key ' + key);
+          permissions[key] = 1;
+        }
       }
     }
   } else {
     // use 'of' keyword because this is a iterator, not an array
     for (let key of formData.keys()) {
+      console.log('Key was ' + key);
       key = key.trim();
-      if (key == 'roleName' && key == 'allowBarangay') {
-        console.log('adding key ' + key);
-        permissions.push(key);
+      if (key != 'roleName') {
+        if (key != 'allowBarangay') {
+          console.log('adding key ' + key);
+          permissions.push(key);
+        }
       }
     }
   }
@@ -192,11 +200,13 @@ $('#save-role-btn').on('click', async () => {
   }
 
   // PERMISSIONS CHECK
-  console.log('Permissions is ' + JSON.stringify(permissions));
   if (
-    (!editMode && permissions.length === 0) ||
-    Object.values(permissions).some(value => value == console.log(value))
+    !editMode &&
+    (typeof permissions == 'object'
+      ? Object.keys(permissions).length
+      : permissions.length) == 0
   ) {
+    console.log('Permissions is ' + JSON.stringify(permissions));
     $('#permissions-alert').text('Please select at least one permission.');
     ok = false;
   }
