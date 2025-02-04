@@ -98,6 +98,10 @@ require_once '../db/db.php';
                 <!-- for displaying error -->
                 <div id="alert"></div>
 
+                <br>
+                <h3 class="mb-3">Account details</h3>
+                <hr>
+
                 <!-- actual content -->
                 <div class="row">
                   <div class="mb-3 form-group col-lg-6">
@@ -157,6 +161,7 @@ require_once '../db/db.php';
                   </div>
                 </div>
 
+                <!-- Roles selector -->
                 <?php
                 require_once '../db/db.php';
                 require_once '../api/get_role_name.php';
@@ -173,8 +178,8 @@ require_once '../db/db.php';
                 if (!empty($roles)):
                 ?>
                   <div class="mb-3 form-group">
-                    <label for="role" class="form-label">Role</label>
-                    <select class="custom-select" name="role" id="role" required>
+                    <label for="roleSelect" class="form-label">Role</label>
+                    <select class="custom-select" name="role" id="roleSelect" required>
                       <option value="" disabled selected hidden>Select one</option>
                       <?php
                       $options = '';
@@ -192,46 +197,31 @@ require_once '../db/db.php';
                     <h6>No roles available.</h6>
                   </div>
                 <?php endif; ?>
-                <hr>
-                <div class="col" id="barangaySelection" style="display: none">
-                  <div class="row">
-                    <h5 class="modal-title" id="barangayAssignmentsLabel">Assigned Barangays</h5>
-                    <button type="button" class="btn btn-success btn-sm ml-3" id="barangaySelectBtn" data-toggle="modal" data-target="#barangaySelectorDialog">
-                      <i class="fas fa-plus-circle"></i>&nbsp;Add
-                    </button>
-                  </div>
-                  <div id="barangayAssignmentsLoading" class="my-2">
-                    <div class="spinner-border spinner-border-sm mr-2" role="status"></div>
-                    <span class="text-align-center mt-2" style="font-size: 14px;">Loading...</span>
-                  </div>
-                  <div id="noBarangayAssignments" class="container" style="display: none">
-                    <p class="text-align-center mt-2" style="font-size: 14px;">No assignments yet.</p>
-                  </div>
-                  <ul class="container-fluid" id="barangayAssignmentsList" style="display: none">
-                  </ul>
-                  <div class="invalid-feedback">
-                  </div>
-                </div>
 
-                <!-- Permissions selector if no barangay assignments -->
-                <div class="mb-3 form-group container-fluid" id="permissionsNoBar">
-                  <h6 class="mb-3">User permissions</h6>
-                  <div id="permissionsNoBar-alert" class="text-danger"></div>
-                  <p id="permissionsNoBarNoPermissions" style="display: none;">No permissions found.</p>
-                  <ul id="permissionsNoBarList" class="list-unstyled">
-                    <li class="d-inline-block m-1">
-                      <div class="input-group mb-3 d-flex flex-row">
-                        <div class="input-group-prepend">
-                          <div class="input-group-text">
-                            <input type="checkbox" name="<?= $key ?>" id="<?= $key ?>" value="true" checked>
-                          </div>
-                        </div>
-                        <div class="card card-body border-secondary">
-                          <label for="<?= $key ?>" id="label-<?= $key ?>"><?= $key ?></label>
-                        </div>
-                      </div>
-                    </li>
-                  </ul>
+                <br>
+                <h3 class="mb-3">User permissions</h3>
+                <hr>
+
+                <h6 class="mb-3" id="noRoleSelected">Select a role to choose permissions.</h6>
+
+                <!-- General permissions selector, if has barangays-->
+                <div class="mb-3 form-group container-fluid" id="genPermContainer" style="display: none">
+                  <h6 class="mb-3">Global scope</h6>
+                  <div id="genPermAlert" class="text-danger"></div>
+                  <p id="genPermNoPerm" style="display: none;">No permissions found.</p>
+                  <ul id="genPermList" class="list-unstyled"></ul>
+                </div>
+                <br>
+                <hr>
+
+                <!-- Per-barangay permission, if allowed -->
+                <div class="mb-3 form-group container-fluid" id="barPermContainer" style="display: none;">
+                  <h6 class="mb-3">Barangay scope</h6>
+                  <div id="barPermAlert" class="text-danger"></div>
+                  <div class="table-responsive">
+                    <table class="table table-striped table-bordered" id="barPermTable" width="100%" cellspacing="0">
+                    </table>
+                  </div>
                 </div>
               </form>
             </div>

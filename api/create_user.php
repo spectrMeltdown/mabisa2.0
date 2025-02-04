@@ -18,18 +18,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $mobileNum = trim($_POST['mobile_num']);
   /** @var string */
   $pass = trim($_POST['pass']);
-  // /** @var string */
-  // $confirmPass = trim($_POST['confirmPass']);
   /** @var string */
   $role = $_POST['role'];
   /** @var string */
 
-  //check if passwords match
-  // if ($pass != $confirmPass) {
-  //   die('Passwords do not match!!');
-  // }
-  // echo $mobileNum;
-  // construct new user
 
   // insert to database
   global $pdo;
@@ -45,9 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       ':role' => $role,
       ':barangay' => $barangay,
     ]);
-    updateUserAssignments($id, $auditorBarangays, $pdo);
-    // blank means everything went okay
   } catch (\Throwable $th) {
-    echo json_encode($th);
+    echo json_encode($th->getMessage());
   }
 }
