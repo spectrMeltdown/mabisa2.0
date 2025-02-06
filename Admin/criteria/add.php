@@ -25,11 +25,12 @@ $maintenance_document_source_result = fetchAllData($pdo, "SELECT * FROM `mainten
     <!-- Modal -->
     <div class="modal fade" id="addMaintenanceCriteriaModal" tabindex="-1" aria-labelledby="modalLabel"
         aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-xl">
+
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalLabel">Add Maintenance Criteria Setup</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
                 </div>
                 <div class="modal-body">
                     <form action="../script.php" method="post">
