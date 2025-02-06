@@ -151,7 +151,7 @@ if ($barangay_id) {
                 <!-- Topbar -->
                 <?php
                 include '../common/nav.php';
-                $role = 'Barangay Secretary';
+                $role = 'Barangay Admin';
                 $name = 'name';
                 ?>
                 <!-- End of Topbar -->
@@ -207,22 +207,13 @@ if ($barangay_id) {
                                 <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
                                     <thead class="bg-secondary text-white">
                                         <tr>
-                                            <?php if ($role === 'Barangay Admin'): ?>
                                                 <th style="width: 17%; text-align: center;">Requirement Code</th>
                                                 <th style="width: 17%;">Requirement Description</th>
                                                 <th style="width: 9%; text-align: center;">Attachment</th>
                                                 <th style="width: 6%; text-align: center;">Status</th>
                                                 <th style="width: 9%; text-align: center;">Last Modified</th>
-                                                <th style="width: 7%; text-align: center;">Approval</th>
-                                                <th style="width: 9%; text-align: center;">Comments</th>
-                                            <?php elseif ($role === 'Barangay Secretary'): ?>
-                                                <th style="width: 17%;">Relevant/Definition</th>
-                                                <th style="width: 17%;">Requirement Description</th>
-                                                <th style="width: 6%; text-align: center;">Attachment</th>
-                                                <th style="width: 4%; text-align: center;">Status</th>
-                                                <th style="width: 9%;">Last Modified</th>
-                                                <th style="width: 7%; text-align: center;">Comments</th>
-                                            <?php endif; ?>
+                                                
+                                       
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -262,14 +253,25 @@ if ($barangay_id) {
                                                     <p>No Uploads Yet</p>
                                                 <?php endif; ?>
                                             <?php else: ?>
-                                                <form method="POST" action="../bar_assessment/admin_actions/view.php"
+                                                <button type="button" class="btn btn-success mb-3" title="View" data-toggle="modal"
+                                                    data-target="#commentModal"
+                                                    data-fileid="<?= htmlspecialchars($data['file_id']); ?>"
+                                                    data-role="<?= htmlspecialchars($role); ?>"
+                                                    data-name="<?= htmlspecialchars($name); ?>">
+                                                    <i class="fa fa-eye"></i>
+                                                </button>
+                                              
+                                                <?php if($role === $row['data_source'] && $data['status'] !== 'approved' ):?>
+
+                                                    <form method="POST" action="../bar_assessment/user_actions/delete.php"
                                                     target="_blank">
                                                     <input type="hidden" name="file_id"
                                                         value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                    <button type="submit" class="btn btn-success mb-3" title="View">
-                                                        <i class="fa fa-eye"></i>
+                                                    <button type="submit" class="btn btn-danger mb-3" title="Delete">
+                                                        <i class="fa fa-trash"></i>
                                                     </button>
                                                 </form>
+                                                    <?php endif; ?>
                                             <?php endif; ?>
                                         </td>
 
@@ -290,7 +292,7 @@ if ($barangay_id) {
                                         </td>
 
                                         <?php if ($role === 'Barangay Admin' && $data): ?>
-                                            <td style="text-align: center; vertical-align: middle;">
+                                            <!-- <td style="text-align: center; vertical-align: middle;">
                                                 <div class="column">
                                                     <form method="POST" action="admin_actions/change_status.php">
                                                         <input type="hidden" name="file_id"
@@ -305,20 +307,10 @@ if ($barangay_id) {
                                                         <button type="submit" class="btn btn-danger btn-sm">Decline</button>
                                                     </form>
                                                 </div>
-                                            </td>
+                                            </td> -->
                                         <?php endif; ?>
 
-                                        <td class="data-cell-comments" style="text-align: center; vertical-align: middle;">
-                                            <?php if ($data): ?>
-                                                <button type="button" class="btn btn-primary" data-toggle="modal"
-                                                    data-target="#commentModal"
-                                                    data-fileid="<?= htmlspecialchars($data['file_id']); ?>"
-                                                    data-role="<?= htmlspecialchars($role); ?>"
-                                                    data-name="<?= htmlspecialchars($name); ?>">
-                                                    Comments
-                                                </button>
-                                            <?php endif; ?>
-                                        </td>
+                                      
                                     </tr>
 
                                 <?php endforeach; ?>
@@ -337,6 +329,38 @@ if ($barangay_id) {
         </div>
     </div>
     </div>
+    <script>
+        document.querySelectorAll(".file-input").forEach(input => {
+            input.addEventListener("change", function () {
+                let formId = "uploadForm-" + this.id.split("-")[1];
+                let form = document.getElementById(formId);
+                if (form) {
+                    form.submit();
+                }
+            });
+        });
+
+        
+        $(document).ready(function () {
+    $('#commentModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); 
+        var fileId = button.data('fileid'); 
+        var name = button.data('name'); 
+        var modal = $(this);
+
+        var fileSrc = "../bar_assessment/admin_actions/view.php?file_id=" + fileId;
+        modal.find('#fileDisplay').attr('src', fileSrc);
+        modal.find('input[name="file_id"]').val(fileId);
+        modal.find('input[name="name"]').val(name);
+        modal.find('#approveFileId').val(fileId);
+        modal.find('#declineFileId').val(fileId);
+    });
+});
+
+
+    </script>
+    
+
     <?php require '../components/comment_section.php'; ?>
 </body>
 
