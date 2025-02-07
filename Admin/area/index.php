@@ -20,10 +20,12 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <html lang="en">
 
 <head>
-  
+
   <?php
-  $isInFolder=true;
+  $isInFolder = true;
   require '../common/head.php' ?>
+  <script src="../../vendor/jquery/jquery.min.js"></script>
+  <script src="../../js/maintenance-criteria.js"></script>
 </head>
 
 <body id="page-top">
@@ -46,41 +48,49 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <!-- End of Topbar -->
         <!-- Begin Page Content -->
         <div class="container-fluid">
-          <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Assign Area</h1>
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <div style="float: left;">
+                <h3 class="m-0 font-weight-bold text-primary">Assign Area</h3>
+              </div>
+              <div style="float: right;">
+                <div class="row">
+                  <a class="btn btn-primary" id="open-add-modal">Add Area</a>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table table-responsive">
+                <table id="maintenanceTable" class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Description</th>
+                      <th>Trail</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($data as $row):
+                      ?>
+                      <tr>
+
+                        <td style="font-size: 20px;"><?php echo $row['description']; ?></td>
+                        <td style="font-size: 20px;"><?php echo $row['trail']; ?></td>
+                        <td>
+                          <a class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
+                            Edit
+                          </a>
+                          <a href="../script.php?delete_id=<?php echo $row['keyctr'] ?>">Delete</a>
+                        </td>
+                      </tr>
+
+                    <?php endforeach ?>
+                  </tbody>
+                </table>
+
+              </div>
+            </div>
           </div>
-          <div class="container mt-5" style="padding-bottom: 20px">
-            <button type="button" class="btn btn-primary">
-              Add Area
-            </button>
-            
-          </div>
-          <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
-          <thead class="bg-secondary text-white">
-                  <tr>
-                  <th>Description</th>
-        <th>Trail</th>
-        <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                <?php foreach ($data as $row):
-              ?>
-<tr>
-                    
-                    <td style="font-size: 20px;"><?php echo $row['description']; ?></td>
-                    <td style="font-size: 20px;"><?php echo $row['trail']; ?></td>                   
-                    <td>
-                      <a class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
-                        Edit
-                      </a>
-                      <a href="../script.php?delete_id=<?php echo $row['keyctr'] ?>">Delete</a>
-                    </td>
-                  </tr>
-              
-              <?php endforeach?> 
-                </tbody>
-          </table>
 
         </div>
       </div>
