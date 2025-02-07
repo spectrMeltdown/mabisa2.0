@@ -94,6 +94,21 @@ $('#crud-user').on('hidden.bs.modal', () => {
   $('#alert').html(defaultAlert);
 });
 
+$('#barPermTable').DataTable({
+  ajax: {
+    url: '../api/get_user_permission_table.php',
+    data: d => {
+      d.roleID = $('#roleSelect').val(); // will auto update based on current selection
+    },
+    dataSrc: '',
+  },
+  columns: [
+    { data: 'barangay', title: 'Barangay' },
+    { data: 'criteria', title: 'Criteria' },
+    { data: 'permissions', title: 'Permissions' },
+  ],
+});
+
 // handle role changes
 $('#roleSelect').on('change', e => {
   if (loading) return;
@@ -130,9 +145,7 @@ $('#roleSelect').on('change', e => {
       // if not super admin, then added the permissions to the list
       else {
         // remove the superAdminLabel if present
-        if ($('#superAdminLabel').length) {
-          $('#superAdminLabel').remove();
-        }
+        if ($('#superAdminLabel').length) $('#superAdminLabel').remove();
         // convert permissions to a object first
         permissions = JSON.parse(permissions);
         // populate the permissions (already filtered by server)
@@ -146,7 +159,10 @@ $('#roleSelect').on('change', e => {
                                  </div>
                                </div>
                                <div class="card card-body border-secondary">
-                                 <label for="${key}" id="label-${value}">${key.replaceAll('_', ' ')}</label>
+                                 <label for="${key}" id="label-${value}">${key.replaceAll(
+            '_',
+            ' ',
+          )}</label>
                                </div>
                              </div>
                            </li>`);
@@ -162,37 +178,24 @@ $('#roleSelect').on('change', e => {
 
   // show/hide barangay table
   $.ajax({
-    url: '../api/get_barangay_permissions.php',
+    url: '../api/get_barangay_permissions_tablephp',
     type: 'POST',
     data: {
       role_id: selectedOption,
     },
-    success: permissions => {
-      console.log('Permissions are : ' + permissions);
-
-      // remove all the displayed permissions
-      $('#genPermList').empty();
-
-      // if super admin, just display "all permissions are granted"
-      if (permissions == '"Super Admin"') {
-        console.log('Super admin');
-        if (!$('#superAdminLabel').length) {
-          $('#genPermList').append(`
-            <li class="m-1" id="superAdminLabel">
-            <h5>All permissions are automatically granted to super admins.</h5>
-                     </li>`);
-        }
-      }
-      // if not super admin, then added the permissions to the list
-      else {
+    success: data => {
+      console.log('bar permissions are : ' + data);
+      // empty the table
+      $('#barPermTable').empty();
+      // proceed if not super admin
+      if (!(data['role'] == '"Super Admin"')) {
         // remove the superAdminLabel if present
-        if ($('#superAdminLabel').length) {
-          $('#superAdminLabel').remove();
-        }
+        if ($('#superAdminLabel').length) $('#superAdminLabel').remove();
         // convert permissions to a object first
-        permissions = JSON.parse(permissions);
-        // populate the permissions (already filtered by server)
-        for (let [key, value] of Object.entries(permissions)) {
+        data = JSON.parse(data);
+        // populate the table
+        for (let [key, value] of Object.entries(data)) {
+          
           $('#genPermList').append(`
                   <li class="d-inline-block m-1">
                              <div class="input-group mb-3 d-flex flex-row">
@@ -202,19 +205,22 @@ $('#roleSelect').on('change', e => {
                                  </div>
                                </div>
                                <div class="card card-body border-secondary">
-                                 <label for="${key}" id="label-${value}">${key.replaceAll('_', ' ')}</label>
+                                 <label for="${key}" id="label-${value}">${key.replaceAll(
+            '_',
+            ' ',
+          )}</label>
                                </div>
                              </div>
                            </li>`);
         }
+        $('#barPermContainer').css('display', 'block');
       }
-      $('#genPermContainer').css('display', 'block');
-      $('#noRoleSelected').css('display', 'none');
     },
     error: res => {
       console.log('Error: ' + JSON.stringify(res));
     },
   });
+
   toggleLoading();
 });
 
