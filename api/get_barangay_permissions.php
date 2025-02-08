@@ -20,34 +20,34 @@ try {
   writeLog('Barangays was:');
   writeLog($barangays);
 
-  // get all permissions
-  $sql = "SELECT * FROM permissions";
-  $stmt = $pdo->prepare($sql);
-  $stmt->execute();
-  $allPermissions = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  writeLog('all permissions was:');
-  writeLog($allPermissions);
-
-  // Fetch taken permissions in user_roles (criteria)
-  // $sql = "SELECT user_roles_barangay_id, permission_id FROM user_roles";
-  // $stmt = $pdo->prepare($sql);
-  // $stmt->execute();
-  // $takenCriteria = [];
-  // foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
-  //   $takenCriteria[$row['brgyid']][] = $row['permission_id'];
-  // }
-
-  // Fetch all criteria instead (using active version)
-  $sql = "SELECT user_roles_barangay_id, permission_id FROM user_roles";
-  $stmt = $pdo->prepare($sql);
-  $stmt->execute();
-  $takenCriteria = [];
-  foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
-    $takenCriteria[$row['brgyid']][] = $row['permission_id'];
+  // get all permissions that start with "assessment"
+  $sql = "describe permissions;";
+  $query = $pdo->query($sql);
+  $allPermissions = [];
+  // add all permissions to the column
+  if ($query->rowCount() <= 0) throw new Exception('describe permissions didn\'t return anything');
+  while ($col = $query->fetch(PDO::FETCH_ASSOC)) {
+    // add if assessment word is in it
+    if (!(strstr($col, 'assessment') == false)) {
+      $allPermissions[] = $col;
+    }
   }
 
+  // Fetch all indicators instead from the current active version 
+  $sql = "SELECT i.indicator_code as code, i.relevance_def as description
+  from maintenance_area_indicators i 
+  inner join maintenance_criteria_setup cs
+  on cs.indicator_keyctr = i.keyctr 
+  inner join maintenance_criteria_version v
+  on v.keyctr = cs.version_keyctr
+  where v.active_ = 1"
+  ;
+  $stmt = $pdo->prepare($sql);
+  $stmt->execute();
+  $activeIndicators = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
   // Fetch taken permissions in user_roles_barangay (assessment)
-  $sql = "SELECT user_roles_barangay_id, permission_id FROM user_roles_barangay";
+  $sql = "SELECT  b.brgyid, b.brgyname, p.* from permissions p cross join refbarangay b inner join user_roles_barangay rb on rb.permission_id = p.id";
   $stmt = $pdo->prepare($sql);
   $stmt->execute();
   $takenAssessment = [];
@@ -62,32 +62,21 @@ try {
   foreach ($barangays as $barangay) {
     $barangayId = $barangay['brgyid'];
 
-    // // Get available criteria permissions (exclude taken ones)
-    // $availableCriteria = array_diff(array_keys($permissionsMap), $takenCriteria[$barangayId] ?? []);
+    // Exclude permissions that are not granted to the assigned role
+    $availableAssessment = array_diff(array_keys($rolePermissions), $takenAssessment[$barangayId] ?? []);
 
     // Get available assessment permissions (exclude taken ones)
-    $availableAssessment = array_diff(array_keys($permissionsMap), $takenAssessment[$barangayId] ?? []);
+    $availableAssessment = array_diff(array_keys($availableAssessment), $takenAssessment[$barangayId] ?? []);
 
     $response[] = [
-      "Barangay" => $barangay['name'],
-      "Criteria" => array_map(fn($id) => $permissionsMap[$id], $availableCriteria),
-      "Permissions" => array_map(fn($id) => $permissionsMap[$id], $availableAssessment)
+      "barangay" => $barangay['name'],
+      "indicators" => ,
+      "permissions" => array_map(fn($id) => $allPermissions[$id], $availableAssessment)
     ];
   }
 
   // Return JSON response
   echo json_encode($response, JSON_PRETTY_PRINT);
-
-  // // get all permissions columns
-  // $sql = "describe permissions;";
-  // $query = $pdo->query($sql);
-  // writeLog($query);
-
-  // // add all permissions to the column
-  // if ($query->rowCount() <= 0) throw new Exception('describe permissions didn\'t return anything');
-  // while ($col = $query->fetch(PDO::FETCH_ASSOC)) {
-  //   $result['permissions'][] = $col;
-  // }
 } catch (\Throwable $th) {
   http_response_code(500);
   $message = $th->getMessage();
