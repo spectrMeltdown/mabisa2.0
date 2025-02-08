@@ -205,7 +205,7 @@ if ($barangay_id) {
                                 </div>
 
                                 <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
-                                    <thead class="bg-secondary text-white">
+                                   <thead>
                                         <tr>
                                                 <th style="width: 17%; text-align: center;">Requirement Code</th>
                                                 <th style="width: 17%;">Requirement Description</th>

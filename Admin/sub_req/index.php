@@ -44,17 +44,22 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <!-- End of Topbar -->
         <!--Header-->
         <div class="container-fluid">
-          <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Sub Requirements</h1>
-          </div>
-          <!-- Begin Page Content -->
-          <div class="container mt-5" style="padding-bottom: 20px">
-            <button type="button" class="btn btn-primary">
-            Create New Record
-            </button>
-          </div>
+        
+          <div class="card shadow mb-4">
+          <div class="card-header py-3">
+              <div style="float: left;">
+                <h3 class="m-0 font-weight-bold text-primary">Sub Requirements</h3>
+              </div>
+              <div style="float: right;">
+                <div class="row">
+                  <a class="btn btn-primary" id="open-add-modal">Create New Record</a>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table table-responsive">
           <table class="table table-bordered" >
-            <thead class="bg-secondary text-white">
+           <thead>
               <tr>
               <th>KeyCtr</th>
             <th>MininumReq KeyCtr</th>
@@ -87,6 +92,7 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
               <?php endforeach ?>
             </tbody>
           </table>
+          </div></div></div>
           <!--End Page Content-->
         </div>
       </div>

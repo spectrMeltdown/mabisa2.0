@@ -44,52 +44,59 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <!-- End of Topbar -->
         <!--Header-->
         <div class="container-fluid">
-          <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Governance Assignment</h1>
-          </div>
-          <!-- Begin Page Content -->
-          <div class="container mt-5" style="padding-bottom: 20px">
-            <button type="button" class="btn btn-primary">
-            Add New Governance Entry
-            </button>
-          </div>
-          <table class="table table-bordered" >
-            <thead class="bg-secondary text-white">
-              <tr>
-              <th>ID</th>
-        <th>Category Code</th>
-        <th>Area Keyctr</th>
-        <th>Description Keyctr</th>
-        <th>Description</th>
-        <th>Trail</th>
-        <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php foreach ($data as $row):
-                ?>
-                <tr>
-                  <td><?php echo $row['keyctr']; ?></td>
-                  <td><?php echo $row['cat_code']; ?></td>
-                  <td><?php echo $row['area_keyctr']; ?></td>
-                  <td><?php echo $row['desc_keyctr']; ?></td>
-                  <td><?php echo $row['description']; ?></td>
-                  <td><?php echo $row['trail']; ?></td>
-                  <td>
-                    <a class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
-                      Edit
-                    </a>
-                    <a href="../script.php?delete_id=<?php echo $row['keyctr'] ?>">Delete</a>
-                  </td>
-                </tr>
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <div style="float: left;">
+                <h3 class="m-0 font-weight-bold text-primary">Governance Assignment</h3>
+              </div>
+              <div style="float: right;">
+                <div class="row">
+                  <a class="btn btn-primary" id="open-add-modal"> Add New Governance Entry</a>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table table-responsive"></div>
+              <table class="table table-bordered">
+               <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Category Code</th>
+                    <th>Area Keyctr</th>
+                    <th>Description Keyctr</th>
+                    <th>Description</th>
+                    <th>Trail</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php foreach ($data as $row):
+                    ?>
+                    <tr>
+                      <td><?php echo $row['keyctr']; ?></td>
+                      <td><?php echo $row['cat_code']; ?></td>
+                      <td><?php echo $row['area_keyctr']; ?></td>
+                      <td><?php echo $row['desc_keyctr']; ?></td>
+                      <td><?php echo $row['description']; ?></td>
+                      <td><?php echo $row['trail']; ?></td>
+                      <td>
+                        <a class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
+                          Edit
+                        </a>
+                        <a href="../script.php?delete_id=<?php echo $row['keyctr'] ?>">Delete</a>
+                      </td>
+                    </tr>
 
-              <?php endforeach ?>
-            </tbody>
-          </table>
-          <!--End Page Content-->
+                  <?php endforeach ?>
+                </tbody>
+              </table>
+              <!--End Page Content-->
+            </div>
+          </div>
         </div>
       </div>
     </div>
+  </div>
   </div>
 </body>
 

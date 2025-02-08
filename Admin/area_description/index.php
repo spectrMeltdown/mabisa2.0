@@ -43,43 +43,53 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <!-- End of Topbar -->
         <!--Header-->
         <div class="container-fluid">
-          <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Area Description</h1>
-          </div>
+        
           <!-- Begin Page Content -->
-          <div class="container mt-5" style="padding-bottom: 20px">
-            <button type="button" class="btn btn-primary">
-              Add New Description
-            </button>
+          
+          <div class="card shadow mb-4">
+          <div class="card-header py-3">
+              <div style="float: left;">
+                <h3 class="m-0 font-weight-bold text-primary">Area Description</h3>
+              </div>
+              <div style="float: right;">
+                <div class="row">
+                  <a class="btn btn-primary" id="open-add-modal">Add New Description</a>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table table-responsive">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Description</th>
+                      <th>Trail</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($data as $row):
+                      ?>
+                      <tr>
+                        <td><?php echo $row['keyctr']; ?></td>
+
+                        <td><?php echo $row['description']; ?></td>
+                        <td><?php echo $row['trail']; ?></td>
+                        <td>
+                          <a class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
+                            Edit
+                          </a>
+                          <a href="../script.php?delete_id=<?php echo $row['keyctr'] ?>">Delete</a>
+                        </td>
+                      </tr>
+
+                    <?php endforeach ?>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
-          <table class="table table-bordered" >
-            <thead class="bg-secondary text-white">
-              <tr>
-                <th>ID</th>
-                <th>Description</th>
-                <th>Trail</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php foreach ($data as $row):
-                ?>
-                <tr>
-                  <td><?php echo $row['keyctr']; ?></td>
-
-                  <td><?php echo $row['description']; ?></td>
-                  <td><?php echo $row['trail']; ?></td>
-                  <td>
-                    <a class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
-                      Edit
-                    </a>
-                    <a href="../script.php?delete_id=<?php echo $row['keyctr'] ?>">Delete</a>
-                  </td>
-                </tr>
-
-              <?php endforeach ?>
-            </tbody>
-          </table>
           <!--End Page Content-->
         </div>
       </div>
