@@ -208,7 +208,7 @@ require_once '../db/db.php';
                 <div class="mb-3 form-group container-fluid" id="genPermContainer" style="display: none">
                   <h6 class="mb-3">Global scope</h6>
                   <div id="genPermAlert" class="text-danger"></div>
-                  <p id="genPermNoPerm" style="display: none;">No permissions found.</p>
+                  <p id="genPermNoPerm" style="display: none;">No permissions available.</p>
                   <ul id="genPermList" class="list-unstyled"></ul>
                 </div>
                 <br>

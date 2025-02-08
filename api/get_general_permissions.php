@@ -23,7 +23,7 @@ try {
     exit;
   }
 
-  $hasBarangay = ['allow_barangay'];
+  $hasBarangay = $role['allow_barangay'];
   writeLog('has barangay: ');
   writeLog($hasBarangay);
 
@@ -31,12 +31,13 @@ try {
   global $rolePermissions;
 
   // check if role allows barangays
-  if ($hasBarangay == true) {
+  if ($hasBarangay) {
     // remove all permissions that start with the name 'assessment'
-    array_filter($rolePermissions, function ($permission) {
-      writeLog($permission);
+    $rolePermissions = array_filter($rolePermissions, function ($permission) {
       return strstr((string)$permission, 'assessment');
     });
+    writeLog('New permissions are');
+    writeLog($rolePermissions);
   }
 
   writeLog('Final result: ');

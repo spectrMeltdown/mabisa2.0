@@ -4,51 +4,79 @@ declare(strict_types=1);
 $useAsImport; // for get_permissions.php
 require 'logging.php';
 require_once '../db/db.php';
-require_once 'get_permissions.php';
+require_once 'get_permissions.php'; // gets the role permissions
 
 try {
   if ($_SERVER['REQUEST_METHOD'] != 'POST') throw new Exception('Invalid request.');
   if (empty($_POST['role_id'])) throw new Exception('Invalid ID.');
+  if ($_POST['role_id'] == '') die;
   $result = [];
 
-  // get the role
-  $sql = "select * from roles where id = :role_id limit 1";
-  $query = $pdo->prepare($sql);
-  $query->execute([':role_id' => $_POST['role_id']]);
-  $role = $query->fetch(PDO::FETCH_ASSOC);
+  // get all barangays
+  $sql = "SELECT brgyid, name FROM refbarangay";
+  $stmt = $pdo->prepare($sql);
+  $stmt->execute();
+  $barangays = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  writeLog('Barangays was:');
+  writeLog($barangays);
 
-  // super admins are auto granted all permissions
-  if ($role['name'] == 'Super Admin') {
-    echo json_encode('Super Admin');
-    exit;
+  // get all permissions
+  $sql = "SELECT * FROM permissions";
+  $stmt = $pdo->prepare($sql);
+  $stmt->execute();
+  $allPermissions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  writeLog('all permissions was:');
+  writeLog($allPermissions);
+
+  // Fetch taken permissions in user_roles (criteria)
+  // $sql = "SELECT user_roles_barangay_id, permission_id FROM user_roles";
+  // $stmt = $pdo->prepare($sql);
+  // $stmt->execute();
+  // $takenCriteria = [];
+  // foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+  //   $takenCriteria[$row['brgyid']][] = $row['permission_id'];
+  // }
+
+  // Fetch all criteria instead (using active version)
+  $sql = "SELECT user_roles_barangay_id, permission_id FROM user_roles";
+  $stmt = $pdo->prepare($sql);
+  $stmt->execute();
+  $takenCriteria = [];
+  foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+    $takenCriteria[$row['brgyid']][] = $row['permission_id'];
   }
 
-  $hasBarangay = ['allow_barangay'];
-  writeLog('has barangay: ');
-  writeLog($hasBarangay);
+  // Fetch taken permissions in user_roles_barangay (assessment)
+  $sql = "SELECT user_roles_barangay_id, permission_id FROM user_roles_barangay";
+  $stmt = $pdo->prepare($sql);
+  $stmt->execute();
+  $takenAssessment = [];
+  foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+    $takenAssessment[$row['barangay_id']][] = $row['permission_id'];
+  }
+  writeLog('taken assessment permissions was:');
+  writeLog($takenAssessment);
 
-  // get permissions of the role
-  global $rolePermissions;
+  // Build the JSON response
+  $response = [];
+  foreach ($barangays as $barangay) {
+    $barangayId = $barangay['brgyid'];
 
-  // check if role allows barangays
-  if ($hasBarangay == true) {
-    // remove all permissions that start with the name 'assessment'
-    array_filter($rolePermissions, function ($permission) {
-      writeLog($permission);
-      return strstr((string)$permission, 'assessment');
-    });
+    // // Get available criteria permissions (exclude taken ones)
+    // $availableCriteria = array_diff(array_keys($permissionsMap), $takenCriteria[$barangayId] ?? []);
+
+    // Get available assessment permissions (exclude taken ones)
+    $availableAssessment = array_diff(array_keys($permissionsMap), $takenAssessment[$barangayId] ?? []);
+
+    $response[] = [
+      "Barangay" => $barangay['name'],
+      "Criteria" => array_map(fn($id) => $permissionsMap[$id], $availableCriteria),
+      "Permissions" => array_map(fn($id) => $permissionsMap[$id], $availableAssessment)
+    ];
   }
 
-  writeLog('Final result: ');
-  writeLog($rolePermissions);
-  echo json_encode($rolePermissions);
-} catch (\Throwable $th) {
-  http_response_code(500);
-  $message = $th->getMessage();
-  writeLog($message);
-  echo json_encode($message);
-}
-
+  // Return JSON response
+  echo json_encode($response, JSON_PRETTY_PRINT);
 
   // // get all permissions columns
   // $sql = "describe permissions;";
@@ -60,3 +88,9 @@ try {
   // while ($col = $query->fetch(PDO::FETCH_ASSOC)) {
   //   $result['permissions'][] = $col;
   // }
+} catch (\Throwable $th) {
+  http_response_code(500);
+  $message = $th->getMessage();
+  writeLog($message);
+  echo json_encode($message);
+}

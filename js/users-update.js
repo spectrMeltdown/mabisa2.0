@@ -94,21 +94,6 @@ $('#crud-user').on('hidden.bs.modal', () => {
   $('#alert').html(defaultAlert);
 });
 
-$('#barPermTable').DataTable({
-  ajax: {
-    url: '../api/get_user_permission_table.php',
-    data: d => {
-      d.roleID = $('#roleSelect').val(); // will auto update based on current selection
-    },
-    dataSrc: '',
-  },
-  columns: [
-    { data: 'barangay', title: 'Barangay' },
-    { data: 'criteria', title: 'Criteria' },
-    { data: 'permissions', title: 'Permissions' },
-  ],
-});
-
 // handle role changes
 $('#roleSelect').on('change', e => {
   if (loading) return;
@@ -117,7 +102,7 @@ $('#roleSelect').on('change', e => {
   // id of the role
   /** @type {string} */
   let selectedOption = e.target.value;
-  // console.log(`${selectedOption}`);
+  console.log('Current selected option is: '  + selectedOption);
 
   // show/hide general permissions
   $.ajax({
@@ -128,12 +113,17 @@ $('#roleSelect').on('change', e => {
     },
     success: permissions => {
       console.log('Permissions are : ' + permissions);
+      let testPermissions = JSON.parse(permissions);
 
-      // remove all the displayed permissions
+      // reset divs
       $('#genPermList').empty();
+      $('#genPermNoPerm').css('display', 'none');
 
       // if super admin, just display "all permissions are granted"
-      if (permissions == '"Super Admin"') {
+      if (!testPermissions || testPermissions.length == 0) {
+        console.log('blank global permissions!');
+        $('#genPermNoPerm').css('display', 'block');
+      } else if (permissions == '"Super Admin"') {
         console.log('Super admin');
         if (!$('#superAdminLabel').length) {
           $('#genPermList').append(`
@@ -176,51 +166,20 @@ $('#roleSelect').on('change', e => {
     },
   });
 
-  // show/hide barangay table
+  // get barangay permissions
   $.ajax({
-    url: '../api/get_barangay_permissions_tablephp',
+    url: '../api/get_barangay_permissions.php',
     type: 'POST',
     data: {
       role_id: selectedOption,
     },
-    success: data => {
-      console.log('bar permissions are : ' + data);
-      // empty the table
-      $('#barPermTable').empty();
-      // proceed if not super admin
-      if (!(data['role'] == '"Super Admin"')) {
-        // remove the superAdminLabel if present
-        if ($('#superAdminLabel').length) $('#superAdminLabel').remove();
-        // convert permissions to a object first
-        data = JSON.parse(data);
-        // populate the table
-        for (let [key, value] of Object.entries(data)) {
-          
-          $('#genPermList').append(`
-                  <li class="d-inline-block m-1">
-                             <div class="input-group mb-3 d-flex flex-row">
-                               <div class="input-group-prepend">
-                                 <div class="input-group-text">
-                                   <input type="checkbox" name="${key}" id="${key}" value="true" checked>
-                                 </div>
-                               </div>
-                               <div class="card card-body border-secondary">
-                                 <label for="${key}" id="label-${value}">${key.replaceAll(
-            '_',
-            ' ',
-          )}</label>
-                               </div>
-                             </div>
-                           </li>`);
-        }
-        $('#barPermContainer').css('display', 'block');
-      }
+    success: barPermissions => {
+      console.log('bar permissions are : ' + barPermissions);
     },
     error: res => {
       console.log('Error: ' + JSON.stringify(res));
     },
   });
-
   toggleLoading();
 });
 
