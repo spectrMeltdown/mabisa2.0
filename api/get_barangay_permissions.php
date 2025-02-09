@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 $useAsImport; // for get_permissions.php
+$permsOnly = false;
 require 'logging.php';
 require_once '../db/db.php';
 require_once 'get_permissions.php'; // gets the role permissions
@@ -11,6 +12,15 @@ try {
   if (empty($_POST['role_id'])) throw new Exception('Invalid ID.');
   if ($_POST['role_id'] == '') die;
   $result = [];
+
+  // check if role allows barangay
+  $sql = "SELECT allow_barangay FROM roles where id = :id";
+  $stmt = $pdo->prepare($sql);
+  $stmt->execute([':id' => $_POST['role_id']]);
+  $role = $stmt->fetch(PDO::FETCH_ASSOC);
+
+  writeLog($role);
+  if ($role['allow_barangay'] != 1) exit;
 
   // get all barangays
   $sql = "SELECT brgyid, brgyname FROM refbarangay";
@@ -70,16 +80,23 @@ try {
   }); // remove allow_barangay
   foreach ($barangays as $barangay) {
     foreach ($activeIndicators as $indicator) {
-      $barangayId = $barangay['brgyid'];
-
       // Get available assessment permissions (exclude taken ones)
-      $takenPermissions = array_diff($allPermissions, $takenAssessment[$barangayId] ?? []);
+      $takenPermissions = array_diff($allPermissions, $takenAssessment[$barangay['brgyid']] ?? []);
+      writeLog('original taken assessment');
+      writeLog($takenAssessment);
 
+      // TODO: add a ternary to check if it is taken or not.
+      // CREATE MODE: if taken, mark with check and disable
+      // EDIT MODE: if taken and user id match, mark with check. If taken and not user match, then check and disable
       $response[] = [
         "barangay" => $barangay['brgyname'],
         "indicators" => $indicator,
-        'taken_perms' => $takenPermissions,
-        'available_perms' => $rolePermissions,
+        'taken_perms' => array_map(function ($perm) {
+          return str_replace('assessment_', '', $perm);
+        }, $takenPermissions),
+        'available_perms' => array_map(function ($perm) {
+          return str_replace('assessment_', '', $perm);
+        }, $rolePermissions),
       ];
     }
   }
