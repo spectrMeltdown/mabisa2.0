@@ -1,41 +1,51 @@
 <?php
-include 'db.php';
+include '../../db/db.php';
 session_start();
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_area'])) {
     $description = $_POST['description'];
     $trail = 'Created at ' . date('Y-m-d H:i:s');
 
-    // Insert into the database
-    $sql = "INSERT INTO maintenance_area (description, trail) VALUES (:description, :trail)";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute(['description' => $description, 'trail' => $trail]);
+    try {
+        $pdo->beginTransaction();
 
-    // Set success message and redirect
-    $_SESSION['success'] = "Area created successfully!";
+        $sql = "INSERT INTO maintenance_area (description, trail) VALUES (:description, :trail)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['description' => $description, 'trail' => $trail]);
+
+        $pdo->commit();
+
+        $_SESSION['success'] = "Area created successfully!";
+    } catch (PDOException $e) {
+        $pdo->rollBack();
+        $_SESSION['error'] = "Error: " . $e->getMessage();
+    }
+
     header('Location: index.php');
     exit();
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Add New Area</title>
-</head>
-<body>
 
-<h1>Add New Area</h1>
+<div class="modal fade" id="addAreaModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Add New Area</h5>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="create_area.php">
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description" required></textarea>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 
-<form method="POST" action="create_area.php">
-    <label>Description:</label><br>
-    <textarea name="description" required></textarea><br><br>
-
-    <button type="submit">Add Area</button>
-</form>
-
-<a href="index.php">Back to List</a>
-
-</body>
-</html>
+                        <button type="submit" class="btn btn-primary" name="add_area">Add Area</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

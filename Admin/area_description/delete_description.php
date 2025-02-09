@@ -1,5 +1,5 @@
 <?php
-include 'db.php';
+include '../../db/db.php';
 session_start();
 
 if (isset($_GET['keyctr'])) {
@@ -11,7 +11,7 @@ if (isset($_GET['keyctr'])) {
 
     // Set success message and redirect
     $_SESSION['success'] = "Description deleted successfully!";
-    header('Location: index_description.php');
+    header('Location: index.php');
     exit();
 } else {
     echo "Invalid request!";

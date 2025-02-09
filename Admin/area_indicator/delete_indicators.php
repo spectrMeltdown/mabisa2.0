@@ -1,22 +1,31 @@
 <?php
-include 'db.php';
+include '../../db/db.php';
 session_start();
 
-if (isset($_GET['indicator_code'])) {
-    $indicator_code = $_GET['indicator_code'];
+if (isset($_GET['keyctr'])) {
+    $keyctr = $_GET['keyctr'];
 
-    // Delete the record
-    $stmt = $pdo->prepare("DELETE FROM maintenance_area_indicators WHERE indicator_code = ?");
-    if ($stmt->execute([$indicator_code])) {
-        $_SESSION['success'] = "Indicator entry deleted successfully!";
-    } else {
-        $_SESSION['error'] = "Failed to delete indicator entry.";
+    try {
+        // Start transaction
+        $pdo->beginTransaction();
+
+        // Delete the record
+        $stmt = $pdo->prepare("DELETE FROM maintenance_area_indicators WHERE keyctr = ?");
+        if ($stmt->execute([$keyctr])) {
+            // Commit the transaction
+            $pdo->commit();
+            $_SESSION['success'] = "Indicator entry deleted successfully!";
+        } else {
+            // Rollback if deletion fails
+            $pdo->rollBack();
+            $_SESSION['error'] = "Failed to delete indicator entry.";
+        }
+    } catch (Exception $e) {
+        // Rollback in case of an exception
+        $pdo->rollBack();
+        $_SESSION['error'] = "An error occurred: " . $e->getMessage();
     }
-    header("Location: index.php");
-    exit;
-} else {
-    $_SESSION['error'] = "No indicator code specified.";
+
     header("Location: index.php");
     exit;
 }
-?>
