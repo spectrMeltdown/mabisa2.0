@@ -206,7 +206,7 @@ require_once '../db/db.php';
 
                 <!-- General permissions selector, if has barangays-->
                 <div class="mb-3 form-group container-fluid" id="genPermContainer" style="display: none">
-                  <h6 class="mb-3">Global scope</h6>
+                  <h4 class="mb-3"><strong>Global scope</strong></h4>
                   <div id="genPermAlert" class="text-danger"></div>
                   <p id="genPermNoPerm" style="display: none;">No permissions available.</p>
                   <ul id="genPermList" class="list-unstyled"></ul>
@@ -216,10 +216,10 @@ require_once '../db/db.php';
 
                 <!-- Per-barangay permission, if allowed -->
                 <div class="mb-3 form-group container-fluid" id="barPermContainer" style="display: none;">
-                  <h6 class="mb-3">Barangay scope</h6>
+                  <h4 class="mb-3"><strong>Barangay scope</strong></h4>
                   <div id="barPermAlert" class="text-danger"></div>
                   <div class="table-responsive">
-                    <table class="table table-striped table-bordered" id="barPermTable" width="100%" cellspacing="0">
+                    <table class="table table-bordered" id="barPermTable" width="100%" cellspacing="0">
                     </table>
                   </div>
                 </div>

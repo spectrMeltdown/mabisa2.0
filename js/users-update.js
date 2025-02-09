@@ -102,7 +102,7 @@ $('#roleSelect').on('change', e => {
   // id of the role
   /** @type {string} */
   let selectedOption = e.target.value;
-  console.log('Current selected option is: '  + selectedOption);
+  console.log('Current selected option is: ' + selectedOption);
 
   // show/hide general permissions
   $.ajax({
@@ -173,8 +173,92 @@ $('#roleSelect').on('change', e => {
     data: {
       role_id: selectedOption,
     },
-    success: barPermissions => {
-      console.log('bar permissions are : ' + barPermissions);
+    success: res => {
+      console.log('bar permissions are : ' + res);
+      const barTableData = JSON.parse(res);
+      $('#barPermTable').DataTable({
+        data: barTableData,
+        columns: [
+          { data: 'barangay', title: 'Barangay' },
+          {
+            data: 'indicators',
+            title: 'Indicators',
+            render: function(data, type, row) {
+              if (Array.isArray(data)) {
+                return data
+                  .map(
+                    ind =>
+                      `<strong>Code: ${ind['code']}</strong>:<br> ${ind['description']}`,
+                  )
+                  .join('<br>');
+              } else if (typeof data == 'object') {
+                return `<strong>Code: ${data.code}</strong><br>${data.description}`;
+              }
+              // console.log('Not array in render');
+              // console.log(typeof data);
+              return data; // Default display if not an array
+            },
+          },
+          {
+            data: 'available_perms',
+            title: 'Permissions',
+            render: function(data, type, row) {
+              if (Array.isArray(data)) {
+                return data
+                  .map(val => {
+                    const uniqueID = `${row['barangay']}-${row['indicators']['code']}-${val}`;
+                    return `<li class="d-inline-block m-1">
+                <div class="input-group mb-3 d-flex flex-row">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text">
+                      <input type="checkbox" name="" id="${uniqueID}" value="true" checked>
+                    </div>
+                  </div>
+                  <div class="card card-body border-secondary">
+                    <label for="${uniqueID}" id="label-${uniqueID}">${val.replaceAll(
+                      '_',
+                      ' ',
+                    )}</label>
+                  </div>
+                </div>
+              </li>`;
+                  })
+                  .join('<br>');
+              }
+              //  else if (typeof data == 'object') {
+              //   console.log('Not array in render');
+              //   console.log(JSON.stringify(data));
+              //   return Object.entries(data)
+              //     .map(([key, value]) => {
+              //       return `<li class="d-inline-block m-1">
+              //   <div class="input-group mb-3 d-flex flex-row">
+              //     <div class="input-group-prepend">
+              //       <div class="input-group-text">
+              //         <input type="checkbox" name="${key}" id="${key}" value="true" checked>
+              //       </div>
+              //     </div>
+              //     <div class="card card-body border-secondary">
+              //       <label for="${key}" id="label-${key}">${key.replaceAll(
+              //         '_',
+              //         ' ',
+              //       )}</label>
+              //     </div>
+              //   </div>
+              // </li>`;
+              //     })
+              //     .join('<br>');
+              // }
+              console.log('unknown data');
+              console.log(typeof data);
+              return data; // Default display if not an array
+            },
+          },
+        ],
+        rowsGroup: [
+          0, // Merge identical "Barangay" cells
+        ],
+      });
+      $('#barPermContainer').css('display', 'block');
     },
     error: res => {
       console.log('Error: ' + JSON.stringify(res));
