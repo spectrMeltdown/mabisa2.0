@@ -12,6 +12,10 @@ $stmt = $pdo->query("SELECT * FROM maintenance_area_description");
 $stmt->execute();
 $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+
+session_start();
+$successMessage = isset($_SESSION['success']) ? $_SESSION['success'] : '';
+unset($_SESSION['success']); // Remove message after displaying
 ?>
 
 <!DOCTYPE html>
@@ -79,10 +83,11 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <td><?php echo $row['description']; ?></td>
                         <td><?php echo $row['trail']; ?></td>
                         <td>
-                          <a class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
+                        <button class="btn btn-primary edit-btn" data-id="<?php echo $row['keyctr']; ?>">
                             Edit
-                          </a>
-                          <a href="../script.php?delete_id=<?php echo $row['keyctr'] ?>">Delete</a>
+                          </button>
+                          <a href="delete_description.php?keyctr=<?php echo $row['keyctr']; ?>" class="btn btn-danger delete-btn"
+                            data-id="<?php echo $row['keyctr']; ?>">Delete</a>
                         </td>
                       </tr>
 
@@ -97,6 +102,53 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
       </div>
     </div>
   </div>
+  
+  <div id="editDescriptionModalContainer"></div>
+  <script>
+    $(document).ready(function () {
+      $('#open-add-modal').click(function () {
+        $('#addAreaDescriptionModal').modal('show');
+      });
+
+      $('.delete-btn').click(function (e) {
+        e.preventDefault();
+        var url = $(this).attr('href');
+        if (confirm("Are you sure you want to delete this description?")) {
+          window.location.href = url;
+        }
+      });
+
+      var successMessage = "<?php echo $successMessage; ?>";
+      if (successMessage) {
+        alert(successMessage);
+      }
+    });
+
+
+    $(document).on('click', '.edit-btn', function () {
+      var keyctr = $(this).data('id');
+
+      if (!keyctr) {
+        alert('Error: Missing keyctr!');
+        return;
+      }
+
+      $.ajax({
+        url: 'edit_description.php',
+        type: 'GET',
+        data: { keyctr: keyctr },
+        success: function (response) {
+          $('#editDescriptionModalContainer').html(response);
+          $('#editAreaDescriptionModal').modal('show');
+        },
+        error: function () {
+          alert('Error retrieving data.');
+        }
+      });
+    });
+  </script>
+
+  <?php include 'add_description.php' ?>
 </body>
 
 </html>
