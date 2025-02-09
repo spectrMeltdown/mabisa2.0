@@ -22,6 +22,8 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <?php
   $isInFolder = true;
   require '../common/head.php' ?>
+  <script src="../../vendor/jquery/jquery.min.js"></script>
+  <script src="../../js/maintenance-criteria.js"></script>
 </head>
 
 
@@ -58,7 +60,7 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
             <div class="card-body">
               <div class="table table-responsive"></div>
-          <table class="table table-bordered" >
+          <table id="maintenanceTable" class="table table-bordered" >
            <thead>
               <tr>
               <th>ID</th>

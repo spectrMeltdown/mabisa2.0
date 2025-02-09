@@ -1,63 +1,50 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
-// use empty to check for all cases (variable unset, blank string, etc). Negation of the variable also works, but may display warning.
+
 if (empty($_COOKIE['id'])) {
   header('location:logged_out.php');
   exit;
 }
+
 require_once '../../db/db.php';
 
-
+//query for display 
 $stmt = $pdo->query("SELECT * FROM maintenance_area");
 $stmt->execute();
 $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-
+// Check for success message
+session_start();
+$successMessage = isset($_SESSION['success']) ? $_SESSION['success'] : '';
+unset($_SESSION['success']); // Remove message after displaying
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
   <?php
   $isInFolder = true;
-  require '../common/head.php' ?>
+  require '../common/head.php'; ?>
   <script src="../../vendor/jquery/jquery.min.js"></script>
   <script src="../../js/maintenance-criteria.js"></script>
 </head>
 
 <body id="page-top">
-  <!-- Page Wrapper -->
   <div id="wrapper">
-    <!-- Sidebar -->
     <?php
     $isCriteriaPhp = true;
     $isInFolder = true;
-    require '../common/sidebar.php' ?>
-    <!-- End of Sidebar -->
-
-    <!-- Content Wrapper -->
+    require '../common/sidebar.php'; ?>
     <div id="content-wrapper" class="d-flex flex-column">
-      <!-- Main Content -->
       <div id="content">
-
-        <!-- Topbar -->
-        <?php require '../common/nav.php' ?>
-        <!-- End of Topbar -->
-        <!-- Begin Page Content -->
+        <?php require '../common/nav.php'; ?>
         <div class="container-fluid">
           <div class="card shadow mb-4">
             <div class="card-header py-3">
-              <div style="float: left;">
-                <h3 class="m-0 font-weight-bold text-primary">Assign Area</h3>
-              </div>
-              <div style="float: right;">
-                <div class="row">
-                  <a class="btn btn-primary" id="open-add-modal">Add Area</a>
-                </div>
-              </div>
+              <h3 class="m-0 font-weight-bold text-primary" style="float: left;">Assign Area</h3>
+              <a class="btn btn-primary" id="open-add-modal" style="float: right;">Add Area</a>
             </div>
             <div class="card-body">
               <div class="table table-responsive">
@@ -70,32 +57,78 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </tr>
                   </thead>
                   <tbody>
-                    <?php foreach ($data as $row):
-                      ?>
+                    <?php foreach ($data as $row): ?>
                       <tr>
-
                         <td style="font-size: 20px;"><?php echo $row['description']; ?></td>
                         <td style="font-size: 20px;"><?php echo $row['trail']; ?></td>
                         <td>
-                          <a class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
+                          <button class="btn btn-primary edit-btn" data-id="<?php echo $row['keyctr']; ?>">
                             Edit
-                          </a>
-                          <a href="../script.php?delete_id=<?php echo $row['keyctr'] ?>">Delete</a>
+                          </button>
+                          <a href="delete_area.php?keyctr=<?php echo $row['keyctr']; ?>" class="btn btn-danger delete-btn"
+                            data-id="<?php echo $row['keyctr']; ?>">Delete</a>
                         </td>
                       </tr>
-
-                    <?php endforeach ?>
+                    <?php endforeach; ?>
                   </tbody>
                 </table>
-
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>
   </div>
+
+  <div id="editModalContainer"></div>
+  <script>
+    //open the add modal
+    $(document).ready(function () {
+      $('#open-add-modal').click(function () {
+        $('#addAreaModal').modal('show');
+      });
+
+      // Confirmation for delete
+      $('.delete-btn').click(function (e) {
+        e.preventDefault();
+        var url = $(this).attr('href');
+        if (confirm("Are you sure you want to delete this area?")) {
+          window.location.href = url;
+        }
+      });
+
+      // Success alert
+      var successMessage = "<?php echo $successMessage; ?>";
+      if (successMessage) {
+        alert(successMessage);
+      }
+    });
+    //edit 
+    $(document).on('click', '.edit-btn', function () {
+      var keyctr = $(this).data('id');
+
+      if (!keyctr) {
+        alert('Error: Missing keyctr!');
+        return;
+      }
+
+      $.ajax({
+        url: 'edit_area.php',
+        type: 'GET',
+        data: { keyctr: keyctr },
+        success: function (response) {
+          $('#editModalContainer').html(response);
+          $('#editAreaModal').modal('show');
+        },
+        error: function () {
+          alert('Error retrieving data.');
+        }
+      });
+    });
+
+  </script>
+  <?php include 'create_area.php'; ?>
+
 </body>
 
 </html>

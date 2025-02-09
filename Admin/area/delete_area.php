@@ -1,19 +1,27 @@
 <?php
-include 'db.php';
+include '../../db/db.php';
 session_start();
 
 if (isset($_GET['keyctr'])) {
     $keyctr = $_GET['keyctr'];
 
-    // Delete the area from the database
-    $stmt = $pdo->prepare("DELETE FROM maintenance_area WHERE keyctr = :keyctr");
-    $stmt->execute(['keyctr' => $keyctr]);
+    try {
+        $pdo->beginTransaction();
 
-    // Set success message and redirect
-    $_SESSION['success'] = "Area deleted successfully!";
-    header('Location: index.php');
-    exit();
+        $stmt = $pdo->prepare("DELETE FROM maintenance_area WHERE keyctr = :keyctr");
+        $stmt->execute(['keyctr' => $keyctr]);
+
+        $pdo->commit();
+
+        $_SESSION['success'] = "Area deleted successfully!";
+    } catch (PDOException $e) {
+        $pdo->rollBack();
+        $_SESSION['error'] = "Error: " . $e->getMessage();
+    }
 } else {
-    echo "Invalid request!";
+    $_SESSION['error'] = "Invalid request!";
 }
+
+header('Location: index.php');
+exit();
 ?>
