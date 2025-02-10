@@ -2,11 +2,9 @@
 include '../../db/db.php';
 session_start();
 
-// Fetch area descriptions for the dropdown
 $description_stmt = $pdo->query("SELECT DISTINCT keyctr, description FROM maintenance_area_description");
 $descriptions = $description_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_indicator'])) {
     $area_description = $_POST['area_description'];
     $indicator_code = $_POST['indicator_code'];
@@ -16,16 +14,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_indicator'])) {
     $trail = 'Created at ' . date('Y-m-d H:i:s');
 
     try {
-        // Start transaction
         $pdo->beginTransaction();
 
-        // Fetch description keyctr from maintenance_area_description
         $desc_stmt = $pdo->prepare("SELECT keyctr FROM maintenance_area_description WHERE description = ? LIMIT 1");
         $desc_stmt->execute([$area_description]);
         $desc_data = $desc_stmt->fetch(PDO::FETCH_ASSOC);
         $desc_keyctr = $desc_data ? $desc_data['keyctr'] : null;
 
-        // Fetch governance cat_code from maintenance_governance
         $gov_stmt = $pdo->prepare("SELECT keyctr FROM maintenance_governance WHERE description = ? LIMIT 1");
         $gov_stmt->execute([$area_description]);
         $gov_data = $gov_stmt->fetch(PDO::FETCH_ASSOC);
@@ -35,21 +30,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_indicator'])) {
             $stmt = $pdo->prepare("INSERT INTO maintenance_area_indicators (governance_code, desc_keyctr, area_description, indicator_code, indicator_description, relevance_def, min_requirement, trail) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
             if ($stmt->execute([$governance_code, $desc_keyctr, $area_description, $indicator_code, $indicator_description, $relevance_def, $min_requirement, $trail])) {
-                // Commit the transaction
+              
                 $pdo->commit();
                 $_SESSION['success'] = "Indicator entry created successfully!";
             } else {
-                // Rollback if insert fails
+               
                 $pdo->rollBack();
                 $_SESSION['error'] = "Failed to create indicator entry.";
             }
         } else {
-            // Rollback if invalid area description
+           
             $pdo->rollBack();
             $_SESSION['error'] = "Invalid Area Description selected.";
         }
     } catch (Exception $e) {
-        // Rollback in case of an exception
+  
         $pdo->rollBack();
         $_SESSION['error'] = "An error occurred: " . $e->getMessage();
     }

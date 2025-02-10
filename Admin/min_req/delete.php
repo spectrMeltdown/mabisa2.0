@@ -1,29 +1,32 @@
 <?php
-include 'db.php';
+include '../../db/db.php';
+session_start();
 
-$keyctr = $_GET['keyctr'];
+if (isset($_GET['keyctr'])) {
+    $keyctr = $_GET['keyctr'];
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $sql = "DELETE FROM maintenance_area_mininumreqs WHERE keyctr = ?";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$keyctr]);
+    try {
+        // Start transaction
+        $pdo->beginTransaction();
+
+        // Delete the record
+        $stmt = $pdo->prepare("DELETE FROM maintenance_area_mininumreqs WHERE keyctr = ?");
+        if ($stmt->execute([$keyctr]) && $stmt->rowCount() > 0) {
+            // Commit the transaction
+            $pdo->commit();
+            $_SESSION['success'] = "Minimum Requirement deleted successfully!";
+        } else {
+            // Rollback if deletion fails
+            $pdo->rollBack();
+            $_SESSION['error'] = "Failed to delete: No matching record found.";
+        }
+    } catch (Exception $e) {
+        // Rollback in case of an exception
+        $pdo->rollBack();
+        $_SESSION['error'] = "Error deleting record: " . $e->getMessage();
+    }
 
     header("Location: index.php");
+    exit;
 }
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Delete Minimum Requirement</title>
-</head>
-<body>
-    <h1>Delete Minimum Requirement</h1>
-    <p>Are you sure you want to delete this requirement?</p>
-    <form action="" method="post">
-        <input type="submit" value="Delete">
-    </form>
-    <a href="index.php">Cancel</a>
-</body>
-</html>
