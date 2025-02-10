@@ -7,13 +7,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $description = $_POST['description'];
     $sub_mininumreqs = $_POST['sub_mininumreqs'];
 
-    $sql = "INSERT INTO maintenance_area_mininumreqs (indicator_keyctr, reqs_code, description, sub_mininumreqs) VALUES (?, ?, ?, ?)";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$indicator_keyctr, $reqs_code, $description, $sub_mininumreqs]);
+    try {
+        $pdo->beginTransaction();
+
+        $sql = "INSERT INTO maintenance_area_mininumreqs (indicator_keyctr, reqs_code, description, sub_mininumreqs) 
+                VALUES (?, ?, ?, ?)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$indicator_keyctr, $reqs_code, $description, $sub_mininumreqs]);
+
+        $pdo->commit();
+    } catch (Exception $e) {
+        $pdo->rollBack();
+    }
 
     header("Location: index.php");
+    exit();
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

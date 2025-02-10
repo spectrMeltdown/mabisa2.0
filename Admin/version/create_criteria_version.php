@@ -1,5 +1,5 @@
 <?php
-include 'db.php';
+include '../../db/db.php';
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -9,53 +9,62 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $active_ = isset($_POST['active_']) ? 1 : 0;
     $trail = 'Created at ' . date('Y-m-d H:i:s');
 
-    // Insert into the database
-    $sql = "INSERT INTO maintenance_criteria_version (short_def, description, active_yr, active_, trail) 
-            VALUES (:short_def, :description, :active_yr, :active_, :trail)";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        'short_def' => $short_def,
-        'description' => $description,
-        'active_yr' => $active_yr,
-        'active_' => $active_,
-        'trail' => $trail
+    try {
+        $pdo->beginTransaction();
 
-    ]);
+        $sql = "INSERT INTO maintenance_criteria_version (short_def, description, active_yr, active_, trail) 
+                VALUES (:short_def, :description, :active_yr, :active_, :trail)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            'short_def' => $short_def,
+            'description' => $description,
+            'active_yr' => $active_yr,
+            'active_' => $active_,
+            'trail' => $trail
+        ]);
 
-    // Set success message and redirect
-    $_SESSION['success'] = "Criteria version created successfully!";
-    header('Location: index_criteria_version.php');
+        $pdo->commit();
+        $_SESSION['success'] = "Criteria version created successfully!";
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        $_SESSION['error'] = "Failed to create criteria version: " . $e->getMessage();
+    }
+
+    header('Location: index.php');
     exit();
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Add New Criteria Version</title>
-</head>
-<body>
-
-<h1>Add New Criteria Version</h1>
-
-<form method="POST" action="create_criteria_version.php">
-    <label>Short Definition:</label><br>
-    <input type="text" name="short_def" required><br><br>
-
-    <label>Description:</label><br>
-    <textarea name="description" required></textarea><br><br>
-
-    <label>Active Year:</label><br>
-    <input type="text" name="active_yr" required><br><br>
-
-    <label>Active:</label>
-    <input type="checkbox" name="active_" value="1"><br><br>
-
-    <button type="submit">Add Criteria Version</button>
-</form>
-
-<a href="index_criteria_version.php">Back to List</a>
-
-</body>
-</html>
+<div class="modal fade" id="addCriteriaVersion" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Add New Criteria Version</h5>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="create_criteria_version.php">
+                    <div class="mb-3">
+                        <label class="form-label">Short Definition</label>
+                        <input type="text" class="form-control" name="short_def" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Active Year</label>
+                        <input type="text" class="form-control" name="active_yr" required>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" name="active_" value="1">
+                        <label class="form-check-label">Active</label>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Add Criteria Version</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -5,12 +5,20 @@ session_start();
 if (isset($_GET['keyctr'])) {
     $keyctr = $_GET['keyctr'];
 
-    // Delete the description from the database
-    $stmt = $pdo->prepare("DELETE FROM maintenance_area_description WHERE keyctr = :keyctr");
-    $stmt->execute(['keyctr' => $keyctr]);
+    try {
+        $pdo->beginTransaction();
 
-    // Set success message and redirect
-    $_SESSION['success'] = "Description deleted successfully!";
+        $stmt = $pdo->prepare("DELETE FROM maintenance_area_description WHERE keyctr = :keyctr");
+        $stmt->execute(['keyctr' => $keyctr]);
+
+        $pdo->commit();
+
+        $_SESSION['success'] = "Description deleted successfully!";
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        $_SESSION['error'] = "Error deleting description: " . $e->getMessage();
+    }
+
     header('Location: index.php');
     exit();
 } else {

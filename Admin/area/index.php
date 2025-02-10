@@ -17,7 +17,7 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // Check for success message
 session_start();
 $successMessage = isset($_SESSION['success']) ? $_SESSION['success'] : '';
-unset($_SESSION['success']); // Remove message after displaying
+unset($_SESSION['success']); 
 ?>
 
 <!DOCTYPE html>

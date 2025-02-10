@@ -56,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['add_minreq_sub'])) {
                             <option value="">Select Minimum Requirement</option>
                             <?php foreach ($mininumreqs as $mininumreq): ?>
                                 <option value="<?= htmlspecialchars($mininumreq['keyctr']) ?>">
-                                <?= htmlspecialchars($mininumreq['description']); ?>
+                                <?= htmlspecialchars($mininumreq['keyctr'] .'.     ' . $mininumreq['description']); ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
