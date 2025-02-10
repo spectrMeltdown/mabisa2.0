@@ -112,7 +112,7 @@ unset($_SESSION['success']);
       $(document).on('click', '.delete-btn', function (e) {
         e.preventDefault();
         var url = $(this).attr('href');
-        if (confirm("Are you sure you want to delete this indicator?")) {
+        if (confirm("Are you sure you want to delete this minimum requirement?")) {
           window.location.href = url;
         }
       });
@@ -145,7 +145,7 @@ unset($_SESSION['success']);
         });
     });
   </script>
-  <?php require 'add_req.php' ?>
+  <?php require 'add.php' ?>
 </body>
 
 </html>
