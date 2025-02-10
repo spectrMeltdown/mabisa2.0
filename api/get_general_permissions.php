@@ -24,8 +24,8 @@ try {
   }
 
   $hasBarangay = $role['allow_barangay'];
-  writeLog('has barangay: ');
-  writeLog($hasBarangay);
+  // writeLog('has barangay: ');
+  // writeLog($hasBarangay);
 
   // get permissions of the role
   global $rolePermissions;
@@ -36,12 +36,12 @@ try {
     $rolePermissions = array_filter($rolePermissions, function ($permission) {
       return strstr((string)$permission, 'assessment');
     });
-    writeLog('New permissions are');
-    writeLog($rolePermissions);
+    // writeLog('New permissions are');
+    // writeLog($rolePermissions);
   }
 
-  writeLog('Final result: ');
-  writeLog($rolePermissions);
+  // writeLog('Final result: ');
+  // writeLog($rolePermissions);
   echo json_encode($rolePermissions);
 } catch (\Throwable $th) {
   http_response_code(500);

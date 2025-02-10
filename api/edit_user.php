@@ -48,12 +48,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   try {
     // update user_assignments table
-    updateUserAssignments($id, $auditorBarangays, $pdo);
+    // updateUserAssignments($id, $auditorBarangays, $pdo);
     writeLog($sql);
     $stmt = $pdo->prepare($sql);
     $stmt->execute($parameters);
   } catch (\Throwable $th) {
-    writeLog($th);
-    echo  $th;
+    http_response_code(500);
+    $message = $th->getMessage();
+    writeLog($message);
+    echo json_encode($message);
   }
 }

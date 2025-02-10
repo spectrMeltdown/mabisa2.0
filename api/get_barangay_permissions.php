@@ -19,7 +19,7 @@ try {
   $stmt->execute([':id' => $_POST['role_id']]);
   $role = $stmt->fetch(PDO::FETCH_ASSOC);
 
-  writeLog($role);
+  // writeLog($role);
   if ($role['allow_barangay'] != 1) exit;
 
   // get all barangays
@@ -48,7 +48,7 @@ try {
   // writeLog($allPermissions);
 
   // Fetch all indicators instead from the current active version 
-  $sql = "SELECT i.indicator_code as code, i.relevance_def as description
+  $sql = "SELECT i.keyctr as id, i.indicator_code as code, i.relevance_def as description
   from maintenance_area_indicators i 
   inner join maintenance_criteria_setup cs
   on cs.indicator_keyctr = i.keyctr 
@@ -82,14 +82,17 @@ try {
     foreach ($activeIndicators as $indicator) {
       // Get available assessment permissions (exclude taken ones)
       $takenPermissions = array_diff($allPermissions, $takenAssessment[$barangay['brgyid']] ?? []);
-      writeLog('original taken assessment');
-      writeLog($takenAssessment);
+      // writeLog('original taken assessment');
+      // writeLog($takenAssessment);
 
       // TODO: add a ternary to check if it is taken or not.
       // CREATE MODE: if taken, mark with check and disable
       // EDIT MODE: if taken and user id match, mark with check. If taken and not user match, then check and disable
       $response[] = [
-        "barangay" => $barangay['brgyname'],
+        "barangay" => [
+          'name' => $barangay['brgyname'],
+          'id' => $barangay['brgyid'],
+        ],
         "indicators" => $indicator,
         'taken_perms' => array_map(function ($perm) {
           return str_replace('assessment_', '', $perm);
@@ -101,8 +104,8 @@ try {
     }
   }
 
-  writeLog('Final result was:');
-  writeLog($response);
+  // writeLog('Final result was:');
+  // writeLog($response);
   // Return JSON response
   echo json_encode($response, JSON_PRETTY_PRINT);
 } catch (\Throwable $th) {

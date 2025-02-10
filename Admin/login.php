@@ -95,7 +95,8 @@ if (!empty($_COOKIE['id'])) {
                                         <br>
                                         <img src="../img/index.png" width="200" height="60">
                                     </div>
-                                    <div id="alert" class="alert"></div>
+                                    <div class="alert alert-danger alert-dismissible fade" role="alert" id="alert">
+                                    </div>
                                     <form class="user" id="loginForm">
                                         <div class="form-group">
                                             <label for="username"><b>Username:</b></label>

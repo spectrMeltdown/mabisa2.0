@@ -18,7 +18,8 @@
         <form id="settingFormData" class="needs-validation" novalidate>
           <!-- for displaying error -->
           <div class="mt-4 mb-4">
-            <div id="alert"></div>
+            <div class="alert alert-danger alert-dismissible fade" role="alert" id="alert">
+            </div>
           </div>
           <div class="container">
             <p id="changeProfileSettingSubtitle"></p>

@@ -46,6 +46,5 @@ try {
   http_response_code(500);
   $message = $th->getMessage();
   writeLog($message);
-  // if (isset($useAsImport)) echo json_encode($message);
   echo json_encode($message);
 }

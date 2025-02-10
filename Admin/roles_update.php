@@ -96,7 +96,8 @@ require_once '../db/db.php';
               </div> -->
               <form id="crud-role-content" data-edit-mode="true" class="ml-3" novalidate>
                 <!-- for displaying error -->
-                <div id="alert"></div>
+                <div class="alert alert-danger alert-dismissible fade" role="alert" id="alert">
+                </div>
 
                 <!-- actual content -->
                 <div class="mb-3 form-group">

@@ -1,11 +1,15 @@
-const modalLabel = document.getElementById('modalLabel');
-const passLabel = document.getElementById('passwordLabel');
-let origPassLabel = 'Password';
-let origModalLabel = 'New user';
+// const modalLabel = document.getElementById('modalLabel');
+// const passLabel = document.getElementById('passwordLabel');
+// let origPassLabel = 'Password';
+// let origModalLabel = 'New user';
+
+// js polyfill for a function that
+function nl2br(str) {
+  return str.replace(/\n/g, '<br>');
+}
 
 let currentUserID;
 /** @var {array} */
-let roles = [];
 const defaultAlert = '<div class="alert"></div>';
 let editMode = undefined;
 addPhonePrepend();
@@ -22,77 +26,6 @@ $('#cancel-btn').on('click', async () => {
   } else {
     // console.log('cancelled');
   }
-});
-
-// for showing modal after clicking edit btn`
-// using document.addEventListener is better than document.querySelectorAll().forEach()
-// because the latter only works when the element in query is static (not dynamically added/removed)
-// reset the form element in crud user dialog
-$('#crud-user').on('show.bs.modal', function(event) {
-  if (loading) return;
-  toggleLoading();
-
-  if ($(event.relatedTarget).hasClass('edit-user-btn')) {
-    // console.log("editing");
-    editMode = true;
-
-    // Change the h5 with id 'modalLabel' under the modal with id="crud-user" to "Edit user"
-    origModalLabel = modalLabel.textContent;
-    modalLabel.textContent = 'Edit User'; // Update the modal label text
-
-    // Change the h5 with id 'modalLabel' under the modal with id="crud-user" to "Edit user"
-    origPassLabel = passLabel.textContent;
-    passLabel.textContent = 'New Password'; // Update the modal label text
-
-    // hide confirm password because we are editing
-    $('#confirmPassField').css('display', 'none');
-    currentUserID = $(event.relatedTarget).data('id'); // Get the user ID from the clicked button
-    // TODO: fetch the existing user data and assign it
-    document.getElementById('loadingSpinner').classList.remove('d-flex');
-    document.getElementById('loadingSpinner').classList.add('d-none');
-    document
-      .getElementById('crud-user-modal-content')
-      .classList.remove('d-none');
-  } else if ($(event.relatedTarget).hasClass('add-user-btn')) {
-    // console.log("adding");
-    editMode = false;
-    addPhonePrepend();
-    // Hide the loading spinner and show the modal content
-    document.getElementById('loadingSpinner').classList.remove('d-flex');
-    document.getElementById('loadingSpinner').classList.add('d-none');
-    document
-      .getElementById('crud-user-modal-content')
-      .classList.remove('d-none');
-    // Show the edit modal crud-user
-  }
-  toggleLoading();
-});
-
-// reset the form element in crud user dialog
-$('#crud-user').on('hidden.bs.modal', () => {
-  // console.log('modal hidden');
-  const form = this.querySelector('form');
-  if (form) form.reset();
-
-  // revert the text to original
-  modalLabel.textContent = origModalLabel;
-  passLabel.textContent = origPassLabel;
-
-  // hide barangay option
-  const barangayDiv = document.getElementById('barangayDiv');
-  barangayDiv.style.display = 'none';
-
-  // display confirm pass again
-  $('#confirmPassField').css('display', 'inline-block');
-
-  // remove the userID
-  currentUserID = undefined;
-
-  // clear selected barangays
-  selectedBarangays = [];
-
-  // clear alerts
-  $('#alert').html(defaultAlert);
 });
 
 // handle role changes
@@ -118,6 +51,7 @@ $('#roleSelect').on('change', async e => {
       .destroy();
   }
 
+  // wrap with try catch because promise throws exeception and kills the function
   try {
     // show/hide general permissions
     await new Promise((res, rej) => {
@@ -209,21 +143,49 @@ $('#roleSelect').on('change', async e => {
           const barTableData = JSON.parse(res);
           $('#barPermTable').DataTable({
             data: barTableData,
+            createdRow: function(row, data, dataIndex) {
+              $('td', row).each(function() {
+                $(this).html($(this).html()); // Force HTML rendering
+              });
+            },
             columns: [
-              { data: 'barangay', title: 'Barangay' },
+              {
+                data: 'barangay',
+                title: 'Barangay',
+                render: function(data, type, row) {
+                  // console.log('Type is: ' + type);
+                  if (Array.isArray(data)) {
+                    return data
+                      .map(ind => {
+                        return ind['name'];
+                      })
+                      .join('<br>');
+                  } else if (typeof data == 'object') {
+                    return data.name;
+                  }
+                  // console.log('Not array in render');
+                  // console.log(typeof data);
+                  return data; // Default display if not an array
+                },
+              },
               {
                 data: 'indicators',
                 title: 'Indicators',
                 render: function(data, type, row) {
+                  // console.log('Type is: ' + type);
                   if (Array.isArray(data)) {
                     return data
-                      .map(
-                        ind =>
-                          `<strong>Code: ${ind['code']}</strong>:<br> ${ind['description']}`,
-                      )
+                      .map(ind => {
+                        // console.log(nl2br(ind['description']));
+                        return `<strong>Code: ${
+                          ind['code']
+                        }</strong>:<br> ${nl2br(ind['description'])}`;
+                      })
                       .join('<br>');
                   } else if (typeof data == 'object') {
-                    return `<strong>Code: ${data.code}</strong><br>${data.description}`;
+                    return `<strong>Code: ${data.code}</strong><br>${nl2br(
+                      data.description,
+                    )}`;
                   }
                   // console.log('Not array in render');
                   // console.log(typeof data);
@@ -237,7 +199,7 @@ $('#roleSelect').on('change', async e => {
                   if (Array.isArray(data)) {
                     return data
                       .map(val => {
-                        const uniqueID = `${row['barangay']}-${row['indicators']['code']}-${val}`;
+                        const uniqueID = `${row['barangay']['id']}--${row['indicators']['id']}--${val}`;
                         // TODO: add a ternary to check if it is taken or not.
                         // CREATE MODE: if taken, mark with check and disable
                         // EDIT MODE: if taken and user id match, mark with check. If taken and not user match, then check and disable
@@ -339,20 +301,19 @@ document.getElementById('confirmPassEye').addEventListener('click', function() {
 });
 
 // when submitting the form
-$('#save-user-btn').on('click', async e => {
+$('#save-user-btn').on('click', async () => {
   if (loading) return;
   toggleLoading();
 
   // get all users to compare existing usernames & emails
   const users = await fetch(`../api/get_users.php`).then(response => {
     if (!response.ok) {
+      $('#alert').addClass('show');
       $('#alert').html(
-        '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
-          '<strong>Error!</strong> Network error!.' +
+        '<strong>Error!</strong> Network error!.' +
           '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
           '<span aria-hidden="true">&times;</span>' +
-          '</button>' +
-          '</div>',
+          '</button>',
       );
       throw new Error('Network problem!');
     }
@@ -374,12 +335,13 @@ $('#save-user-btn').on('click', async e => {
   const mobileNum = $('#mobileNum')
     .val()
     ?.trim();
-  const confirmPass = $('#confirmPass')
-    .val()
-    ?.trim();
   const password = $('#pass')
     .val()
     ?.trim();
+  const confirmPass = $('#confirmPass')
+    .val()
+    ?.trim();
+  const role = $('#roleSelect').val();
 
   function resetFieldStates() {
     $('#username').removeClass('is-invalid');
@@ -412,6 +374,21 @@ $('#save-user-btn').on('click', async e => {
       .find('.invalid-feedback')
       .first()
       .text('');
+    $('#roleSelect').removeClass('is-invalid');
+    $('#roleSelect')
+      .find('.invalid-feedback')
+      .first()
+      .text('');
+    $('#gen-perm-title').removeClass('is-invalid');
+    $('#gen-perm-title')
+      .find('.invalid-feedback')
+      .first()
+      .text('');
+    $('#bar-perm-title').removeClass('is-invalid');
+    $('#bar-perm-title')
+      .find('.invalid-feedback')
+      .first()
+      .text('');
   }
 
   function addError(element, message, customFeedbackElement) {
@@ -429,6 +406,7 @@ $('#save-user-btn').on('click', async e => {
     element.addClass('is-invalid');
   }
   resetFieldStates();
+  resetAlert();
 
   // PASSWORD
   if (!editMode && (password == '' || password == null)) {
@@ -516,10 +494,33 @@ $('#save-user-btn').on('click', async e => {
     ok = false;
   }
 
-  // ROLES
-  const rolesForm = new FormData($('#user-roles-form').get(0));
-  for (const entry of rolesForm.entries()) {
-    console.log(entry);
+  // ROLE
+  if (role == null) {
+    addError($('#roleSelect'), 'Please select a role.');
+    ok = false;
+  }
+
+  // GEN PERMISSIONS
+  const genPermsForm = new FormData($('#user-gen-permissions-form').get(0));
+  // display error if no permissions selected, and there are general permissions available
+  if (
+    genPermsForm.entries().next().done &&
+    $('#genPermNoPerm').css('display') == 'none'
+  ) {
+    addError($('#gen-perm-title'), 'Please select permissions.');
+    ok = false;
+  }
+
+  // BAR PERMISSIONS
+  const barPermsForm = new FormData($('#user-bar-permissions-form').get(0));
+  barPermsForm.delete('barPermTable_length'); // from datatables
+  // display error if no permissions selected, and if barangay permissions available
+  if (
+    barPermsForm.entries().next().done &&
+    $('#barPermContainer').css('display') != 'none'
+  ) {
+    addError($('#bar-perm-title'), 'Please select permissions.');
+    ok = false;
   }
 
   if (!ok) {
@@ -528,21 +529,43 @@ $('#save-user-btn').on('click', async e => {
     return;
   }
 
-  $('#alert').html(defaultAlert);
+  $('#alert').empty();
   const detailsForm = new FormData($('#user-details-form').get(0));
+  const submitObj = {};
+  submitObj['details'] = {};
+  submitObj['genPerms'] = {};
+  submitObj['barPerms'] = {};
+
+  // loop details
+  for (const [key, value] of detailsForm.entries()) {
+    console.log('Details forms' + key + value);
+    submitObj['details'][key] = value;
+  }
+  // loop gen permissions (if needed)
+  if ($('#genPermNoPerm').css('display') == 'none') {
+    for (const [key, value] of genPermsForm.entries()) {
+      console.log('genPermsForm forms' + key + value);
+      submitObj['genPerms'][key] = value;
+    }
+  }
+  // loop bar permissions (if needed)
+  if ($('#barPermContainer').css('display') != 'none') {
+    for (const [key, value] of barPermsForm.entries()) {
+      console.log('barPermsForm forms' + key + value);
+      submitObj['barPerms'][key] = value;
+    }
+  }
   if (!editMode) {
     console.log('not edit mode');
     $.ajax({
       type: 'POST',
       url: '../api/create_user.php',
-      data: detailsForm, // Use 'data' instead of 'body'
-      processData: false, // Prevent jQuery from processing the FormData
-      contentType: false, // Prevent jQuery from setting content type
+      data: submitObj, // Use 'data' instead of 'body'
       success: function(result) {
         // check if null, empty, false, 0, infinity, etc
         if (!result) {
           $('#crud-user').modal('hide');
-          location.reload();
+          // location.reload();
           $('#main-toast-container').append(
             addToast('Success!', 'User created successfully.'),
           );
@@ -553,17 +576,18 @@ $('#save-user-btn').on('click', async e => {
     });
   } else {
     detailsForm.append('id', currentUserID);
+    permissionsForm.append('id', currentUserID);
     $.ajax({
       type: 'POST',
       url: '../api/edit_user.php',
       data: detailsForm, // Use 'data' instead of 'body'
       processData: false, // Prevent jQuery from processing the FormData
-      contentType: false, // Prevent jQuery from setting content type
+      contentType: false, // Prevent jQuery from setting 1content type
       success: function(result) {
         // check if null, empty, false, 0, infinity, etc
         if (!result) {
           $('#crud-user').modal('hide');
-          location.reload();
+          // location.reload();
           $('#main-toast-container').append(
             addToast('Success!', 'User successfully edited.'),
           );
