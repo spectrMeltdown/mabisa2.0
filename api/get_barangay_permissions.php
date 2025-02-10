@@ -66,11 +66,12 @@ try {
   $stmt->execute();
   $takenAssessment = [];
   foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
-    $takenAssessment[$row['brgyid']][] = array_filter($row, function ($entry) {
-      // writeLog('in array filter: ');
-      writeLog($entry);
-      return str_contains($entry, 'assessment');
-    });
+    // remove int values (like p.id)
+    $filteredRow = array_filter($row, fn($value) => is_string($value));
+    // get assessment perms
+    $assessmentData = array_filter($filteredRow, fn($key) => str_contains($key, 'assessment'), ARRAY_FILTER_USE_KEY);
+    // assign perms to each barangay
+    $takenAssessment[$row['brgyid']] = $assessmentData;
   }
   // writeLog('taken assessment permissions was:');
   // writeLog($takenAssessment);
@@ -84,10 +85,11 @@ try {
   foreach ($barangays as $barangay) {
     foreach ($activeIndicators as $indicator) {
       // Get available assessment permissions (exclude taken ones)
+      writeLog('Taken assessment barangay');
       writeLog($takenAssessment[$barangay['brgyid']]);
       $takenPermissions = array_diff($allPermissions, $takenAssessment[$barangay['brgyid']] ?? []);
-      writeLog('Taken permissions after: ');
-      writeLog($takenPermissions);
+      // writeLog('Taken permissions after: ');
+      // writeLog($takenPermissions);
 
       // TODO: add a ternary to check if it is taken or not.
       // CREATE MODE: if taken, mark with check and disable
