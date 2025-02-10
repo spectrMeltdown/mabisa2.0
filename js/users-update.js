@@ -8,6 +8,7 @@ let currentUserID;
 let roles = [];
 const defaultAlert = '<div class="alert"></div>';
 let editMode = undefined;
+addPhonePrepend();
 
 //cancel button confirmation
 $('#cancel-btn').on('click', async () => {
@@ -19,7 +20,7 @@ $('#cancel-btn').on('click', async () => {
   if (confirm) {
     history.back();
   } else {
-    console.log('cancelled');
+    // console.log('cancelled');
   }
 });
 
@@ -69,7 +70,7 @@ $('#crud-user').on('show.bs.modal', function(event) {
 
 // reset the form element in crud user dialog
 $('#crud-user').on('hidden.bs.modal', () => {
-  console.log('modal hidden');
+  // console.log('modal hidden');
   const form = this.querySelector('form');
   if (form) form.reset();
 
@@ -95,52 +96,69 @@ $('#crud-user').on('hidden.bs.modal', () => {
 });
 
 // handle role changes
-$('#roleSelect').on('change', e => {
+$('#roleSelect').on('change', async e => {
+  // console.log('event fired');
+  $('#roleSelect').prop('disabled', true); // Disable select
   if (loading) return;
   toggleLoading();
+  // console.log('not loading');
 
   // id of the role
   /** @type {string} */
   let selectedOption = e.target.value;
-  console.log('Current selected option is: '  + selectedOption);
+  // console.log('Current selected option is: ' + selectedOption);
 
-  // show/hide general permissions
-  $.ajax({
-    url: '../api/get_general_permissions.php',
-    type: 'POST',
-    data: {
-      role_id: selectedOption,
-    },
-    success: permissions => {
-      console.log('Permissions are : ' + permissions);
-      let testPermissions = JSON.parse(permissions);
+  // reset divs
+  $('#genPermList').empty();
+  $('#genPermNoPerm').css('display', 'none');
+  $('#barPermContainer').css('display', 'none');
+  if ($.fn.DataTable.isDataTable('#barPermTable')) {
+    $('#barPermTable')
+      .DataTable()
+      .destroy();
+  }
 
-      // reset divs
-      $('#genPermList').empty();
-      $('#genPermNoPerm').css('display', 'none');
+  try {
+    // show/hide general permissions
+    await new Promise((res, rej) => {
+      // 5-second timeout if ajax never completes
+      setTimeout(() => {
+        console.log('Request timed out');
+        rej('Timeout');
+      }, 5000);
 
-      // if super admin, just display "all permissions are granted"
-      if (!testPermissions || testPermissions.length == 0) {
-        console.log('blank global permissions!');
-        $('#genPermNoPerm').css('display', 'block');
-      } else if (permissions == '"Super Admin"') {
-        console.log('Super admin');
-        if (!$('#superAdminLabel').length) {
-          $('#genPermList').append(`
+      $.ajax({
+        url: '../api/get_general_permissions.php',
+        type: 'POST',
+        data: {
+          role_id: selectedOption,
+        },
+        success: permissions => {
+          console.log('Permissions are : ' + permissions);
+          let testPermissions = JSON.parse(permissions);
+
+          // if super admin, just display "all permissions are granted"
+          if (!testPermissions || testPermissions.length == 0) {
+            console.log('blank global permissions!');
+            $('#genPermNoPerm').css('display', 'block');
+          } else if (permissions == '"Super Admin"') {
+            console.log('Super admin');
+            if (!$('#superAdminLabel').length) {
+              $('#genPermList').append(`
             <li class="m-1" id="superAdminLabel">
             <h5>All permissions are automatically granted to super admins.</h5>
                      </li>`);
-        }
-      }
-      // if not super admin, then added the permissions to the list
-      else {
-        // remove the superAdminLabel if present
-        if ($('#superAdminLabel').length) $('#superAdminLabel').remove();
-        // convert permissions to a object first
-        permissions = JSON.parse(permissions);
-        // populate the permissions (already filtered by server)
-        for (let [key, value] of Object.entries(permissions)) {
-          $('#genPermList').append(`
+            }
+          }
+          // if not super admin, then added the permissions to the list
+          else {
+            // remove the superAdminLabel if present
+            if ($('#superAdminLabel').length) $('#superAdminLabel').remove();
+            // convert permissions to a object first
+            permissions = JSON.parse(permissions);
+            // populate the permissions (already filtered by server)
+            for (let [key, value] of Object.entries(permissions)) {
+              $('#genPermList').append(`
                   <li class="d-inline-block m-1">
                              <div class="input-group mb-3 d-flex flex-row">
                                <div class="input-group-prepend">
@@ -150,42 +168,143 @@ $('#roleSelect').on('change', e => {
                                </div>
                                <div class="card card-body border-secondary">
                                  <label for="${key}" id="label-${value}">${key.replaceAll(
-            '_',
-            ' ',
-          )}</label>
+                '_',
+                ' ',
+              )}</label>
                                </div>
                              </div>
                            </li>`);
-        }
-      }
-      $('#genPermContainer').css('display', 'block');
-      $('#noRoleSelected').css('display', 'none');
-    },
-    error: res => {
-      console.log('Error: ' + JSON.stringify(res));
-    },
-  });
+            }
+          }
+          $('#genPermContainer').css('display', 'block');
+          $('#noRoleSelected').css('display', 'none');
+          res();
+        },
+        error: res => {
+          console.log('Error: ' + JSON.stringify(res));
+          rej();
+        },
+      });
+    });
 
-  // get barangay permissions
-  $.ajax({
-    url: '../api/get_barangay_permissions.php',
-    type: 'POST',
-    data: {
-      role_id: selectedOption,
-    },
-    success: barPermissions => {
-      console.log('bar permissions are : ' + barPermissions);
-    },
-    error: res => {
-      console.log('Error: ' + JSON.stringify(res));
-    },
-  });
+    // get barangay permissions
+    await new Promise((resolve, rej) => {
+      // 5-second timeout if ajax never completes
+      setTimeout(() => {
+        console.log('Request timed out');
+        rej('Timeout');
+      }, 5000);
+      $.ajax({
+        url: '../api/get_barangay_permissions.php',
+        type: 'POST',
+        data: {
+          role_id: selectedOption,
+        },
+        success: res => {
+          // console.log('bar permissions are : ' + res);
+          if (!res) {
+            rej();
+            return;
+          }
+          const barTableData = JSON.parse(res);
+          $('#barPermTable').DataTable({
+            data: barTableData,
+            columns: [
+              { data: 'barangay', title: 'Barangay' },
+              {
+                data: 'indicators',
+                title: 'Indicators',
+                render: function(data, type, row) {
+                  if (Array.isArray(data)) {
+                    return data
+                      .map(
+                        ind =>
+                          `<strong>Code: ${ind['code']}</strong>:<br> ${ind['description']}`,
+                      )
+                      .join('<br>');
+                  } else if (typeof data == 'object') {
+                    return `<strong>Code: ${data.code}</strong><br>${data.description}`;
+                  }
+                  // console.log('Not array in render');
+                  // console.log(typeof data);
+                  return data; // Default display if not an array
+                },
+              },
+              {
+                data: 'available_perms',
+                title: 'Permissions',
+                render: function(data, type, row) {
+                  if (Array.isArray(data)) {
+                    return data
+                      .map(val => {
+                        const uniqueID = `${row['barangay']}-${row['indicators']['code']}-${val}`;
+                        // TODO: add a ternary to check if it is taken or not.
+                        // CREATE MODE: if taken, mark with check and disable
+                        // EDIT MODE: if taken and user id match, mark with check. If taken and not user match, then check and disable
+                        return `<li class="d-inline-block m-1">
+                <div class="input-group mb-3">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text">
+                      <input type="checkbox" name="${uniqueID}" id="${uniqueID}" value="true">
+                    </div>
+                  </div>
+                  <div class="card card-body border-secondary">
+                    <label for="${uniqueID}" id="label-${uniqueID}">${val.replaceAll(
+                          '_',
+                          ' ',
+                        )}</label>
+                  </div>
+                </div>
+              </li>`;
+                      })
+                      .join('<br>');
+                  }
+                  // console.log('unknown data');
+                  // console.log(typeof data);
+                  return data; // Default display if not an array
+                },
+              },
+            ],
+            // rowsGroup: [
+            //   0, // Merge identical "Barangay" cells
+            // ],
+            drawCallback: function(settings) {
+              var api = this.api();
+              var prev = null;
+
+              api
+                .rows({ page: 'current' })
+                .every(function(rowIdx, tableLoop, rowLoop) {
+                  var data = this.data();
+                  if (prev && prev.barangay === data.barangay) {
+                    $(this.node())
+                      .find('td:first')
+                      .html('');
+                  } else {
+                    prev = data;
+                  }
+                });
+            },
+          });
+          $('#barPermContainer').css('display', 'block');
+          resolve();
+        },
+        error: res => {
+          console.log('Error: ' + JSON.stringify(res));
+          rej();
+        },
+      });
+    });
+  } catch (error) {
+    //
+  }
   toggleLoading();
+  $('#roleSelect').prop('disabled', false); // Disable select
 });
 
 // show/hide in password field
 document.getElementById('passEye').addEventListener('click', function() {
-  console.log('eye toggled');
+  // console.log('eye toggled');
   const passwordInput = document.getElementById('pass');
   const icon = this.children[0];
 
@@ -203,10 +322,10 @@ document.getElementById('passEye').addEventListener('click', function() {
 
 // show/hide password in confirm pass field
 document.getElementById('confirmPassEye').addEventListener('click', function() {
-  console.log('eye toggled (confirm pass)');
+  // console.log('eye toggled (confirm pass)');
   const passwordInput = document.getElementById('confirmPass');
   const icon = this.children[0];
-  console.log(icon.classList);
+  // console.log(icon.classList);
   // Toggle the input type
   if (passwordInput.type === 'password') {
     passwordInput.type = 'text';
@@ -255,12 +374,6 @@ $('#save-user-btn').on('click', async e => {
   const mobileNum = $('#mobileNum')
     .val()
     ?.trim();
-  const role = $('#role')
-    .val()
-    ?.trim();
-  const barangay = $('#barangay')
-    .val()
-    ?.trim();
   const confirmPass = $('#confirmPass')
     .val()
     ?.trim();
@@ -286,16 +399,6 @@ $('#save-user-btn').on('click', async e => {
       .text('');
     $('#mobileNum').removeClass('is-invalid');
     $('#mobileNum')
-      .find('.invalid-feedback')
-      .first()
-      .text('');
-    $('#role').removeClass('is-invalid');
-    $('#role')
-      .find('.invalid-feedback')
-      .first()
-      .text('');
-    $('#barangay').removeClass('is-invalid');
-    $('#barangay')
       .find('.invalid-feedback')
       .first()
       .text('');
@@ -325,7 +428,6 @@ $('#save-user-btn').on('click', async e => {
     }
     element.addClass('is-invalid');
   }
-
   resetFieldStates();
 
   // PASSWORD
@@ -414,22 +516,10 @@ $('#save-user-btn').on('click', async e => {
     ok = false;
   }
 
-  // BARANGAY
-  if ((barangay == '' || barangay == null) && role === 'Secretary') {
-    addError($('#barangay'), 'Please select a barangay.');
-    ok = false;
-  }
-
-  // ROLE
-  if (role == null || role == 'Select one') {
-    addError($('#role'), 'Please select a role.');
-    ok = false;
-  }
-
-  // FOR AUDITOR
-  if (role === 'Auditor' && auditorBarangays.length == 0) {
-    addError($('#role'), 'Please assign barangays to this auditor.');
-    ok = false;
+  // ROLES
+  const rolesForm = new FormData($('#user-roles-form').get(0));
+  for (const entry of rolesForm.entries()) {
+    console.log(entry);
   }
 
   if (!ok) {
@@ -439,29 +529,13 @@ $('#save-user-btn').on('click', async e => {
   }
 
   $('#alert').html(defaultAlert);
-  const formData = new FormData($('#crud-user-modal-content').get(0));
-  // some extra work before submitting
-  switch (role) {
-    case 'Admin':
-      formData.delete('barangay');
-      formData.delete('auditorBarangays');
-      break;
-    case 'Secretary':
-      formData.delete('auditorBarangays');
-      break;
-    case 'Auditor':
-      formData.delete('barangay');
-      formData.append('auditorBarangays', JSON.stringify(auditorBarangays));
-      break;
-    default:
-      console.error('Unknown role when saving the user!');
-  }
+  const detailsForm = new FormData($('#user-details-form').get(0));
   if (!editMode) {
     console.log('not edit mode');
     $.ajax({
       type: 'POST',
       url: '../api/create_user.php',
-      data: formData, // Use 'data' instead of 'body'
+      data: detailsForm, // Use 'data' instead of 'body'
       processData: false, // Prevent jQuery from processing the FormData
       contentType: false, // Prevent jQuery from setting content type
       success: function(result) {
@@ -478,11 +552,11 @@ $('#save-user-btn').on('click', async e => {
       },
     });
   } else {
-    formData.append('id', currentUserID);
+    detailsForm.append('id', currentUserID);
     $.ajax({
       type: 'POST',
       url: '../api/edit_user.php',
-      data: formData, // Use 'data' instead of 'body'
+      data: detailsForm, // Use 'data' instead of 'body'
       processData: false, // Prevent jQuery from processing the FormData
       contentType: false, // Prevent jQuery from setting content type
       success: function(result) {

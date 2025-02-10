@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const mobileNumRegex = /^\+639\d{9}$/;
 

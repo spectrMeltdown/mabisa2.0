@@ -19,8 +19,10 @@ require_once '../db/db.php';
 
 <head>
   <?php require 'common/head.php' ?>
-  <script src="../js/users-update.js" defer></script>
   <script src="../js/util/confirmation.js" defer></script>
+  <script src="../js/util/input-validation.js" defer></script>
+  <script src="../js/util/phone-prepend.js" defer></script>
+  <script src="../js/users-update.js" defer></script>
   <style>
     /* bigger checkboxes */
     input[type=checkbox] {
@@ -94,7 +96,7 @@ require_once '../db/db.php';
                   <span class="sr-only">Loading...</span>
                 </div>
               </div> -->
-              <form id="crud-user-content" class="ml-3" novalidate>
+              <form id="user-details-form" class="ml-3" novalidate>
                 <!-- for displaying error -->
                 <div id="alert"></div>
 
@@ -160,7 +162,8 @@ require_once '../db/db.php';
                     </div>
                   </div>
                 </div>
-
+              </form>
+              <form id="user-roles-form" class="ml-3" novalidate>
                 <!-- Roles selector -->
                 <?php
                 require_once '../db/db.php';
@@ -206,9 +209,9 @@ require_once '../db/db.php';
 
                 <!-- General permissions selector, if has barangays-->
                 <div class="mb-3 form-group container-fluid" id="genPermContainer" style="display: none">
-                  <h6 class="mb-3">Global scope</h6>
+                  <h4 class="mb-3"><strong>Global scope</strong></h4>
                   <div id="genPermAlert" class="text-danger"></div>
-                  <p id="genPermNoPerm" style="display: none;">No permissions available.</p>
+                  <p id="genPermNoPerm" style="display: none;">No general permissions available.</p>
                   <ul id="genPermList" class="list-unstyled"></ul>
                 </div>
                 <br>
@@ -216,10 +219,10 @@ require_once '../db/db.php';
 
                 <!-- Per-barangay permission, if allowed -->
                 <div class="mb-3 form-group container-fluid" id="barPermContainer" style="display: none;">
-                  <h6 class="mb-3">Barangay scope</h6>
+                  <h4 class="mb-3"><strong>Barangay scope</strong></h4>
                   <div id="barPermAlert" class="text-danger"></div>
                   <div class="table-responsive">
-                    <table class="table table-striped table-bordered" id="barPermTable" width="100%" cellspacing="0">
+                    <table class="table table-bordered" id="barPermTable" width="100%" cellspacing="0">
                     </table>
                   </div>
                 </div>

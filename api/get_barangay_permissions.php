@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 $useAsImport; // for get_permissions.php
+$permsOnly = false;
 require 'logging.php';
 require_once '../db/db.php';
 require_once 'get_permissions.php'; // gets the role permissions
@@ -12,13 +13,22 @@ try {
   if ($_POST['role_id'] == '') die;
   $result = [];
 
+  // check if role allows barangay
+  $sql = "SELECT allow_barangay FROM roles where id = :id";
+  $stmt = $pdo->prepare($sql);
+  $stmt->execute([':id' => $_POST['role_id']]);
+  $role = $stmt->fetch(PDO::FETCH_ASSOC);
+
+  writeLog($role);
+  if ($role['allow_barangay'] != 1) exit;
+
   // get all barangays
-  $sql = "SELECT brgyid, name FROM refbarangay";
+  $sql = "SELECT brgyid, brgyname FROM refbarangay";
   $stmt = $pdo->prepare($sql);
   $stmt->execute();
   $barangays = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  writeLog('Barangays was:');
-  writeLog($barangays);
+  // writeLog('Barangays was:');
+  // writeLog($barangays);
 
   // get all permissions that start with "assessment"
   $sql = "describe permissions;";
@@ -27,11 +37,15 @@ try {
   // add all permissions to the column
   if ($query->rowCount() <= 0) throw new Exception('describe permissions didn\'t return anything');
   while ($col = $query->fetch(PDO::FETCH_ASSOC)) {
+    // writeLog('Col is: ');
+    // writeLog($col);
     // add if assessment word is in it
-    if (!(strstr($col, 'assessment') == false)) {
-      $allPermissions[] = $col;
+    if (str_contains($col['Field'], 'assessment')) {
+      $allPermissions[] = $col['Field'];
     }
   }
+  // writeLog('All permissions was:');
+  // writeLog($allPermissions);
 
   // Fetch all indicators instead from the current active version 
   $sql = "SELECT i.indicator_code as code, i.relevance_def as description
@@ -40,8 +54,7 @@ try {
   on cs.indicator_keyctr = i.keyctr 
   inner join maintenance_criteria_version v
   on v.keyctr = cs.version_keyctr
-  where v.active_ = 1"
-  ;
+  where v.active_ = 1";
   $stmt = $pdo->prepare($sql);
   $stmt->execute();
   $activeIndicators = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -52,29 +65,44 @@ try {
   $stmt->execute();
   $takenAssessment = [];
   foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
-    $takenAssessment[$row['barangay_id']][] = $row['permission_id'];
+    $takenAssessment[$row['brgyid']][] = array_filter($row, function ($entry) {
+      return str_contains($entry, 'assessment');
+    });
   }
-  writeLog('taken assessment permissions was:');
-  writeLog($takenAssessment);
+  // writeLog('taken assessment permissions was:');
+  // writeLog($takenAssessment);
 
   // Build the JSON response
   $response = [];
+  $rolePermissions = array_keys($rolePermissions);
+  $rolePermissions = array_filter($rolePermissions, function ($key) {
+    return !str_contains($key, 'barangay');
+  }); // remove allow_barangay
   foreach ($barangays as $barangay) {
-    $barangayId = $barangay['brgyid'];
+    foreach ($activeIndicators as $indicator) {
+      // Get available assessment permissions (exclude taken ones)
+      $takenPermissions = array_diff($allPermissions, $takenAssessment[$barangay['brgyid']] ?? []);
+      writeLog('original taken assessment');
+      writeLog($takenAssessment);
 
-    // Exclude permissions that are not granted to the assigned role
-    $availableAssessment = array_diff(array_keys($rolePermissions), $takenAssessment[$barangayId] ?? []);
-
-    // Get available assessment permissions (exclude taken ones)
-    $availableAssessment = array_diff(array_keys($availableAssessment), $takenAssessment[$barangayId] ?? []);
-
-    $response[] = [
-      "barangay" => $barangay['name'],
-      "indicators" => ,
-      "permissions" => array_map(fn($id) => $allPermissions[$id], $availableAssessment)
-    ];
+      // TODO: add a ternary to check if it is taken or not.
+      // CREATE MODE: if taken, mark with check and disable
+      // EDIT MODE: if taken and user id match, mark with check. If taken and not user match, then check and disable
+      $response[] = [
+        "barangay" => $barangay['brgyname'],
+        "indicators" => $indicator,
+        'taken_perms' => array_map(function ($perm) {
+          return str_replace('assessment_', '', $perm);
+        }, $takenPermissions),
+        'available_perms' => array_map(function ($perm) {
+          return str_replace('assessment_', '', $perm);
+        }, $rolePermissions),
+      ];
+    }
   }
 
+  writeLog('Final result was:');
+  writeLog($response);
   // Return JSON response
   echo json_encode($response, JSON_PRETTY_PRINT);
 } catch (\Throwable $th) {
