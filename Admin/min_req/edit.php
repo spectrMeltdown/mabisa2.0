@@ -1,50 +1,74 @@
 <?php
-include 'db.php';
+include '../../db/db.php';
+session_start();
 
-$keyctr = $_GET['keyctr'];
+if (isset($_GET['keyctr'])) {
+    $keyctr = $_GET['keyctr'];
 
-$sql = "SELECT * FROM maintenance_area_mininumreqs WHERE keyctr = ?";
-$stmt = $pdo->prepare($sql);
-$stmt->execute([$keyctr]);
-$req = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stmt = $pdo->prepare("SELECT * FROM maintenance_area_mininumreqs WHERE keyctr = :keyctr");
+    $stmt->execute(['keyctr' => $keyctr]);
+    $req = $stmt->fetch(PDO::FETCH_ASSOC);
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $keyctr = $_POST['keyctr'];
     $indicator_keyctr = $_POST['indicator_keyctr'];
     $reqs_code = $_POST['reqs_code'];
     $description = $_POST['description'];
-    $sub_mininumreqs = $_POST['sub_mininumreqs'] ?? 0;
+    $sub_mininumreqs = isset($_POST['sub_mininumreqs']) ? 1 : 0;
 
-    $sql = "UPDATE maintenance_area_mininumreqs SET indicator_keyctr = ?, reqs_code = ?, description = ?, sub_mininumreqs = ? WHERE keyctr = ?";
+    $sql = "UPDATE maintenance_area_mininumreqs SET indicator_keyctr = :indicator_keyctr, reqs_code = :reqs_code, description = :description, sub_mininumreqs = :sub_mininumreqs WHERE keyctr = :keyctr";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$indicator_keyctr, $reqs_code, $description, $sub_mininumreqs, $keyctr]);
+    $stmt->execute([
+        'indicator_keyctr' => $indicator_keyctr,
+        'reqs_code' => $reqs_code,
+        'description' => $description,
+        'sub_mininumreqs' => $sub_mininumreqs,
+        'keyctr' => $keyctr
+    ]);
 
+    $_SESSION['success'] = "Minimum requirement updated successfully!";
     header("Location: index.php");
+    exit();
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Edit Minimum Requirement</title>
-</head>
-<body>
-    <h1>Edit Minimum Requirement</h1>
-    <form action="" method="post">
-        <label for="indicator_keyctr">Indicator Keyctr:</label>
-        <input type="number" name="indicator_keyctr" value="<?= $req['indicator_keyctr'] ?>" required><br>
+<div class="modal fade" id="editMinimumReqModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit Minimum Requirement</h5>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="edit.php">
+                    <input type="hidden" name="keyctr" value="<?php echo htmlspecialchars($req['keyctr']); ?>">
 
-        <label for="reqs_code">Reqs Code:</label>
-        <input type="text" name="reqs_code" value="<?= $req['reqs_code'] ?>" required><br>
+                    <div class="mb-3">
+                        <label class="form-label">Indicator Keyctr:</label>
+                        <input type="number" class="form-control" name="indicator_keyctr" value="<?php echo htmlspecialchars($req['indicator_keyctr']); ?>" required>
+                    </div>
 
-        <label for="description">Description:</label>
-        <textarea name="description" required><?= $req['description'] ?></textarea><br>
+                    <div class="mb-3">
+                        <label class="form-label">Reqs Code:</label>
+                        <input type="text" class="form-control" name="reqs_code" value="<?php echo htmlspecialchars($req['reqs_code']); ?>" required>
+                    </div>
 
-        <label for="sub_mininumreqs">Sub Minimum Reqs:</label>
-        <input type="checkbox" name="sub_mininumreqs" value="1" <?= $req['sub_mininumreqs'] ? 'checked' : '' ?>><br>
+                    <div class="mb-3">
+                        <label class="form-label">Description:</label>
+                        <textarea class="form-control" name="description" required><?php echo htmlspecialchars($req['description']); ?></textarea>
+                    </div>
 
-        <input type="submit" value="Update">
-    </form>
-    <a href="index.php">Back to List</a>
-</body>
-</html>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="sub_mininumreqs" value="1" <?php echo $req['sub_mininumreqs'] ? 'checked' : ''; ?>>
+                        <label class="form-check-label">Sub Minimum Reqs</label>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Update Requirement</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
