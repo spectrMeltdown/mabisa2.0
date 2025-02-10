@@ -22,6 +22,7 @@ require_once '../db/db.php';
   <script src="../js/util/confirmation.js" defer></script>
   <script src="../js/util/input-validation.js" defer></script>
   <script src="../js/util/phone-prepend.js" defer></script>
+  <script src="../js/util/alert.js" defer></script>
   <script src="../js/users-update.js" defer></script>
   <style>
     /* bigger checkboxes */
@@ -98,8 +99,8 @@ require_once '../db/db.php';
               </div> -->
               <form id="user-details-form" class="ml-3" novalidate>
                 <!-- for displaying error -->
-                <div id="alert"></div>
-
+                <div class="alert alert-danger alert-dismissible fade" role="alert" id="alert">
+                </div>
                 <br>
                 <h3 class="mb-3">Account details</h3>
                 <hr>
@@ -108,13 +109,13 @@ require_once '../db/db.php';
                 <div class="row">
                   <div class="mb-3 form-group col-lg-6">
                     <label for="fullName" class="form-label">Full Name</label>
-                    <input maxlength="100" type="text" class="form-control" name="fullName" id="fullName" required autocomplete="name" />
+                    <input maxlength="100" type="text" class="form-control" name="fullName" id="fullName" required autocomplete="name" value="testing" />
                     <div class="invalid-feedback">
                     </div>
                   </div>
                   <div class="mb-3 form-group col-lg-6">
                     <label for="username" class="form-label">Username</label>
-                    <input maxlength="100" type="text" class="form-control" name="username" id="username" required autocomplete="username" />
+                    <input maxlength="100" type="text" class="form-control" name="username" id="username" required autocomplete="username" value="testing" />
                     <div class="invalid-feedback">
                     </div>
                   </div>
@@ -123,13 +124,13 @@ require_once '../db/db.php';
                 <div class="row">
                   <div class="mb-3 form-group col-lg-6">
                     <label for="email" class="form-label">Email</label>
-                    <input maxlength="100" type="email" class="form-control" name="email" id="email" required autocomplete="email" />
+                    <input maxlength="100" type="email" class="form-control" name="email" id="email" required autocomplete="email" value="testing@testing.com" />
                     <div class="invalid-feedback">
                     </div>
                   </div>
                   <div class="mb-3 form-group col-lg-6">
                     <label for="mobileNum" class="form-label">Mobile Number</label>
-                    <input title="Please enter a valid phone number." maxLength="10" type="tel" class="form-control" name="mobileNum" id="mobileNum" pattern="^\+?[0-9]*$" inputmode="numeric" required autocomplete="tel" />
+                    <input title="Please enter a valid phone number." maxLength="13" type="tel" class="form-control" name="mobileNum" id="mobileNum" pattern="^\+?[0-9]*$" inputmode="numeric" required autocomplete="tel" value="+639816203801" />
                     <div class="invalid-feedback">
                     </div>
                   </div>
@@ -139,7 +140,7 @@ require_once '../db/db.php';
                   <div class="mb-3 col-lg-6 form-group" id="passField">
                     <label for="pass" class="form-label" id="passwordLabel">Password</label>
                     <div class="d-flex">
-                      <input maxlength="100" type="password" class="form-control" name="pass" id="pass" required autocomplete="new-password" />
+                      <input maxlength="100" type="password" class="form-control" name="pass" id="pass" required autocomplete="new-password" value="testingthis" />
                       <div class="p-1"></div>
                       <button type="button" id="passEye" class="btn btn-outline-secondary d-inline-block">
                         <i class="fa fa-eye"></i> <!-- Add Font Awesome for the icon -->
@@ -152,7 +153,7 @@ require_once '../db/db.php';
                   <div class="mb-3 col-lg-6 form-group" id="confirmPassField">
                     <label for="confirmPass" class="form-label">Confirm password</label>
                     <div class="d-flex">
-                      <input maxlength="100" type="password" class="form-control" name="confirmPass" id="confirmPass" required autocomplete="new-password" />
+                      <input maxlength="100" type="password" class="form-control" name="confirmPass" id="confirmPass" required autocomplete="new-password" value="testingthis" />
                       <div class="p-1"></div>
                       <button type="button" id="confirmPassEye" class="btn btn-outline-secondary">
                         <i class="fa fa-eye"></i> <!-- Add Font Awesome for the icon -->
@@ -162,8 +163,6 @@ require_once '../db/db.php';
                     </div>
                   </div>
                 </div>
-              </form>
-              <form id="user-roles-form" class="ml-3" novalidate>
                 <!-- Roles selector -->
                 <?php
                 require_once '../db/db.php';
@@ -200,26 +199,30 @@ require_once '../db/db.php';
                     <h6>No roles available.</h6>
                   </div>
                 <?php endif; ?>
+              </form>
+              <br>
+              <h3 class="mb-3">User permissions</h3>
+              <hr>
+              <h6 class="mb-3" id="noRoleSelected">Select a role to choose permissions.</h6>
 
-                <br>
-                <h3 class="mb-3">User permissions</h3>
-                <hr>
-
-                <h6 class="mb-3" id="noRoleSelected">Select a role to choose permissions.</h6>
-
-                <!-- General permissions selector, if has barangays-->
+              <!-- General permissions selector, if has barangays-->
+              <form id="user-gen-permissions-form" class="ml-3" novalidate>
                 <div class="mb-3 form-group container-fluid" id="genPermContainer" style="display: none">
-                  <h4 class="mb-3"><strong>Global scope</strong></h4>
+                  <h4 class="mb-3" id="gen-perm-title"><strong>Global scope</strong></h4>
+                  <div class="invalid-feedback"></div>
                   <div id="genPermAlert" class="text-danger"></div>
                   <p id="genPermNoPerm" style="display: none;">No general permissions available.</p>
                   <ul id="genPermList" class="list-unstyled"></ul>
                 </div>
-                <br>
-                <hr>
+              </form>
+              <br>
+              <hr>
 
-                <!-- Per-barangay permission, if allowed -->
+              <!-- Per-barangay permission, if allowed -->
+              <form id="user-bar-permissions-form" class="ml-3" novalidate>
                 <div class="mb-3 form-group container-fluid" id="barPermContainer" style="display: none;">
-                  <h4 class="mb-3"><strong>Barangay scope</strong></h4>
+                  <h4 class="mb-3" id="bar-perm-title"><strong>Barangay scope</strong></h4>
+                  <div class="invalid-feedback"></div>
                   <div id="barPermAlert" class="text-danger"></div>
                   <div class="table-responsive">
                     <table class="table table-bordered" id="barPermTable" width="100%" cellspacing="0">

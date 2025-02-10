@@ -18,7 +18,8 @@
         <form id="barangay-select-modal-content" class="needs-validation" novalidate>
           <!-- for displaying error -->
           <div class="mt-4 mb-4">
-            <div id="alert"></div>
+            <div class="alert alert-danger alert-dismissible fade" role="alert" id="alert">
+            </div>
           </div>
           <!-- actual content -->
           <!-- TODO: might migrate to js later, unless un-assignment of the auditor barangays will be done in the main crud dialog-->

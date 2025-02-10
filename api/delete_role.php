@@ -31,6 +31,7 @@ try {
   echo json_encode('Success');
 } catch (\Throwable $th) {
   http_response_code(500);
-  writeLog($th);
-  echo json_encode($th->getMessage());
+  $message = $th->getMessage();
+  writeLog($message);
+  echo json_encode($message);
 }

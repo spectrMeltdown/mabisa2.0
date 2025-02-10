@@ -1,7 +1,5 @@
 'use strict';
 
-const defaultAlert = '<div class="alert"></div>';
-
 // get from url params
 const params = new URLSearchParams(location.search);
 /** @var {int} */
@@ -95,12 +93,10 @@ $('#save-role-btn').on('click', async () => {
   const roles = await fetch(`../api/get_roles.php`).then(async res => {
     if (!res.ok) {
       $('#alert').html(
-        '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
-          '<strong>Error!</strong> An unexpected error occurred.' +
+        '<strong>Error!</strong> An unexpected error occurred.' +
           '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
           '<span aria-hidden="true">&times;</span>' +
-          '</button>' +
-          '</div>',
+          '</button>',
       );
       throw new Error('Network problem!');
     }
@@ -140,7 +136,7 @@ $('#save-role-btn').on('click', async () => {
 
   // start with a clean slate
   resetFieldStates();
-  $('#alert').html(defaultAlert);
+  $('#alert').empty();
 
   // get input values
   let formData = new FormData(document.querySelector('#crud-role-content'));
