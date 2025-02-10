@@ -1,14 +1,17 @@
 <?php
-include 'db.php';
+include '../../db/db.php';
 session_start();
 
 if (isset($_GET['keyctr'])) {
     $keyctr = $_GET['keyctr'];
 
-    // Fetch the criteria version to edit
-    $stmt = $pdo->prepare("SELECT * FROM maintenance_criteria_version WHERE keyctr = :keyctr");
-    $stmt->execute(['keyctr' => $keyctr]);
-    $criteria_version = $stmt->fetch(PDO::FETCH_ASSOC);
+    try {
+        $stmt = $pdo->prepare("SELECT * FROM maintenance_criteria_version WHERE keyctr = :keyctr");
+        $stmt->execute(['keyctr' => $keyctr]);
+        $version = $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        die("Error fetching criteria version: " . $e->getMessage());
+    }
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -19,60 +22,79 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $active_ = isset($_POST['active_']) ? 1 : 0;
     $trail = 'Updated at ' . date('Y-m-d H:i:s');
 
-    // Update the criteria version in the database
-    $sql = "UPDATE maintenance_criteria_version SET 
-            short_def = :short_def, 
-            description = :description, 
-            active_yr = :active_yr, 
-            active_ = :active_, 
-            trail = :trail 
-            WHERE keyctr = :keyctr";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        'short_def' => $short_def,
-        'description' => $description,
-        'active_yr' => $active_yr,
-        'active_' => $active_,
-        'trail' => $trail,
-        'keyctr' => $keyctr
-    ]);
+    try {
+        $pdo->beginTransaction();
 
-    // Set success message and redirect
-    $_SESSION['success'] = "Criteria version updated successfully!";
-    header('Location: index_criteria_version.php');
+        $sql = "UPDATE maintenance_criteria_version SET 
+                short_def = :short_def, 
+                description = :description, 
+                active_yr = :active_yr, 
+                active_ = :active_, 
+                trail = :trail 
+                WHERE keyctr = :keyctr";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            'short_def' => $short_def,
+            'description' => $description,
+            'active_yr' => $active_yr,
+            'active_' => $active_,
+            'trail' => $trail,
+            'keyctr' => $_POST['original_keyctr']
+        ]);
+
+        $pdo->commit();
+
+        $_SESSION['success'] = "Criteria version updated successfully!";
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        $_SESSION['error'] = "Error updating criteria version: " . $e->getMessage();
+    }
+
+    header('Location: index.php');
     exit();
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Edit Criteria Version</title>
-</head>
-<body>
 
-<h1>Edit Criteria Version</h1>
 
-<form method="POST" action="edit_criteria_version.php">
-    <input type="hidden" name="keyctr" value="<?php echo $criteria_version['keyctr']; ?>">
 
-    <label>Short Definition:</label><br>
-    <input type="text" name="short_def" value="<?php echo $criteria_version['short_def']; ?>" required><br><br>
+<!-- Edit Category Modal -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCategoryModalLabel">Edit Category</h5>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="edit_criteria_version.php">
+                    <input type="hidden" name="original_keyctr" value="<?php echo htmlspecialchars($version['keyctr']); ?>">
 
-    <label>Description:</label><br>
-    <textarea name="description" required><?php echo $criteria_version['description']; ?></textarea><br><br>
+                    <div class="mb-3">
+                        <label class="form-label">short Definition</label>
+                        <input type="text" class="form-control" name="short_def" value="<?php echo htmlspecialchars($version['short_def']); ?>" required>
+                    </div>
 
-    <label>Active Year:</label><br>
-    <input type="text" name="active_yr" value="<?php echo $criteria_version['active_yr']; ?>" required><br><br>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description" required><?php echo htmlspecialchars($version['description']); ?></textarea>
+                    </div>
 
-    <label>Active:</label>
-    <input type="checkbox" name="active_" value="1" <?php echo $criteria_version['active_'] ? 'checked' : ''; ?>><br><br>
+                    <div class="mb-3">
+                        <label class="form-label">Active Year</label>
+                        <input type="text" class="form-control" name="active_yr" value="<?php echo htmlspecialchars($version['active_yr']); ?>" required>
+                    </div>
 
-    <button type="submit">Update Criteria Version</button>
-</form>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="active_" value="1" <?php echo $version['active_'] ? 'checked' : ''; ?>>
+                        <label class="form-check-label">Active</label>
+                    </div>
 
-<a href="index_criteria_version.php">Back to List</a>
-
-</body>
-</html>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Update Version</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
