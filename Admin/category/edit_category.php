@@ -1,11 +1,10 @@
 <?php
-include 'db.php';
+include '../../db/db.php';
 session_start();
 
 if (isset($_GET['code'])) {
     $code = $_GET['code'];
-
-    // Fetch the category to edit
+    
     $stmt = $pdo->prepare("SELECT * FROM maintenance_category WHERE code = :code");
     $stmt->execute(['code' => $code]);
     $category = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -17,41 +16,68 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $description = $_POST['description'];
     $trail = 'Updated at ' . date('Y-m-d H:i:s');
 
-    // Update the category in the database
-    $sql = "UPDATE maintenance_category SET short_def = :short_def, description = :description, trail = :trail WHERE code = :code";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute(['short_def' => $short_def, 'description' => $description, 'trail' => $trail, 'code' => $code]);
+    try {
+        $pdo->beginTransaction();
+        
+        $sql = "UPDATE maintenance_category 
+                SET code = :new_code, short_def = :short_def, description = :description, trail = :trail 
+                WHERE code = :code";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            'new_code' => $code, 
+            'short_def' => $short_def, 
+            'description' => $description, 
+            'trail' => $trail, 
+            'code' => $_POST['original_code']
+        ]);
 
-    // Set success message and redirect
-    $_SESSION['success'] = "Category updated successfully!";
+        $pdo->commit(); 
+        
+        $_SESSION['success'] = "Category updated successfully!";
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        $_SESSION['error'] = "Failed to update category: " . $e->getMessage();
+    }
+    
     header('Location: index.php');
     exit();
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Edit Category</title>
-</head>
-<body>
 
-<h1>Edit Category</h1>
+<!-- Edit Category Modal -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCategoryModalLabel">Edit Category</h5>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="edit_category.php">
+                    <input type="hidden" name="original_code" value="<?php echo htmlspecialchars($category['code']); ?>">
 
-<form method="POST" action="edit_category.php">
-    <input type="hidden" name="code" value="<?php echo $category['code']; ?>">
+                    <div class="mb-3">
+                        <label class="form-label">Code</label>
+                        <input type="text" class="form-control" name="code" value="<?php echo htmlspecialchars($category['code']); ?>" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Short Definition</label>
+                        <input type="text" class="form-control" name="short_def" value="<?php echo htmlspecialchars($category['short_def']); ?>" required>
+                    </div>
 
-    <label>Short Definition:</label><br>
-    <input type="text" name="short_def" value="<?php echo $category['short_def']; ?>" required><br>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description" required><?php echo htmlspecialchars($category['description']); ?></textarea>
+                    </div>
 
-    <label>Description:</label><br>
-    <textarea name="description" required><?php echo $category['description']; ?></textarea><br><br>
-
-    <button type="submit">Update Category</button>
-</form>
-
-<a href="index.php">Back to List</a>
-
-</body>
-</html>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Update Category</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

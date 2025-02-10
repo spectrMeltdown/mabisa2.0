@@ -6,17 +6,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $description = $_POST['description'];
     $trail = 'Created at ' . date('Y-m-d H:i:s');
 
-    // Insert into the database
-    $sql = "INSERT INTO maintenance_area_description (description, trail) VALUES (:description, :trail)";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute(['description' => $description, 'trail' => $trail]);
+    try {
+        $pdo->beginTransaction();
 
-    // Set success message and redirect
-    $_SESSION['success'] = "Description created successfully!";
+        $sql = "INSERT INTO maintenance_area_description (description, trail) VALUES (:description, :trail)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['description' => $description, 'trail' => $trail]);
+
+        $pdo->commit();
+
+        $_SESSION['success'] = "Description created successfully!";
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        $_SESSION['error'] = "Error creating description: " . $e->getMessage();
+    }
+
     header('Location: index.php');
     exit();
 }
 ?>
+
 <div class="modal fade" id="addAreaDescriptionModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">

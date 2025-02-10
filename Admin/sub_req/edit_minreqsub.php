@@ -9,7 +9,6 @@ if (isset($_GET['keyctr'])) {
     $stmt->execute(['keyctr' => $keyctr]);
     $req = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Fetch values for dropdowns
     $mininumreqs = $pdo->query("SELECT keyctr, description FROM maintenance_area_mininumreqs")->fetchAll(PDO::FETCH_ASSOC);
     $indicators = $pdo->query("SELECT keyctr, area_description FROM maintenance_area_indicators")->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -23,6 +22,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $trail = 'Modified at ' . date('Y-m-d H:i:s');
 
     try {
+        $pdo->beginTransaction();
+
         $stmt = $pdo->prepare("UPDATE maintenance_area_mininumreqs_sub 
             SET mininumreq_keyctr = :mininumreq_keyctr, 
                 indicator_keyctr = :indicator_keyctr, 
@@ -40,15 +41,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'keyctr' => $keyctr
         ]);
 
+        $pdo->commit();
+
         $_SESSION['success'] = "Sub Requirement updated successfully!";
-        echo "Success!";
     } catch (Exception $e) {
-        echo "Error: " . $e->getMessage();
+        $pdo->rollBack();
+        $_SESSION['error'] = "Error updating sub requirement: " . $e->getMessage();
     }
+
     header("Location: index.php");
     exit();
 }
 ?>
+
 
 <div class="modal fade" id="editMinReqSubModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">

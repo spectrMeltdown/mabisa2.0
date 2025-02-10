@@ -5,10 +5,13 @@ session_start();
 if (isset($_GET['keyctr'])) {
     $keyctr = $_GET['keyctr'];
 
-    // Fetch the description to edit
-    $stmt = $pdo->prepare("SELECT * FROM maintenance_area_description WHERE keyctr = :keyctr");
-    $stmt->execute(['keyctr' => $keyctr]);
-    $description = $stmt->fetch(PDO::FETCH_ASSOC);
+    try {
+        $stmt = $pdo->prepare("SELECT * FROM maintenance_area_description WHERE keyctr = :keyctr");
+        $stmt->execute(['keyctr' => $keyctr]);
+        $description = $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        die("Error fetching description: " . $e->getMessage());
+    }
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -16,17 +19,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $description = $_POST['description'];
     $trail = 'Updated at ' . date('Y-m-d H:i:s');
 
-    // Update the description in the database
-    $sql = "UPDATE maintenance_area_description SET description = :description, trail = :trail WHERE keyctr = :keyctr";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute(['description' => $description, 'trail' => $trail, 'keyctr' => $keyctr]);
+    try {
+        $pdo->beginTransaction();
 
-    // Set success message and redirect
-    $_SESSION['success'] = "Description updated successfully!";
+        $sql = "UPDATE maintenance_area_description SET description = :description, trail = :trail WHERE keyctr = :keyctr";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['description' => $description, 'trail' => $trail, 'keyctr' => $keyctr]);
+
+        $pdo->commit();
+
+        $_SESSION['success'] = "Description updated successfully!";
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        $_SESSION['error'] = "Error updating description: " . $e->getMessage();
+    }
+
     header('Location: index.php');
     exit();
 }
 ?>
+
 
 <div class="modal fade" id="editAreaDescriptionModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog">

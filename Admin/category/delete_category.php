@@ -1,19 +1,34 @@
 <?php
-include 'db.php';
+include '../../db/db.php';
 session_start();
 
 if (isset($_GET['code'])) {
     $code = $_GET['code'];
 
-    // Delete the category from the database
-    $stmt = $pdo->prepare("DELETE FROM maintenance_category WHERE code = :code");
-    $stmt->execute(['code' => $code]);
+    try {
+        $pdo->beginTransaction();
 
-    // Set success message and redirect
-    $_SESSION['success'] = "Category deleted successfully!";
-    header('Location: index.php');
-    exit();
+        $stmt = $pdo->prepare("DELETE FROM maintenance_category WHERE code = ?");
+    
+        if ($stmt->execute([$code])) {
+      
+            $pdo->commit();
+            $_SESSION['success'] = "Category deleted successfully!";
+        } else {
+            $pdo->rollBack();
+            $_SESSION['error'] = "Failed to delete category.";
+        }
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        $_SESSION['error'] = "An error occurred: " . $e->getMessage();
+    }
+
+    
+    header("Location: index.php");
+    exit;
 } else {
-    echo "Invalid request!";
+    $_SESSION['error'] = "Invalid request!";
+    header("Location: index.php");
+    exit;
 }
 ?>

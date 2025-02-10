@@ -17,21 +17,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $description = $_POST['description'];
     $sub_mininumreqs = isset($_POST['sub_mininumreqs']) ? 1 : 0;
 
-    $sql = "UPDATE maintenance_area_mininumreqs SET indicator_keyctr = :indicator_keyctr, reqs_code = :reqs_code, description = :description, sub_mininumreqs = :sub_mininumreqs WHERE keyctr = :keyctr";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        'indicator_keyctr' => $indicator_keyctr,
-        'reqs_code' => $reqs_code,
-        'description' => $description,
-        'sub_mininumreqs' => $sub_mininumreqs,
-        'keyctr' => $keyctr
-    ]);
+    try {
+        $pdo->beginTransaction();
 
-    $_SESSION['success'] = "Minimum requirement updated successfully!";
+        $sql = "UPDATE maintenance_area_mininumreqs 
+                SET indicator_keyctr = :indicator_keyctr, 
+                    reqs_code = :reqs_code, 
+                    description = :description, 
+                    sub_mininumreqs = :sub_mininumreqs 
+                WHERE keyctr = :keyctr";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            'indicator_keyctr' => $indicator_keyctr,
+            'reqs_code' => $reqs_code,
+            'description' => $description,
+            'sub_mininumreqs' => $sub_mininumreqs,
+            'keyctr' => $keyctr
+        ]);
+
+        $pdo->commit();
+
+        $_SESSION['success'] = "Minimum requirement updated successfully!";
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        $_SESSION['error'] = "Error updating minimum requirement: " . $e->getMessage();
+    }
+
     header("Location: index.php");
     exit();
 }
 ?>
+
 
 <div class="modal fade" id="editMinimumReqModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
