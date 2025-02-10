@@ -13,7 +13,12 @@ $stmt = $pdo->query("SELECT * FROM maintenance_governance");
 $stmt->execute();
 $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+
+session_start();
+$successMessage = isset($_SESSION['success']) ? $_SESSION['success'] : '';
+unset($_SESSION['success']);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -60,7 +65,7 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="card-body">
               <div class="table table-responsive"></div>
               <table id="maintenanceTable" class="table table-bordered">
-               <thead>
+                <thead>
                   <tr>
                     <th>ID</th>
                     <th>Category Code</th>
@@ -85,7 +90,8 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <a class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
                           Edit
                         </a>
-                        <a href="../script.php?delete_id=<?php echo $row['keyctr'] ?>">Delete</a>
+                        <a href="delete_governance.php?keyctr=<?php echo $row['keyctr']; ?>"
+                          class="btn btn-danger delete-btn" data-id="<?php echo $row['keyctr']; ?>">Delete</a>
                       </td>
                     </tr>
 
@@ -100,6 +106,52 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
   </div>
   </div>
+  <div id="editGovernanceContainer"></div>
+  <script>
+    $(document).ready(function () {
+      $('#open-add-modal').click(function () {
+        $('#addGovernance').modal('show');
+      });
+
+      var successMessage = "<?php echo $successMessage; ?>";
+      if (successMessage) {
+        alert(successMessage);
+      }
+
+      $('.delete-btn').click(function (e) {
+        e.preventDefault();
+        var url = $(this).attr('href');
+        if (confirm("Are you sure you want to delete this governance?")) {
+          window.location.href = url;
+        }
+      });
+    });
+    $(document).on('click', '.open-modal', function () {
+      var keyctr = $(this).data('id');
+
+      if (!keyctr) {
+        alert('Error: Missing keyctr!');
+        return;
+      }
+
+
+      $.ajax({
+        url: 'edit_governance.php',
+        type: 'GET',
+        data: { keyctr: keyctr },
+        success: function (response) {
+          $('#editGovernanceContainer').html(response);
+          $('#editGovernance').modal('show');
+        },
+        error: function () {
+          alert('Error retrieving data.');
+        }
+      });
+    });
+
+
+  </script>
+  <?php include 'create_governance.php' ?>
 </body>
 
 </html>

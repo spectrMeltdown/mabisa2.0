@@ -70,7 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <select class="form-control" name="mininumreq_keyctr" required>
                             <?php foreach ($mininumreqs as $mininumreq): ?>
                                 <option value="<?= $mininumreq['keyctr']; ?>" <?= $req['mininumreq_keyctr'] == $mininumreq['keyctr'] ? 'selected' : ''; ?>>
-                                    <?= htmlspecialchars($mininumreq['description']); ?>
+                                    <?=  htmlspecialchars($mininumreq['keyctr'] .'.     ' . $mininumreq['description']);?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
