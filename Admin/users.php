@@ -7,6 +7,11 @@ if (empty($_COOKIE['id'])) {
   header('location:logged_out.php');
   exit;
 }
+
+// only user* permissions are allowed
+if () {
+
+}
 // require '../api/logging.php';
 // if (roleAccess()) {
 // }
@@ -78,6 +83,7 @@ require_once '../db/db.php';
                         <th>Full Name</th>
                         <th>Username</th>
                         <th>Role</th>
+                        <th>Barangays</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
@@ -87,6 +93,7 @@ require_once '../db/db.php';
                           <th>Full Name</th>
                           <th>Username</th>
                           <th>Role</th>
+                          <th>Barangays</th>
                           <th>Actions</th>
                         </tr>
                       </tfoot>
@@ -103,7 +110,20 @@ require_once '../db/db.php';
                           <td><?php echo $row['full_name'] ?></td>
                           <td><?php echo $row['username'] ?></td>
                           <td><?php echo getRoleName($pdo, $row['role_id']) ?></td>
-                          <td><?php echo $row['barangay'] ?></td>
+                          <td><?php
+                              $query = $pdo->prepare("SELECT b.brgyname as barangay from refbarangay b inner join user_roles_barangay ub on ub.barangay_id = b.brgyid where ub.user_id = :id");
+                              // writeLog($userData);
+                              $query->execute([':id' => $userData['id']]);
+                              if ($query->rowCount() <= 0) {
+                                echo 'No barangay assignments';
+                              } else {
+                                echo '<ul>';
+                                while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+                                  echo '<li>' . htmlspecialchars($row['barangay']) . '</li>';
+                                }
+                                echo '</ul>';
+                              }
+                              ?></td>
                           <td>
                             <a href="#edit-user" class="btn btn-sm btn-info btn-circle edit-user-btn"
                               data-toggle="modal" data-target="#crud-user" data-id="<?= $row['id'] ?>">

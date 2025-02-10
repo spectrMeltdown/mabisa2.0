@@ -5,6 +5,9 @@ require $pathPrepend . 'api/get_user.php'; // this will provide userData array
 require $pathPrepend . 'api/util/url_exists.php';
 // unset after using
 unset($customUserID);
+// get the general permissions
+function getPermissions() {}
+// get the barangay permissions
 ?>
 
 <script src="<?= $pathPrepend ?>js/nav.js" defer></script>
