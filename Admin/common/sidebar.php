@@ -84,12 +84,21 @@
       <span>Location</span></a>
   </li>
 
-  <li class="nav-item <?= isset($isUsersPhp) ? 'active' : '' ?>">
-    <a class="nav-link" href="<?php echo isset($isInFolder) ? '../' : ''; ?>users.php">
-      <i class="fas fa-fw fa-users"></i>
-      <span>Users</span></a>
-  </li>
-
+  <?php
+  global $genPermissions;
+  // check if gen permissions has any user* permissions
+  if ((is_string($genPermissions) && $genPermissions == 'all') || !empty(array_filter($genPermissions, function ($value) {
+    return str_contains($value, 'user');
+  }))):
+  ?>
+    <li class="nav-item <?= isset($isUsersPhp) ? 'active' : '' ?>">
+      <a class="nav-link" href="<?php echo isset($isInFolder) ? '../' : ''; ?>users.php">
+        <i class="fas fa-fw fa-users"></i>
+        <span>Users</span></a>
+    </li>
+  <?php
+  endif;
+  ?>
   <li class="nav-item <?= isset($isReports) ? 'active' : '' ?>">
     <a class="nav-link" href="<?php echo isset($isInFolder) ? '../' : ''; ?>reports.php">
       <i class="fas fa-fw fa-chart-line"></i>

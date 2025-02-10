@@ -9,9 +9,6 @@ if (empty($_COOKIE['id'])) {
 }
 
 // only user* permissions are allowed
-if () {
-
-}
 // require '../api/logging.php';
 // if (roleAccess()) {
 // }
@@ -157,8 +154,8 @@ require_once '../db/db.php';
     <!-- End of Content Wrapper -->
   </div>
   <!-- End of Page Wrapper -->
-  <?php require 'components/crud_user_dialog.php' ?>
-  <?php require 'components/barangay_selector_dialog.php' ?>
+  <?php include 'components/crud_user_dialog.php' ?>
+  <?php include 'components/barangay_selector_dialog.php' ?>
 </body>
 
 </html>

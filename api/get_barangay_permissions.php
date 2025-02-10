@@ -60,12 +60,15 @@ try {
   $activeIndicators = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
   // Fetch taken permissions in user_roles_barangay (assessment)
-  $sql = "SELECT  b.brgyid, b.brgyname, p.* from permissions p cross join refbarangay b inner join user_roles_barangay rb on rb.permission_id = p.id";
+  // $sql = "SELECT  b.brgyid, b.brgyname, p.* from permissions p inner join user_roles_barangay rb on rb.permission_id = p.id inner join refbarangay b on b.brgyid = rb.barangay_id";
+  $sql = "SELECT  b.brgyid, b.brgyname, p.* from permissions p inner join user_roles_barangay rb on rb.permission_id = p.id cross join refbarangay b";
   $stmt = $pdo->prepare($sql);
   $stmt->execute();
   $takenAssessment = [];
   foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
     $takenAssessment[$row['brgyid']][] = array_filter($row, function ($entry) {
+      // writeLog('in array filter: ');
+      writeLog($entry);
       return str_contains($entry, 'assessment');
     });
   }
@@ -81,9 +84,10 @@ try {
   foreach ($barangays as $barangay) {
     foreach ($activeIndicators as $indicator) {
       // Get available assessment permissions (exclude taken ones)
+      writeLog($takenAssessment[$barangay['brgyid']]);
       $takenPermissions = array_diff($allPermissions, $takenAssessment[$barangay['brgyid']] ?? []);
-      // writeLog('original taken assessment');
-      // writeLog($takenAssessment);
+      writeLog('Taken permissions after: ');
+      writeLog($takenPermissions);
 
       // TODO: add a ternary to check if it is taken or not.
       // CREATE MODE: if taken, mark with check and disable
@@ -111,6 +115,6 @@ try {
 } catch (\Throwable $th) {
   http_response_code(500);
   $message = $th->getMessage();
-  writeLog($message);
+  writeLog($th);
   echo json_encode($message);
 }
