@@ -5,9 +5,18 @@ declare(strict_types=1);
 // header('Content-Type: application/json');
 require_once 'logging.php';
 require_once '../db/db.php';
+require_once 'has_permissions.php';
 
 try {
   if ($_SERVER['REQUEST_METHOD'] != 'POST') throw new Exception('Invalid request.');
+  // redirect if logged out
+  if (empty($_COOKIE['id'])) {
+    header('location: ' . $_SERVER['HTTP_HOST'] . '/Admin/logged_out');
+    exit;
+  }
+  // redirect if not granted permission
+  if (hasPermission()) {
+  }
 
   /** @var string */
   $roleName = trim($_POST['role_name']);

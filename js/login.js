@@ -13,7 +13,8 @@ $('#loginBtn').on('click', e => {
     .val()
     .trim();
   const rememberMe = $('#rememberMe').prop('checked');
-
+  
+  resetAlert('alert');
   if (!password) {
     addAlert('Password cannot be empty.');
     ok = false;
@@ -26,7 +27,6 @@ $('#loginBtn').on('click', e => {
     loading = false;
     return;
   }
-  resetAlert('alert');
   fetch('../api/login.php', {
     method: 'POST',
     // when passing data to php via js, don't use json because php $_POST doesn't read that (there is a workaround to reading json

@@ -36,7 +36,6 @@ if (isset($_COOKIE['id'])) {
     if ($userData['role'] == 'Super Admin') return 'all';
     $sql = '';
     if ($isBarPerms) {
-      // TODO: UGMA NAPOD ni haha
       $sql = 'SELECT b.brgyid, p.* from permissions p 
     INNER JOIN user_roles_barangay urb on urb.permission_id = p.id
     INNER JOIN refbarangay b on b.brgyid = urb.barangay_id
