@@ -12,6 +12,10 @@ try {
 
     $data = json_decode(file_get_contents('php://input'), true);
 
+    if (!$data) {
+        $data = $_POST;
+    }
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($data['file_id'])) {
         $file_id = $data['file_id'];
 
@@ -22,7 +26,7 @@ try {
             echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
         }
     } else {
-        echo json_encode(['success' => false, 'message' => 'Invalid request. Missing required parameters.']);
+        echo json_encode(['success' => false, 'message' => 'Invalid request. Missing required parameters.', 'received_data' => $data]);
     }
 } catch (PDOException $e) {
     echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . $e->getMessage()]);

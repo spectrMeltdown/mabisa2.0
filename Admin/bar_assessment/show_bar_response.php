@@ -151,8 +151,8 @@ if ($barangay_id) {
                 <!-- Topbar -->
                 <?php
                 include '../common/nav.php';
-                $role = 'Barangay Admin';
-                $name = 'name';
+                $role = 'Barangay Secretary';//temporary role
+                $name = 'name';//temporary name
                 ?>
                 <!-- End of Topbar -->
 
@@ -168,7 +168,7 @@ if ($barangay_id) {
                     </div>
                     <?php
                     foreach ($data as $key => $rows):
-                        // Filter rows to include only those where the role matches the data_source or role is 'admin'
+                        // Filter rows : the purpose is to show admin all the rows, while only show specific roles their rows(indicated in the document source)
                         $filtered_rows = array_filter($rows, function ($row) use ($role) {
                             return $role === 'Barangay Admin' || $role === $row['data_source'];
                         });
@@ -205,15 +205,15 @@ if ($barangay_id) {
                                 </div>
 
                                 <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
-                                   <thead>
+                                    <thead>
                                         <tr>
-                                                <th style="width: 17%; text-align: center;">Requirement Code</th>
-                                                <th style="width: 17%;">Requirement Description</th>
-                                                <th style="width: 9%; text-align: center;">Attachment</th>
-                                                <th style="width: 6%; text-align: center;">Status</th>
-                                                <th style="width: 9%; text-align: center;">Last Modified</th>
-                                                
-                                       
+                                            <th style="width: 17%; text-align: center;">Requirement Code</th>
+                                            <th style="width: 17%;">Requirement Description</th>
+                                            <th style="width: 9%; text-align: center;">Attachment</th>
+                                            <th style="width: 6%; text-align: center;">Status</th>
+                                            <th style="width: 9%; text-align: center;">Last Modified</th>
+
+
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -260,18 +260,14 @@ if ($barangay_id) {
                                                     data-name="<?= htmlspecialchars($name); ?>">
                                                     <i class="fa fa-eye"></i>
                                                 </button>
-                                              
-                                                <?php if($role === $row['data_source'] && $data['status'] !== 'approved' ):?>
 
-                                                    <form method="POST" action="../bar_assessment/user_actions/delete.php"
-                                                    target="_blank">
-                                                    <input type="hidden" name="file_id"
-                                                        value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                    <button type="submit" class="btn btn-danger mb-3" title="Delete">
+                                                <?php if ($role === $row['data_source'] && $data['status'] !== 'approved'): ?>
+
+                                                    <button class="btn btn-danger mb-3 delete-btn"
+                                                        data-file-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
                                                         <i class="fa fa-trash"></i>
                                                     </button>
-                                                </form>
-                                                    <?php endif; ?>
+                                                <?php endif; ?>
                                             <?php endif; ?>
                                         </td>
 
@@ -291,26 +287,9 @@ if ($barangay_id) {
                                             <?php echo !empty($data) ? htmlspecialchars($data['date_uploaded']) : ''; ?>
                                         </td>
 
-                                        <?php if ($role === 'Barangay Admin' && $data): ?>
-                                            <!-- <td style="text-align: center; vertical-align: middle;">
-                                                <div class="column">
-                                                    <form method="POST" action="admin_actions/change_status.php">
-                                                        <input type="hidden" name="file_id"
-                                                            value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                        <input type="hidden" name="action" value="approve">
-                                                        <button type="submit" class="btn btn-success mb-3">Approve</button>
-                                                    </form>
-                                                    <form method="POST" action="admin_actions/change_status.php">
-                                                        <input type="hidden" name="file_id"
-                                                            value="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                        <input type="hidden" name="action" value="decline">
-                                                        <button type="submit" class="btn btn-danger btn-sm">Decline</button>
-                                                    </form>
-                                                </div>
-                                            </td> -->
-                                        <?php endif; ?>
 
-                                      
+
+
                                     </tr>
 
                                 <?php endforeach; ?>
@@ -334,18 +313,71 @@ if ($barangay_id) {
             input.addEventListener("change", function () {
                 let formId = "uploadForm-" + this.id.split("-")[1];
                 let form = document.getElementById(formId);
-                if (form) {
-                    form.submit();
+
+                if (this.files.length > 0) {
+                    let file = this.files[0];
+                    let fileName = file.name;
+                    let fileSize = file.size;
+                    let maxFileSize = 10 * 1024 * 1024; // change first number to change file size limit
+
+                    if (fileSize > maxFileSize) {
+                        alert("File size exceeds 10MB limit.");
+                        this.value = "";
+                        return;
+                    }
+
+                    let formData = new FormData(form);
+                    formData.append("file", file);
+
+                    fetch(form.action, {
+                        method: "POST",
+                        body: formData
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert("File uploaded successfully!");
+                                location.reload();
+                            } else {
+                                alert("Error: " + data.message);
+                            }
+                        })
+                        .catch(error => console.error("Error:", error));
                 }
             });
         });
 
-        
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                let fileId = this.getAttribute('data-file-id');
+
+                if (!confirm('Are you sure you want to delete this file?')) {
+                    return;
+                }
+
+                fetch('../bar_assessment/user_actions/delete.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ file_id: fileId })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('File deleted successfully.');
+                            location.reload();
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        });
+
         $(document).ready(function () {
     $('#commentModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget); 
-        var fileId = button.data('fileid'); 
-        var name = button.data('name'); 
+        var button = $(event.relatedTarget);
+        var fileId = button.data('fileid');
+        var name = button.data('name');
         var modal = $(this);
 
         var fileSrc = "../bar_assessment/admin_actions/view.php?file_id=" + fileId;
@@ -354,12 +386,15 @@ if ($barangay_id) {
         modal.find('input[name="name"]').val(name);
         modal.find('#approveFileId').val(fileId);
         modal.find('#declineFileId').val(fileId);
+        modal.find('#cancelFileId').val(fileId);
+
+       
     });
 });
 
 
     </script>
-    
+
 
     <?php require '../components/comment_section.php'; ?>
 </body>

@@ -34,29 +34,20 @@ class Admin_Actions
     }
 
     public function viewFile($file_id)
-{
-    $query = "SELECT file 
-              FROM barangay_assessment_files 
-              WHERE file_id = :file_id";
-
-    $stmt = $this->pdo->prepare($query);
-    $stmt->execute([
-        ':file_id' => $file_id,
-        
-    ]);
-
-    $file = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($file) {
-        $fileContent = $file['file'];
-
-        header("Content-Type: application/pdf");
-        header("Content-Disposition: inline; filename=\"file.pdf\"");
-        echo $fileContent;
-    } else {
-        throw new Exception("File not found.");
+    {
+        $query = "SELECT file_path FROM barangay_assessment_files WHERE file_id = :file_id";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute([':file_id' => $file_id]);
+    
+        $file = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+        if ($file && file_exists($file['file_path'])) {
+            return $file['file_path']; // Return file path instead of binary data
+        } else {
+            throw new Exception("File not found.");
+        }
     }
-}
+    
 
     
 }
