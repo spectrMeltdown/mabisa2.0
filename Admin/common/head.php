@@ -32,7 +32,7 @@ if (isset($_COOKIE['id'])) {
   {
     // auto-skip if super admin
     global $userData;
-    writeLog($userData);
+    // writeLog($userData);
     if ($userData['role'] == 'Super Admin') return 'all';
     $sql = '';
     if ($isBarPerms) {
@@ -53,8 +53,8 @@ if (isset($_COOKIE['id'])) {
     $query->execute([':id' => $userData['id']]);
     $permissions = $query->fetch();
     if ($permissions == false) return [];
-    writeLog('Permissions is');
-    writeLog($permissions);
+    // writeLog('Permissions is');
+    // writeLog($permissions);
 
     // get the permissions that have their value set to 1 (true)
     $permissions = array_keys(array_filter($permissions, function ($value) {
@@ -62,8 +62,8 @@ if (isset($_COOKIE['id'])) {
     }));
     return $permissions; //return only column names
   }
-  $genPermissions = getPermissions();
-  // $barPermissions = getPermissions(true);
+  $userGenPerms = getPermissions();
+  $userBarPerms = getPermissions(true);
   // get the barangay permissions
 }
 

@@ -85,8 +85,8 @@ try {
   foreach ($barangays as $barangay) {
     foreach ($activeIndicators as $indicator) {
       // Get available assessment permissions (exclude taken ones)
-      writeLog('Taken assessment barangay');
-      writeLog($takenAssessment[$barangay['brgyid']]);
+      // writeLog('Taken assessment barangay');
+      // writeLog($takenAssessment[$barangay['brgyid']]);
       $takenPermissions = array_diff($allPermissions, $takenAssessment[$barangay['brgyid']] ?? []);
       // writeLog('Taken permissions after: ');
       // writeLog($takenPermissions);

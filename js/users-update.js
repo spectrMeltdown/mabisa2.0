@@ -29,7 +29,7 @@ $('#cancel-btn').on('click', async () => {
 });
 
 // handle role changes
-$('#roleSelect').on('change', async (e) => {
+$('#roleSelect').on('change', async e => {
   // console.log('event fired');
   $('#roleSelect').prop('disabled', true); // Disable select
   if (loading) return;
@@ -46,7 +46,9 @@ $('#roleSelect').on('change', async (e) => {
   $('#genPermNoPerm').css('display', 'none');
   $('#barPermContainer').css('display', 'none');
   if ($.fn.DataTable.isDataTable('#barPermTable')) {
-    $('#barPermTable').DataTable().destroy();
+    $('#barPermTable')
+      .DataTable()
+      .destroy();
   }
 
   // wrap with try catch because promise throws exeception and kills the function
@@ -65,7 +67,7 @@ $('#roleSelect').on('change', async (e) => {
         data: {
           role_id: selectedOption,
         },
-        success: (permissions) => {
+        success: permissions => {
           console.log('Permissions are : ' + permissions);
           let testPermissions = JSON.parse(permissions);
 
@@ -100,9 +102,9 @@ $('#roleSelect').on('change', async (e) => {
                                </div>
                                <div class="card card-body border-secondary">
                                  <label for="${key}" id="label-${value}">${key.replaceAll(
-                                   '_',
-                                   ' ',
-                                 )}</label>
+                '_',
+                ' ',
+              )}</label>
                                </div>
                              </div>
                            </li>`);
@@ -112,7 +114,7 @@ $('#roleSelect').on('change', async (e) => {
           $('#noRoleSelected').css('display', 'none');
           res();
         },
-        error: (res) => {
+        error: res => {
           console.log('Error: ' + JSON.stringify(res));
           rej();
         },
@@ -132,7 +134,7 @@ $('#roleSelect').on('change', async (e) => {
         data: {
           role_id: selectedOption,
         },
-        success: (res) => {
+        success: res => {
           // console.log('bar permissions are : ' + res);
           if (!res) {
             rej();
@@ -141,8 +143,8 @@ $('#roleSelect').on('change', async (e) => {
           const barTableData = JSON.parse(res);
           $('#barPermTable').DataTable({
             data: barTableData,
-            createdRow: function (row, data, dataIndex) {
-              $('td', row).each(function () {
+            createdRow: function(row, data, dataIndex) {
+              $('td', row).each(function() {
                 $(this).html($(this).html()); // Force HTML rendering
               });
             },
@@ -150,11 +152,11 @@ $('#roleSelect').on('change', async (e) => {
               {
                 data: 'barangay',
                 title: 'Barangay',
-                render: function (data, type, row) {
+                render: function(data, type, row) {
                   // console.log('Type is: ' + type);
                   if (Array.isArray(data)) {
                     return data
-                      .map((ind) => {
+                      .map(ind => {
                         return ind['name'];
                       })
                       .join('<br>');
@@ -169,11 +171,11 @@ $('#roleSelect').on('change', async (e) => {
               {
                 data: 'indicators',
                 title: 'Indicators',
-                render: function (data, type, row) {
+                render: function(data, type, row) {
                   // console.log('Type is: ' + type);
                   if (Array.isArray(data)) {
                     return data
-                      .map((ind) => {
+                      .map(ind => {
                         // console.log(nl2br(ind['description']));
                         return `<strong>Code: ${
                           ind['code']
@@ -193,10 +195,10 @@ $('#roleSelect').on('change', async (e) => {
               {
                 data: 'available_perms',
                 title: 'Permissions',
-                render: function (data, type, row) {
+                render: function(data, type, row) {
                   if (Array.isArray(data)) {
                     return data
-                      .map((val) => {
+                      .map(val => {
                         const uniqueID = `${row['barangay']['id']}--${row['indicators']['id']}--${val}`;
                         // TODO: add a ternary to check if it is taken or not.
                         // CREATE MODE: if taken, mark with check and disable
@@ -210,9 +212,9 @@ $('#roleSelect').on('change', async (e) => {
                   </div>
                   <div class="card card-body border-secondary">
                     <label for="${uniqueID}" id="label-${uniqueID}">${val.replaceAll(
-                      '_',
-                      ' ',
-                    )}</label>
+                          '_',
+                          ' ',
+                        )}</label>
                   </div>
                 </div>
               </li>`;
@@ -228,16 +230,24 @@ $('#roleSelect').on('change', async (e) => {
             // rowsGroup: [
             //   0, // Merge identical "Barangay" cells
             // ],
-            drawCallback: function (settings) {
-              var api = this.api();
-              var prev = null;
+            drawCallback: function(settings) {
+              let api = this.api();
+              let prev = null;
 
               api
                 .rows({ page: 'current' })
-                .every(function (rowIdx, tableLoop, rowLoop) {
-                  var data = this.data();
+                .every(function(rowIdx, tableLoop, rowLoop) {
+                  let data = this.data();
+
+                  // Ensure the data object contains 'barangay'
+                  if (!data || typeof data.barangay === 'undefined') {
+                    return;
+                  }
+
+                  let cell = $(this.node()).find('td:first'); // Target the first column
+
                   if (prev && prev.barangay === data.barangay) {
-                    $(this.node()).find('td:first').html('');
+                    cell.empty(); // Use empty() instead of html('') for better performance
                   } else {
                     prev = data;
                   }
@@ -247,7 +257,7 @@ $('#roleSelect').on('change', async (e) => {
           $('#barPermContainer').css('display', 'block');
           resolve();
         },
-        error: (res) => {
+        error: res => {
           console.log('Error: ' + JSON.stringify(res));
           rej();
         },
@@ -261,7 +271,7 @@ $('#roleSelect').on('change', async (e) => {
 });
 
 // show/hide in password field
-document.getElementById('passEye').addEventListener('click', function () {
+document.getElementById('passEye').addEventListener('click', function() {
   // console.log('eye toggled');
   const passwordInput = document.getElementById('pass');
   const icon = this.children[0];
@@ -279,24 +289,22 @@ document.getElementById('passEye').addEventListener('click', function () {
 });
 
 // show/hide password in confirm pass field
-document
-  .getElementById('confirmPassEye')
-  .addEventListener('click', function () {
-    // console.log('eye toggled (confirm pass)');
-    const passwordInput = document.getElementById('confirmPass');
-    const icon = this.children[0];
-    // console.log(icon.classList);
-    // Toggle the input type
-    if (passwordInput.type === 'password') {
-      passwordInput.type = 'text';
-      icon.classList.remove('fa-eye');
-      icon.classList.add('fa-eye-slash');
-    } else {
-      passwordInput.type = 'password';
-      icon.classList.remove('fa-eye-slash');
-      icon.classList.add('fa-eye');
-    }
-  });
+document.getElementById('confirmPassEye').addEventListener('click', function() {
+  // console.log('eye toggled (confirm pass)');
+  const passwordInput = document.getElementById('confirmPass');
+  const icon = this.children[0];
+  // console.log(icon.classList);
+  // Toggle the input type
+  if (passwordInput.type === 'password') {
+    passwordInput.type = 'text';
+    icon.classList.remove('fa-eye');
+    icon.classList.add('fa-eye-slash');
+  } else {
+    passwordInput.type = 'password';
+    icon.classList.remove('fa-eye-slash');
+    icon.classList.add('fa-eye');
+  }
+});
 
 // when submitting the form
 $('#save-user-btn').on('click', async () => {
@@ -304,7 +312,7 @@ $('#save-user-btn').on('click', async () => {
   toggleLoading();
 
   // get all users to compare existing usernames & emails
-  const users = await fetch(`../api/get_users.php`).then((response) => {
+  const users = await fetch(`../api/get_users.php`).then(response => {
     if (!response.ok) {
       $('#alert').addClass('show');
       $('#alert').html(
@@ -321,12 +329,24 @@ $('#save-user-btn').on('click', async () => {
 
   // console.log($("#username").val());
   // get input values
-  const username = $('#username').val()?.trim();
-  const fullName = $('#fullName').val()?.trim();
-  const email = $('#email').val()?.trim();
-  const mobileNum = $('#mobileNum').val()?.trim();
-  const password = $('#pass').val()?.trim();
-  const confirmPass = $('#confirmPass').val()?.trim();
+  const username = $('#username')
+    .val()
+    ?.trim();
+  const fullName = $('#fullName')
+    .val()
+    ?.trim();
+  const email = $('#email')
+    .val()
+    ?.trim();
+  const mobileNum = $('#mobileNum')
+    .val()
+    ?.trim();
+  const password = $('#pass')
+    .val()
+    ?.trim();
+  const confirmPass = $('#confirmPass')
+    .val()
+    ?.trim();
   const role = $('#roleSelect').val();
   // const roleName = $('#roleSelect option:selected').text();
   // console.log(roleName);
@@ -335,30 +355,63 @@ $('#save-user-btn').on('click', async () => {
 
   function resetFieldStates() {
     $('#username').removeClass('is-invalid');
-    $('#username').find('.invalid-feedback').first().text('');
+    $('#username')
+      .find('.invalid-feedback')
+      .first()
+      .text('');
     $('#fullName').removeClass('is-invalid');
-    $('#fullName').find('.invalid-feedback').first().text('');
+    $('#fullName')
+      .find('.invalid-feedback')
+      .first()
+      .text('');
     $('#email').removeClass('is-invalid');
-    $('#email').find('.invalid-feedback').first().text('');
+    $('#email')
+      .find('.invalid-feedback')
+      .first()
+      .text('');
     $('#mobileNum').removeClass('is-invalid');
-    $('#mobileNum').find('.invalid-feedback').first().text('');
+    $('#mobileNum')
+      .find('.invalid-feedback')
+      .first()
+      .text('');
     $('#confirmPass').removeClass('is-invalid');
-    $('#confirmPass').find('.invalid-feedback').first().text('');
+    $('#confirmPass')
+      .find('.invalid-feedback')
+      .first()
+      .text('');
     $('#pass').removeClass('is-invalid');
-    $('#pass').find('.invalid-feedback').first().text('');
+    $('#pass')
+      .find('.invalid-feedback')
+      .first()
+      .text('');
     $('#roleSelect').removeClass('is-invalid');
-    $('#roleSelect').find('.invalid-feedback').first().text('');
+    $('#roleSelect')
+      .find('.invalid-feedback')
+      .first()
+      .text('');
     $('#gen-perm-title').removeClass('is-invalid');
-    $('#gen-perm-title').find('.invalid-feedback').first().text('');
+    $('#gen-perm-title')
+      .find('.invalid-feedback')
+      .first()
+      .text('');
     $('#bar-perm-title').removeClass('is-invalid');
-    $('#bar-perm-title').find('.invalid-feedback').first().text('');
+    $('#bar-perm-title')
+      .find('.invalid-feedback')
+      .first()
+      .text('');
   }
 
   function addError(element, message, customFeedbackElement) {
     if (customFeedbackElement) {
-      element.find('.invalid-feedback').first().text(message);
+      element
+        .find('.invalid-feedback')
+        .first()
+        .text(message);
     } else {
-      element.next('.invalid-feedback').first().text(message);
+      element
+        .next('.invalid-feedback')
+        .first()
+        .text(message);
     }
     element.addClass('is-invalid');
   }
@@ -404,7 +457,7 @@ $('#save-user-btn').on('click', async () => {
   }
   if (
     !editMode &&
-    users.some((user) => user.username === username && user.id != currentUserID)
+    users.some(user => user.username === username && user.id != currentUserID)
   ) {
     addError($('#username'), 'Username already taken.');
     ok = false;
@@ -427,7 +480,7 @@ $('#save-user-btn').on('click', async () => {
   }
   if (
     !editMode &&
-    users.some((user) => user.email === email && user.id != currentUserID)
+    users.some(user => user.email === email && user.id != currentUserID)
   ) {
     addError($('#email'), 'Email already taken.');
     ok = false;
@@ -526,12 +579,11 @@ $('#save-user-btn').on('click', async () => {
       type: 'POST',
       url: '../api/create_user.php',
       data: submitObj, // Use 'data' instead of 'body'
-      success: function (result) {
+      success: function(result) {
         // check if null, empty, false, 0, infinity, etc
         if (!result) {
           $('#crud-user').modal('hide');
           location.href = 'users.php';
-          location.reload();
           $('#main-toast-container').append(
             addToast('Success!', 'User created successfully.'),
           );
@@ -549,12 +601,11 @@ $('#save-user-btn').on('click', async () => {
       data: detailsForm, // Use 'data' instead of 'body'
       processData: false, // Prevent jQuery from processing the FormData
       contentType: false, // Prevent jQuery from setting 1content type
-      success: function (result) {
+      success: function(result) {
         // check if null, empty, false, 0, infinity, etc
         if (!result) {
           $('#crud-user').modal('hide');
           location.href = 'users.php';
-          location.reload();
           $('#main-toast-container').append(
             addToast('Success!', 'User successfully edited.'),
           );

@@ -110,7 +110,7 @@ require_once '../db/db.php';
                           <td><?php
                               $query = $pdo->prepare("SELECT b.brgyname as barangay from refbarangay b inner join user_roles_barangay ub on ub.barangay_id = b.brgyid where ub.user_id = :id");
                               // writeLog($userData);
-                              $query->execute([':id' => $userData['id']]);
+                              $query->execute([':id' => $row['id']]);
                               if ($query->rowCount() <= 0) {
                                 echo 'No barangay assignments';
                               } else {
