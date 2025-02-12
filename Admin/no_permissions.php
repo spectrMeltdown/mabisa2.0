@@ -41,14 +41,20 @@ date_default_timezone_set('Asia/Manila');
       <div class="col-md-6">
         <div class="card text-center p-4">
           <div class="card-body">
-            <h1 class="card-title mb-3">You are logged out</h1>
-            <p class="card-text text-muted mb-4">If you’d like to continue, please log in.</p>
-            <a href="../index.php" class="btn btn-danger btn-lg">Go to login page <i class="fas fa-arrow-circle-right"></i></a>
+            <h1 class="card-title mb-3">No permissions</h1>
+            <p class="card-text text-muted mb-4">You do not have the permissions to view this page.</p>
+            <button id="goBackBtn" class="btn btn-danger btn-lg"><i class="fas fa-arrow-circle-left mr-2"></i>Go back</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 </body>
+<script>
+  document.getElementById('goBackBtn').addEventListener('click', () => {
+    // console.log('backing up');
+    history.back();
+  });
+</script>
 
 </html>

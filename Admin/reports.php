@@ -8,7 +8,15 @@ if (empty($_COOKIE['id'])) {
   exit;
 }
 
+require_once '../api/logging.php';
 require_once '../db/db.php';
+require_once '../api/has_permissions.php';
+global $pdo;
+
+if (!hasPermissions($pdo, $_COOKIE['id'], ['reports_read'])) {
+  header('location:no_permissions.php');
+  exit;
+}
 ?>
 
 <!DOCTYPE html>

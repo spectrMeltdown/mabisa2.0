@@ -5,8 +5,21 @@ if (empty($_COOKIE['id'])) {
     exit;
 }
 
-require_once 'bar_assessment/responses.php';
+// PERMISSIONS CHECK
+
+require_once '../api/logging.php';
 require_once '../db/db.php';
+require_once '../api/has_permissions.php';
+global $pdo;
+
+if (!hasPermissions($pdo, $_COOKIE['id'], ['assessment_submissions_read'], true, true)) {
+    header('location:no_permissions.php');
+    exit;
+}
+
+// END OF PERMISSIONS CHECK
+
+require_once 'bar_assessment/responses.php';
 
 $responsesObj = new Responses($pdo);
 $responses = $responsesObj->show_responses();
@@ -18,7 +31,7 @@ $responses = $responsesObj->show_responses();
 
 <head>
     <?php require 'common/head.php' ?>
-    <script src="../vendor/jquery/jquery.min.js" ></script>
+    <script src="../vendor/jquery/jquery.min.js"></script>
     <script src="../js/bar-assessment.js"></script>
 
 </head>

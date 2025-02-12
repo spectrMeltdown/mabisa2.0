@@ -7,11 +7,16 @@ if (empty($_COOKIE['id'])) {
   header('location:logged_out.php');
   exit;
 }
-// require '../api/logging.php';
-// if (roleAccess()) {
-// }
 
+require_once '../api/logging.php';
 require_once '../db/db.php';
+require_once '../api/has_permissions.php';
+global $pdo;
+
+if (!hasPermissions($pdo, $_COOKIE['id'], ['users_create, users_update'])) {
+  header('location:no_permissions.php');
+  exit;
+}
 ?>
 
 <!DOCTYPE html>

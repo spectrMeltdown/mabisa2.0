@@ -105,4 +105,4 @@ if (isset($_COOKIE['id'])) {
 
 <script src="<?= $pathPrepend ?>js/app.js" defer></script>
 
-<title>MABISA</title>
+<?= isset($customTitle) ? '' : '<title>MABISA</title>' ?>
