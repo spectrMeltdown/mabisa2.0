@@ -26,7 +26,7 @@ global $userGenPerms;
 
   <?php
   // check if gen permissions has any criteria* permissions, or if 'all' is specified
-  if ((is_string($userGenPerms) && $userGenPerms == 'all') || !empty(array_filter($userGenPerms, function ($value) {
+  if ((is_string($userGenPerms) && $userGenPerms == 'all') || !empty(array_filter($userGenPerms ?? [], function ($value) {
     return str_contains($value, 'criteria');
   }))):
   ?>
@@ -87,7 +87,7 @@ global $userGenPerms;
   writeLog('bar perms was');
   writeLog($userBarPerms);
   // check if gen permissions has any assessment* permissions, or if 'all' is specified, or if barPermissions has entries
-  if ((is_string($userGenPerms) && $userGenPerms == 'all') || !empty(array_filter($userGenPerms, function ($value) {
+  if ((is_string($userBarPerms) && $userBarPerms == 'all') || !empty(array_filter($userBarPerms ?? [], function ($value) {
     return str_contains($value, 'assessment');
   })) || !empty($userBarPerms)):
   ?>
@@ -102,7 +102,7 @@ global $userGenPerms;
   ?>
   <?php
   // check if gen permissions has any map* permissions, or if 'all' is specified
-  if ((is_string($userGenPerms) && $userGenPerms == 'all') || !empty(array_filter($userGenPerms, function ($value) {
+  if ((is_string($userGenPerms) && $userGenPerms == 'all') || !empty(array_filter($userGenPerms ?? [], function ($value) {
     return str_contains($value, 'map');
   }))):
   ?>
@@ -116,7 +116,7 @@ global $userGenPerms;
   ?>
   <?php
   // check if gen permissions has any user* permissions, or if 'all' is specified
-  if ((is_string($userGenPerms) && $userGenPerms == 'all') || !empty(array_filter($userGenPerms, function ($value) {
+  if ((is_string($userGenPerms) && $userGenPerms == 'all') || !empty(array_filter($userGenPerms ?? [], function ($value) {
     return str_contains($value, 'user');
   }))):
   ?>
@@ -131,7 +131,7 @@ global $userGenPerms;
   <?php
   global $userGenPerms;
   // check if gen permissions has any user* permissions, or if 'all' is specified
-  if ((is_string($userGenPerms) && $userGenPerms == 'all') || !empty(array_filter($userGenPerms, function ($value) {
+  if ((is_string($userGenPerms) && $userGenPerms == 'all') || !empty(array_filter($userGenPerms ?? [], function ($value) {
     return str_contains($value, 'user');
   }))):
   ?>

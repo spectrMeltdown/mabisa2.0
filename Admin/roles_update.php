@@ -1,20 +1,10 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
-// ensure the user is still logged in, redirect if not
-// use empty to check for all cases (variable unset, blank string, etc). Negation of the variable also works, but may display warning.
-if (empty($_COOKIE['id'])) {
-  header('location:logged_out.php');
-  exit;
-}
 
-require_once '../api/logging.php';
-require_once '../db/db.php';
-require_once '../api/has_permissions.php';
-global $pdo;
-
-if (!hasPermissions($pdo, $_COOKIE['id'], ['roles_create, roles_update'])) {
-  header('location:no_permissions.php');
+require 'common/auth.php';
+if (!userHasPerms(['roles_create', 'roles_update'], 'gen')) {
+  header('Location:no_permissions.php');
   exit;
 }
 ?>
@@ -23,7 +13,8 @@ if (!hasPermissions($pdo, $_COOKIE['id'], ['roles_create, roles_update'])) {
 <html lang="en">
 
 <head>
-  <?php require 'common/head.php' ?>
+  <?php require 'common/head.php';
+  ?>
   <script src="../js/role-change.js" defer></script>
   <script src="../js/util/confirmation.js" defer></script>
   <style>

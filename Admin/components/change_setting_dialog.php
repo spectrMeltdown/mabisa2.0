@@ -17,14 +17,12 @@
 
         <form id="settingFormData" class="needs-validation" novalidate>
           <!-- for displaying error -->
-          <div class="mt-4 mb-4">
-            <div class="alert alert-danger alert-dismissible fade" role="alert" id="alert">
-            </div>
+          <div class="alert alert-danger alert-dismissible fade" role="alert" id="alert">
           </div>
           <div class="container">
             <p id="changeProfileSettingSubtitle"></p>
             <div class="mb-3 form-group">
-              <input maxlength="100" type="text" class="form-control" name="newValue" id="newValue" required />
+              <input maxlength="100" type="text" class="form-control" name="newValue" id="newValueInput" required />
               <div class="invalid-feedback">
               </div>
             </div>

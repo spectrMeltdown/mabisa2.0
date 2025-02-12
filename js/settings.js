@@ -1,5 +1,27 @@
 'use strict';
 
+// account details enum
+// const accountDataCamel = Object.freeze({
+//   username: Symbol('username'),
+//   email: Symbol('email'),
+//   fullName: Symbol('fullName'),
+//   mobileNum: Symbol('mobileNum'),
+//   password: Symbol('password'),
+// });
+
+// const accountDataSnake = Object.freeze({
+//   username: Symbol('username'),
+//   email: Symbol('email'),
+//   fullName: Symbol('full_name'),
+//   mobileNum: Symbol('mobile_num'),
+//   password: Symbol('password'),
+// });
+
+let origMobileNum;
+let origFullName;
+let origUsername;
+let origEmail;
+
 // get user data onload
 document.addEventListener('DOMContentLoaded', async () => {
   const user = await fetch('../api/get_user.php?id=self')
@@ -10,10 +32,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
   // assign user data to display fields
-  $('#username').text(user['username']);
-  $('#email').text(user['email']);
-  $('#fullName').text(user['full_name']);
-  $('#mobileNum').text('+63' + user['mobile_num']);
+  origUsername = user['username'];
+  origEmail = user['email'];
+  origMobileNum = user['mobile_num'];
+  origFullName = user['full_name'];
+  $('#username').text(origUsername);
+  $('#email').text(origEmail);
+  $('#fullName').text(origFullName);
+  $('#mobileNum').text('+63' + origMobileNum);
 
   const profilePicExists = await fileExists(user['profile_pic']);
   console.log('Profile pic exists:' + profilePicExists);
@@ -104,40 +130,54 @@ document.getElementById('fileInput').addEventListener('change', async event => {
 });
 
 // individual edit buttons
-$('#mobileNum-edit').on('click', async e => {
+$('#mobileNum-edit').on('click', async () => {
+  /** @type {FormData} */
   const value = await changeProfileSettingDialog(
     'mobileNum',
     'Change Mobile Number',
     'Enter new mobile number:',
+    origMobileNum,
   );
+  if (value) updateAccData(value);
 });
-$('#fullName-edit').on('click', async e => {
+$('#fullName-edit').on('click', async () => {
+  /** @type {FormData} */
   const value = await changeProfileSettingDialog(
     'fullName',
     'Change Full Name',
     'Enter new full name:',
+    origFullName,
   );
+  if (value) updateAccData(value);
 });
-$('#username-edit').on('click', async e => {
+$('#username-edit').on('click', async () => {
+  /** @type {FormData} */
   const value = await changeProfileSettingDialog(
     'username',
     'Change Username',
     'Enter new username:',
+    origUsername,
   );
+  if (value) updateAccData(value);
 });
-$('#password-edit').on('click', async e => {
+$('#password-edit').on('click', async () => {
+  /** @type {FormData} */
   const value = await changeProfileSettingDialog(
     'password',
     'Change Password',
     'Enter new password:',
   );
+  if (value) updateAccData(value);
 });
-$('#email-edit').on('click', async e => {
+$('#email-edit').on('click', async () => {
   const value = await changeProfileSettingDialog(
-    'password',
+    /** @type {FormData} */
+    'email',
     'Change Email',
     'Enter new email:',
+    origEmail,
   );
+  if (value) updateAccData(value);
 });
 
 // create a enum (basically immutable object because js doesn't have enums)
@@ -166,60 +206,60 @@ function checkSetting(valToCheck) {
 }
 
 // show dialog to get new value, then return that value
-async function changeProfileSettingDialog(setting, title, subtitle, type) {
+async function changeProfileSettingDialog(setting, title, subtitle, oldValue) {
   if (checkSetting(setting)) {
     throw new Error('Invalid setting!');
   }
   $('#changeProfileSettingTitle').text(title);
   $('#changeProfileSettingSubtitle').text(subtitle);
-  if ($('#newValue')) {
-    console.log('was a new value');
-    $('#newValue').attr('id', setting);
-  }
-  $('#' + setting).attr('name', setting);
+  $('#newValueInput').attr('name', setting);
 
   switch (setting) {
     case 'mobileNum':
-      $('#' + setting).attr('type', 'tel');
-      $('#' + setting).attr('maxLength', '10');
-      $('#' + setting).attr('pattern', '^+?[0-9]*$');
-      $('#' + setting).attr('inputmode', 'numeric');
-      $('#' + setting).attr('autocomplete', 'tel');
-      addPhonePrepend();
+      $('#newValueInput').attr('type', 'tel');
+      $('#newValueInput').attr('maxLength', '10');
+      $('#newValueInput').attr('pattern', '^+?[0-9]*$');
+      $('#newValueInput').attr('inputmode', 'numeric');
+      $('#newValueInput').attr('autocomplete', 'tel');
+      addPhonePrepend('newValueInput');
       break;
     case 'fullName':
-      removePhonePrepend();
-      $('#' + setting).attr('type', 'text');
-      $('#' + setting).attr('maxLength', '100');
-      $('#' + setting).removeAttr('pattern');
-      $('#' + setting).removeAttr('inputmode');
-      $('#' + setting).attr('autocomplete', 'name');
+      removePhonePrepend('newValueInput');
+      $('#newValueInput').attr('type', 'text');
+      $('#newValueInput').attr('maxLength', '100');
+      $('#newValueInput').removeAttr('pattern');
+      $('#newValueInput').removeAttr('inputmode');
+      $('#newValueInput').attr('autocomplete', 'name');
       break;
     case 'password':
-      removePhonePrepend();
-      $('#' + setting).attr('type', 'password');
-      $('#' + setting).attr('maxLength', '100');
-      $('#' + setting).removeAttr('pattern');
-      $('#' + setting).removeAttr('inputmode');
-      $('#' + setting).attr('autocomplete', 'new-password');
+      removePhonePrepend('newValueInput');
+      $('#newValueInput').attr('type', 'password');
+      $('#newValueInput').attr('maxLength', '100');
+      $('#newValueInput').removeAttr('pattern');
+      $('#newValueInput').removeAttr('inputmode');
+      $('#newValueInput').attr('autocomplete', 'new-password');
       break;
     case 'email':
-      removePhonePrepend();
-      $('#' + setting).attr('type', 'email');
-      $('#' + setting).attr('maxLength', '100');
-      $('#' + setting).removeAttr('pattern');
-      $('#' + setting).removeAttr('inputmode');
-      $('#' + setting).attr('autocomplete', 'email');
+      removePhonePrepend('newValueInput');
+      $('#newValueInput').attr('type', 'email');
+      $('#newValueInput').attr('maxLength', '100');
+      $('#newValueInput').removeAttr('pattern');
+      $('#newValueInput').removeAttr('inputmode');
+      $('#newValueInput').attr('autocomplete', 'email');
       break;
     case 'username':
-      removePhonePrepend();
-      $('#' + setting).attr('type', 'text');
-      $('#' + setting).attr('maxLength', '100');
-      $('#' + setting).removeAttr('pattern');
-      $('#' + setting).removeAttr('inputmode');
-      $('#' + setting).attr('autocomplete', 'username');
+      removePhonePrepend('newValueInput');
+      $('#newValueInput').attr('type', 'text');
+      $('#newValueInput').attr('maxLength', '100');
+      $('#newValueInput').removeAttr('pattern');
+      $('#newValueInput').removeAttr('inputmode');
+      $('#newValueInput').attr('autocomplete', 'username');
       break;
   }
+
+  // setting the value last, because mobileNum added a prepend of +63
+  console.log('old value was: ' + oldValue);
+  $('#newValueInput').val(oldValue);
 
   const dialog = new bootstrap.Modal($('#changeProfileSettingDialog').get(0));
   dialog.show();
@@ -227,37 +267,39 @@ async function changeProfileSettingDialog(setting, title, subtitle, type) {
     // return value if button clicked
     $('#changeProfileSettingSubmit')
       .off('click')
-      .on('click', e => {
+      .on('click', () => {
         const formData = new FormData($('#settingFormData').get(0));
         console.log('FormData was: ' + JSON.stringify(formData));
         resolve(formData);
         dialog.hide();
       });
     // end if closed
-    $('#changeProfileSettingDialog').on('hidden.bs.modal', e => {
+    $('#changeProfileSettingDialog').on('hidden.bs.modal', () => {
       resolve(null);
     });
   });
 }
 
-async function saveNewValue(formData) {
-  $.ajax({
-    type: 'POST',
-    url: '../api/edit_user.php',
-    data: formData,
-    processData: false, // Prevent jQuery from processing the FormData
-    contentType: false, // Prevent jQuery from setting content type
-    success: function(result) {
-      // check if null, empty, false, 0, infinity, etc
-      if (!result) {
-        $('#crud-user').modal('hide');
+// function to apply changes to database
+function updateAccData(/** @type {FormData} */ formData) {
+  formData.append('id', 'self');
+  try {
+    $.ajax({
+      url: '../api/edit_user.php',
+      type: 'POST',
+      data: formData,
+      processData: false, // Prevent jQuery from processing the FormData
+      contentType: false,
+      success: data => {
+        console.log(data);
+        // $('#crud-user').modal('hide');
         location.reload();
-        // $("#main-toast-container").append(
-        //   addToast("Success!", "User created successfully."),
-        // );
-      } else {
-        console.log('error!: ' + result);
-      }
-    },
-  });
+      },
+      error: err => {
+        console.log(err);
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
 }

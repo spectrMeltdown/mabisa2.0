@@ -2,60 +2,72 @@
 
 declare(strict_types=1);
 // ini_set('display_errors', 0); // Disable error display
-require_once '../db/db.php';
 require_once 'logging.php';
-require 'util/update_assignments.php';
+require_once '../db/db.php';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  /** @var string */
+try {
+  if ($_SERVER['REQUEST_METHOD'] != 'POST') throw new Exception('Invalid request method.');
+  if (empty($_POST['id'])) throw new Exception('No ID given.');
+
+  // get post vars
+  /** @var int|string */
   $id = $_POST['id'];
   /** @var string */
-  $fullName = trim($_POST['full_name']);
+  $fullName = !empty($_POST['fullName']) ? trim($_POST['fullName']) : null;
   /** @var string */
-  $username = trim($_POST['username']);
+  $username = !empty($_POST['username']) ? trim($_POST['username']) : null;
   /** @var string */
-  $email = trim($_POST['email']);
+  $email = !empty($_POST['email']) ?  trim($_POST['email']) : null;
   /** @var string */
-  $mobileNum = substr(trim($_POST['mobile_num']), 3);
+  $mobileNum = !empty($_POST['mobileNum']) ? substr(trim((string)$_POST['mobileNum']), 3) : null;
   /** @var string */
   $pass = !empty($_POST['pass']) ? trim($_POST['pass']) : null;
-  // /** @var string */
-  // $confirmPass = trim($_POST['confirmPass']);
-  /** @var string */
-  $role = $_POST['role'];
-  /** @var string */
-  $barangay = isset($_POST['barangay']) ? $_POST['barangay'] : 'N/A';
-  $auditorBarangays = $_POST['auditorBarangays'] ?? null;
 
-  // writeLog($role);
-  // insert to database
+  // if self was specified, use cookie id
+  if ($id == 'self') $id = $_COOKIE['id'];
+
+  // initialize other vars
   global $pdo;
-  $sql = 'update users set username = :username, full_name = :full_name, email = :email, mobile_num = :mobile_num, role = :role, barangay = :barangay';
-  $parameters = [
-    ':id' => $id,
-    ':username' => $username,
-    ':full_name' => $fullName,
-    ':email' => $email,
-    ':mobile_num' => $mobileNum,
-    ':role' => $role,
-    ':barangay' => $barangay,
-  ];
-  if ($pass !== null) {
-    $sql .= ', password = :password';
-    $parameters[':password'] = password_hash($password, PASSWORD_BCRYPT);
+  $sql = 'UPDATE users SET ';
+  $params = [':id' => $id];
+
+  // append field(s) to update and set params
+  if ($fullName) {
+    $sql .= 'full_name = :fullName, ';
+    $params[':fullName'] = $fullName;
   }
+  if ($username) {
+    $sql .= 'username = :username, ';
+    $params[':username'] = $username;
+  }
+  if ($email) {
+    $sql .= 'email = :email, ';
+    $params[':email'] = $email;
+  }
+  if ($mobileNum) {
+    $sql .= 'mobile_num = :mobileNum, ';
+    $params[':mobileNum'] = $mobileNum;
+  }
+  if ($pass) {
+    $sql .= 'password = :pass, ';
+    $params[':pass'] = password_hash($pass, PASSWORD_BCRYPT);
+  }
+
+  // remove trailing space and comma on sql statement
+  $sql = substr($sql, 0, -2);
+
+  // append the id
   $sql .= ' where id = :id;';
 
-  try {
-    // update user_assignments table
-    // updateUserAssignments($id, $auditorBarangays, $pdo);
-    writeLog($sql);
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute($parameters);
-  } catch (\Throwable $th) {
-    http_response_code(500);
-    $message = $th->getMessage();
-    writeLog($message);
-    echo json_encode($message);
-  }
+  // EXECUTE
+  writeLog('statement was:');
+  writeLog($sql);
+  writeLog('params was:');
+  writeLog($params);
+  $stmt = $pdo->prepare($sql);
+  $stmt->execute($params);
+} catch (\Throwable $th) {
+  http_response_code(500);
+  writeLog($th);
+  echo json_encode($th->getMessage());
 }

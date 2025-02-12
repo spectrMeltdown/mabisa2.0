@@ -1,7 +1,8 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
-// if the user is already logged in, redirect to the dashboard instead
+
+// keep this here to redirect to dashboard if already logged in 
 if (!empty($_COOKIE['id'])) {
     header('location:dashboard.php');
     exit;
@@ -13,7 +14,11 @@ if (!empty($_COOKIE['id'])) {
 
 <head>
     <?php
+    $isLoginPage;
+    $pathPrepend = '../';
     require 'common/head.php' ?>
+    <!-- import again if you are using inline scripts -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
     <style type="text/css">
         @media (max-width: 768px) {
             .mv_hide {

@@ -1,10 +1,12 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
-// ensure the user is still logged in, redirect if not
-// use empty to check for all cases (variable unset, blank string, etc). Negation of the variable also works, but may display warning.
-if (empty($_COOKIE['id'])) {
-  header('location:logged_out.php');
+
+$isInFolder = true;
+require '../common/auth.php';
+if (!userHasPerms('criteria_read', 'gen')) {
+  // header does not allow relative paths, so this is my temporary solution
+  header('Location:' .  substr(__DIR__, 0, strrpos(__DIR__, '/')) . 'no_permissions.php');
   exit;
 }
 
@@ -23,7 +25,6 @@ unset($_SESSION['success']);
 
 <head>
   <?php
-  $isInFolder = true;
   require '../common/head.php' ?>
   <script src="../../vendor/jquery/jquery.min.js"></script>
   <script src="../../js/maintenance-criteria.js"></script>
@@ -77,7 +78,7 @@ unset($_SESSION['success']);
                   </thead>
                   <tbody>
                     <?php foreach ($data as $row):
-                      ?>
+                    ?>
                       <tr>
                         <td><?= $row['keyctr']; ?></td>
                         <td><?= $row['mininumreq_keyctr']; ?></td>
@@ -91,7 +92,7 @@ unset($_SESSION['success']);
                             Edit
                           </a>
                           <a href="delete_minreqsub.php?keyctr=<?php echo $row['keyctr']; ?>" class="btn btn-danger delete-btn"
-                          data-id="<?php echo $row['keyctr']; ?>">Delete</a>
+                            data-id="<?php echo $row['keyctr']; ?>">Delete</a>
                         </td>
                       </tr>
 
@@ -108,13 +109,13 @@ unset($_SESSION['success']);
   </div>
 
   <script>
-   $(document).ready(function () {
-  $('#open-add-modal').click(function () {
-    $('#addMinReqSubModal').modal('show');
-  });
+    $(document).ready(function() {
+      $('#open-add-modal').click(function() {
+        $('#addMinReqSubModal').modal('show');
+      });
 
 
-  $(document).on('click', '.delete-btn', function (e) {
+      $(document).on('click', '.delete-btn', function(e) {
         e.preventDefault();
         var url = $(this).attr('href');
         if (confirm("Are you sure you want to delete this sub requirement?")) {
@@ -122,34 +123,35 @@ unset($_SESSION['success']);
         }
       });
 
-  var successMessage = "<?php echo $successMessage; ?>";
-  if (successMessage) {
-    alert(successMessage);
-  }
-});
+      var successMessage = "<?php echo $successMessage; ?>";
+      if (successMessage) {
+        alert(successMessage);
+      }
+    });
 
-$(document).on('click', '.open-modal', function () {
-    var keyctr = $(this).data('id');
+    $(document).on('click', '.open-modal', function() {
+      var keyctr = $(this).data('id');
 
-    if (!keyctr) {
+      if (!keyctr) {
         alert('Error: Missing keyctr!');
         return;
-    }
+      }
 
-    $.ajax({
+      $.ajax({
         url: 'edit_minreqsub.php',
         type: 'GET',
-        data: { keyctr: keyctr },
-        success: function (response) {
-            $('body').append(response);
-            $('#editMinReqSubModal').modal('show');
+        data: {
+          keyctr: keyctr
         },
-        error: function () {
-            alert('Error retrieving data.');
+        success: function(response) {
+          $('body').append(response);
+          $('#editMinReqSubModal').modal('show');
+        },
+        error: function() {
+          alert('Error retrieving data.');
         }
+      });
     });
-});
-
   </script>
   <?php include 'add_minreqsub.php' ?>
 </body>

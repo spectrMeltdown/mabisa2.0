@@ -1,13 +1,8 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
-// ensure the user is still logged in, redirect if not
-// use empty to check for all cases (variable unset, blank string, etc). Negation of the variable also works, but may display warning.
-if (empty($_COOKIE['id'])) {
-  header('location: logged_out.php');
-  exit;
-}
 
+require 'common/auth.php';
 require_once '../db/db.php';
 ?>
 

@@ -1,5 +1,5 @@
 <?php
-
+// NOTE: Use this for api files (non-display) only. head.php already gets all permissions for checking
 
 /**
  * @return bool - returns false if any permission in permissions is not granted
@@ -16,7 +16,6 @@ function hasPermissions(\PDO $pdo, $id, array $permissions, bool $isBarPerm = fa
   // SELECT GROUP_CONCAT(COLUMN_NAME) INTO @sql
   // FROM INFORMATION_SCHEMA.COLUMNS
   // WHERE TABLE_SCHEMA = 'your_database' AND TABLE_NAME = 'your_table' AND COLUMN_NAME LIKE 'user%';
-
   // SET @sql = CONCAT('SELECT ', @sql, ' FROM your_table;');
   // PREPARE stmt FROM @sql;
   // EXECUTE stmt;

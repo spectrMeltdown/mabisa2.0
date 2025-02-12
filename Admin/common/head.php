@@ -15,57 +15,6 @@ no-cache doesn't really mean totally no cache if you're worried.
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
-
-$pathPrepend = isset($isInFolder) ? '../../' : '../';
-
-if (isset($_COOKIE['id'])) {
-  // getting user data
-  $customUserID = 'self';
-  $userData;
-  require $pathPrepend . 'api/get_user.php'; // this will provide userData array
-  require $pathPrepend . 'api/util/url_exists.php';
-  // unset after using
-  unset($customUserID);
-
-  // get the general permissions
-  function getPermissions($isBarPerms = false): array | string
-  {
-    // auto-skip if super admin
-    global $userData;
-    // writeLog($userData);
-    if ($userData['role'] == 'Super Admin') return 'all';
-    $sql = '';
-    if ($isBarPerms) {
-      $sql = 'SELECT b.brgyid, p.* from permissions p 
-    INNER JOIN user_roles_barangay urb on urb.permission_id = p.id
-    INNER JOIN refbarangay b on b.brgyid = urb.barangay_id
-    WHERE urb.user_id = :id;
-    ';
-    } else {
-      $sql = 'SELECT * from permissions p 
-    inner join user_roles ur on ur.permissions_id = p.id
-    WHERE ur.user_id = :id;
-    ';
-    }
-    global $pdo;
-    $query = $pdo->prepare($sql);
-    $query->execute([':id' => $userData['id']]);
-    $permissions = $query->fetch();
-    if ($permissions == false) return [];
-    // writeLog('Permissions is');
-    // writeLog($permissions);
-
-    // get the permissions that have their value set to 1 (true)
-    $permissions = array_keys(array_filter($permissions, function ($value) {
-      return $value == 1;
-    }));
-    return $permissions; //return only column names
-  }
-  $userGenPerms = getPermissions();
-  $userBarPerms = getPermissions(true);
-  // get the barangay permissions
-}
-
 ?>
 
 <!-- Font -->

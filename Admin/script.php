@@ -1,7 +1,7 @@
 <?php
 
 $pathPrepend = isset($isInFolder) ? '../' : '';
-require_once $pathPrepend.'../db/db.php';
+require_once $pathPrepend . '../db/db.php';
 
 
 if (isset($_POST['add_maintenance_criteria_setup'])) {
@@ -57,7 +57,7 @@ if (isset($_POST['add_maintenance_criteria_setup'])) {
 }
 
 if (isset($_POST['update_maintenance_criteria_setup'])) {
-   
+
     $keyctr = $_POST['keyctr'];
     $version_keyctr = $_POST['version_keyctr'];
     $indicator_keyctr = $_POST['indicator_keyctr'];

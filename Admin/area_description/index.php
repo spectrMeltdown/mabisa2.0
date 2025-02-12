@@ -1,9 +1,12 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
-// use empty to check for all cases (variable unset, blank string, etc). Negation of the variable also works, but may display warning.
-if (empty($_COOKIE['id'])) {
-  header('location:logged_out.php');
+
+$isInFolder = true;
+require '../common/auth.php';
+if (!userHasPerms('criteria_read', 'gen')) {
+  // header does not allow relative paths, so this is my temporary solution
+  header('Location:' .  substr(__DIR__, 0, strrpos(__DIR__, '/')) . 'no_permissions.php');
   exit;
 }
 
@@ -15,7 +18,7 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 session_start();
 $successMessage = isset($_SESSION['success']) ? $_SESSION['success'] : '';
-unset($_SESSION['success']); 
+unset($_SESSION['success']);
 ?>
 
 <!DOCTYPE html>
@@ -23,10 +26,9 @@ unset($_SESSION['success']);
 
 <head>
   <?php
-  $isInFolder = true;
   require '../common/head.php' ?>
-   <script src="../../vendor/jquery/jquery.min.js"></script>
-   <script src="../../js/maintenance-criteria.js"></script>
+  <script src="../../vendor/jquery/jquery.min.js"></script>
+  <script src="../../js/maintenance-criteria.js"></script>
 </head>
 
 
@@ -49,11 +51,11 @@ unset($_SESSION['success']);
         <!-- End of Topbar -->
         <!--Header-->
         <div class="container-fluid">
-        
+
           <!-- Begin Page Content -->
-          
+
           <div class="card shadow mb-4">
-          <div class="card-header py-3">
+            <div class="card-header py-3">
               <div style="float: left;">
                 <h3 class="m-0 font-weight-bold text-primary">Area Description</h3>
               </div>
@@ -76,14 +78,14 @@ unset($_SESSION['success']);
                   </thead>
                   <tbody>
                     <?php foreach ($data as $row):
-                      ?>
+                    ?>
                       <tr>
                         <td><?php echo $row['keyctr']; ?></td>
 
                         <td><?php echo $row['description']; ?></td>
                         <td><?php echo $row['trail']; ?></td>
                         <td>
-                        <button class="btn btn-primary edit-btn" data-id="<?php echo $row['keyctr']; ?>">
+                          <button class="btn btn-primary edit-btn" data-id="<?php echo $row['keyctr']; ?>">
                             Edit
                           </button>
                           <a href="delete_description.php?keyctr=<?php echo $row['keyctr']; ?>" class="btn btn-danger delete-btn"
@@ -102,15 +104,15 @@ unset($_SESSION['success']);
       </div>
     </div>
   </div>
-  
+
   <div id="editDescriptionModalContainer"></div>
   <script>
-    $(document).ready(function () {
-      $('#open-add-modal').click(function () {
+    $(document).ready(function() {
+      $('#open-add-modal').click(function() {
         $('#addAreaDescriptionModal').modal('show');
       });
 
-      $('.delete-btn').click(function (e) {
+      $('.delete-btn').click(function(e) {
         e.preventDefault();
         var url = $(this).attr('href');
         if (confirm("Are you sure you want to delete this description?")) {
@@ -125,7 +127,7 @@ unset($_SESSION['success']);
     });
 
 
-    $(document).on('click', '.edit-btn', function () {
+    $(document).on('click', '.edit-btn', function() {
       var keyctr = $(this).data('id');
 
       if (!keyctr) {
@@ -136,12 +138,14 @@ unset($_SESSION['success']);
       $.ajax({
         url: 'edit_description.php',
         type: 'GET',
-        data: { keyctr: keyctr },
-        success: function (response) {
+        data: {
+          keyctr: keyctr
+        },
+        success: function(response) {
           $('#editDescriptionModalContainer').html(response);
           $('#editAreaDescriptionModal').modal('show');
         },
-        error: function () {
+        error: function() {
           alert('Error retrieving data.');
         }
       });

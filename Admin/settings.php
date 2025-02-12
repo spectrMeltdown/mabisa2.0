@@ -1,13 +1,7 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
-// ensure the user is still logged in, redirect if not
-// use empty to check for all cases (variable unset, blank string, etc). Negation of the variable also works, but may display warning.
-if (empty($_COOKIE['id'])) {
-  header('location:logged_out.php');
-  exit;
-}
-
+require 'common/auth.php';
 require_once '../db/db.php';
 ?>
 
@@ -15,7 +9,7 @@ require_once '../db/db.php';
 <html lang="en">
 
 <head>
-  <?php require 'common/head.php' ?>
+  <?php require 'common/head.php'; ?>
   <script src="../js/settings.js" defer></script>
   <script src="../js/util/confirmation.js" defer></script>
   <script src="../js/util/phone-prepend.js" defer></script>
@@ -94,7 +88,17 @@ require_once '../db/db.php';
                 </ul>
 
                 <!-- disabled because the super admin should be the only one to manage accounts -->
-                <!-- <button class="btn btn-danger btn-block" id="deleteAccountBtn">Delete Account</button> -->
+                <?php
+                if ($userData['role'] != 'Super Admin'):
+                ?>
+                  <p class="text-center"><i class="fas fa-info-circle"></i> Your account can only be deleted by an administrator.</p>
+                <?php
+                else:
+                ?>
+                  <p class="text-center"><i class="fas fa-info-circle"></i> Your account can only be deleted by another super admin.</p>
+                <?php
+                endif;
+                ?>
               </div>
             </div>
           </div>

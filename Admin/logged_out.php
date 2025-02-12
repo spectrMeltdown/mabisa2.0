@@ -8,7 +8,9 @@ date_default_timezone_set('Asia/Manila');
 
 <head>
   <?php
-  require 'common/head.php' ?>
+  // adding path prepend here, because it is defined in auth.php, which we don't use here
+  $pathPrepend = isset($isInFolder) ? '../../' : '../';
+  require 'common/head.php' ?>;
   <style>
     body {
       background-color: #f8f9fa;

@@ -2,8 +2,11 @@
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
 
-if (empty($_COOKIE['id'])) {
-  header('location:logged_out.php');
+$isInFolder = true;
+require '../common/auth.php';
+if (!userHasPerms('criteria_read', 'gen')) {
+  // header does not allow relative paths, so this is my temporary solution
+  header('Location:' .  substr(__DIR__, 0, strrpos(__DIR__, '/')) . 'no_permissions.php');
   exit;
 }
 
@@ -17,7 +20,7 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // Check for success message
 session_start();
 $successMessage = isset($_SESSION['success']) ? $_SESSION['success'] : '';
-unset($_SESSION['success']); 
+unset($_SESSION['success']);
 ?>
 
 <!DOCTYPE html>
@@ -25,8 +28,8 @@ unset($_SESSION['success']);
 
 <head>
   <?php
-  $isInFolder = true;
-  require '../common/head.php'; ?>
+  require '../common/head.php';
+  ?>
   <script src="../../vendor/jquery/jquery.min.js"></script>
   <script src="../../js/maintenance-criteria.js"></script>
 </head>
@@ -83,13 +86,13 @@ unset($_SESSION['success']);
   <div id="editModalContainer"></div>
   <script>
     //open the add modal
-    $(document).ready(function () {
-      $('#open-add-modal').click(function () {
+    $(document).ready(function() {
+      $('#open-add-modal').click(function() {
         $('#addAreaModal').modal('show');
       });
 
       // Confirmation for delete
-      $('.delete-btn').click(function (e) {
+      $('.delete-btn').click(function(e) {
         e.preventDefault();
         var url = $(this).attr('href');
         if (confirm("Are you sure you want to delete this area?")) {
@@ -104,7 +107,7 @@ unset($_SESSION['success']);
       }
     });
     //edit 
-    $(document).on('click', '.edit-btn', function () {
+    $(document).on('click', '.edit-btn', function() {
       var keyctr = $(this).data('id');
 
       if (!keyctr) {
@@ -115,17 +118,18 @@ unset($_SESSION['success']);
       $.ajax({
         url: 'edit_area.php',
         type: 'GET',
-        data: { keyctr: keyctr },
-        success: function (response) {
+        data: {
+          keyctr: keyctr
+        },
+        success: function(response) {
           $('#editModalContainer').html(response);
           $('#editAreaModal').modal('show');
         },
-        error: function () {
+        error: function() {
           alert('Error retrieving data.');
         }
       });
     });
-
   </script>
   <?php include 'create_area.php'; ?>
 

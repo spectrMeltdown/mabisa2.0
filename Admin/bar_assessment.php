@@ -1,39 +1,25 @@
 <?php
-// ensure the user is still logged in, redirect if not
-if (empty($_COOKIE['id'])) {
-    header('location:logged_out.php');
+require 'common/auth.php';
+if (!userHasPerms('assessment', 'bar')) {
+    header('Location:no_permissions.php');
     exit;
 }
-
-// PERMISSIONS CHECK
-
-require_once '../api/logging.php';
-require_once '../db/db.php';
-require_once '../api/has_permissions.php';
-global $pdo;
-
-if (!hasPermissions($pdo, $_COOKIE['id'], ['assessment_submissions_read'], true, true)) {
-    header('location:no_permissions.php');
-    exit;
-}
-
-// END OF PERMISSIONS CHECK
-
-require_once 'bar_assessment/responses.php';
-
-$responsesObj = new Responses($pdo);
-$responses = $responsesObj->show_responses();
-
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <?php require 'common/head.php' ?>
+    <?php
+    require 'common/head.php';
+    require_once '../db/db.php';
+    require_once 'bar_assessment/responses.php';
+
+    $responsesObj = new Responses($pdo);
+    $responses = $responsesObj->show_responses();
+    ?>
     <script src="../vendor/jquery/jquery.min.js"></script>
     <script src="../js/bar-assessment.js"></script>
-
 </head>
 
 <body id="page-top">

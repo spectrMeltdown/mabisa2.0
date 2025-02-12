@@ -1,14 +1,19 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
-// ensure the user is still logged in, redirect if not
-// use empty to check for all cases (variable unset, blank string, etc). Negation of the variable also works, but may display warning.
-if (empty($_COOKIE['id'])) {
-  header('location:logged_out.php');
+
+$isInFolder = true;
+require '../common/auth.php';
+if (!userHasPerms('criteria_read', 'gen')) {
+  // header does not allow relative paths, so this is my temporary solution
+  header('Location:' .  substr(__DIR__, 0, strrpos(__DIR__, '/')) . 'no_permissions.php');
   exit;
 }
-$isInFolder = true;
+
 include '../script.php';
+
+// set pathprepend again for the requires/import below
+$pathPrepend = isset($isInFolder) ? '../../' : '../';
 
 $data = [];
 
@@ -96,7 +101,6 @@ if (!empty($maintenance_area_description_result)) {
 <head>
   <?php
   require '../common/head.php' ?>
-
   <script src="../../vendor/jquery/jquery.min.js"></script>
 </head>
 
@@ -107,7 +111,7 @@ if (!empty($maintenance_area_description_result)) {
     <?php
     include '../common/sidebar.php'
 
-      ?>
+    ?>
     <!-- End of Sidebar -->
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
@@ -203,7 +207,7 @@ if (!empty($maintenance_area_description_result)) {
                     if ($table_started) {
                       echo "</tbody></table>";
                     }
-                    ?>
+                ?>
                     <div class="row bg-info" style="margin: 0; padding: 10px 0;">
                       <h6 class="col-lg-12 text-center text-white" style="margin: 0;">
                         <?php echo htmlspecialchars($current_indicator); ?>
@@ -221,11 +225,11 @@ if (!empty($maintenance_area_description_result)) {
                         </tr>
                       </thead>
                       <tbody>
-                        <?php
-                        $last_indicator = $current_indicator;
-                        $table_started = true;
-                  endif;
-                  ?>
+                      <?php
+                      $last_indicator = $current_indicator;
+                      $table_started = true;
+                    endif;
+                      ?>
                       <tr>
                         <td>
                           <button class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
@@ -246,7 +250,7 @@ if (!empty($maintenance_area_description_result)) {
                       echo "</tbody></table>";
                     }
                     ?>
-                    
+
                   <?php endforeach; ?>
 
             </div>
@@ -261,18 +265,18 @@ if (!empty($maintenance_area_description_result)) {
 
   <div id="modalContainer"></div>
   <script>
-    $(document).on("click", "#open-add-modal", function () {
+    $(document).on("click", "#open-add-modal", function() {
       $.ajax({
         url: "add.php",
         type: "GET",
-        success: function (response) {
+        success: function(response) {
           $("#modalContainer").html(response);
-          setTimeout(function () {
+          setTimeout(function() {
             var addMaintenanceCriteriaModal = new bootstrap.Modal(document.getElementById("addMaintenanceCriteriaModal"));
             addMaintenanceCriteriaModal.show();
           }, 200);
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
           console.log("Error: " + error);
         }
       });
@@ -280,21 +284,23 @@ if (!empty($maintenance_area_description_result)) {
   </script>
 
   <script>
-    $(document).on("click", ".open-modal", function () {
+    $(document).on("click", ".open-modal", function() {
       var edit_id = $(this).data("id");
 
       $.ajax({
         url: "edit.php",
         type: "POST",
-        data: { edit_id: edit_id },
-        success: function (response) {
+        data: {
+          edit_id: edit_id
+        },
+        success: function(response) {
           $("#modalContainer").html(response);
-          setTimeout(function () {
+          setTimeout(function() {
             var displayIdModal = new bootstrap.Modal(document.getElementById("displayIdModal"));
             displayIdModal.show();
           }, 200);
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
           console.log("Error: " + error);
         }
       });

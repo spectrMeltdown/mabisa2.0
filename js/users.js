@@ -7,17 +7,17 @@ if ($('#user_dataTable').find('p').length === 0) {
       emptyTable: 'No matching records found.',
     },
     columns: [
-      { title: 'Fullname' },
+      { title: 'Full Name' },
       { title: 'Username' },
       { title: 'Role' },
-      { title: 'Barangay' },
+      { title: 'Barangays' },
       { title: 'Actions' },
     ],
   });
 }
 
 // handle user delete btn
-$('.delete-user-btn').on('click', async (e) => {
+$('.delete-user-btn').on('click', async e => {
   if (loading) return;
   toggleLoading();
 

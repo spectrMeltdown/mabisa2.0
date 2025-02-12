@@ -1,10 +1,12 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
-// ensure the user is still logged in, redirect if not
-// use empty to check for all cases (variable unset, blank string, etc). Negation of the variable also works, but may display warning.
-if (empty($_COOKIE['id'])) {
-  header('location:logged_out.php');
+
+$isInFolder = true;
+require '../common/auth.php';
+if (!userHasPerms('criteria_read', 'gen')) {
+  // header does not allow relative paths, so this is my temporary solution
+  header('Location:' .  substr(__DIR__, 0, strrpos(__DIR__, '/')) . 'no_permissions.php');
   exit;
 }
 
@@ -15,7 +17,7 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 session_start();
 $successMessage = isset($_SESSION['success']) ? $_SESSION['success'] : '';
-unset($_SESSION['success']); 
+unset($_SESSION['success']);
 ?>
 
 <!DOCTYPE html>
@@ -23,7 +25,6 @@ unset($_SESSION['success']);
 
 <head>
   <?php
-  $isInFolder = true;
   require '../common/head.php' ?>
   <script src="../../vendor/jquery/jquery.min.js"></script>
   <script src="../../js/maintenance-criteria.js"></script>
@@ -74,18 +75,18 @@ unset($_SESSION['success']);
                 </thead>
                 <tbody>
                   <?php foreach ($data as $row):
-                    ?>
+                  ?>
                     <tr>
                       <td><?= htmlspecialchars($row['keyctr']); ?></td>
                       <td><?= htmlspecialchars($row['srccode']); ?></td>
                       <td><?= htmlspecialchars($row['srcdesc']); ?></td>
                       <td><?= htmlspecialchars($row['trail']); ?></td>
                       <td>
-                      <a class="btn btn-primary edit-btn" data-id="<?php echo $row['keyctr']; ?>">
+                        <a class="btn btn-primary edit-btn" data-id="<?php echo $row['keyctr']; ?>">
                           Edit
                         </a>
                         <a href="delete_document_source.php?keyctr=<?php echo $row['keyctr']; ?>" class="btn btn-danger delete-btn"
-                        data-id="<?php echo $row['keyctr']; ?>">Delete</a>
+                          data-id="<?php echo $row['keyctr']; ?>">Delete</a>
                       </td>
                     </tr>
 
@@ -100,11 +101,11 @@ unset($_SESSION['success']);
     </div>
   </div>
   </div>
-  
+
   <div id="editDocuSourceModalContainer"></div>
-      <script>
-    $(document).ready(function () {
-      $('#open-add-modal').click(function () {
+  <script>
+    $(document).ready(function() {
+      $('#open-add-modal').click(function() {
         $('#addDocuSource').modal('show');
       });
 
@@ -113,42 +114,44 @@ unset($_SESSION['success']);
         alert(successMessage);
       }
 
-      $('.delete-btn').click(function (e) {
+      $('.delete-btn').click(function(e) {
         e.preventDefault();
         var url = $(this).attr('href');
         if (confirm("Are you sure you want to delete this category?")) {
           window.location.href = url;
         }
       });
-     
+
     });
   </script>
 
-<script>
-     $(document).on('click', '.edit-btn', function () {
-        var code = $(this).data('id');
+  <script>
+    $(document).on('click', '.edit-btn', function() {
+      var code = $(this).data('id');
 
-        if (!code) {
-          alert('Error: Missing category code!');
-          return;
+      if (!code) {
+        alert('Error: Missing category code!');
+        return;
+      }
+
+      $.ajax({
+        url: 'edit_document_source.php',
+        type: 'GET',
+        data: {
+          keyctr: code
+        },
+        success: function(response) {
+          $('#editDocuSourceModalContainer').html(response);
+          $('#editDocuSourceModal').modal('show');
+
+        },
+        error: function() {
+          alert('Error retrieving category data.');
         }
-
-        $.ajax({
-  url: 'edit_document_source.php',
-  type: 'GET',
-  data: { keyctr: code },  
-          success: function (response) {
-            $('#editDocuSourceModalContainer').html(response);
-            $('#editDocuSourceModal').modal('show');
-            
-          },
-          error: function () {
-            alert('Error retrieving category data.');
-          }
-        });
       });
+    });
   </script>
-  
+
   <?php require 'create_document_source.php' ?>
 </body>
 
