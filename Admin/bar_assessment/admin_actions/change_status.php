@@ -12,6 +12,8 @@ try {
                 $result = $admin->approve($file_id);
             } elseif ($action === 'decline') {
                 $result = $admin->decline($file_id);
+            } elseif ($action === 'revert') {
+                $result = $admin->revert($file_id);
             } else {
                 throw new Exception('Invalid action specified.');
             }

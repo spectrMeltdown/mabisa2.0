@@ -8,7 +8,7 @@
     }
 
     .comments-container {
-        height: 500px;
+        height: 450px;
         overflow-y: auto;
     }
 </style>
@@ -39,7 +39,8 @@
                             </div>
                         </div>
 
-                        <?php if ($role === 'Barangay Admin'): ?>
+                        <?php if ($role === 'Barangay Admin'):
+                            ?>
                             <form method="post" action="../bar_assessment/admin_actions/add_comment.php">
                                 <input type="hidden" name="file_id">
                                 <input type="hidden" name="name">
@@ -47,23 +48,40 @@
                                     <textarea class="form-control" id="commentText" name="commentText" rows="2"
                                         placeholder="Write your comment here..." required></textarea>
                                 </div>
-                                <div class="text-right">
+                                <div class="text-right mb-3">
                                     <button type="submit" class="btn btn-primary btn-block">Add Comment</button>
                                 </div>
                             </form>
 
-                            <div class="mt-2">
+
+                            <div id="statusMessage" class="alert alert-info text-center" style="display: none;"></div>
+
+                            <div id="approveForm" style="display: none;">
                                 <form method="POST" action="admin_actions/change_status.php">
                                     <input type="hidden" name="file_id" id="approveFileId">
                                     <input type="hidden" name="action" value="approve">
                                     <button type="submit" class="btn btn-success btn-block">Approve</button>
                                 </form>
+                            </div>
+
+                            <div id="declineForm" style="display: none;">
                                 <form method="POST" action="admin_actions/change_status.php">
                                     <input type="hidden" name="file_id" id="declineFileId">
                                     <input type="hidden" name="action" value="decline">
                                     <button type="submit" class="btn btn-danger btn-block">Decline</button>
                                 </form>
                             </div>
+
+                            <div id="revertForm" style="display: none;">
+                                <form method="POST" action="admin_actions/change_status.php">
+                                    <input type="hidden" name="file_id" id="revertFileId">
+                                    <input type="hidden" name="action" value="revert">
+                                    <button type="submit" class="btn btn-warning btn-block">Revert to Pending</button>
+                                </form>
+                            </div>
+
+
+
                         <?php endif; ?>
                     </div>
                 </div>
