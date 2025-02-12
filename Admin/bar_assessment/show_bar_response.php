@@ -151,7 +151,7 @@ if ($barangay_id) {
                 <!-- Topbar -->
                 <?php
                 include '../common/nav.php';
-                $role = 'Barangay Secretary';//temporary role
+                $role = 'Barangay Admin';//temporary role
                 $name = 'name';//temporary name
                 ?>
                 <!-- End of Topbar -->
@@ -257,9 +257,10 @@ if ($barangay_id) {
                                                     data-target="#commentModal"
                                                     data-fileid="<?= htmlspecialchars($data['file_id']); ?>"
                                                     data-role="<?= htmlspecialchars($role); ?>"
-                                                    data-name="<?= htmlspecialchars($name); ?>">
-                                                    <i class="fa fa-eye"></i>
-                                                </button>
+                                                    data-name="<?= htmlspecialchars($name); ?>"
+                                                    data-status="<?= htmlspecialchars($data['status']); ?>">
+                                                <i class="fa fa-eye"></i>
+                                            </button>
 
                                                 <?php if ($role === $row['data_source'] && $data['status'] !== 'approved'): ?>
 
@@ -373,24 +374,7 @@ if ($barangay_id) {
             });
         });
 
-        $(document).ready(function () {
-    $('#commentModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget);
-        var fileId = button.data('fileid');
-        var name = button.data('name');
-        var modal = $(this);
-
-        var fileSrc = "../bar_assessment/admin_actions/view.php?file_id=" + fileId;
-        modal.find('#fileDisplay').attr('src', fileSrc);
-        modal.find('input[name="file_id"]').val(fileId);
-        modal.find('input[name="name"]').val(name);
-        modal.find('#approveFileId').val(fileId);
-        modal.find('#declineFileId').val(fileId);
-        modal.find('#cancelFileId').val(fileId);
-
-       
-    });
-});
+     
 
 
     </script>
