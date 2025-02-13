@@ -3,7 +3,7 @@ $isInFolder = true;
 require '../common/auth.php';
 if (!userHasPerms('criteria_read', 'gen')) {
     // header does not allow relative paths, so this is my temporary solution
-    header('Location:' .  substr(__DIR__, 0, strrpos(__DIR__, '/')) . 'no_permissions.php');
+    header('Location:' . substr(__DIR__, 0, strrpos(__DIR__, '/')) . 'no_permissions.php');
     exit;
 }
 
@@ -130,7 +130,7 @@ if ($barangay_id) {
     <?php
     $pathPrepend = '../../';
     require '../common/head.php'
-    ?>
+        ?>
     <script src="../../vendor/jquery/jquery.min.js"></script>
     <script src="../../js/bar-assessment.js"></script>
 
@@ -145,7 +145,7 @@ if ($barangay_id) {
         <?php
         include '../common/sidebar.php'
 
-        ?>
+            ?>
 
         <!-- sidebar end -->
 
@@ -158,7 +158,7 @@ if ($barangay_id) {
                 <!-- Topbar -->
                 <?php
                 include '../common/nav.php';
-                $role = 'Barangay Admin'; //temporary role
+                $role = 'Barangay Secretary'; //temporary role
                 $name = 'name'; //temporary name
                 ?>
                 <!-- End of Topbar -->
@@ -184,7 +184,7 @@ if ($barangay_id) {
                         if (empty($filtered_rows)) {
                             continue;
                         }
-                    ?>
+                        ?>
                         <div class="card-header bg-primary text-center py-3">
                             <div class="card-body">
                                 <h5 class="text-white"><?php echo htmlspecialchars($key); ?></h5>
@@ -203,7 +203,7 @@ if ($barangay_id) {
                                 if ($table_started) {
                                     echo "</tbody></table>";
                                 }
-                        ?>
+                                ?>
 
                                 <div class="row bg-info" style="margin: 0; padding: 10px 0;">
                                     <h6 class="col-lg-12 text-center text-white" style="margin: 0;">
@@ -225,11 +225,11 @@ if ($barangay_id) {
                                     </thead>
                                     <tbody>
 
-                                    <?php
-                                    $last_indicator = $current_indicator;
-                                    $table_started = true;
-                                endif;
-                                    ?>
+                                        <?php
+                                        $last_indicator = $current_indicator;
+                                        $table_started = true;
+                            endif;
+                            ?>
 
                                     <tr>
                                         <td><?php echo $row['relevance_definition']; ?></td>
@@ -248,8 +248,9 @@ if ($barangay_id) {
                                                         <input type="hidden" name="criteria_keyctr"
                                                             value="<?php echo htmlspecialchars($row['keyctr'], ENT_QUOTES, 'UTF-8'); ?>">
 
+
                                                         <input type="file" name="file" id="file-<?php echo $row['keyctr']; ?>"
-                                                            class="file-input" style="display: none;" required>
+                                                            class="file-input" style="display: none;" required accept="application/pdf">
 
                                                         <button type="button" class="btn btn-primary" title="Upload"
                                                             onclick="document.getElementById('file-<?php echo $row['keyctr']; ?>').click();">
@@ -318,7 +319,7 @@ if ($barangay_id) {
     </div>
     <script>
         document.querySelectorAll(".file-input").forEach(input => {
-            input.addEventListener("change", function() {
+            input.addEventListener("change", function () {
                 let formId = "uploadForm-" + this.id.split("-")[1];
                 let form = document.getElementById(formId);
 
@@ -338,9 +339,9 @@ if ($barangay_id) {
                     formData.append("file", file);
 
                     fetch(form.action, {
-                            method: "POST",
-                            body: formData
-                        })
+                        method: "POST",
+                        body: formData
+                    })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
@@ -356,7 +357,7 @@ if ($barangay_id) {
         });
 
         document.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function () {
                 let fileId = this.getAttribute('data-file-id');
 
                 if (!confirm('Are you sure you want to delete this file?')) {
@@ -364,14 +365,14 @@ if ($barangay_id) {
                 }
 
                 fetch('../bar_assessment/user_actions/delete.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            file_id: fileId
-                        })
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        file_id: fileId
                     })
+                })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {

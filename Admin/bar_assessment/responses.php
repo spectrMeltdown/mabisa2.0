@@ -57,7 +57,7 @@ class Responses
     
     public function getProgress($barangay_id) {
         try {
-            $query1 = "SELECT COUNT(*) as totalRequirements FROM maintenance_area_mininumreqs";
+            $query1 = "SELECT COUNT(*) as totalRequirements FROM maintenance_criteria_setup";
             $stmt1 = $this->pdo->prepare($query1);
             $stmt1->execute();
             $result1 = $stmt1->fetch(PDO::FETCH_ASSOC);

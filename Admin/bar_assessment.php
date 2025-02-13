@@ -60,7 +60,7 @@ if (!userHasPerms('assessment', 'bar')) {
                                             <th>Barangay</th>
                                             <th>Last Transaction</th>
                                             <th>Actions</th>
-                                            <th>Progress</th>
+                                            <th>Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -74,7 +74,13 @@ if (!userHasPerms('assessment', 'bar')) {
                                                 echo "<td>";
                                                 echo "<a href='bar_assessment/show_bar_response.php?barangay_id=" . htmlspecialchars($row['barangay_id']) . "' class='btn btn-primary btn-sm'>View</a>";
                                                 echo "</td>";
-                                                echo "<td>" . htmlspecialchars($progress) . " %</td>";
+                                               if($progress >= 40){
+                                                echo "<td> Passed </td>";
+                                               }
+                                               else
+                                               {
+                                                echo "<td> Failed </td>";
+                                               }
                                                 echo "</tr>";
                                             }
                                         }

@@ -4,6 +4,9 @@ date_default_timezone_set('Asia/Manila');
 
 require 'common/auth.php';
 require_once '../db/db.php';
+require_once 'bar_assessment/responses.php';
+
+$responses = new Responses($pdo);
 ?>
 
 <!DOCTYPE html>
@@ -80,7 +83,22 @@ require_once '../db/db.php';
                           Barangay In Progress
                         </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">
-                          0
+                        <?php
+                          $stmt = $pdo->query("SELECT barangay_id FROM `barangay_assessment`;");
+                          $barangays = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                          $complete = 0;
+
+                          foreach ($barangays as $barangay) {
+                            $progress = $responses->getProgress($barangay['barangay_id']);
+
+                            if ($progress != 100) {
+                              $complete++;
+                            }
+                          }
+
+                          echo $complete;
+                          ?>
                         </div>
                       </div>
                       <div class="col-auto">
@@ -101,7 +119,24 @@ require_once '../db/db.php';
                           Completed Barangay
                         </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">
-                          0
+                          <?php
+                          $stmt = $pdo->query("SELECT barangay_id FROM `barangay_assessment`;");
+                          $barangays = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                          $complete = 0;
+
+                          foreach ($barangays as $barangay) {
+                            $progress = $responses->getProgress($barangay['barangay_id']);
+
+                            if ($progress == 100) {
+                              $complete++;
+                            }
+                          }
+
+                          echo $complete;
+                          ?>
+
+
                         </div>
                       </div>
                       <div class="col-auto">
@@ -122,7 +157,11 @@ require_once '../db/db.php';
                           Registered Barangay
                         </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">
-                          0
+                          <?php
+                          $stmt = $pdo->query("SELECT COUNT(*) FROM barangay_assessment;");
+                          $count = $stmt->fetchColumn();
+                          echo $count;
+                          ?>
                         </div>
                       </div>
                       <div class="col-auto">
