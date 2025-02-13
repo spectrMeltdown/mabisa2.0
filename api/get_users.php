@@ -13,7 +13,7 @@ function getAllUsers(): array
   $stmt = $pdo->query($sql);
   $users = [];
   while ($user = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $roleName = getRoleName($pdo, $user['role_id']);
+    $roleName = empty($user['role_id']) ? '--' : getRoleName($pdo, $user['role_id']);
     $user['role'] = $roleName;
     unset($user['role_id']);
     $users[] = $user;

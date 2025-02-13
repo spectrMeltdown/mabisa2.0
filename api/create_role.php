@@ -15,15 +15,21 @@ try {
     exit;
   }
   // redirect if not granted permission
-  if (hasPermission()) {
-  }
+  // if (hasPermission()) {
+  // }
 
   /** @var string */
   $roleName = trim($_POST['role_name']);
+  writeLog('role name from post');
+  writeLog($roleName);
   /** @var bool */
   $allowBarangay = $_POST['allow_barangay'];
+  writeLog('allow barangay from post');
+  writeLog($allowBarangay);
   /** @var array */
   $permissions = json_decode($_POST['permissions']);
+  writeLog('permissions from post');
+  writeLog($permissions);
 
   // cancel if any empty
   if (empty($roleName)) {
@@ -62,20 +68,23 @@ try {
     array_fill(0, count($permissions), true) // set true for each item
   );
 
-  // writeLog('Execution permissions was: ');
-  // writeLog($permissions);
-
+  writeLog('insert statement on permissions was: ');
+  writeLog($sql);
+  writeLog('insert params was permissions was: ');
+  writeLog($permissions);
   $stmt = $pdo->prepare($sql);
   $stmt->execute($permissions);
   /** @var int */
   $permissionID = (int)$pdo->lastInsertId();
 
+  writeLog('new permission id was: ');
+  writeLog($permissionID);
   // finally, insert the role
   $sql = 'insert into roles(name, allow_barangay, permissions_id) values (:name, :allow_barangay, :permissions_id)';
   $stmt = $pdo->prepare($sql);
   $stmt->execute([
     ':name' => $roleName,
-    ':allow_barangay' => $allowBarangay,
+    ':allow_barangay' => (bool)$allowBarangay,
     ':permissions_id' => $permissionID,
   ]);
   // blank means everything went well

@@ -18,7 +18,7 @@ try {
   /** @var bool|string */
   $permsOnly = empty($_POST['permsOnly']) ? true : $_POST['permsOnly'];
 
-  $query = $pdo->prepare("select * from permissions inner join roles on roles.id = permissions.id where roles.id = :id");
+  $query = $pdo->prepare("select * from permissions inner join roles on roles.permissions_id = permissions.id where roles.id = :id");
   $query->execute([
     'id' => $id
   ]);

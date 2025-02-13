@@ -264,7 +264,7 @@ $('#roleSelect').on('change', async e => {
       });
     });
   } catch (error) {
-    //
+    console.log('Error from outer try catch on ajax: ' + error);
   }
   toggleLoading();
   $('#roleSelect').prop('disabled', false); // Disable select

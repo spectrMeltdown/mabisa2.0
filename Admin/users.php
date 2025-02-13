@@ -93,15 +93,17 @@ if (!userHasPerms('users_read', 'gen')) {
                     <tbody id='user-table-body'>
                       <?php
                       require_once '../api/get_role_name.php';
-                      $query = $pdo->prepare("select * from users where id != :id");
+                      $query = $pdo->prepare("select id, full_name, username, role_id from users where id != :id");
                       // writeLog($userData);
                       $query->execute([':id' => $userData['id']]);
-                      while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+                      $allUsers = $query->fetchAll(PDO::FETCH_ASSOC);
+                      foreach ($allUsers as $row) {
+                        writeLog($row);
                       ?>
                         <tr>
                           <td><?php echo $row['full_name'] ?></td>
                           <td><?php echo $row['username'] ?></td>
-                          <td><?php echo getRoleName($pdo, $row['role_id']) ?></td>
+                          <td><?php echo $row['role_id'] ? getRoleName($pdo, $row['role_id']) : '--' ?></td>
                           <td><?php
                               $query = $pdo->prepare("SELECT b.brgyname as barangay from refbarangay b inner join user_roles_barangay ub on ub.barangay_id = b.brgyid where ub.user_id = :id");
                               // writeLog($userData);
@@ -109,9 +111,10 @@ if (!userHasPerms('users_read', 'gen')) {
                               if ($query->rowCount() <= 0) {
                                 echo 'No barangay assignments';
                               } else {
+                                $brgys = $query->fetchAll(PDO::FETCH_ASSOC);
                                 echo '<ul>';
-                                while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
-                                  echo '<li>' . htmlspecialchars($row['barangay']) . '</li>';
+                                foreach ($brgys as $brgy) {
+                                  echo '<li>' . htmlspecialchars($brgy['barangay']) . '</li>';
                                 }
                                 echo '</ul>';
                               }
@@ -150,8 +153,6 @@ if (!userHasPerms('users_read', 'gen')) {
     <!-- End of Content Wrapper -->
   </div>
   <!-- End of Page Wrapper -->
-  <?php include 'components/crud_user_dialog.php' ?>
-  <?php include 'components/barangay_selector_dialog.php' ?>
 </body>
 
 </html>

@@ -1,7 +1,15 @@
 <?php
-require_once './responses.php';
-require_once './comments.php';
-require_once './admin_actions/admin_actions.php';
+$isInFolder = true;
+require '../common/auth.php';
+if (!userHasPerms('criteria_read', 'gen')) {
+    // header does not allow relative paths, so this is my temporary solution
+    header('Location:' .  substr(__DIR__, 0, strrpos(__DIR__, '/')) . 'no_permissions.php');
+    exit;
+}
+
+require_once 'responses.php';
+require_once 'comments.php';
+require_once 'admin_actions/admin_actions.php';
 require_once '../../db/db.php';
 
 $barangay_id = isset($_GET['barangay_id']) ? $_GET['barangay_id'] : null;
@@ -24,7 +32,6 @@ if ($barangay_id) {
     $stmt->bindParam(1, $barangay_id, PDO::PARAM_INT);
     $stmt->execute();
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $isInFolder = true;
     include '../script.php';
     $data = [];
 
@@ -121,8 +128,9 @@ if ($barangay_id) {
 <head>
 
     <?php
-    $isInFolder = true;
-    require '../common/head.php' ?>
+    $pathPrepend = '../../';
+    require '../common/head.php'
+    ?>
     <script src="../../vendor/jquery/jquery.min.js"></script>
     <script src="../../js/bar-assessment.js"></script>
 
@@ -135,10 +143,9 @@ if ($barangay_id) {
 
         <!--sidebar start  -->
         <?php
-        $isInFolder = true;
         include '../common/sidebar.php'
 
-            ?>
+        ?>
 
         <!-- sidebar end -->
 
@@ -151,8 +158,8 @@ if ($barangay_id) {
                 <!-- Topbar -->
                 <?php
                 include '../common/nav.php';
-                $role = 'Barangay Admin';//temporary role
-                $name = 'name';//temporary name
+                $role = 'Barangay Admin'; //temporary role
+                $name = 'name'; //temporary name
                 ?>
                 <!-- End of Topbar -->
 
@@ -177,7 +184,7 @@ if ($barangay_id) {
                         if (empty($filtered_rows)) {
                             continue;
                         }
-                        ?>
+                    ?>
                         <div class="card-header bg-primary text-center py-3">
                             <div class="card-body">
                                 <h5 class="text-white"><?php echo htmlspecialchars($key); ?></h5>
@@ -196,7 +203,7 @@ if ($barangay_id) {
                                 if ($table_started) {
                                     echo "</tbody></table>";
                                 }
-                                ?>
+                        ?>
 
                                 <div class="row bg-info" style="margin: 0; padding: 10px 0;">
                                     <h6 class="col-lg-12 text-center text-white" style="margin: 0;">
@@ -218,11 +225,11 @@ if ($barangay_id) {
                                     </thead>
                                     <tbody>
 
-                                        <?php
-                                        $last_indicator = $current_indicator;
-                                        $table_started = true;
-                            endif;
-                            ?>
+                                    <?php
+                                    $last_indicator = $current_indicator;
+                                    $table_started = true;
+                                endif;
+                                    ?>
 
                                     <tr>
                                         <td><?php echo $row['relevance_definition']; ?></td>
@@ -259,8 +266,8 @@ if ($barangay_id) {
                                                     data-role="<?= htmlspecialchars($role); ?>"
                                                     data-name="<?= htmlspecialchars($name); ?>"
                                                     data-status="<?= htmlspecialchars($data['status']); ?>">
-                                                <i class="fa fa-eye"></i>
-                                            </button>
+                                                    <i class="fa fa-eye"></i>
+                                                </button>
 
                                                 <?php if ($role === $row['data_source'] && $data['status'] !== 'approved'): ?>
 
@@ -311,7 +318,7 @@ if ($barangay_id) {
     </div>
     <script>
         document.querySelectorAll(".file-input").forEach(input => {
-            input.addEventListener("change", function () {
+            input.addEventListener("change", function() {
                 let formId = "uploadForm-" + this.id.split("-")[1];
                 let form = document.getElementById(formId);
 
@@ -331,9 +338,9 @@ if ($barangay_id) {
                     formData.append("file", file);
 
                     fetch(form.action, {
-                        method: "POST",
-                        body: formData
-                    })
+                            method: "POST",
+                            body: formData
+                        })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
@@ -349,7 +356,7 @@ if ($barangay_id) {
         });
 
         document.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', function () {
+            button.addEventListener('click', function() {
                 let fileId = this.getAttribute('data-file-id');
 
                 if (!confirm('Are you sure you want to delete this file?')) {
@@ -357,10 +364,14 @@ if ($barangay_id) {
                 }
 
                 fetch('../bar_assessment/user_actions/delete.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ file_id: fileId })
-                })
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            file_id: fileId
+                        })
+                    })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
@@ -373,10 +384,6 @@ if ($barangay_id) {
                     .catch(error => console.error('Error:', error));
             });
         });
-
-     
-
-
     </script>
 
 

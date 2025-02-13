@@ -236,7 +236,7 @@ $('#save-role-btn').on('click', async () => {
       // check if null, empty, false, 0, infinity, etc
       if (!result) {
         alert('Role ' + (editMode ? 'edited' : 'created') + ' successfully!');
-        history.back(); // go back
+        location.href = 'roles.php';
         // location.reload(); // reload because it needs to get latest data
         // $('#main-toast-container').append(
         //   addToast('Success!', 'User created successfully.'),

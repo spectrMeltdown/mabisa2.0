@@ -18,15 +18,15 @@ try {
   $id  = trim($_POST['id']);
   $permissionsID  = trim($_POST['permissions_id']);
 
-  // delete permissions (foreign key constraint on role)
-  $sql = 'delete from permissions where id = :permissions_id';
-  $query = $pdo->prepare($sql);
-  $query->execute([':permissions_id' => $permissionsID]);
-
   // delete role
   $sql = 'delete from roles where id = :id';
   $query = $pdo->prepare($sql);
   $query->execute([':id' => $id]);
+
+  // delete permissions (foreign key constraint on role)
+  $sql = 'delete from permissions where id = :permissions_id';
+  $query = $pdo->prepare($sql);
+  $query->execute([':permissions_id' => $permissionsID]);
 
   echo json_encode('Success');
 } catch (\Throwable $th) {

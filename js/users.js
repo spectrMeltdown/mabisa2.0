@@ -47,6 +47,9 @@ $('.delete-user-btn').on('click', async e => {
           console.log('error!: ' + result);
         }
       },
+      error: err => {
+        console.log(err.responseText);
+      },
     });
   }
   toggleLoading();

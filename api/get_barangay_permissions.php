@@ -13,22 +13,27 @@ try {
   if ($_POST['role_id'] == '') die;
   $result = [];
 
+  writeLog('IN GET BARANGAY PERMS');
+
   // check if role allows barangay
   $sql = "SELECT allow_barangay FROM roles where id = :id";
   $stmt = $pdo->prepare($sql);
   $stmt->execute([':id' => $_POST['role_id']]);
-  $role = $stmt->fetch(PDO::FETCH_ASSOC);
+  $allowBarangay = $stmt->fetch(PDO::FETCH_ASSOC)['allow_barangay'];
 
-  // writeLog($role);
-  if ($role['allow_barangay'] != 1) exit;
+  writeLog('allow barangay is: ');
+  writeLog($allowBarangay);
+
+  // exit if the role doesn't allow barangay assignments
+  if ($allowBarangay != 1) exit;
 
   // get all barangays
   $sql = "SELECT brgyid, brgyname FROM refbarangay";
   $stmt = $pdo->prepare($sql);
   $stmt->execute();
   $barangays = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  // writeLog('Barangays was:');
-  // writeLog($barangays);
+  writeLog('Barangays was:');
+  writeLog($barangays);
 
   // get all permissions that start with "assessment"
   $sql = "describe permissions;";
@@ -44,8 +49,8 @@ try {
       $allPermissions[] = $col['Field'];
     }
   }
-  // writeLog('All permissions was:');
-  // writeLog($allPermissions);
+  writeLog('All permissions was:');
+  writeLog($allPermissions);
 
   // Fetch all indicators instead from the current active version 
   $sql = "SELECT i.keyctr as id, i.indicator_code as code, i.relevance_def as description
@@ -58,6 +63,8 @@ try {
   $stmt = $pdo->prepare($sql);
   $stmt->execute();
   $activeIndicators = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  writeLog('active indicators was: ');
+  writeLog($activeIndicators);
 
   // Fetch taken permissions in user_roles_barangay (assessment)
   // $sql = "SELECT  b.brgyid, b.brgyname, p.* from permissions p inner join user_roles_barangay rb on rb.permission_id = p.id inner join refbarangay b on b.brgyid = rb.barangay_id";
@@ -68,20 +75,28 @@ try {
   foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
     // remove int values (like p.id)
     $filteredRow = array_filter($row, fn($value) => is_string($value));
+    // writeLog('Filtered row');
+    // writeLog($filteredRow);
     // get assessment perms
     $assessmentData = array_filter($filteredRow, fn($key) => str_contains($key, 'assessment'), ARRAY_FILTER_USE_KEY);
-    // assign perms to each barangay
+    // writeLog('assessment data row');
+    // writeLog($assessmentData);
     $takenAssessment[$row['brgyid']] = $assessmentData;
   }
-  // writeLog('taken assessment permissions was:');
-  // writeLog($takenAssessment);
+  writeLog('taken assessment permissions was:');
+  writeLog($takenAssessment);
+
+  $response = [];
+
+  // get the permission names only 
+  $rolePermissions = array_keys($rolePermissions);
+
+  // remove allow_barangay and get only the assessment permissions
+  $rolePermissions = array_filter($rolePermissions, function ($key) {
+    return !str_contains($key, 'allow') && !str_contains($key, 'barangay') && str_contains($key, 'assessment');
+  });
 
   // Build the JSON response
-  $response = [];
-  $rolePermissions = array_keys($rolePermissions);
-  $rolePermissions = array_filter($rolePermissions, function ($key) {
-    return !str_contains($key, 'barangay');
-  }); // remove allow_barangay
   foreach ($barangays as $barangay) {
     foreach ($activeIndicators as $indicator) {
       // Get available assessment permissions (exclude taken ones)
@@ -110,8 +125,8 @@ try {
     }
   }
 
-  // writeLog('Final result was:');
-  // writeLog($response);
+  writeLog('Final result was:');
+  writeLog($response);
   // Return JSON response
   echo json_encode($response, JSON_PRETTY_PRINT);
 } catch (\Throwable $th) {

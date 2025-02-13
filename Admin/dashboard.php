@@ -12,6 +12,35 @@ require_once '../db/db.php';
 <head>
   <?php
   require 'common/head.php' ?>
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+
+    .wrapper {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content {
+      flex: 1;
+    }
+
+    .sticky-footer {
+      position: relative;
+      bottom: 0;
+      width: 100%;
+    }
+
+    @media (max-height: 100vh) {
+      .sticky-footer {
+        position: absolute;
+      }
+    }
+  </style>
 </head>
 
 <body id="page-top">
@@ -196,16 +225,7 @@ require_once '../db/db.php';
         </div>
 
         <!-- End of Main Content -->
-
-        <!-- Footer -->
-        <footer class="sticky-footer bg-white">
-          <div class="container my-auto">
-            <div class="copyright text-center my-auto">
-              <span>Copyright &copy; MABISA 2024</span>
-            </div>
-          </div>
-        </footer>
-        <!-- End of Footer -->
+        <?php include 'common/footer.php' ?>
       </div>
       <!-- End of Content Wrapper -->
     </div>

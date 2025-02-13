@@ -53,7 +53,7 @@ if (!userHasPerms(['roles_read'], 'gen')) {
               </div>
               <div style="float: right;">
                 <a href="roles_update.php" class="btn btn-sm btn-primary">Add role</a>
-                <a onclick="history.back()" class="btn btn-sm btn-secondary">Go back</a>
+                <a onclick="location.href = 'users.php'" class="btn btn-sm btn-secondary">Go back</a>
               </div>
             </div>
             <div class="card-body">

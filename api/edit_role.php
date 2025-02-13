@@ -12,6 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $id = $_POST['id'];
     /** @var int */
     $permissionsId = $_POST['permissions_id'];
+    writeLog('permissions is id was: ');
+    writeLog($permissions);
     /** @var string */
     $roleName = trim($_POST['role_name']);
     /** @var bool */
@@ -38,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       throw new Exception('id was empty!');
     }
 
-    // insert permissions first to get the id 
+    // update permissions first
     global $pdo;
     $sql = 'update permissions set';
     foreach ($permissions as $key => $value) {
