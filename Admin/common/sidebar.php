@@ -106,11 +106,11 @@ global $userGenPerms;
     return str_contains($value, 'map');
   }))):
   ?>
-    <li class="nav-item <?= isset($isLocationPhp) ? 'active' : '' ?>">
+    <!-- <li class="nav-item <?= isset($isLocationPhp) ? 'active' : '' ?>">
       <a class="nav-link" href="<?php echo isset($isInFolder) ? '../' : ''; ?>location.php">
         <i class="fas fa-fw fa-map-marker-alt"></i>
         <span>Location</span></a>
-    </li>
+    </li> -->
   <?php
   endif;
   ?>
