@@ -67,14 +67,14 @@ if (!userHasPerms('assessment', 'bar')) {
                                         <?php
                                         if (!empty($responses)) {
                                             foreach ($responses as $row) {
-                                                $progress = $responsesObj->getProgress($row['barangay_id']);
+                                                $isPassed = $responsesObj->passedOrFail($row['barangay_id']);
                                                 echo "<tr>";
                                                 echo "<td>" . htmlspecialchars($row['barangay']) . "</td>";
                                                 echo "<td>" . htmlspecialchars($row['dateUploaded']) . "</td>";
                                                 echo "<td>";
                                                 echo "<a href='bar_assessment/show_bar_response.php?barangay_id=" . htmlspecialchars($row['barangay_id']) . "' class='btn btn-primary btn-sm'>View</a>";
                                                 echo "</td>";
-                                               if($progress >= 40){
+                                               if($isPassed >= 40){
                                                 echo "<td> Passed </td>";
                                                }
                                                else
@@ -82,6 +82,7 @@ if (!userHasPerms('assessment', 'bar')) {
                                                 echo "<td> Failed </td>";
                                                }
                                                 echo "</tr>";
+                                            // echo "<td>" . $isPassed . "</td>";
                                             }
                                         }
                                         ?>
@@ -89,17 +90,12 @@ if (!userHasPerms('assessment', 'bar')) {
                                 </table>
                             </div>
                         </div>
-
-
                     </div>
                 </div>
                 <!-- End of Page Content -->
-
-
             </div>
             <!-- End of Main Content -->
         </div>
-
     </div>
     </div>
 </body>

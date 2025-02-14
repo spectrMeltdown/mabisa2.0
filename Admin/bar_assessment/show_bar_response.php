@@ -173,144 +173,152 @@ if ($barangay_id) {
                             <a href="../bar_assessment.php" class="btn btn-secondary">Back</a>
                         </div>
                     </div>
-                    <?php
-                    foreach ($data as $key => $rows):
-                        // Filter rows : the purpose is to show admin all the rows, while only show specific roles their rows(indicated in the document source)
-                        $filtered_rows = array_filter($rows, function ($row) use ($role) {
-                            return $role === 'Barangay Admin' || $role === $row['data_source'];
-                        });
+                    <div class="card shadow mb-4">
+                        <div class="card-body">
+                            <?php
+                            foreach ($data as $key => $rows):
+                                // Filter rows : the purpose is to show admin all the rows, while only show specific roles their rows(indicated in the document source)
+                                $filtered_rows = array_filter($rows, function ($row) use ($role) {
+                                    return $role === 'Barangay Admin' || $role === $row['data_source'];
+                                });
 
-                        // Skip rendering if no matching rows exist
-                        if (empty($filtered_rows)) {
-                            continue;
-                        }
-                        ?>
-                        <div class="card-header bg-primary text-center py-3">
-                            <div class="card-body">
-                                <h5 class="text-white"><?php echo htmlspecialchars($key); ?></h5>
-                            </div>
-                        </div>
-
-                        <?php
-                        $last_indicator = '';
-                        $table_started = false;
-
-                        foreach ($filtered_rows as $row):
-                            $current_indicator = $row['indicator_code'] . " " . $row['indicator_description'];
-
-                            if ($current_indicator !== $last_indicator):
-
-                                if ($table_started) {
-                                    echo "</tbody></table>";
+                                // Skip rendering if no matching rows exist
+                                if (empty($filtered_rows)) {
+                                    continue;
                                 }
                                 ?>
-
-                                <div class="row bg-info" style="margin: 0; padding: 10px 0;">
-                                    <h6 class="col-lg-12 text-center text-white" style="margin: 0;">
-                                        <?php echo htmlspecialchars($current_indicator); ?>
-                                    </h6>
+                                <div class="card-header bg-primary text-center py-3">
+                                    <div class="card-body">
+                                        <h5 class="text-white"><?php echo htmlspecialchars($key); ?></h5>
+                                    </div>
                                 </div>
 
-                                <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 17%; text-align: center;">Requirement Code</th>
-                                            <th style="width: 17%;">Requirement Description</th>
-                                            <th style="width: 9%; text-align: center;">Attachment</th>
-                                            <th style="width: 6%; text-align: center;">Status</th>
-                                            <th style="width: 9%; text-align: center;">Last Modified</th>
-
-
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-
-                                        <?php
-                                        $last_indicator = $current_indicator;
-                                        $table_started = true;
-                            endif;
-                            ?>
-
-                                    <tr>
-                                        <td><?php echo $row['relevance_definition']; ?></td>
-                                        <td><?php echo $row['reqs_code'] . " " . $row['description']; ?></td>
-
-                                        <?php
-                                        $data = $responses->getData($barangay_id, $row['keyctr']);
-                                        ?>
-                                        <td class="data-cell-upload-view" style="text-align: center; vertical-align: middle;">
-                                            <?php if (!$data): ?>
-                                                <?php if ($role === 'Barangay Secretary'): ?>
-                                                    <form action="../bar_assessment/user_actions/upload.php" method="POST"
-                                                        enctype="multipart/form-data" id="uploadForm-<?php echo $row['keyctr']; ?>">
-                                                        <input type="hidden" name="barangay_id"
-                                                            value="<?php echo htmlspecialchars($barangay_id, ENT_QUOTES, 'UTF-8'); ?>">
-                                                        <input type="hidden" name="criteria_keyctr"
-                                                            value="<?php echo htmlspecialchars($row['keyctr'], ENT_QUOTES, 'UTF-8'); ?>">
-
-
-                                                        <input type="file" name="file" id="file-<?php echo $row['keyctr']; ?>"
-                                                            class="file-input" style="display: none;" required accept="application/pdf">
-
-                                                        <button type="button" class="btn btn-primary" title="Upload"
-                                                            onclick="document.getElementById('file-<?php echo $row['keyctr']; ?>').click();">
-                                                            <i class="fa fa-upload"></i>
-                                                        </button>
-                                                    </form>
-                                                <?php elseif ($role === 'Barangay Admin'): ?>
-                                                    <p>No Uploads Yet</p>
-                                                <?php endif; ?>
-                                            <?php else: ?>
-                                                <button type="button" class="btn btn-success mb-3" title="View" data-toggle="modal"
-                                                    data-target="#commentModal"
-                                                    data-fileid="<?= htmlspecialchars($data['file_id']); ?>"
-                                                    data-role="<?= htmlspecialchars($role); ?>"
-                                                    data-name="<?= htmlspecialchars($name); ?>"
-                                                    data-status="<?= htmlspecialchars($data['status']); ?>">
-                                                    <i class="fa fa-eye"></i>
-                                                </button>
-
-                                                <?php if ($role === $row['data_source'] && $data['status'] !== 'approved'): ?>
-
-                                                    <button class="btn btn-danger mb-3 delete-btn"
-                                                        data-file-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                        <i class="fa fa-trash"></i>
-                                                    </button>
-                                                <?php endif; ?>
-                                            <?php endif; ?>
-                                        </td>
-
-                                        <td class="data-cell-status" style="text-align: center; vertical-align: middle;">
-                                            <?php if (!empty($data)): ?>
-                                                <?php if ($data['status'] === 'approved'): ?>
-                                                    <i class="fa fa-check text-success" title="Approved"></i>
-                                                <?php elseif ($data['status'] === 'declined'): ?>
-                                                    <i class="fa fa-x text-danger" title="Declined"></i>
-                                                <?php else: ?>
-                                                    <i class="fa fa-hourglass-start" title="Waiting for Approval"></i>
-                                                <?php endif; ?>
-                                            <?php endif; ?>
-                                        </td>
-
-                                        <td class="data-cell-date-uploaded" style="text-align: center; vertical-align: middle;">
-                                            <?php echo !empty($data) ? htmlspecialchars($data['date_uploaded']) : ''; ?>
-                                        </td>
-
-
-
-
-                                    </tr>
-
-                                <?php endforeach; ?>
-
                                 <?php
-                                if ($table_started) {
-                                    echo "</tbody></table>";
-                                }
-                                ?>
+                                $last_indicator = '';
+                                $table_started = false;
 
-                            <?php endforeach; ?>
+                                foreach ($filtered_rows as $row):
+                                    $current_indicator = $row['indicator_code'] . " " . $row['indicator_description'];
 
+                                    if ($current_indicator !== $last_indicator):
+
+                                        if ($table_started) {
+                                            echo "</tbody></table>";
+                                        }
+                                        ?>
+
+                                        <div class="row bg-info" style="margin: 0; padding: 10px 0;">
+                                            <h6 class="col-lg-12 text-center text-white" style="margin: 0;">
+                                                <?php echo htmlspecialchars($current_indicator); ?>
+                                            </h6>
+                                        </div>
+
+                                        <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width: 17%; text-align: center;">Requirement Code</th>
+                                                    <th style="width: 17%;">Requirement Description</th>
+                                                    <th style="width: 9%; text-align: center;">Attachment</th>
+                                                    <th style="width: 6%; text-align: center;">Status</th>
+                                                    <th style="width: 9%; text-align: center;">Last Modified</th>
+
+
+                                                </tr>
+                                            </thead>
+                                            <tbod>
+
+                                                <?php
+                                                $last_indicator = $current_indicator;
+                                                $table_started = true;
+                                    endif;
+                                    ?>
+
+                                            <tr>
+                                                <td><?php echo $row['relevance_definition']; ?></td>
+                                                <td><?php echo $row['reqs_code'] . " " . $row['description']; ?></td>
+
+                                                <?php
+                                                $data = $responses->getData($barangay_id, $row['keyctr']);
+                                                ?>
+                                                <td class="data-cell-upload-view"
+                                                    style="text-align: center; vertical-align: middle;">
+                                                    <?php if (!$data): ?>
+                                                        <?php if ($role === 'Barangay Secretary'): ?>
+                                                            <form action="../bar_assessment/user_actions/upload.php" method="POST"
+                                                                enctype="multipart/form-data"
+                                                                id="uploadForm-<?php echo $row['keyctr']; ?>">
+                                                                <input type="hidden" name="barangay_id"
+                                                                    value="<?php echo htmlspecialchars($barangay_id, ENT_QUOTES, 'UTF-8'); ?>">
+                                                                <input type="hidden" name="criteria_keyctr"
+                                                                    value="<?php echo htmlspecialchars($row['keyctr'], ENT_QUOTES, 'UTF-8'); ?>">
+
+
+                                                                <input type="file" name="file" id="file-<?php echo $row['keyctr']; ?>"
+                                                                    class="file-input" style="display: none;" required
+                                                                    accept="application/pdf">
+
+                                                                <button type="button" class="btn btn-primary" title="Upload"
+                                                                    onclick="document.getElementById('file-<?php echo $row['keyctr']; ?>').click();">
+                                                                    <i class="fa fa-upload"></i>
+                                                                </button>
+                                                            </form>
+                                                        <?php elseif ($role === 'Barangay Admin'): ?>
+                                                            <p>No Uploads Yet</p>
+                                                        <?php endif; ?>
+                                                    <?php else: ?>
+                                                        <button type="button" class="btn btn-success mb-3" title="View"
+                                                            data-toggle="modal" data-target="#commentModal"
+                                                            data-fileid="<?= htmlspecialchars($data['file_id']); ?>"
+                                                            data-role="<?= htmlspecialchars($role); ?>"
+                                                            data-name="<?= htmlspecialchars($name); ?>"
+                                                            data-status="<?= htmlspecialchars($data['status']); ?>">
+                                                            <i class="fa fa-eye"></i>
+                                                        </button>
+
+                                                        <?php if ($role === $row['data_source'] && $data['status'] !== 'approved'): ?>
+
+                                                            <button class="btn btn-danger mb-3 delete-btn"
+                                                                data-file-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                                <i class="fa fa-trash"></i>
+                                                            </button>
+                                                        <?php endif; ?>
+                                                    <?php endif; ?>
+                                                </td>
+
+                                                <td class="data-cell-status"
+                                                    style="text-align: center; vertical-align: middle;">
+                                                    <?php if (!empty($data)): ?>
+                                                        <?php if ($data['status'] === 'approved'): ?>
+                                                            <i class="fa fa-check text-success" title="Approved"></i>
+                                                        <?php elseif ($data['status'] === 'declined'): ?>
+                                                            <i class="fa fa-x text-danger" title="Declined"></i>
+                                                        <?php else: ?>
+                                                            <i class="fa fa-hourglass-start" title="Waiting for Approval"></i>
+                                                        <?php endif; ?>
+                                                    <?php endif; ?>
+                                                </td>
+
+                                                <td class="data-cell-date-uploaded"
+                                                    style="text-align: center; vertical-align: middle;">
+                                                    <?php echo !empty($data) ? htmlspecialchars($data['date_uploaded']) : ''; ?>
+                                                </td>
+
+
+
+
+                                            </tr>
+
+                                        <?php endforeach; ?>
+
+                                        <?php
+                                        if ($table_started) {
+                                            echo "</tbody></table>";
+                                        }
+                                        ?>
+
+                                    <?php endforeach; ?>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- End of Main Content -->
