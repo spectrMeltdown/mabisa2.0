@@ -90,11 +90,10 @@ if (!userHasPerms(['roles_create', 'roles_update'], 'gen')) {
                   <span class="sr-only">Loading...</span>
                 </div>
               </div> -->
-              <form id="crud-role-content" data-edit-mode="true" class="ml-3" novalidate>
+              <form id="role-form" class="ml-3" novalidate>
                 <!-- for displaying error -->
                 <div class="alert alert-danger alert-dismissible fade" role="alert" id="alert">
                 </div>
-
                 <!-- actual content -->
                 <div class="mb-3 form-group">
                   <label for="roleName" class="form-label">Role name</label>
@@ -108,65 +107,103 @@ if (!userHasPerms(['roles_create', 'roles_update'], 'gen')) {
                   <label for="allowBarangay" class="form-label">Allow assigning of barangays?</label>
                   <i class="fas fa-question-circle" style="font-size: 15px" data-toggle="tooltip" data-placement="left" title="Barangay assignments can be done when creating or editing users."></i>
                 </div>
+              </form>
+              <form id="bar-perms-form" class="ml-3" style="display: none" novalidate>
+                <hr>
+                <br>
+                <h6 class="mb-3">Barangay Scope Permissions</h6>
                 <div class="mb-3 form-group container-fluid" id="permissions">
-                  <h6 class="mb-3">Permissions</h6>
-                  <div id="permissions-alert" class="text-danger"></div>
+                  <div id="bar-permissions-alert" class="text-danger"></div>
                   <?php
-                  $query = $pdo->query("select * from roles");
-                  while ($row = $query->fetch(PDO::FETCH_ASSOC)):
-                    require_once '../api/logging.php';
-                    $permissionsValue = '';
-                    if ($row['permissions_id']):
-                      $query = $pdo->prepare("select * from permissions where id = :permissions_id limit 1");
-                      $query->execute([':permissions_id' => $row['permissions_id']]);
-                      $permissions = $query->fetch(PDO::FETCH_ASSOC);
-                      // remove first item (id)
-                      array_shift($permissions);
-                      // remove last item (last modified)
-                      array_pop($permissions);
+                  // get the permissions table details
+                  $query = $pdo->query("describe permissions;");
 
-                      // remove super admin permissions if not super admin
-                      if (!($userData['role'] === 'Super Admin')) {
-                        $permissions = array_filter($permissions, function ($permission) {
-                          return strstr($permission, 'super_admin') === false;
-                        });
-                      }
+                  // assign to columsn array 
+                  $columns = $query->fetchAll(PDO::FETCH_ASSOC);
 
-                      //get all keys where value is true (or 1 in this case)
-                      $keys = array_keys(array_filter($permissions, function ($permission) {
-                        return $permission == 1;
-                      }));
+                  // extract name of the column, save to permissions array
+                  $permissions = [];
+                  foreach ($columns as $col) {
+                    if (str_contains($col['Field'], 'assessment')) {
+                      $permissions[] = $col['Field'];
+                    }
+                  }
                   ?>
-                      <ul class="list-unstyled">
-                        <?php
-                        foreach ($keys as $key):
-                        ?>
-                          <li class="d-inline-block m-1">
-                            <div class="input-group mb-3 d-flex flex-row">
-                              <div class="input-group-prepend">
-                                <div class="input-group-text">
-                                  <input type="checkbox" name="<?= $key ?>" id="<?= $key ?>" value="true">
-                                </div>
-                              </div>
-                              <div class="card card-body border-secondary">
-                                <label for="<?= $key ?>" id="label-<?= $key ?>"><?= $key ?></label>
-                              </div>
+                  <ul class="list-unstyled">
+                    <?php
+                    // loop permissions
+                    foreach ($permissions as $perm):
+                    ?>
+                      <li class="d-inline-block m-1">
+                        <div class="input-group mb-3 d-flex flex-row">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">
+                              <input type="checkbox" name="<?= $perm ?>" id="bar-<?= $perm ?>" value="true">
                             </div>
-                          </li>
-                        <?php
-                        endforeach;
-                        ?>
-                      </ul>
+                          </div>
+                          <div class="card card-body border-secondary">
+                            <label for="bar-<?= $perm ?>" id="label-bar-<?= $perm ?>"><?= $perm ?></label>
+                          </div>
+                        </div>
+                      </li>
+                    <?php
+                    endforeach;
+                    ?>
+                  </ul>
                 </div>
-              <?php
-                    else:
-              ?>
-                <p>No permissions found.</p>
-                ?>
-            <?php
-                    endif;
-                  endwhile;
-            ?>
+              </form>
+              <hr>
+              <br>
+              <form id="gen-perms-form" class="ml-3" novalidate>
+                <h6 class="mb-3">Global Scope Permissions</h6>
+                <div class="mb-3 form-group container-fluid" id="gen-permissions">
+                  <div id="gen-permissions-alert" class="text-danger"></div>
+                  <?php
+                  // get the permissions table details
+                  $query = $pdo->query("describe permissions;");
+
+                  // assign to columsn array 
+                  $columns = $query->fetchAll(PDO::FETCH_ASSOC);
+
+                  // extract name of the column, save to permissions array
+                  $permissions = [];
+                  foreach ($columns as $col) {
+                    $permissions[] = $col['Field'];
+                  }
+
+                  // remove first and last element (id & last_modified)
+                  array_shift($permissions);
+                  array_pop($permissions);
+
+                  // remove super admin permissions if not super admin
+                  if (!($userData['role'] === 'Super Admin')) {
+                    $permissions = array_filter($permissions, function ($permission) {
+                      return !str_contains($permission, 'super_admin');
+                    });
+                  }
+                  ?>
+                  <ul class="list-unstyled">
+                    <?php
+                    // loop permissions
+                    foreach ($permissions as $perm):
+                    ?>
+                      <li class="d-inline-block m-1">
+                        <div class="input-group mb-3 d-flex flex-row">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">
+                              <input type="checkbox" name="<?= $perm ?>" id="<?= $perm ?>" value="true">
+                            </div>
+                          </div>
+                          <div class="card card-body border-secondary">
+                            <label for="<?= $perm ?>" id="label<?= $perm ?>"><?= $perm ?></label>
+                          </div>
+                        </div>
+                      </li>
+                    <?php
+                    endforeach;
+                    ?>
+                  </ul>
+                </div>
               </form>
             </div>
           </div>

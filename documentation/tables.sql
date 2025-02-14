@@ -75,8 +75,8 @@ CREATE TABLE users (
 
 CREATE TABLE user_roles_barangay (
 	user_id int NOT NULL,
-	barangay_id varchar(10), -- just following what was already set in the database
-  indicator_id bigint(20),-- just following what was already set in the database
+	barangay_id varchar(10), 
+  indicator_id bigint(20),
   permission_id int,
   last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE (user_id, barangay_id, indicator_id, permission_id), -- there must not exist a row with the 4 being the same. Using UNIQUE because primary keys cannot be null

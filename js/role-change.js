@@ -5,7 +5,9 @@ const params = new URLSearchParams(location.search);
 /** @var {int} */
 const id = Number(params.get('id'));
 /** @var {object} */
-let allPermissions = {};
+let barPerms = {};
+/** @var {object} */
+let genPerms = {};
 /** @var {bool} */
 let editMode = false;
 /** @var {int} */
@@ -35,27 +37,46 @@ if (id) {
         /** @type {object} */
         res = JSON.parse(res);
         console.log('Res is: ' + JSON.stringify(res));
+
         // fill in role name
         $('#roleName').attr('value', res.role.name);
 
-        // fill in allow_barangay checkbox
-        if (res.role.allow_barangay == 1) {
-          $('#allowBarangay').prop('checked', true);
+        // barangay allowed or not
+        /** @type {bool} */
+        const barAllowed = res.role.allow_barangay;
+
+        // display barangay perms, if allowed
+        if (barAllowed == 1) {
+          $('#bar-perms-form').css('display', 'block');
         }
 
         // save permissions id for later
         permissionsID = res.role.permissions_id;
 
         // save and reset all to zero
-        allPermissions = structuredClone(res.permissions); // this function creates a true deep copy of the object. Doesn't support old browsers
-        Object.keys(allPermissions).forEach(value => {
-          allPermissions[value] = 0;
+        if (barAllowed == 1) {
+          barPerms = structuredClone(res.barPerms); // this function creates a true deep copy of the object. Doesn't support old browsers
+          Object.keys(barPerms).forEach(value => {
+            barPerms[value] = 0;
+          });
+        }
+        genPerms = structuredClone(res.barPerms); // this function creates a true deep copy of the object. Doesn't support old browsers
+        Object.keys(barPerms).forEach(value => {
+          barPerms[value] = 0;
         });
 
         // fill in permissions checkboxes
-        for (const key in res.permissions) {
-          console.log('Key is' + res.permissions[key] + '\n');
-          if (res.permissions[key] === 1) {
+        if (barAllowed == 1) {
+          for (const key in res.barPerms) {
+            console.log('Key is' + res.barPerms[key] + '\n');
+            if (res.barPerms[key] === 1) {
+              $('#bar-' + key).prop('checked', true); // use prop instead of attr for attributes without a value
+            }
+          }
+        }
+        for (const key in res.genPerms) {
+          console.log('Key is' + res.genPerms[key] + '\n');
+          if (res.genPerms[key] === 1) {
             $('#' + key).prop('checked', true); // use prop instead of attr for attributes without a value
           }
         }
@@ -67,6 +88,21 @@ if (id) {
   })();
 }
 
+$('#allowBarangay').on('click', e => {
+  // get the jquery element
+  const checkbox = $(e.target);
+  const barForm = $('#bar-perms-form');
+
+  // if checked, hide the barangay permissions
+  if (!checkbox.prop('checked')) {
+    barForm.css('display', 'none');
+    // also reset all checkboxes
+    $('#bar-perms-form input[type=checkbox]').prop('checked', false);
+  } else {
+    barForm.css('display', 'block');
+  }
+});
+
 //cancel button confirmation
 $('#cancel-btn').on('click', async () => {
   const confirm = await showConfirmationDialog(
@@ -75,7 +111,7 @@ $('#cancel-btn').on('click', async () => {
     'Yes',
   );
   if (confirm) {
-    history.back();
+    location.href = 'roles.php';
   } else {
     console.log('cancelled');
   }

@@ -78,7 +78,7 @@
         </span>
         <!-- TODO: render the user profile pic below -->
         <img class="img-profile rounded-circle"
-          src="<?= !empty($userData['profile_pic']) && is_file($userData['profile_pic']) ? $userData['profile_pic'] : $pathPrepend . 'img/undraw_profile.svg' ?>" />
+          src="<?= !empty($userData['profile_pic']) && is_file($userData['profile_pic']) ?  $userData['profile_pic'] : $pathPrepend . 'img/undraw_profile.svg' ?>" />
       </a>
       <!-- Dropdown - User Information -->
       <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
