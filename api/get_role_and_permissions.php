@@ -23,13 +23,24 @@ try {
   // writeLog('Result with role was: ');
   // writeLog($result);
 
+  // get the general permissions
   $sql = 'select * from permissions where id = :id limit 1';
   $query = $pdo->prepare($sql);
-  $query->execute([':id' => $result['role']['permissions_id']]);
-  $result['permissions'] = $query->fetch(PDO::FETCH_ASSOC);
+  $query->execute([':id' => $result['role']['gen_perms']]);
+  $result['gen_perms'] = $query->fetch(PDO::FETCH_ASSOC);
 
-  // remove id and last_modified
-  unset($result['role']['id'], $result['role']['last_modified'], $result['permissions']['id'], $result['permissions']['last_modified']);
+  // get the barangay permissions
+  $sql = 'select * from permissions where id = :id limit 1';
+  $query = $pdo->prepare($sql);
+  $query->execute([':id' => $result['role']['bar_perms']]);
+  $result['bar_perms'] = $query->fetch(PDO::FETCH_ASSOC);
+
+  // remove ids and last_modified
+  unset($result['role']['id'], $result['role']['last_modified'], $result['bar_perms']['id'], $result['bar_perms']['last_modified'], $result['gen_perms']['id'], $result['gen_perms']['last_modified']);
+
+  // change the names
+  $result['barPerms'] = $result['bar_perms'];
+  $result['genPerms'] = $result['gen_perms'];
 
   writeLog('Result was: ');
   writeLog($result);

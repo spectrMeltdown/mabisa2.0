@@ -29,40 +29,36 @@ try {
   writeLog($role);
 
   // super admins are auto granted all permissions
-  if ($role['name'] == 'Super Admin') {
+  if (strtolower($role['name']) == 'super admin') {
     echo json_encode('Super Admin');
     exit;
   }
 
-  $hasBarangay = $role['allow_barangay'];
-  writeLog('has barangay: ');
-  writeLog($hasBarangay);
-
-  // get permissions of the role
-  global $rolePermissions;
-  writeLog('original role perms were:');
-  writeLog($rolePermissions);
+  // get general permissions
+  global $genPerms;
+  writeLog('original gen perms were:');
+  writeLog($genPerms);
 
   // remove allow barangay from the perms
-  $rolePermissions = array_filter($rolePermissions, fn($perm) => !str_contains($perm, 'allow') && !str_contains($perm, 'barangay'), ARRAY_FILTER_USE_KEY);
+  $genPerms = array_filter($genPerms, fn($perm) => !str_contains($perm, 'allow') && !str_contains($perm, 'bar'), ARRAY_FILTER_USE_KEY);
 
   writeLog('after filter: ');
-  writeLog($rolePermissions);
+  writeLog($genPerms);
 
-  // check if role allows barangays
-  if ($hasBarangay == 1) {
-    writeLog('has barangay!');
-    // TODO: allow this later on, because then the user can access all barangays if so
-    // remove all permissions that start with the name 'assessment'
-    $rolePermissions = array_filter($rolePermissions, function ($permission) {
-      writeLog($permission);
-      return !str_contains((string)$permission, 'assessment');
-    }, ARRAY_FILTER_USE_KEY);
-  }
+  // // check if role allows barangays
+  // if ($hasBarangay == 1) {
+  //   writeLog('has barangay!');
+  //   // TODO: allow this later on, because then the user can access all barangays if so
+  //   // remove all permissions that start with the name 'assessment'
+  //   $rolePermissions = array_filter($rolePermissions, function ($permission) {
+  //     writeLog($permission);
+  //     return !str_contains((string)$permission, 'assessment');
+  //   }, ARRAY_FILTER_USE_KEY);
+  // }
 
   writeLog('Final result: ');
-  writeLog($rolePermissions);
-  echo json_encode($rolePermissions);
+  writeLog($genPerms);
+  echo json_encode($genPerms);
 } catch (\Throwable $th) {
   http_response_code(500);
   $message = $th->getMessage();

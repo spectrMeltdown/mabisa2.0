@@ -12,10 +12,10 @@ $('#roles_dataTable').DataTable({
   //   },
   // ],
   columns: [
-    { data: 'Role' },
-    { data: 'Permissions' },
-    { data: 'Barangay Assignments' },
-    { data: 'Actions' },
+    { title: 'Role' },
+    { title: 'Global Permissions' },
+    { title: 'Barangay Permissions' },
+    { title: 'Actions' },
   ],
 });
 
@@ -27,13 +27,15 @@ $('.delete-role-btn').on('click', async e => {
   );
   if (!confirmation) return;
   const id = $(e.target).data('id');
-  const permissionsID = $(e.target).data('permissions-id');
+  const genPerms = $(e.target).data('gen-perms-id');
+  const barPerms = $(e.target).data('bar-perms-id');
   $.ajax({
     url: '../api/delete_role.php',
     type: 'POST',
     data: {
       id: id,
-      permissions_id: permissionsID,
+      genPerms: genPerms,
+      barPerms: barPerms,
     },
     success: result => {
       console.log('Success: ' + result);

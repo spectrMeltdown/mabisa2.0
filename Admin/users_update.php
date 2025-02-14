@@ -2,7 +2,7 @@
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
 require 'common/auth.php';
-if (!userHasPerms(['users_create, users_update'], 'gen')) {
+if (!userHasPerms(['users_create', 'users_update'], 'gen')) {
   header('Location:no_permissions.php');
   exit;
 }
@@ -166,10 +166,14 @@ if (!userHasPerms(['users_create, users_update'], 'gen')) {
                 $query = $pdo->query('select * from roles');
                 $roles = $query->fetchAll(PDO::FETCH_ASSOC);
                 // If not super admin, then remove option to add a super admin
-                if (!($userData['role'] === 'Super Admin')) {
+                if (!(strtolower($userData['role']) === 'super admin')) {
                   // echo '<script>console.log("not a super admin!")</script>';
-                  $roles = array_values($roles, function ($role) {
-                    return $role !== 'Super Admin';
+                  writeLog('roles are');
+                  writeLog($roles);
+                  $roles = array_filter($roles, function ($role) {
+                    writeLog('role is');
+                    writeLog($role);
+                    return strtolower($role) !== 'super admin';
                   });
                 }
                 if (!empty($roles)):

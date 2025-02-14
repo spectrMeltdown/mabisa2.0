@@ -15,35 +15,6 @@ $responses = new Responses($pdo);
 <head>
   <?php
   require 'common/head.php' ?>
-  <style>
-    html,
-    body {
-      height: 100%;
-      margin: 0;
-    }
-
-    .wrapper {
-      min-height: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .content {
-      flex: 1;
-    }
-
-    .sticky-footer {
-      position: relative;
-      bottom: 0;
-      width: 100%;
-    }
-
-    @media (max-height: 100vh) {
-      .sticky-footer {
-        position: absolute;
-      }
-    }
-  </style>
 </head>
 
 <body id="page-top">
@@ -83,7 +54,7 @@ $responses = new Responses($pdo);
                           Barangay In Progress
                         </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">
-                        <?php
+                          <?php
                           $stmt = $pdo->query("SELECT barangay_id FROM `barangay_assessment`;");
                           $barangays = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

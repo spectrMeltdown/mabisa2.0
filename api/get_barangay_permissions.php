@@ -16,10 +16,10 @@ try {
   writeLog('IN GET BARANGAY PERMS');
 
   // check if role allows barangay
-  $sql = "SELECT allow_barangay FROM roles where id = :id";
+  $sql = "SELECT allow_bar FROM roles where id = :id";
   $stmt = $pdo->prepare($sql);
   $stmt->execute([':id' => $_POST['role_id']]);
-  $allowBarangay = $stmt->fetch(PDO::FETCH_ASSOC)['allow_barangay'];
+  $allowBarangay = $stmt->fetch(PDO::FETCH_ASSOC)['allow_bar'];
 
   writeLog('allow barangay is: ');
   writeLog($allowBarangay);
@@ -39,9 +39,10 @@ try {
   $sql = "describe permissions;";
   $query = $pdo->query($sql);
   $allPermissions = [];
-  // add all permissions to the column
+  // error if there are no columns found (or the table didn't exist)
   if ($query->rowCount() <= 0) throw new Exception('describe permissions didn\'t return anything');
-  while ($col = $query->fetch(PDO::FETCH_ASSOC)) {
+  // get all the columns and add them to the allPermissions array
+  foreach ($query->fetchAll(PDO::FETCH_ASSOC) as $col) {
     // writeLog('Col is: ');
     // writeLog($col);
     // add if assessment word is in it
@@ -89,9 +90,9 @@ try {
   $response = [];
 
   // get the permission names only 
-  $rolePermissions = array_keys($rolePermissions);
+  $rolePermissions = array_keys($barPerms);
 
-  // remove allow_barangay and get only the assessment permissions
+  // remove allow_bar and get only the assessment permissions
   $rolePermissions = array_filter($rolePermissions, function ($key) {
     return !str_contains($key, 'allow') && !str_contains($key, 'barangay') && str_contains($key, 'assessment');
   });

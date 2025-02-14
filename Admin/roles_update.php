@@ -176,7 +176,7 @@ if (!userHasPerms(['roles_create', 'roles_update'], 'gen')) {
                   array_pop($permissions);
 
                   // remove super admin permissions if not super admin
-                  if (!($userData['role'] === 'Super Admin')) {
+                  if (!(strtolower($userData['role']) === 'super admin')) {
                     $permissions = array_filter($permissions, function ($permission) {
                       return !str_contains($permission, 'super_admin');
                     });
@@ -187,7 +187,7 @@ if (!userHasPerms(['roles_create', 'roles_update'], 'gen')) {
                     // loop permissions
                     foreach ($permissions as $perm):
                     ?>
-                      <li class="d-inline-block m-1">
+                      <li class="d-inline-block m-1 perm-container" id="<?= $perm ?>-container">
                         <div class="input-group mb-3 d-flex flex-row">
                           <div class="input-group-prepend">
                             <div class="input-group-text">
@@ -195,7 +195,7 @@ if (!userHasPerms(['roles_create', 'roles_update'], 'gen')) {
                             </div>
                           </div>
                           <div class="card card-body border-secondary">
-                            <label for="<?= $perm ?>" id="label<?= $perm ?>"><?= $perm ?></label>
+                            <label for="<?= $perm ?>" id="label-<?= $perm ?>"><?= $perm ?></label>
                           </div>
                         </div>
                       </li>
