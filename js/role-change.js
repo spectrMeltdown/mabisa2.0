@@ -43,10 +43,14 @@ if (id) {
         /** @type {bool} */
         const barAllowed = res.role.allow_bar;
 
-        // display barangay perms, if allowed
+        // check if bar perms are allowed
         if (barAllowed == 1) {
+          // if allowed, then display the barangay permissions
           $('#bar-perms-form').css('display', 'block');
+          // hide the gen perms that are already in barangay perms
           showGenAssessItems(false);
+          // check the allowBarangay checkbox
+          $('#allowBarangay').prop('checked', true);
         }
 
         // save permissions id for later

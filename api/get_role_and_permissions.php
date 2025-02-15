@@ -42,8 +42,8 @@ try {
   $result['barPerms'] = $result['bar_perms'];
   $result['genPerms'] = $result['gen_perms'];
 
-  writeLog('Result was: ');
-  writeLog($result);
+  // writeLog('Result was: ');
+  // writeLog($result);
   echo json_encode($result);
 } catch (\Throwable $th) {
   http_response_code(500);

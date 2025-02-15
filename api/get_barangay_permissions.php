@@ -5,6 +5,7 @@ $useAsImport; // for get_permissions.php
 $permsOnly = false;
 require 'logging.php';
 require_once '../db/db.php';
+require 'get_all_perm_cols.php';
 require_once 'get_permissions.php'; // gets the role permissions
 
 try {
@@ -36,20 +37,7 @@ try {
   writeLog($barangays);
 
   // get all permissions that start with "assessment"
-  $sql = "describe permissions;";
-  $query = $pdo->query($sql);
-  $allPermissions = [];
-  // error if there are no columns found (or the table didn't exist)
-  if ($query->rowCount() <= 0) throw new Exception('describe permissions didn\'t return anything');
-  // get all the columns and add them to the allPermissions array
-  foreach ($query->fetchAll(PDO::FETCH_ASSOC) as $col) {
-    // writeLog('Col is: ');
-    // writeLog($col);
-    // add if assessment word is in it
-    if (str_contains($col['Field'], 'assessment')) {
-      $allPermissions[] = $col['Field'];
-    }
-  }
+  $allPermissions = getPermTableNames($pdo, 'assessment');
   writeLog('All permissions was:');
   writeLog($allPermissions);
 
@@ -126,8 +114,8 @@ try {
     }
   }
 
-  writeLog('Final result was:');
-  writeLog($response);
+  // writeLog('Final result was:');
+  // writeLog($response);
   // Return JSON response
   echo json_encode($response, JSON_PRETTY_PRINT);
 } catch (\Throwable $th) {

@@ -45,6 +45,8 @@
   - console.log
   - writeLog (also all require/includes for this)
   - echo (that were used for logging)
+  - comments
+- minify JS & PHP files
 
 # Code cleanup
 
