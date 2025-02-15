@@ -22,26 +22,31 @@ try {
 
   /** @var string */
   $roleName = trim($_POST['role_name']);
-  writeLog('role name from post');
-  writeLog($roleName);
+  // writeLog('role name from post');
+  // writeLog($roleName);
   /** @var bool */
-  $allowBar = $_POST['allow_bar'];
+  // writeLog('allow bar from post');
+  // writeLog(gettype($_POST['allow_bar']));
+  // tried filter_var, but doesn't work. (bool) also doesn't work. We just have to convert it manually
   writeLog('allow barangay from post');
+  writeLog($_POST['allow_bar']);
+  $allowBar = empty($_POST['allow_bar']) ? null : (strtolower(trim($_POST['allow_bar'])) == 'false' ? false : (strtolower(trim($_POST['allow_bar'])) == 'true' ? true : null));
+  writeLog('allow barangay after assignment');
   writeLog($allowBar);
   /** @var array */
   $genPerms = json_decode($_POST['genPerms']);
-  writeLog('genPerms from post');
-  writeLog($genPerms);
+  // writeLog('genPerms from post');
+  // writeLog($genPerms);
   /** @var array */
   $barPerms = json_decode($_POST['barPerms']);
-  writeLog('barPerms from post');
-  writeLog($barPerms);
+  // writeLog('barPerms from post');
+  // writeLog($barPerms);
 
   // cancel if any empty
   if (empty($roleName)) {
     // writeLog('roleName was empty!');
     throw new Exception('Role name was empty!');
-  } else if (empty($allowBar)) {
+  } else if (!isset($allowBar)) {
     // writeLog('allowBarangay was empty!');
     throw new Exception('allowBarangay was empty!');
   } else if (empty($barPerms) && $allowBar) {

@@ -26,7 +26,8 @@ try {
   /** @var string */
   $roleName = trim($_POST['role_name']);
   /** @var bool */
-  $allowBar = $_POST['allow_bar'];
+  // refer to create_role.php for more info
+  $allowBar = empty($_POST['allow_bar']) ? null : (strtolower(trim($_POST['allow_bar'])) == 'false' ? false : (strtolower(trim($_POST['allow_bar'])) == 'true' ? true : null));
   // writeLog($allowBar);
   // writeLog('Type is: ' . gettype($allowBar));
   /** @var array */
@@ -41,7 +42,7 @@ try {
   if (empty($roleName)) {
     writeLog('roleName was empty!');
     throw new Exception('Role name was empty!');
-  } else if (empty($allowBar)) {
+  } else if (!isset($allowBar)) {
     writeLog('allowBarangay was empty!');
     throw new Exception('allowBarangay was empty!');
   } else if (empty($barPerms) && $allowBar) {

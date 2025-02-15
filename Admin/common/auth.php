@@ -58,6 +58,11 @@ $userGenPerms = getPermissions();
 $userBarPerms = getPermissions(true);
 
 // a function to check user perms. Used on almost all pages that import this file.
+// TODO: update to accept barID, versionID, and indicatorID and check against that. For bar permissions
+/** @param perms can be a single perm or a array of perms. note that perm names don't have to be complete (but is recommended to be complete) 
+ *  @param permType must be 'gen' for global/general permissions or 'bar' for barangay permissions
+ * @return bool return true if has perms, or false if not.
+ */
 function userHasPerms(string | array  $perms, string $permType): bool
 {
   /** @var array|string */
@@ -83,12 +88,12 @@ function checkPerms($grantedPerms, $permsQuery)
   if (is_array($permsQuery)) {
     // writeLog('perms was array');
     foreach ($permsQuery as $perm) {
-      $result = array_filter($grantedPerms, function ($genPerm) use ($perm) {
+      $result = array_filter($grantedPerms, function ($grantedP) use ($perm) {
         // writeLog('gen perm matches?');
         // writeLog($genPerm);
         // writeLog($perm);
         // writeLog(str_contains($genPerm, $perm));
-        return str_contains($genPerm, $perm);
+        return str_contains($grantedP, $perm);
       });
       // if there is a match, return true
       return !empty($result);
@@ -97,18 +102,18 @@ function checkPerms($grantedPerms, $permsQuery)
   // if string, loop only through the permissions array
   else if (is_string($permsQuery)) {
     // writeLog('perms was string');
-    $result = array_filter($grantedPerms, function ($genPerm) use ($permsQuery) {
+    $result = array_filter($grantedPerms, function ($grantedP) use ($permsQuery) {
       // writeLog('gen perm matches (string)?');
       // writeLog($genPerm);
       // writeLog($permsQuery);
       // writeLog(str_contains($genPerm, $permsQuery));
-      return str_contains($genPerm, $permsQuery);
+      return str_contains($grantedP, $permsQuery);
     });
     // if there is a match, return true
     return !empty($result);
   }
   // throw if neither
   else {
-    throw new Exception('Perms was not a string or array.');
+    throw new Exception('permsQuery was not a string or array.');
   }
 }

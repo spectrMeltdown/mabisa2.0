@@ -1,7 +1,7 @@
 <?php
 $isInFolder = true;
 require '../common/auth.php';
-if (!userHasPerms('criteria_read', 'gen')) {
+if (!userHasPerms('submissions_read', 'bar')) {
     // header does not allow relative paths, so this is my temporary solution
     header('Location:' . substr(__DIR__, 0, strrpos(__DIR__, '/')) . 'no_permissions.php');
     exit;
@@ -130,7 +130,7 @@ if ($barangay_id) {
     <?php
     $pathPrepend = '../../';
     require '../common/head.php'
-        ?>
+    ?>
     <script src="../../vendor/jquery/jquery.min.js"></script>
     <script src="../../js/bar-assessment.js"></script>
 
@@ -145,7 +145,7 @@ if ($barangay_id) {
         <?php
         include '../common/sidebar.php'
 
-            ?>
+        ?>
 
         <!-- sidebar end -->
 
@@ -186,7 +186,7 @@ if ($barangay_id) {
                                 if (empty($filtered_rows)) {
                                     continue;
                                 }
-                                ?>
+                            ?>
                                 <div class="card-header bg-primary text-center py-3">
                                     <div class="card-body">
                                         <h5 class="text-white"><?php echo htmlspecialchars($key); ?></h5>
@@ -205,7 +205,7 @@ if ($barangay_id) {
                                         if ($table_started) {
                                             echo "</tbody></table>";
                                         }
-                                        ?>
+                                ?>
 
                                         <div class="row bg-info" style="margin: 0; padding: 10px 0;">
                                             <h6 class="col-lg-12 text-center text-white" style="margin: 0;">
@@ -227,11 +227,11 @@ if ($barangay_id) {
                                             </thead>
                                             <tbod>
 
-                                                <?php
-                                                $last_indicator = $current_indicator;
-                                                $table_started = true;
-                                    endif;
-                                    ?>
+                                            <?php
+                                            $last_indicator = $current_indicator;
+                                            $table_started = true;
+                                        endif;
+                                            ?>
 
                                             <tr>
                                                 <td><?php echo $row['relevance_definition']; ?></td>
@@ -243,7 +243,7 @@ if ($barangay_id) {
                                                 <td class="data-cell-upload-view"
                                                     style="text-align: center; vertical-align: middle;">
                                                     <?php if (!$data): ?>
-                                                        <?php if ($role === 'Barangay Secretary'): ?>
+                                                        <?php if (userHasPerms(['submissions_create', 'submissions_read'], 'bar')): ?>
                                                             <form action="../bar_assessment/user_actions/upload.php" method="POST"
                                                                 enctype="multipart/form-data"
                                                                 id="uploadForm-<?php echo $row['keyctr']; ?>">
@@ -262,7 +262,7 @@ if ($barangay_id) {
                                                                     <i class="fa fa-upload"></i>
                                                                 </button>
                                                             </form>
-                                                        <?php elseif ($role === 'Barangay Admin'): ?>
+                                                        <?php elseif (userHasPerms('submissions_read', 'bar')): ?>
                                                             <p>No Uploads Yet</p>
                                                         <?php endif; ?>
                                                     <?php else: ?>
@@ -327,7 +327,7 @@ if ($barangay_id) {
     </div>
     <script>
         document.querySelectorAll(".file-input").forEach(input => {
-            input.addEventListener("change", function () {
+            input.addEventListener("change", function() {
                 let formId = "uploadForm-" + this.id.split("-")[1];
                 let form = document.getElementById(formId);
 
@@ -347,9 +347,9 @@ if ($barangay_id) {
                     formData.append("file", file);
 
                     fetch(form.action, {
-                        method: "POST",
-                        body: formData
-                    })
+                            method: "POST",
+                            body: formData
+                        })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
@@ -365,7 +365,7 @@ if ($barangay_id) {
         });
 
         document.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', function () {
+            button.addEventListener('click', function() {
                 let fileId = this.getAttribute('data-file-id');
 
                 if (!confirm('Are you sure you want to delete this file?')) {
@@ -373,14 +373,14 @@ if ($barangay_id) {
                 }
 
                 fetch('../bar_assessment/user_actions/delete.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        file_id: fileId
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            file_id: fileId
+                        })
                     })
-                })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
