@@ -30,7 +30,7 @@ unset($_SESSION['success']);
   <?php
   require '../common/head.php' ?>
   <script src="../../vendor/jquery/jquery.min.js"></script>
-  <script src="../../js/maintenance-criteria.js"></script>
+  <script src="../../js/maintenance-criteria.js"></script>111111111111111
 </head>
 
 <body id="page-top">

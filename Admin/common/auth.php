@@ -40,10 +40,10 @@ function getPermissions($isBarPerms = false): array | string
   $query->execute([':id' => $userData['id']]);
   $permissions = $query->fetch(PDO::FETCH_ASSOC);
   if ($permissions == false) return [];
-  writeLog('bar perms was: ');
-  writeLog($isBarPerms);
-  writeLog('Permissions is: ');
-  writeLog($permissions);
+  // writeLog('bar perms was: ');
+  // writeLog($isBarPerms);
+  // writeLog('Permissions is: ');
+  // writeLog($permissions);
 
   // get the permissions that have their value set to 1 (true)
   $permissions = array_keys(array_filter($permissions, function ($value) {
@@ -59,9 +59,9 @@ $userBarPerms = getPermissions(true);
 
 // a function to check user perms. Used on almost all pages that import this file.
 // TODO: update to accept barID, versionID, and indicatorID and check against that. For bar permissions
-/** @param perms can be a single perm or a array of perms. note that perm names don't have to be complete (but is recommended to be complete) 
- *  @param permType must be 'gen' for global/general permissions or 'bar' for barangay permissions
- * @return bool return true if has perms, or false if not.
+/** @param perms can be a single perm or a array of perms. If array is used, the user must contain all those permissions to be true.
+ *  @param permType must be 'gen' for global/general permissions,'bar' for barangay permissions 'any' for either of them.
+ * @return bool return true if has all perms specified. False if otherwise.
  */
 function userHasPerms(string | array  $perms, string $permType): bool
 {
@@ -71,41 +71,67 @@ function userHasPerms(string | array  $perms, string $permType): bool
   global $userBarPerms;
 
   // check if super admin 
-  if ($userGenPerms == 'all' && $permType == 'gen') return true;
-  if ($userBarPerms == 'all' && $permType == 'bar') return true;
+  if ($userGenPerms == 'all' && ($permType == 'gen' || $permType == 'any')) return true;
+  if ($userBarPerms == 'all' && ($permType == 'bar' || $permType == 'any')) return true;
+  // if ($userBarPerms == 'all' && $permType == 'any') return true;
 
   // check if global/general perms
-  if ($permType == 'gen') return checkPerms($userGenPerms, $perms);
+  if ($permType == 'gen') {
+    writeLog('perm type is ' . $permType);
+    return checkPerms($userGenPerms, $perms);
+  }
   // check if barangay perms
-  else if ($permType == 'bar') return checkPerms($userBarPerms, $perms);
+  else if ($permType == 'bar') {
+    writeLog('perm type is ' . $permType);
+    return checkPerms($userBarPerms, $perms);
+  } else if ($permType == 'any') {
+    writeLog('perm type is ' . $permType);
+    return checkPerms(array_merge($userGenPerms, $userBarPerms), $perms);
+  }
   // throw if none of the above
   else throw new Exception('Invalid perm passed.');
 }
 
 function checkPerms($grantedPerms, $permsQuery)
 {
+  // writeLog(gettype($permsQuery));
   // if array, loop and check against each item
   if (is_array($permsQuery)) {
-    // writeLog('perms was array');
+    writeLog('perms was array');
+    writeLog('granted perms are: ');
+    writeLog($grantedPerms);
+    $result = [];
     foreach ($permsQuery as $perm) {
+      // if the a granted perm matches a query perm, then add to result
       $result = array_filter($grantedPerms, function ($grantedP) use ($perm) {
-        // writeLog('gen perm matches?');
-        // writeLog($genPerm);
-        // writeLog($perm);
+        writeLog('granted: ');
+        writeLog($grantedP);
+        writeLog('query: ');
+        writeLog($perm);
+        writeLog('');
         // writeLog(str_contains($genPerm, $perm));
         return str_contains($grantedP, $perm);
       });
-      // if there is a match, return true
-      return !empty($result);
+      // if they are equal, means that all specified perms are granted
     }
+    // writeLog('perms count was: ' . count($permsQuery));
+    // writeLog($permsQuery);
+    // writeLog('result count was: ' . count($result));
+    // writeLog($result);
+    // writeLog('');
+    return count($permsQuery) == count($result);
   }
   // if string, loop only through the permissions array
   else if (is_string($permsQuery)) {
-    // writeLog('perms was string');
+    writeLog('perms was string');
+    writeLog('granted perms are: ');
+    writeLog($grantedPerms);
     $result = array_filter($grantedPerms, function ($grantedP) use ($permsQuery) {
-      // writeLog('gen perm matches (string)?');
-      // writeLog($genPerm);
-      // writeLog($permsQuery);
+      writeLog('granted: ');
+      writeLog($grantedP);
+      writeLog('permsQuery: ');
+      writeLog($permsQuery);
+      writeLog('');
       // writeLog(str_contains($genPerm, $permsQuery));
       return str_contains($grantedP, $permsQuery);
     });
