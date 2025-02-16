@@ -1,7 +1,7 @@
 <?php
 $isInFolder = true;
 require '../common/auth.php';
-if (!userHasPerms('submissions_read', 'bar')) {
+if (!userHasPerms('assessment', 'any')) {
     // header does not allow relative paths, so this is my temporary solution
     header('Location:' . substr(__DIR__, 0, strrpos(__DIR__, '/')) . 'no_permissions.php');
     exit;
@@ -243,7 +243,9 @@ if ($barangay_id) {
                                                 <td class="data-cell-upload-view"
                                                     style="text-align: center; vertical-align: middle;">
                                                     <?php if (!$data): ?>
-                                                        <?php if (userHasPerms(['submissions_create', 'submissions_read'], 'bar')): ?>
+                                                        <?php
+                                                        writeLog('IN BAR RESPONSE');
+                                                        if (userHasPerms(['assessment_submissions_create'], 'any')): ?>
                                                             <form action="../bar_assessment/user_actions/upload.php" method="POST"
                                                                 enctype="multipart/form-data"
                                                                 id="uploadForm-<?php echo $row['keyctr']; ?>">
@@ -262,7 +264,7 @@ if ($barangay_id) {
                                                                     <i class="fa fa-upload"></i>
                                                                 </button>
                                                             </form>
-                                                        <?php elseif (userHasPerms('submissions_read', 'bar')): ?>
+                                                        <?php elseif (userHasPerms('submissions_read', 'bar') || userHasPerms('comments_read', 'bar')): ?>
                                                             <p>No Uploads Yet</p>
                                                         <?php endif; ?>
                                                     <?php else: ?>

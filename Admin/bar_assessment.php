@@ -1,6 +1,6 @@
 <?php
 require 'common/auth.php';
-if (!userHasPerms('assessment', 'bar')) {
+if (!userHasPerms('assessment', 'any')) {
     header('Location:no_permissions.php');
     exit;
 }
@@ -74,15 +74,13 @@ if (!userHasPerms('assessment', 'bar')) {
                                                 echo "<td>";
                                                 echo "<a href='bar_assessment/show_bar_response.php?barangay_id=" . htmlspecialchars($row['barangay_id']) . "' class='btn btn-primary btn-sm'>View</a>";
                                                 echo "</td>";
-                                               if($isPassed >= 40){
-                                                echo "<td> Passed </td>";
-                                               }
-                                               else
-                                               {
-                                                echo "<td> Failed </td>";
-                                               }
+                                                if ($isPassed >= 40) {
+                                                    echo "<td> Passed </td>";
+                                                } else {
+                                                    echo "<td> Failed </td>";
+                                                }
                                                 echo "</tr>";
-                                            // echo "<td>" . $isPassed . "</td>";
+                                                // echo "<td>" . $isPassed . "</td>";
                                             }
                                         }
                                         ?>
