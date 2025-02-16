@@ -1,4 +1,4 @@
-<?php 
+<?php
 require_once '../../api/audit_log.php';
 require_once '../common/auth.php';
 require_once '../../db/db.php';
@@ -41,15 +41,15 @@ $log = new Audit_log($pdo);
                     </div>
 
                     <div class="col-md-3">
-                        <div class="border rounded p-3 bg-light mb-3 comments-container">
-                            <h6 class="text-muted">Comments</h6>
-                            <div id="commentsContainer">
-                                <p class="text-muted">Loading comments...</p>
+                        <?php if (userHasPerms('comments_read', 'any')): ?>
+                            <div class="border rounded p-3 bg-light mb-3 comments-container">
+                                <h6 class="text-muted">Comments</h6>
+                                <div id="commentsContainer">
+                                    <p class="text-muted">Loading comments...</p>
+                                </div>
                             </div>
-                        </div>
-
-                        <?php if ($role === 'Barangay Admin'):
-                            ?>
+                        <?php endif ?>
+                        <?php if (userHasPerms('comments_create', 'any')): ?>
                             <form method="post" action="../bar_assessment/admin_actions/add_comment.php">
                                 <input type="hidden" name="file_id">
                                 <input type="hidden" name="name">
@@ -61,10 +61,9 @@ $log = new Audit_log($pdo);
                                     <button type="submit" class="btn btn-primary btn-block">Add Comment</button>
                                 </div>
                             </form>
-
-
                             <div id="statusMessage" class="alert alert-info text-center" style="display: none;"></div>
-
+                        <?php endif; ?>
+                        <?php if (userHasPerms('submissions_approve', 'any')): ?>
                             <div id="approveForm" style="display: none;">
                                 <form method="POST" action="admin_actions/change_status.php">
                                     <input type="hidden" name="file_id" id="approveFileId">
@@ -88,9 +87,6 @@ $log = new Audit_log($pdo);
                                     <button type="submit" class="btn btn-warning btn-block">Revert to Pending</button>
                                 </form>
                             </div>
-
-
-
                         <?php endif; ?>
                     </div>
                 </div>

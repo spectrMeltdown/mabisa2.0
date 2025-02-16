@@ -63,8 +63,13 @@ $userBarPerms = getPermissions(true);
  *  @param permType must be 'gen' for global/general permissions,'bar' for barangay permissions 'any' for either of them.
  * @return bool return true if has all perms specified. False if otherwise.
  */
-function userHasPerms(string | array  $perms, string $permType): bool
+function userHasPerms(string | array  $perms, string $permType, string $barID = null, string $indicatorID = null): bool
 {
+  // some parameter checks
+  if (!empty($indicatorID) && empty($barID)) throw new Exception('indicatorID provided, but no barID!!');
+  if (empty($indicatorID) && !empty($barID)) throw new Exception('barID provided, but no indicatorID!!');
+  if ($permType == 'gen' && !empty($indicatorID) && !empty($barID)) throw new Exception('barID & indicatorID are for "bar" perms or "any" perms only!');
+
   /** @var array|string */
   global $userGenPerms;
   /** @var array|string */
@@ -92,7 +97,7 @@ function userHasPerms(string | array  $perms, string $permType): bool
   else throw new Exception('Invalid perm passed.');
 }
 
-function checkPerms($grantedPerms, $permsQuery)
+function checkPerms($grantedPerms, $permsQuery, string $barID = null, string $indicatorID = null)
 {
   // writeLog(gettype($permsQuery));
   // if array, loop and check against each item

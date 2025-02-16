@@ -255,7 +255,7 @@ if ($barangay_id) {
                                                                     value="<?php echo htmlspecialchars($barangay_id, ENT_QUOTES, 'UTF-8'); ?>">
                                                                 <input type="hidden" name="criteria_keyctr"
                                                                     value="<?php echo htmlspecialchars($row['keyctr'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                               <input type="file" name="file" id="file-<?php echo $row['keyctr']; ?>"
+                                                                <input type="file" name="file" id="file-<?php echo $row['keyctr']; ?>"
                                                                     class="file-input" style="display: none;" required
                                                                     accept="application/pdf">
                                                                 <button type="button" class="btn btn-primary" title="Upload"
@@ -275,7 +275,9 @@ if ($barangay_id) {
                                                             data-status="<?= htmlspecialchars($data['status']); ?>">
                                                             <i class="fa fa-eye"></i>
                                                         </button>
-                                                        <?php if ($role === $row['data_source'] && $data['status'] !== 'approved'): ?>
+                                                        <?php //if ($role === $row['data_source'] && $data['status'] !== 'approved'): 
+                                                        ?>
+                                                        <?php if (userHasPerms('submissions_delete', 'any')): ?>
                                                             <button class="btn btn-danger mb-3 delete-btn"
                                                                 data-file-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
                                                                 <i class="fa fa-trash"></i>
@@ -287,17 +289,17 @@ if ($barangay_id) {
                                                     style="text-align: center; vertical-align: middle;">
                                                     <?php if (!empty($data)): ?>
                                                         <?php if ($data['status'] === 'approved'): ?>
-                                                          <div class="rounded bg-success text-white">
-                                                          <p>Approved</p>
-                                                          </div>
+                                                            <div class="rounded bg-success text-white">
+                                                                <p>Approved</p>
+                                                            </div>
                                                         <?php elseif ($data['status'] === 'declined'): ?>
                                                             <div class="rounded bg-danger text-white">
-                                                          <p>Returned</p>
-                                                          </div>
+                                                                <p>Returned</p>
+                                                            </div>
                                                         <?php else: ?>
                                                             <div class="rounded bg-secondary text-white">
-                                                          <p>Waiting for Approval</p>
-                                                          </div>
+                                                                <p>Waiting for Approval</p>
+                                                            </div>
                                                         <?php endif; ?>
                                                     <?php endif; ?>
                                                 </td>
