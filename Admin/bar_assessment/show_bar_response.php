@@ -11,11 +11,13 @@ require_once 'responses.php';
 require_once 'comments.php';
 require_once 'admin_actions/admin_actions.php';
 require_once '../../db/db.php';
+require_once '../../api/audit_log.php';
 
 $barangay_id = isset($_GET['barangay_id']) ? $_GET['barangay_id'] : null;
 $barangay_name = isset($_GET['brgyname']) ? $_GET['brgyname'] : null;
 
 $responses = new Responses($pdo);
+$logging = new Audit_log($pdo);
 
 if ($barangay_id) {
     $stmt = $pdo->prepare("SELECT brgyname FROM refbarangay WHERE brgyid = ?");
@@ -251,12 +253,9 @@ if ($barangay_id) {
                                                                     value="<?php echo htmlspecialchars($barangay_id, ENT_QUOTES, 'UTF-8'); ?>">
                                                                 <input type="hidden" name="criteria_keyctr"
                                                                     value="<?php echo htmlspecialchars($row['keyctr'], ENT_QUOTES, 'UTF-8'); ?>">
-
-
-                                                                <input type="file" name="file" id="file-<?php echo $row['keyctr']; ?>"
+                                                               <input type="file" name="file" id="file-<?php echo $row['keyctr']; ?>"
                                                                     class="file-input" style="display: none;" required
                                                                     accept="application/pdf">
-
                                                                 <button type="button" class="btn btn-primary" title="Upload"
                                                                     onclick="document.getElementById('file-<?php echo $row['keyctr']; ?>').click();">
                                                                     <i class="fa fa-upload"></i>
@@ -274,9 +273,7 @@ if ($barangay_id) {
                                                             data-status="<?= htmlspecialchars($data['status']); ?>">
                                                             <i class="fa fa-eye"></i>
                                                         </button>
-
                                                         <?php if ($role === $row['data_source'] && $data['status'] !== 'approved'): ?>
-
                                                             <button class="btn btn-danger mb-3 delete-btn"
                                                                 data-file-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
                                                                 <i class="fa fa-trash"></i>
@@ -284,28 +281,28 @@ if ($barangay_id) {
                                                         <?php endif; ?>
                                                     <?php endif; ?>
                                                 </td>
-
                                                 <td class="data-cell-status"
                                                     style="text-align: center; vertical-align: middle;">
                                                     <?php if (!empty($data)): ?>
                                                         <?php if ($data['status'] === 'approved'): ?>
-                                                            <i class="fa fa-check text-success" title="Approved"></i>
+                                                          <div class="rounded bg-success text-white">
+                                                          <p>Approved</p>
+                                                          </div>
                                                         <?php elseif ($data['status'] === 'declined'): ?>
-                                                            <i class="fa fa-x text-danger" title="Declined"></i>
+                                                            <div class="rounded bg-danger text-white">
+                                                          <p>Returned</p>
+                                                          </div>
                                                         <?php else: ?>
-                                                            <i class="fa fa-hourglass-start" title="Waiting for Approval"></i>
+                                                            <div class="rounded bg-secondary text-white">
+                                                          <p>Waiting for Approval</p>
+                                                          </div>
                                                         <?php endif; ?>
                                                     <?php endif; ?>
                                                 </td>
-
                                                 <td class="data-cell-date-uploaded"
                                                     style="text-align: center; vertical-align: middle;">
                                                     <?php echo !empty($data) ? htmlspecialchars($data['date_uploaded']) : ''; ?>
                                                 </td>
-
-
-
-
                                             </tr>
 
                                         <?php endforeach; ?>

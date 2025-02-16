@@ -1,3 +1,12 @@
+<?php 
+require_once '../../api/audit_log.php';
+require_once '../common/auth.php';
+require_once '../../db/db.php';
+
+$log = new Audit_log($pdo);
+
+?>
+
 <style>
     .modal-xxl {
         max-width: 95vw;
@@ -68,7 +77,7 @@
                                 <form method="POST" action="admin_actions/change_status.php">
                                     <input type="hidden" name="file_id" id="declineFileId">
                                     <input type="hidden" name="action" value="decline">
-                                    <button type="submit" class="btn btn-danger btn-block">Decline</button>
+                                    <button type="submit" class="btn btn-danger btn-block">Return</button>
                                 </form>
                             </div>
 
