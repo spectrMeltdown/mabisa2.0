@@ -48,10 +48,12 @@ create table permissions (
 CREATE TABLE roles (
     id int AUTO_INCREMENT PRIMARY KEY,
     name varchar(100) NOT NULL UNIQUE,
-    allow_barangay boolean NOT NULL DEFAULT false,
-    permissions_id int,
+    allow_bar boolean NOT NULL DEFAULT false,
+    bar_perms int DEFAULT NULL,
+    gen_perms int DEFAULT NULL,
     last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (permissions_id) REFERENCES permissions(id) ON DELETE SET NULL
+    FOREIGN KEY (bar_perms) REFERENCES permissions(id) ON DELETE SET NULL,
+    FOREIGN KEY (gen_perms) REFERENCES permissions(id) ON DELETE SET NULL
 );
 
 

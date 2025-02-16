@@ -7,6 +7,9 @@ if (!userHasPerms(['roles_create', 'roles_update'], 'gen')) {
   header('Location:no_permissions.php');
   exit;
 }
+
+// for general perms and role perms
+require '../api/get_all_perm_cols.php';
 ?>
 
 <!DOCTYPE html>
@@ -115,24 +118,12 @@ if (!userHasPerms(['roles_create', 'roles_update'], 'gen')) {
                 <div class="mb-3 form-group container-fluid" id="permissions">
                   <div id="bar-permissions-alert" class="text-danger"></div>
                   <?php
-                  // get the permissions table details
-                  $query = $pdo->query("describe permissions;");
-
-                  // assign to columsn array 
-                  $columns = $query->fetchAll(PDO::FETCH_ASSOC);
-
-                  // extract name of the column, save to permissions array
-                  $permissions = [];
-                  foreach ($columns as $col) {
-                    if (str_contains($col['Field'], 'assessment')) {
-                      $permissions[] = $col['Field'];
-                    }
-                  }
+                  $barPermNames = getPermTableNames($pdo, 'assessment');
                   ?>
                   <ul class="list-unstyled">
                     <?php
                     // loop permissions
-                    foreach ($permissions as $perm):
+                    foreach ($barPermNames as $perm):
                     ?>
                       <li class="d-inline-block m-1">
                         <div class="input-group mb-3 d-flex flex-row">
@@ -159,25 +150,11 @@ if (!userHasPerms(['roles_create', 'roles_update'], 'gen')) {
                 <div class="mb-3 form-group container-fluid" id="gen-permissions">
                   <div id="gen-permissions-alert" class="text-danger"></div>
                   <?php
-                  // get the permissions table details
-                  $query = $pdo->query("describe permissions;");
-
-                  // assign to columsn array 
-                  $columns = $query->fetchAll(PDO::FETCH_ASSOC);
-
-                  // extract name of the column, save to permissions array
-                  $permissions = [];
-                  foreach ($columns as $col) {
-                    $permissions[] = $col['Field'];
-                  }
-
-                  // remove first and last element (id & last_modified)
-                  array_shift($permissions);
-                  array_pop($permissions);
+                  $genPermNames = getPermTableNames($pdo);
 
                   // remove super admin permissions if not super admin
-                  if (!($userData['role'] === 'Super Admin')) {
-                    $permissions = array_filter($permissions, function ($permission) {
+                  if (!(strtolower($userData['role']) === 'super admin')) {
+                    $genPermNames = array_filter($genPermNames, function ($permission) {
                       return !str_contains($permission, 'super_admin');
                     });
                   }
@@ -185,9 +162,9 @@ if (!userHasPerms(['roles_create', 'roles_update'], 'gen')) {
                   <ul class="list-unstyled">
                     <?php
                     // loop permissions
-                    foreach ($permissions as $perm):
+                    foreach ($genPermNames as $perm):
                     ?>
-                      <li class="d-inline-block m-1">
+                      <li class="d-inline-block m-1 perm-container" id="<?= $perm ?>-container">
                         <div class="input-group mb-3 d-flex flex-row">
                           <div class="input-group-prepend">
                             <div class="input-group-text">
@@ -195,7 +172,7 @@ if (!userHasPerms(['roles_create', 'roles_update'], 'gen')) {
                             </div>
                           </div>
                           <div class="card card-body border-secondary">
-                            <label for="<?= $perm ?>" id="label<?= $perm ?>"><?= $perm ?></label>
+                            <label for="<?= $perm ?>" id="label-<?= $perm ?>"><?= $perm ?></label>
                           </div>
                         </div>
                       </li>

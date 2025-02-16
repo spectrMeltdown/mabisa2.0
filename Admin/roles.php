@@ -69,8 +69,8 @@ if (!userHasPerms(['roles_read'], 'gen')) {
                     <thead>
                       <tr>
                         <th>Role</th>
-                        <th>Permissions</th>
-                        <th>Barangay Assignments</th>
+                        <th>Global Permissions</th>
+                        <th>Barangay Permissions</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
@@ -78,8 +78,8 @@ if (!userHasPerms(['roles_read'], 'gen')) {
                       <tfoot>
                         <tr>
                           <th>Role</th>
-                          <th>Permissions</th>
-                          <th>Barangay Assignments</th>
+                          <th>Global Permissions</th>
+                          <th>Barangay Permissions</th>
                           <th>Actions</th>
                         </tr>
                       </tfoot>
@@ -92,21 +92,23 @@ if (!userHasPerms(['roles_read'], 'gen')) {
                       ?>
                         <tr>
                           <td><?php echo $row['name'] ?></td>
-                          <td><?php
-                              require_once '../api/logging.php';
-                              $permissionsValue = '';
-                              if ($row['permissions_id']) {
-                                $query = $pdo->prepare("select * from permissions where id = :permissions_id limit 1");
-                                $query->execute([':permissions_id' => $row['permissions_id']]);
-                                $permissions = $query->fetch(PDO::FETCH_ASSOC);
-                                // remove first item (id)
-                                array_shift($permissions);
-                                // remove last item (last modified)
-                                array_pop($permissions);
-                                //get all keys where value is true (or 1 in this case)
-                                $keys = array_keys(array_filter($permissions, function ($permission) {
-                                  return $permission == 1;
-                                }));
+                          <td>
+                            <?php
+                            require_once '../api/logging.php';
+                            $permissionsValue = '';
+                            if ($row['gen_perms']) {
+                              $query = $pdo->prepare("select * from permissions where id = :gen_perms limit 1");
+                              $query->execute([':gen_perms' => $row['gen_perms']]);
+                              $permissions = $query->fetch(PDO::FETCH_ASSOC);
+                              // remove first item (id)
+                              array_shift($permissions);
+                              // remove last item (last modified)
+                              array_pop($permissions);
+                              //get all keys where value is true (or 1 in this case)
+                              $keys = array_keys(array_filter($permissions, function ($permission) {
+                                return $permission == 1;
+                              }));
+                              if ($keys) {
                                 $permissionsValue = '<ul>';
                                 // append to one string
                                 foreach ($keys as $key) {
@@ -116,19 +118,53 @@ if (!userHasPerms(['roles_read'], 'gen')) {
                               } else {
                                 $permissionsValue = 'No permissions found.';
                               }
-                              echo $permissionsValue;
-                              ?></td>
-                          <td><?php echo ($row['allow_barangay'] == true ? 'Yes' : 'No') ?></td>
+                            } else {
+                              $permissionsValue = 'No permissions found.';
+                            }
+                            echo $permissionsValue;
+                            ?>
+                          </td>
                           <td>
                             <?php
-                            if (!($row['name'] === 'Super Admin')):
+                            $permissionsValue = '';
+                            if ($row['bar_perms']) {
+                              $query = $pdo->prepare("select * from permissions where id = :bar_perms limit 1");
+                              $query->execute([':bar_perms' => $row['bar_perms']]);
+                              $permissions = $query->fetch(PDO::FETCH_ASSOC);
+                              // remove first item (id)
+                              array_shift($permissions);
+                              // remove last item (last modified)
+                              array_pop($permissions);
+                              //get all keys where value is true (or 1 in this case)
+                              $keys = array_keys(array_filter($permissions, function ($permission) {
+                                return $permission == 1;
+                              }));
+                              if ($keys) {
+                                $permissionsValue = '<ul>';
+                                // append to one string
+                                foreach ($keys as $key) {
+                                  $permissionsValue .= ('<li>' . $key . '</li>');
+                                }
+                                $permissionsValue .= '<ul>';
+                              } else {
+                                $permissionsValue = 'No permissions found.';
+                              }
+                            } else {
+                              $permissionsValue = 'No permissions found.';
+                            }
+                            echo $permissionsValue;
+                            ?>
+                          </td>
+                          <td>
+                            <?php
+                            if (strtolower($row['name']) !== 'super admin'):
                             ?>
                               <a href="roles_update.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-info btn-circle edit-role-btn">
                                 <i class="fas fa-edit"></i>
                               </a>
                               <a href="#delete-role"
-                                class="btn btn-sm btn-danger btn-circle delete-role-btn" data-id="<?= $row['id'] ?>" data-permissions-id="<?= $row['permissions_id'] ?>">
-                                <i class="fas fa-trash"></i>
+                                class="btn btn-sm btn-danger btn-circle delete-role-btn" data-id="<?= $row['id'] ?>" data-gen-perms-id="<?= $row['gen_perms'] ?>" data-bar-perms-id="<?= $row['bar_perms'] ?>">
+                                <i class=" fas fa-trash"></i>
                               </a>
                             <?php
                             else:

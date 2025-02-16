@@ -15,8 +15,6 @@ $responses = new Responses($pdo);
 <head>
   <?php
   require 'common/head.php' ?>
-  <script src="../vendor/jquery/jquery.min.js"></script>
-  <script src="../js/maintenance-criteria.js"></script>
 </head>
 
 <body id="page-top">

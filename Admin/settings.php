@@ -89,7 +89,7 @@ require_once '../db/db.php';
 
                 <!-- disabled because the super admin should be the only one to manage accounts -->
                 <?php
-                if ($userData['role'] != 'Super Admin'):
+                if (strtolower($userData['role']) != 'super admin'):
                 ?>
                   <p class="text-center"><i class="fas fa-info-circle"></i> Your account can only be deleted by an administrator.</p>
                 <?php

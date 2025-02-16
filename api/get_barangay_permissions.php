@@ -5,6 +5,7 @@ $useAsImport; // for get_permissions.php
 $permsOnly = false;
 require 'logging.php';
 require_once '../db/db.php';
+require 'get_all_perm_cols.php';
 require_once 'get_permissions.php'; // gets the role permissions
 
 try {
@@ -16,10 +17,10 @@ try {
   writeLog('IN GET BARANGAY PERMS');
 
   // check if role allows barangay
-  $sql = "SELECT allow_barangay FROM roles where id = :id";
+  $sql = "SELECT allow_bar FROM roles where id = :id";
   $stmt = $pdo->prepare($sql);
   $stmt->execute([':id' => $_POST['role_id']]);
-  $allowBarangay = $stmt->fetch(PDO::FETCH_ASSOC)['allow_barangay'];
+  $allowBarangay = $stmt->fetch(PDO::FETCH_ASSOC)['allow_bar'];
 
   writeLog('allow barangay is: ');
   writeLog($allowBarangay);
@@ -36,19 +37,7 @@ try {
   writeLog($barangays);
 
   // get all permissions that start with "assessment"
-  $sql = "describe permissions;";
-  $query = $pdo->query($sql);
-  $allPermissions = [];
-  // add all permissions to the column
-  if ($query->rowCount() <= 0) throw new Exception('describe permissions didn\'t return anything');
-  while ($col = $query->fetch(PDO::FETCH_ASSOC)) {
-    // writeLog('Col is: ');
-    // writeLog($col);
-    // add if assessment word is in it
-    if (str_contains($col['Field'], 'assessment')) {
-      $allPermissions[] = $col['Field'];
-    }
-  }
+  $allPermissions = getPermTableNames($pdo, 'assessment');
   writeLog('All permissions was:');
   writeLog($allPermissions);
 
@@ -89,9 +78,9 @@ try {
   $response = [];
 
   // get the permission names only 
-  $rolePermissions = array_keys($rolePermissions);
+  $rolePermissions = array_keys($barPerms);
 
-  // remove allow_barangay and get only the assessment permissions
+  // remove allow_bar and get only the assessment permissions
   $rolePermissions = array_filter($rolePermissions, function ($key) {
     return !str_contains($key, 'allow') && !str_contains($key, 'barangay') && str_contains($key, 'assessment');
   });
@@ -125,8 +114,8 @@ try {
     }
   }
 
-  writeLog('Final result was:');
-  writeLog($response);
+  // writeLog('Final result was:');
+  // writeLog($response);
   // Return JSON response
   echo json_encode($response, JSON_PRETTY_PRINT);
 } catch (\Throwable $th) {

@@ -18,30 +18,59 @@ try {
   /** @var bool|string */
   $permsOnly = empty($_POST['permsOnly']) ? true : $_POST['permsOnly'];
 
-  $query = $pdo->prepare("select * from permissions inner join roles on roles.permissions_id = permissions.id where roles.id = :id");
+  // get bar permissions
+  $query = $pdo->prepare("select * from permissions inner join roles on roles.bar_perms = permissions.id where roles.id = :id");
   $query->execute([
     'id' => $id
   ]);
+  // will return false if result is empty
+  $barPerms = $query->fetch(PDO::FETCH_ASSOC);
+  $barPerms = $barPerms ? $barPerms : []; // replace with empty array if false
 
-  $rolePermissions = $query->fetch(PDO::FETCH_ASSOC);
+  // get gen permissions
+  $query = $pdo->prepare("select * from permissions inner join roles on roles.gen_perms = permissions.id where roles.id = :id");
+  $query->execute([
+    'id' => $id
+  ]);
+  // will return false if result is empty
+  $genPerms = $query->fetch(PDO::FETCH_ASSOC);
+  $genPerms = $genPerms ? $genPerms : []; // replace with empty array if false
 
   if ($permsOnly) {
-    // remove first item (id)
-    array_shift($rolePermissions);
-    // remove last item (last modified)
-    array_pop($rolePermissions);
+    if ($barPerms) {
+      // remove id and last_modified cols
+      array_pop($barPerms);
+      array_shift($barPerms);
+    }
+    if ($genPerms) {
+      // remove id and last_modified cols
+      array_pop($genPerms);
+      array_shift($genPerms);
+    }
   }
 
   //get all items where value is true (or 1 in this case)
   if ($truePerms) {
-    $rolePermissions = array_filter($rolePermissions, function ($permission) {
-      // writeLog('Permission is:');
-      // writeLog($permission);
-      return $permission == 1;
-    });
+    if ($barPerms) {
+      $barPerms = array_filter($barPerms, function ($perm) {
+        // writeLog('Permission is:');
+        // writeLog($permission);
+        return $perm == 1;
+      });
+    }
+    if ($genPerms) {
+      $genPerms = array_filter($genPerms, function ($perm) {
+        // writeLog('Permission is:');
+        // writeLog($permission);
+        return $perm == 1;
+      });
+    }
   }
 
-  if (isset($useAsImport)) echo json_encode($rolePermissions);
+  if (isset($useAsImport)) echo json_encode([
+    'barPerms' => $barPerms,
+    'genPerms' => $genPerms,
+  ]);
 } catch (\Throwable $th) {
   http_response_code(500);
   $message = $th->getMessage();
