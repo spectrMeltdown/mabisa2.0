@@ -14,7 +14,7 @@ class User_Actions
 {
     try {
         if (!$this->pdo->inTransaction()) {
-            $this->pdo->beginTransaction(); // Start transaction only if not already started
+            $this->pdo->beginTransaction(); 
         }
 
         $query1 = "INSERT INTO barangay_assessment_files 

@@ -158,78 +158,59 @@ $responses = new Responses($pdo);
               </div>
             </div>
           </div>
-
           <!-- Content Row -->
           <div class="row"></div>
-          <table class="table">
-            <thead>
-              <tr>
-                <th scope="col">Area Code</th>
-                <th scope="col">Area Name</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="row">1</th>
-                <td>Financial Administration and Sustainability</td>
-              </tr>
-              <tr>
-                <th scope="row">2</th>
-                <td>Disaster Preparedness</td>
-              </tr>
-              <tr>
-                <th scope="row">3</th>
-                <td colspan="2">Safety Peace and Order</td>
-              </tr>
-            </tbody>
-          </table>
           <!-- Content Column -->
           <div class="col-lg-6 mb-4"></div>
         </div>
 
-        <!-- History Logs -->
-        <div class="row">
-          <div class="card">
-            <div class="card-header">
-              <h5 class="card-title">Logs</h5>
+        <?php
+              require_once '../db/db.php';
+
+              try {
+                $sql = "SELECT * FROM audit_log ORDER BY time_and_date DESC";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute();
+                $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+              } catch (PDOException $e) {
+                echo "<p class='text-danger'>Error fetching logs: " . $e->getMessage() . "</p>";
+                $logs = [];
+              }
+              ?>
+        <div class="container-fluid">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <div style="float: left;">
+                <h3 class="m-0 font-weight-bold text-primary">User Logs</h3>
+              </div>
             </div>
             <div class="card-body">
-              <table class="table table-striped">
+              <div class="table table-responsive"></div>
+              <table id="maintenanceTable" class="table table-bordered">
                 <thead>
                   <tr>
-                    <th scope="col">User ID</th>
-                    <th scope="col">Username</th>
-                    <th scope="col">Action</th>
-                    <th scope="col">Date/Time</th>
+                    <th>User Id</th>
+                    <th>Username</th>
+                    <th>Action</th>
+                    <th>Time and Date</th>
+                   
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>john.doe</td>
-                    <td>Logged in</td>
-                    <td>2024-03-01 14:30:00</td>
-                  </tr>
-                  <tr>
-                    <td>2</td>
-                    <td>jane.doe</td>
-                    <td>Viewed dashboard</td>
-                    <td>2024-03-01 14:35:00</td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>john.doe</td>
-                    <td>Updated profile</td>
-                    <td>2024-03-01 14:40:00</td>
-                  </tr>
-                  <tr>
-                    <td>3</td>
-                    <td>admin</td>
-                    <td>Deleted user</td>
-                    <td>2024-03-01 14:45:00</td>
-                  </tr>
+                  <?php foreach ($logs as $log):
+                  ?>
+                    <tr>
+                      <td><?php echo $log['user_id']; ?></td>
+                      <td><?php echo $log['username']; ?></td>
+                      <td><?php echo $log['action']; ?></td>
+                      <td><?php echo $log['time_and_date']; ?></td>
+                    
+                    </tr>
+
+                  <?php endforeach ?>
                 </tbody>
               </table>
+              <!--End Page Content-->
             </div>
           </div>
         </div>
