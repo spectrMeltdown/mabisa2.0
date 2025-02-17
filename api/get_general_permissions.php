@@ -15,12 +15,14 @@ try {
 
   /** @var int */
   $roleID = (int)$_POST['role_id'];
+  /** @var int */
+  $userID = empty($_POST['id']) ? null : (int)$_POST['id'];
 
   writeLog('role id: ');
   writeLog($roleID);
 
   // get the role
-  $sql = "select * from roles where id = :role_id limit 1";
+  $sql = "select name from roles where id = :role_id limit 1";
   $query = $pdo->prepare($sql);
   $query->execute([':role_id' => $roleID]);
   $role = $query->fetch(PDO::FETCH_ASSOC);
@@ -55,6 +57,7 @@ try {
   //     return !str_contains((string)$permission, 'assessment');
   //   }, ARRAY_FILTER_USE_KEY);
   // }
+
 
   writeLog('Final result: ');
   writeLog($genPerms);

@@ -16,10 +16,15 @@ try {
 
   writeLog('IN GET BARANGAY PERMS');
 
+  /** @var int */
+  $roleID = (int)$_POST['role_id'];
+  /** @var int|null */
+  $userID = empty($_POST['id']) ? null : (int)$_POST['id'];
+
   // check if role allows barangay
   $sql = "SELECT allow_bar FROM roles where id = :id";
   $stmt = $pdo->prepare($sql);
-  $stmt->execute([':id' => $_POST['role_id']]);
+  $stmt->execute([':id' => $roleID]);
   $allowBarangay = $stmt->fetch(PDO::FETCH_ASSOC)['allow_bar'];
 
   writeLog('allow barangay is: ');

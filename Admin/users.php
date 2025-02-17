@@ -121,8 +121,7 @@ if (!userHasPerms('users_read', 'gen')) {
                               ?>
                           </td>
                           <td>
-                            <a href="#edit-user" class="btn btn-sm btn-info btn-circle edit-user-btn"
-                              data-toggle="modal" data-target="#crud-user" data-id="<?= $row['id'] ?>">
+                            <a href="users_update.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-info btn-circle edit-user-btn">
                               <i class="fas fa-edit"></i>
                             </a>
                             <a href="#delete-user"
