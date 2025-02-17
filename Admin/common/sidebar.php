@@ -87,9 +87,7 @@ global $userGenPerms;
   // writeLog('bar perms was');
   // writeLog($userBarPerms);
   // check if gen permissions has any assessment* permissions, or if 'all' is specified, or if barPermissions has entries
-  if ((is_string($userBarPerms) && $userBarPerms == 'all') || !empty(array_filter($userBarPerms ?? [], function ($value) {
-    return str_contains($value, 'assessment');
-  })) || !empty($userBarPerms)):
+  if (userHasPerms('assessment', 'any')):
   ?>
     <!-- Nav Item - Tables -->
     <li class="nav-item <?= isset($isInFolderessmentPhp) ? 'active' : '' ?>">

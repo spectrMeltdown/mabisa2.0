@@ -36,7 +36,7 @@ function getUser(string $id)
   $user['role'] = getRoleName($pdo, $user['role_id']);
   // temporarily commenting this out because i need it in user-update.php
   // unset($user['role_id']);
-  return (isset($customUserID) ? $user :  json_encode($user));
+  return (isset($customUserID) ? $user :  json_encode($user, JSON_PRETTY_PRINT));
 }
 
 try {

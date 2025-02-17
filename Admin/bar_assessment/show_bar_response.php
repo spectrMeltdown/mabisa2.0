@@ -1,7 +1,9 @@
 <?php
 $isInFolder = true;
 require '../common/auth.php';
-if (!userHasPerms('assessment', 'any')) {
+$barangay_id = isset($_GET['barangay_id']) ? $_GET['barangay_id'] : null;
+$barangay_name = isset($_GET['brgyname']) ? $_GET['brgyname'] : null;
+if (!userHasPerms('assessment', 'any', $barangay_id)) {
     // header does not allow relative paths, so this is my temporary solution
     header('Location:' . substr(__DIR__, 0, strrpos(__DIR__, '/')) . 'no_permissions.php');
     exit;
@@ -12,9 +14,6 @@ require_once 'comments.php';
 require_once 'admin_actions/admin_actions.php';
 require_once '../../db/db.php';
 require_once '../../api/audit_log.php';
-
-$barangay_id = isset($_GET['barangay_id']) ? $_GET['barangay_id'] : null;
-$barangay_name = isset($_GET['brgyname']) ? $_GET['brgyname'] : null;
 
 $responses = new Responses($pdo);
 $logging = new Audit_log($pdo);

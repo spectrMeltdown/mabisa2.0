@@ -8,10 +8,11 @@ function nl2br(str) {
   return str.replace(/\n/g, '<br>');
 }
 
-let currentUserID;
-/** @var {array} */
-const defaultAlert = '<div class="alert"></div>';
-let editMode = undefined;
+const params = new URLSearchParams(location.search);
+/** @var {int} */
+let currentUserID = Number(params.get('id'));
+/** @var {bool} */
+let editMode = currentUserID ? true : false;
 addPhonePrepend();
 
 //cancel button confirmation
@@ -66,6 +67,7 @@ $('#roleSelect').on('change', async e => {
         type: 'POST',
         data: {
           role_id: selectedOption,
+          id: currentUserID,
         },
         success: permissions => {
           console.log('Permissions are : ' + permissions);
@@ -97,7 +99,7 @@ $('#roleSelect').on('change', async e => {
                              <div class="input-group mb-3 d-flex flex-row">
                                <div class="input-group-prepend">
                                  <div class="input-group-text">
-                                   <input type="checkbox" name="${key}" id="${key}" value="true" checked>
+                                   <input type="checkbox" name="${key}" id="${key}" value="true">
                                  </div>
                                </div>
                                <div class="card card-body border-secondary">
@@ -133,6 +135,7 @@ $('#roleSelect').on('change', async e => {
         type: 'POST',
         data: {
           role_id: selectedOption,
+          id: currentUserID,
         },
         success: res => {
           // console.log('bar permissions are : ' + res);
@@ -143,7 +146,7 @@ $('#roleSelect').on('change', async e => {
           const barTableData = JSON.parse(res);
           $('#barPermTable').DataTable({
             data: barTableData,
-            createdRow: function(row, data, dataIndex) {
+            createdRow: function(row /*, data, dataIndex */) {
               $('td', row).each(function() {
                 $(this).html($(this).html()); // Force HTML rendering
               });
@@ -152,7 +155,7 @@ $('#roleSelect').on('change', async e => {
               {
                 data: 'barangay',
                 title: 'Barangay',
-                render: function(data, type, row) {
+                render: function(data /*, type, row */) {
                   // console.log('Type is: ' + type);
                   if (Array.isArray(data)) {
                     return data
@@ -171,7 +174,7 @@ $('#roleSelect').on('change', async e => {
               {
                 data: 'indicators',
                 title: 'Indicators',
-                render: function(data, type, row) {
+                render: function(data) {
                   // console.log('Type is: ' + type);
                   if (Array.isArray(data)) {
                     return data
@@ -230,13 +233,13 @@ $('#roleSelect').on('change', async e => {
             // rowsGroup: [
             //   0, // Merge identical "Barangay" cells
             // ],
-            drawCallback: function(settings) {
+            drawCallback: function(/*settings */) {
               let api = this.api();
               let prev = null;
 
               api
                 .rows({ page: 'current' })
-                .every(function(rowIdx, tableLoop, rowLoop) {
+                .every(function(/*rowIdx, tableLoop, rowLoop */) {
                   let data = this.data();
 
                   // Ensure the data object contains 'barangay'
@@ -617,3 +620,32 @@ $('#save-user-btn').on('click', async () => {
   }
   toggleLoading();
 });
+
+// fill the values from the id all other javascript has loaded
+if (editMode) {
+  $.ajax({
+    url: '../api/get_user.php',
+    type: 'GET',
+    data: {
+      id: currentUserID,
+    },
+    success: data => {
+      console.log(data);
+      const userData = JSON.parse(data);
+
+      // fill the inputs
+      $('#username').val(userData.username);
+      $('#fullName').val(userData.full_name);
+      $('#email').val(userData.email);
+      $('#mobileNum').val('+63' + userData.mobile_num);
+
+      // trigger roles change. Checkboxes will be checked on this event listener.
+      $('#roleSelect')
+        .val(userData.role_id)
+        .trigger('change');
+    },
+    error: err => {
+      console.error(err.responseText);
+    },
+  });
+}
