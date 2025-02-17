@@ -120,6 +120,9 @@ if ($barangay_id) {
 // echo '<pre>';
 // print_r($data);
 // echo'</pre>';
+session_start();
+$successMessage = isset($_SESSION['success']) ? $_SESSION['success'] : '';
+unset($_SESSION['success']);
 ?>
 
 
@@ -160,7 +163,7 @@ if ($barangay_id) {
                 <!-- Topbar -->
                 <?php
                 include '../common/nav.php';
-                $role = 'Barangay Secretary'; //temporary role
+                $role = 'Barangay Admin'; //temporary role
                 $name = 'name'; //temporary name
                 ?>
                 <!-- End of Topbar -->
@@ -327,6 +330,11 @@ if ($barangay_id) {
     </div>
     </div>
     <script>
+ var successMessage = "<?php echo $successMessage; ?>";
+      if (successMessage) {
+        alert(successMessage);
+      }
+
         document.querySelectorAll(".file-input").forEach(input => {
             input.addEventListener("change", function() {
                 let formId = "uploadForm-" + this.id.split("-")[1];

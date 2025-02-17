@@ -1,11 +1,16 @@
 <?php
+
+require_once __DIR__ . '../../../../api/audit_log.php';
 class Admin_Actions
 {
     private $pdo;
+    private $auditLog;
+    
 
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
+        $this->auditLog = new Audit_log($pdo); 
     }
 
     public function approve(string $file_id): bool
@@ -22,6 +27,8 @@ class Admin_Actions
             }
             
             $this->pdo->commit();
+            $action = "Approved a file with file ID: $file_id";
+                $this->auditLog->userLog($action);
             return true;
         } catch (Exception $e) {
             $this->pdo->rollBack();
@@ -43,6 +50,8 @@ class Admin_Actions
             }
             
             $this->pdo->commit();
+            $action = "Returned a file with file ID: $file_id";
+            $this->auditLog->userLog($action);
             return true;
         } catch (Exception $e) {
             $this->pdo->rollBack();
@@ -64,6 +73,8 @@ class Admin_Actions
             }
             
             $this->pdo->commit();
+            $action = "Reverted a file to pending with file ID: $file_id";
+            $this->auditLog->userLog($action);
             return true;
         } catch (Exception $e) {
             $this->pdo->rollBack();
