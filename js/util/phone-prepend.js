@@ -1,7 +1,9 @@
 function addPhonePrepend(id = 'mobileNum') {
   let phoneInput = $('#' + id);
   // Set default value to +63 on page load = '+63';
-  phoneInput.val('+63');
+  if (!phoneInput.val().includes('+63')) {
+    phoneInput.val('+63');
+  }
   // Ensure the input always starts with +63
   phoneInput.on('input', phoneInputListener);
   // Optional: Prevent cursor from jumping to the start of the input

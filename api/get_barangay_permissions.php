@@ -3,6 +3,7 @@
 declare(strict_types=1);
 $useAsImport; // for get_permissions.php
 $permsOnly = false;
+$disableLogging; // set to true to disable for this file
 require 'logging.php';
 require_once '../db/db.php';
 require 'get_all_perm_cols.php';
@@ -27,8 +28,8 @@ try {
   $stmt->execute([':id' => $roleID]);
   $allowBarangay = $stmt->fetch(PDO::FETCH_ASSOC)['allow_bar'];
 
-  writeLog('allow barangay is: ');
-  writeLog($allowBarangay);
+  // writeLog('allow barangay is: ');
+  // writeLog($allowBarangay);
 
   // exit if the role doesn't allow barangay assignments
   if ($allowBarangay != 1) exit;
@@ -38,15 +39,15 @@ try {
   $stmt = $pdo->prepare($sql);
   $stmt->execute();
   $barangays = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  writeLog('Barangays was:');
-  writeLog($barangays);
+  // writeLog('Barangays was:');
+  // writeLog($barangays);
 
   // get all permissions that start with "assessment"
   $allPermissions = getPermTableNames($pdo, 'assessment');
   writeLog('All permissions was:');
   writeLog($allPermissions);
 
-  // Fetch all indicators instead from the current active version 
+  // Fetch all indicators from the current active version 
   $sql = "SELECT i.keyctr as id, i.indicator_code as code, i.relevance_def as description
   from maintenance_area_indicators i 
   inner join maintenance_criteria_setup cs
@@ -67,6 +68,8 @@ try {
   $stmt->execute();
   $takenAssessment = [];
   foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+    writeLog('original row');
+    writeLog($row);
     // remove int values (like p.id)
     $filteredRow = array_filter($row, fn($value) => is_string($value));
     // writeLog('Filtered row');
@@ -94,11 +97,11 @@ try {
   foreach ($barangays as $barangay) {
     foreach ($activeIndicators as $indicator) {
       // Get available assessment permissions (exclude taken ones)
-      // writeLog('Taken assessment barangay');
-      // writeLog($takenAssessment[$barangay['brgyid']]);
+      writeLog('Taken assessment barangay');
+      writeLog($takenAssessment);
       $takenPermissions = array_diff($allPermissions, $takenAssessment[$barangay['brgyid']] ?? []);
-      // writeLog('Taken permissions after: ');
-      // writeLog($takenPermissions);
+      writeLog('Taken permissions after: ');
+      writeLog($takenPermissions);
 
       // TODO: add a ternary to check if it is taken or not.
       // CREATE MODE: if taken, mark with check and disable
@@ -119,13 +122,13 @@ try {
     }
   }
 
-  // writeLog('Final result was:');
-  // writeLog($response);
+  writeLog('Final result was:');
+  writeLog($response);
   // Return JSON response
   echo json_encode($response, JSON_PRETTY_PRINT);
 } catch (\Throwable $th) {
   http_response_code(500);
   $message = $th->getMessage();
   writeLog($th);
-  echo json_encode($message);
+  echo json_encode($message, JSON_PRETTY_PRINT);
 }

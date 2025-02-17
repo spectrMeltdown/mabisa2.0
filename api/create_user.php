@@ -130,7 +130,7 @@ try {
   http_response_code(500);
   $message = $th->getMessage();
   writeLog($th);
-  echo json_encode($message);
+  echo json_encode($message, JSON_PRETTY_PRINT);
 }
 
 // expects a column names $permissions

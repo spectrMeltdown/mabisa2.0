@@ -32,10 +32,10 @@ try {
     return $permission == 1;
   });
 
-  echo json_encode($userRoles);
+  echo json_encode($userRoles, JSON_PRETTY_PRINT);
 } catch (\Throwable $th) {
   http_response_code(500);
   $message = $th->getMessage();
   writeLog($message);
-  echo json_encode($message);
+  echo json_encode($message, JSON_PRETTY_PRINT);
 }

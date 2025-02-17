@@ -55,8 +55,8 @@ try {
     'samesite' => 'Strict', // Prevent CSRF
   ]);
 
-  echo json_encode($response);
+  echo json_encode($response, JSON_PRETTY_PRINT);
 } catch (Exception $e) {
   // http_response_code(500); // Set HTTP 500 response code
-  echo json_encode(['error' => $e->getMessage()]);
+  echo json_encode(['error' => $e->getMessage()], JSON_PRETTY_PRINT);
 }

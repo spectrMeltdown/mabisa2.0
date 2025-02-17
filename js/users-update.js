@@ -138,7 +138,7 @@ $('#roleSelect').on('change', async e => {
           id: currentUserID,
         },
         success: res => {
-          // console.log('bar permissions are : ' + res);
+          console.log('bar permissions are : ' + res);
           if (!res) {
             rej();
             return;
@@ -174,31 +174,37 @@ $('#roleSelect').on('change', async e => {
               {
                 data: 'indicators',
                 title: 'Indicators',
-                render: function(data) {
-                  // console.log('Type is: ' + type);
+                render: function(data, type, row) {
+                  console.log(data);
                   if (Array.isArray(data)) {
+                    console.log('ARRAY!');
                     return data
-                      .map(ind => {
-                        // console.log(nl2br(ind['description']));
-                        return `<strong>Code: ${
-                          ind['code']
-                        }</strong>:<br> ${nl2br(ind['description'])}`;
+                      .map((ind, index) => {
+                        const uniqueID = `${row['barangay']['id']}--${row['indicators']['id']}--${ind}`;
+                        generateCollapsibleText(
+                          ind.code,
+                          ind.description,
+                          `row-${uniqueID}`,
+                        );
                       })
                       .join('<br>');
-                  } else if (typeof data == 'object') {
-                    return `<strong>Code: ${data.code}</strong><br>${nl2br(
+                  } else if (typeof data === 'object') {
+                    console.log('OBJECT!');
+                    const uniqueID = `${row['barangay']['id']}--${row['indicators']['id']}`;
+                    return generateCollapsibleText(
+                      data.code,
                       data.description,
-                    )}`;
+                      `row-${uniqueID}`,
+                    );
                   }
-                  // console.log('Not array in render');
-                  // console.log(typeof data);
-                  return data; // Default display if not an array
+                  return data;
                 },
               },
               {
                 data: 'available_perms',
                 title: 'Permissions',
                 render: function(data, type, row) {
+                  // console.log('data: ' + data);
                   if (Array.isArray(data)) {
                     return data
                       .map(val => {
@@ -648,4 +654,40 @@ if (editMode) {
       console.error(err.responseText);
     },
   });
+}
+
+function toggleText(id) {
+  const shortText = document.getElementById(`short-text-${id}`);
+  const fullText = document.getElementById(`full-text-${id}`);
+  const toggleLink = document.getElementById(`toggle-link-${id}`);
+
+  if (fullText.style.display === 'none') {
+    shortText.style.display = 'none';
+    fullText.style.display = 'inline';
+    toggleLink.textContent = 'See Less';
+  } else {
+    shortText.style.display = 'inline';
+    fullText.style.display = 'none';
+    toggleLink.textContent = 'See More';
+  }
+}
+
+function generateCollapsibleText(code, description, id) {
+  const shortText = description.substring(0, 300); // Show only first 100 chars
+  const isLong = description.length > 300;
+
+  return `
+  <div>
+    <strong>Code: ${code}</strong><br>
+    <span id="short-text-${id}">${shortText}${isLong ? '...' : ''}</span>
+    <span id="full-text-${id}" style="display: none;">${nl2br(
+    description,
+  )}</span>
+    ${
+      isLong
+        ? `<a href="#" id="toggle-link-${id}" onclick="toggleText('${id}'); return false;">See More</a>`
+        : ''
+    }
+  </div>
+`;
 }

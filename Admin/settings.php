@@ -52,7 +52,7 @@ require_once '../db/db.php';
             </div>
           </div>
         </div> -->
-          <div class="container mt-5">
+          <div class="container my-5">
             <div class="card">
               <div class="card-header">
                 <h3 class="m-0 font-weight-bold text-primary">Settings</h3>

@@ -21,4 +21,4 @@ function getAllUsers(): array
   return $users;
 }
 
-echo json_encode(getAllUsers());
+echo json_encode(getAllUsers(), JSON_PRETTY_PRINT);

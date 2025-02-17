@@ -69,5 +69,5 @@ try {
 } catch (\Throwable $th) {
   http_response_code(500);
   writeLog($th);
-  echo json_encode($th->getMessage());
+  echo json_encode($th->getMessage(), JSON_PRETTY_PRINT);
 }

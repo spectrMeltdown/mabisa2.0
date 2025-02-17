@@ -104,13 +104,13 @@ if (!userHasPerms(['users_create', 'users_update'], 'gen')) {
                 <div class="row">
                   <div class="mb-3 form-group col-lg-6">
                     <label for="fullName" class="form-label">Full Name</label>
-                    <input maxlength="100" type="text" class="form-control" name="fullName" id="fullName" required autocomplete="name" value="testing" />
+                    <input maxlength="100" type="text" class="form-control" name="fullName" id="fullName" required autocomplete="name" />
                     <div class="invalid-feedback">
                     </div>
                   </div>
                   <div class="mb-3 form-group col-lg-6">
                     <label for="username" class="form-label">Username</label>
-                    <input maxlength="100" type="text" class="form-control" name="username" id="username" required autocomplete="username" value="testing" />
+                    <input maxlength="100" type="text" class="form-control" name="username" id="username" required autocomplete="username" />
                     <div class="invalid-feedback">
                     </div>
                   </div>
@@ -119,13 +119,13 @@ if (!userHasPerms(['users_create', 'users_update'], 'gen')) {
                 <div class="row">
                   <div class="mb-3 form-group col-lg-6">
                     <label for="email" class="form-label">Email</label>
-                    <input maxlength="100" type="email" class="form-control" name="email" id="email" required autocomplete="email" value="testing@testing.com" />
+                    <input maxlength="100" type="email" class="form-control" name="email" id="email" required autocomplete="email" />
                     <div class="invalid-feedback">
                     </div>
                   </div>
                   <div class="mb-3 form-group col-lg-6">
                     <label for="mobileNum" class="form-label">Mobile Number</label>
-                    <input title="Please enter a valid phone number." maxLength="13" type="tel" class="form-control" name="mobileNum" id="mobileNum" pattern="^\+?[0-9]*$" inputmode="numeric" required autocomplete="tel" value="+639816203801" />
+                    <input title="Please enter a valid phone number." maxLength="13" type="tel" class="form-control" name="mobileNum" id="mobileNum" pattern="^\+?[0-9]*$" inputmode="numeric" required autocomplete="tel" value="+639376206802" />
                     <div class="invalid-feedback">
                     </div>
                   </div>
@@ -135,7 +135,7 @@ if (!userHasPerms(['users_create', 'users_update'], 'gen')) {
                   <div class="mb-3 col-lg-6 form-group" id="passField">
                     <label for="pass" class="form-label" id="passwordLabel">Password</label>
                     <div class="d-flex">
-                      <input maxlength="100" type="password" class="form-control" name="pass" id="pass" required autocomplete="new-password" value="testingthis" />
+                      <input maxlength="100" type="password" class="form-control" name="pass" id="pass" required autocomplete="new-password" value="iloveyou" />
                       <div class="p-1"></div>
                       <button type="button" id="passEye" class="btn btn-outline-secondary d-inline-block">
                         <i class="fa fa-eye"></i> <!-- Add Font Awesome for the icon -->
@@ -148,7 +148,7 @@ if (!userHasPerms(['users_create', 'users_update'], 'gen')) {
                   <div class="mb-3 col-lg-6 form-group" id="confirmPassField">
                     <label for="confirmPass" class="form-label">Confirm password</label>
                     <div class="d-flex">
-                      <input maxlength="100" type="password" class="form-control" name="confirmPass" id="confirmPass" required autocomplete="new-password" value="testingthis" />
+                      <input maxlength="100" type="password" class="form-control" name="confirmPass" id="confirmPass" required autocomplete="new-password" value="iloveyou" />
                       <div class="p-1"></div>
                       <button type="button" id="confirmPassEye" class="btn btn-outline-secondary">
                         <i class="fa fa-eye"></i> <!-- Add Font Awesome for the icon -->
@@ -178,8 +178,8 @@ if (!userHasPerms(['users_create', 'users_update'], 'gen')) {
                 }
                 if (!empty($roles)):
                 ?>
-                  <div class="mb-3 form-group">
-                    <label for="roleSelect" class="form-label">Role</label>
+                  <div class="my-3 form-group d-flex">
+                    <label for="roleSelect" class="form-label mt-2 mr-3">Role</label>
                     <select class="custom-select" name="role" id="roleSelect" required>
                       <option value="" disabled selected hidden>Select one</option>
                       <?php

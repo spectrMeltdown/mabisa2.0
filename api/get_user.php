@@ -52,5 +52,5 @@ try {
 } catch (Exception $e) {
   writeLog($e);
   http_response_code(500); // Set HTTP 500 response code
-  echo json_encode($e->getMessage());
+  echo json_encode($e->getMessage(), JSON_PRETTY_PRINT);
 }

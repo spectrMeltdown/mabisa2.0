@@ -79,7 +79,7 @@ try {
   // blank means everything went well
 } catch (\Throwable $th) {
   writeLog($th);
-  echo json_encode($th->getMessage());
+  echo json_encode($th->getMessage(), JSON_PRETTY_PRINT);
 }
 
 

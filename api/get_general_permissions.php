@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 $useAsImport; // for get_permissions.php
+$disableLogging = true;
 require 'logging.php';
 require_once '../db/db.php';
 require_once 'get_permissions.php';
@@ -32,7 +33,7 @@ try {
 
   // super admins are auto granted all permissions
   if (strtolower($role['name']) == 'super admin') {
-    echo json_encode('Super Admin');
+    echo json_encode('Super Admin', JSON_PRETTY_PRINT);
     exit;
   }
 
@@ -61,10 +62,10 @@ try {
 
   writeLog('Final result: ');
   writeLog($genPerms);
-  echo json_encode($genPerms);
+  echo json_encode($genPerms, JSON_PRETTY_PRINT);
 } catch (\Throwable $th) {
   http_response_code(500);
   $message = $th->getMessage();
   writeLog($message);
-  echo json_encode($message);
+  echo json_encode($message, JSON_PRETTY_PRINT);
 }

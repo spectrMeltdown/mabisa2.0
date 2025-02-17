@@ -44,10 +44,10 @@ try {
 
   // writeLog('Result was: ');
   // writeLog($result);
-  echo json_encode($result);
+  echo json_encode($result, JSON_PRETTY_PRINT);
 } catch (\Throwable $th) {
   http_response_code(500);
   $message = $th->getMessage();
   writeLog($message);
-  echo json_encode($message);
+  echo json_encode($message, JSON_PRETTY_PRINT);
 }

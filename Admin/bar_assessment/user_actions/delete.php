@@ -10,11 +10,11 @@ require_once '../../../api/audit_log.php';
 header('Content-Type: application/json');
 
 if (isset($_COOKIE['id'])) {
-    $userId = $_COOKIE['id']; 
+    $userId = $_COOKIE['id'];
 
     $sql = "SELECT * FROM users WHERE id = :id";
     $query = $pdo->prepare($sql);
-    $query->execute(['id' => $userId]); 
+    $query->execute(['id' => $userId]);
     $user = $query->fetch(PDO::FETCH_ASSOC);
 } else {
     echo json_encode(['success' => false, 'message' => 'User ID not found in cookies.']);
