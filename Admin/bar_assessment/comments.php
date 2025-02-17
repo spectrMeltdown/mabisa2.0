@@ -1,12 +1,16 @@
 <?php
+require_once __DIR__ . '/../../api/audit_log.php';
+
 
 class Comments
 {
     private $pdo;
+    private $auditLog;
 
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
+        $this->auditLog = new Audit_log($pdo); 
     }
 
     public function add_comment(
@@ -47,6 +51,9 @@ class Comments
 
             if ($updateStmt->execute()) {
                 $this->pdo->commit();
+
+                $action = "Added a comment to file ID: $file_id";
+                $this->auditLog->userLog($action);
 
                 echo "<script>
                     alert('Comment Added');
