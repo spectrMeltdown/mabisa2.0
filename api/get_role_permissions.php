@@ -19,10 +19,11 @@ try {
   $permsOnly = empty($_POST['permsOnly']) ? true : $_POST['permsOnly'];
 
   // get bar permissions
-  $query = $pdo->prepare("select * from permissions inner join roles on roles.bar_perms = permissions.id where roles.id = :id");
+  $query = $pdo->prepare("select p.* from permissions p inner join roles on roles.bar_perms = p.id where roles.id = :id");
   $query->execute([
     'id' => $id
   ]);
+
   // will return false if result is empty
   $barPerms = $query->fetch(PDO::FETCH_ASSOC);
   $barPerms = $barPerms ? $barPerms : []; // replace with empty array if false

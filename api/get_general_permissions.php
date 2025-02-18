@@ -5,7 +5,7 @@ $useAsImport; // for get_permissions.php
 $disableLogging = true;
 require 'logging.php';
 require_once '../db/db.php';
-require_once 'get_permissions.php';
+require_once 'get_role_permissions.php';
 
 try {
   if ($_SERVER['REQUEST_METHOD'] != 'POST') throw new Exception('Invalid request.');

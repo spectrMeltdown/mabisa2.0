@@ -138,7 +138,7 @@ $('#roleSelect').on('change', async e => {
           id: currentUserID,
         },
         success: res => {
-          console.log('bar permissions are : ' + res);
+          // console.log('bar permissions are : ' + res);
           if (!res) {
             rej();
             return;
@@ -175,9 +175,9 @@ $('#roleSelect').on('change', async e => {
                 data: 'indicators',
                 title: 'Indicators',
                 render: function(data, type, row) {
-                  console.log(data);
+                  // console.log(data);
                   if (Array.isArray(data)) {
-                    console.log('ARRAY!');
+                    // console.log('ARRAY!');
                     return data
                       .map((ind, index) => {
                         const uniqueID = `${row['barangay']['id']}--${row['indicators']['id']}--${ind}`;
@@ -189,7 +189,7 @@ $('#roleSelect').on('change', async e => {
                       })
                       .join('<br>');
                   } else if (typeof data === 'object') {
-                    console.log('OBJECT!');
+                    // console.log('OBJECT!');
                     const uniqueID = `${row['barangay']['id']}--${row['indicators']['id']}`;
                     return generateCollapsibleText(
                       data.code,
@@ -204,11 +204,33 @@ $('#roleSelect').on('change', async e => {
                 data: 'available_perms',
                 title: 'Permissions',
                 render: function(data, type, row) {
-                  // console.log('data: ' + data);
                   if (Array.isArray(data)) {
+                    // console.log('data was array!');
                     return data
                       .map(val => {
                         const uniqueID = `${row['barangay']['id']}--${row['indicators']['id']}--${val}`;
+                        let userTaken = false;
+                        let anotherTaken = false;
+                        console.log('the perms:');
+                        console.log(row['taken_perms']);
+                        console.log(row['current_perms']);
+                        if (
+                          Array.isArray(row['taken_perms']) &&
+                          row['taken_perms'].some((
+                            /** @type {string} */ perm,
+                          ) => perm.includes(val))
+                        ) {
+                          anotherTaken = true;
+                          console.log('another taken: ' + anotherTaken);
+                        } else if (
+                          Array.isArray(row['current_perms']) &&
+                          row['current_perms'].some((
+                            /** @type {string} */ perm,
+                          ) => perm.includes(val))
+                        ) {
+                          userTaken = true;
+                          console.log('user taken: ' + userTaken);
+                        }
                         // TODO: add a ternary to check if it is taken or not.
                         // CREATE MODE: if taken, mark with check and disable
                         // EDIT MODE: if taken and user id match, mark with check. If taken and not user match, then check and disable
@@ -216,7 +238,13 @@ $('#roleSelect').on('change', async e => {
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <div class="input-group-text">
-                      <input type="checkbox" name="${uniqueID}" id="${uniqueID}" value="true">
+                      <input type="checkbox" name="${uniqueID}" id="${uniqueID}" value="true" ${
+                          anotherTaken
+                            ? 'checked disabled'
+                            : userTaken
+                            ? 'checked'
+                            : ''
+                        }>
                     </div>
                   </div>
                   <div class="card card-body border-secondary">
@@ -629,6 +657,32 @@ $('#save-user-btn').on('click', async () => {
 
 // fill the values from the id all other javascript has loaded
 if (editMode) {
+  $.ajax({
+    url: '../api/get_user.php',
+    type: 'GET',
+    data: {
+      id: currentUserID,
+    },
+    success: data => {
+      console.log(data);
+      const userData = JSON.parse(data);
+
+      // fill the inputs
+      $('#username').val(userData.username);
+      $('#fullName').val(userData.full_name);
+      $('#email').val(userData.email);
+      $('#mobileNum').val('+63' + userData.mobile_num);
+
+      // trigger roles change. Checkboxes will be checked on this event listener.
+      $('#roleSelect')
+        .val(userData.role_id)
+        .trigger('change');
+    },
+    error: err => {
+      console.error(err.responseText);
+    },
+  });
+
   $.ajax({
     url: '../api/get_user.php',
     type: 'GET',

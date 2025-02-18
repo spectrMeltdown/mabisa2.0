@@ -13,7 +13,7 @@ try {
   /** @var int */
   $id = $_POST['id'];
 
-  $query = $pdo->prepare("select * user_roles where id = :id");
+  $query = $pdo->prepare("select * from user_roles where id = :id");
   $query->execute([
     'id' => $id
   ]);
