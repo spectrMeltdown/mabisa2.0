@@ -585,7 +585,7 @@ $('#save-user-btn').on('click', async () => {
 
   // loop details
   for (const [key, value] of detailsForm.entries()) {
-    console.log('Details forms: ' + key + value);
+    console.log('Details forms: ' + key + ' = ' + value);
     submitObj['details'][key] = value;
   }
 
@@ -598,14 +598,14 @@ $('#save-user-btn').on('click', async () => {
   // loop gen permissions (if needed)
   if ($('#genPermNoPerm').css('display') == 'none') {
     for (const [key, value] of genPermsForm.entries()) {
-      console.log('genPermsForm forms: ' + key + value);
+      console.log('genPermsForm forms: ' + key + ' + ' + value);
       submitObj['genPerms'][key] = value;
     }
   }
   // loop bar permissions (if needed)
   if ($('#barPermContainer').css('display') != 'none') {
     for (const [key, value] of barPermsForm.entries()) {
-      console.log('barPermsForm forms" ' + key + value);
+      console.log('barPermsForm forms: ' + key + ' + ' + value);
       submitObj['barPerms'][key] = value;
     }
   }
@@ -620,7 +620,7 @@ $('#save-user-btn').on('click', async () => {
         // check if null, empty, false, 0, infinity, etc
         if (!result) {
           $('#crud-user').modal('hide');
-          location.href = 'users.php';
+          // location.href = 'users.php';
           $('#main-toast-container').append(
             addToast('Success!', 'User created successfully.'),
           );
@@ -635,14 +635,12 @@ $('#save-user-btn').on('click', async () => {
     $.ajax({
       type: 'POST',
       url: '../api/edit_user.php',
-      data: detailsForm, // Use 'data' instead of 'body'
-      processData: false, // Prevent jQuery from processing the FormData
-      contentType: false, // Prevent jQuery from setting 1content type
+      data: submitObj,
       success: function(result) {
         // check if null, empty, false, 0, infinity, etc
         if (!result) {
           $('#crud-user').modal('hide');
-          location.href = 'users.php';
+          // location.href = 'users.php';
           $('#main-toast-container').append(
             addToast('Success!', 'User successfully edited.'),
           );

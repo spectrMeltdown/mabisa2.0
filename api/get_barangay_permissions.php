@@ -3,7 +3,7 @@
 declare(strict_types=1);
 $useAsImport; // for get_permissions.php
 $permsOnly = false;
-$disableLogging; // set to true to disable for this file
+$disableLogging = true; // set to true to disable for this file
 require 'logging.php';
 require_once '../db/db.php';
 require 'get_all_perm_cols.php';
