@@ -52,6 +52,10 @@ $('#roleSelect').on('change', async e => {
       .destroy();
   }
 
+  // also reset field states
+  resetFieldStates();
+  resetAlert();
+
   // wrap with try catch because promise throws exeception and kills the function
   try {
     // show/hide general permissions
@@ -218,7 +222,13 @@ $('#roleSelect').on('change', async e => {
                           Array.isArray(row['taken_perms']) &&
                           row['taken_perms'].some((
                             /** @type {string} */ perm,
-                          ) => perm.includes(val))
+                          ) => {
+                            console.log('current perm to check: ');
+                            console.log(val);
+                            console.log('current perm taken perm: ');
+                            console.log(perm);
+                            return perm.includes(val);
+                          })
                         ) {
                           anotherTaken = true;
                           console.log('another taken: ' + anotherTaken);
@@ -366,77 +376,36 @@ $('#save-user-btn').on('click', async () => {
 
   // console.log($("#username").val());
   // get input values
+  /** @type {string} */
   const username = $('#username')
     .val()
     ?.trim();
+  /** @type {string} */
   const fullName = $('#fullName')
     .val()
     ?.trim();
+  /** @type {string} */
   const email = $('#email')
     .val()
     ?.trim();
+  /** @type {string} */
   const mobileNum = $('#mobileNum')
     .val()
     ?.trim();
+  /** @type {string} */
   const password = $('#pass')
     .val()
     ?.trim();
+  /** @type {string} */
   const confirmPass = $('#confirmPass')
     .val()
     ?.trim();
+  /** @type {int} */
   const role = $('#roleSelect').val();
   // const roleName = $('#roleSelect option:selected').text();
   // console.log(roleName);
   // toggleLoading();
   // return;
-
-  function resetFieldStates() {
-    $('#username').removeClass('is-invalid');
-    $('#username')
-      .find('.invalid-feedback')
-      .first()
-      .text('');
-    $('#fullName').removeClass('is-invalid');
-    $('#fullName')
-      .find('.invalid-feedback')
-      .first()
-      .text('');
-    $('#email').removeClass('is-invalid');
-    $('#email')
-      .find('.invalid-feedback')
-      .first()
-      .text('');
-    $('#mobileNum').removeClass('is-invalid');
-    $('#mobileNum')
-      .find('.invalid-feedback')
-      .first()
-      .text('');
-    $('#confirmPass').removeClass('is-invalid');
-    $('#confirmPass')
-      .find('.invalid-feedback')
-      .first()
-      .text('');
-    $('#pass').removeClass('is-invalid');
-    $('#pass')
-      .find('.invalid-feedback')
-      .first()
-      .text('');
-    $('#roleSelect').removeClass('is-invalid');
-    $('#roleSelect')
-      .find('.invalid-feedback')
-      .first()
-      .text('');
-    $('#gen-perm-title').removeClass('is-invalid');
-    $('#gen-perm-title')
-      .find('.invalid-feedback')
-      .first()
-      .text('');
-    $('#bar-perm-title').removeClass('is-invalid');
-    $('#bar-perm-title')
-      .find('.invalid-feedback')
-      .first()
-      .text('');
-  }
 
   function addError(element, message, customFeedbackElement) {
     if (customFeedbackElement) {
@@ -493,7 +462,6 @@ $('#save-user-btn').on('click', async () => {
     ok = false;
   }
   if (
-    !editMode &&
     users.some(user => user.username === username && user.id != currentUserID)
   ) {
     addError($('#username'), 'Username already taken.');
@@ -511,33 +479,40 @@ $('#save-user-btn').on('click', async () => {
   }
 
   // EMAIL
-  if (!validEmail(email)) {
-    addError($('#email'), 'Invalid email.');
-    ok = false;
-  }
-  if (
-    !editMode &&
-    users.some(user => user.email === email && user.id != currentUserID)
-  ) {
-    addError($('#email'), 'Email already taken.');
+  if (email == '' || email == null) {
+    addError($('#email'), 'Email cannot be empty.');
     ok = false;
   }
   if (email.length > 100) {
     addError($('#email'), 'Email too long.');
     ok = false;
   }
-  if (email == '' || email == null) {
-    addError($('#email'), 'Email cannot be empty.');
+  if (users.some(user => user.email === email && user.id != currentUserID)) {
+    addError($('#email'), 'Email already taken.');
+    ok = false;
+  }
+  if (!validEmail(email)) {
+    addError($('#email'), 'Invalid email.');
     ok = false;
   }
 
   // MOBILE NUMBER
-  if (!validMobileNum(mobileNum)) {
-    addError($('#mobileNum'), 'Invalid mobile number.');
-    ok = false;
-  }
   if (mobileNum == '+63' || mobileNum == '' || mobileNum == null) {
     addError($('#mobileNum'), 'Mobile number cannot be empty.');
+    ok = false;
+  }
+  console.log(mobileNum.substring(3));
+  if (
+    users.some(
+      user =>
+        user.mobile_num === mobileNum.substring(3) && user.id != currentUserID,
+    )
+  ) {
+    addError($('#mobileNum'), 'Mobile number already taken.');
+    ok = false;
+  }
+  if (!validMobileNum(mobileNum)) {
+    addError($('#mobileNum'), 'Invalid mobile number.');
     ok = false;
   }
 
@@ -742,4 +717,52 @@ function generateCollapsibleText(code, description, id) {
     }
   </div>
 `;
+}
+
+function resetFieldStates() {
+  $('#username').removeClass('is-invalid');
+  $('#username')
+    .find('.invalid-feedback')
+    .first()
+    .text('');
+  $('#fullName').removeClass('is-invalid');
+  $('#fullName')
+    .find('.invalid-feedback')
+    .first()
+    .text('');
+  $('#email').removeClass('is-invalid');
+  $('#email')
+    .find('.invalid-feedback')
+    .first()
+    .text('');
+  $('#mobileNum').removeClass('is-invalid');
+  $('#mobileNum')
+    .find('.invalid-feedback')
+    .first()
+    .text('');
+  $('#confirmPass').removeClass('is-invalid');
+  $('#confirmPass')
+    .find('.invalid-feedback')
+    .first()
+    .text('');
+  $('#pass').removeClass('is-invalid');
+  $('#pass')
+    .find('.invalid-feedback')
+    .first()
+    .text('');
+  $('#roleSelect').removeClass('is-invalid');
+  $('#roleSelect')
+    .find('.invalid-feedback')
+    .first()
+    .text('');
+  $('#gen-perm-title').removeClass('is-invalid');
+  $('#gen-perm-title')
+    .find('.invalid-feedback')
+    .first()
+    .text('');
+  $('#bar-perm-title').removeClass('is-invalid');
+  $('#bar-perm-title')
+    .find('.invalid-feedback')
+    .first()
+    .text('');
 }

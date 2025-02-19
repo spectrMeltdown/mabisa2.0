@@ -8,6 +8,7 @@ require_once 'logging.php';
 
 try {
   if ($_SERVER['REQUEST_METHOD'] != 'POST') throw new Exception('Invalid request.');
+  writeLog('IN CREATE USER');
   // writeLog($_POST);
   // exit;
   if (empty($_POST['details'])) throw new Exception('Details missing.');
@@ -49,7 +50,7 @@ try {
     ':username' => $username,
     ':full_name' => $fullName,
     ':email' => $email,
-    ':mobile_num' => substr($mobileNum, 2),
+    ':mobile_num' => substr($mobileNum, 3),
     ':password' => password_hash($pass, PASSWORD_BCRYPT),
     ':role_id' => (int)$role_id,
   ]);
@@ -101,12 +102,12 @@ try {
     writeLog('inserting gen perms');
     // insert permissions
     $newPermissionID = insertPermissions($pdo, $genPerms);
-    $sql = 'insert into user_roles (user_id, permissions_id, user_roles_barangay_id) values (:user_id, :permissions_id, :user_roles_barangay_id)';
+    $sql = 'insert into user_roles (user_id, permissions_id) values (:user_id, :permissions_id)';
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
       ':user_id' => $newUserID,
       ':permissions_id' => $newPermissionID,
-      ':user_roles_barangay_id' => $newUserRolesBarangayPerms, // default is null, if not granted
+      // ':user_roles_barangay_id' => $newUserRolesBarangayPerms, // default is null, if not granted
     ]);
   } else if ($isSuper) {
     // // get all the possible permissions
@@ -160,6 +161,11 @@ function insertPermissions($pdo, $permissions, $appendAssessment = false): int
     array_map(fn($key) => ':' . $key, $permissions), // append colon to each item
     array_fill(0, count($permissions), true) // set true for each item
   );
+
+  writeLog('statement: ');
+  writeLog($sql);
+  writeLog('permissions: ');
+  writeLog($permissions);
 
   $stmt = $pdo->prepare($sql);
   $stmt->execute($permissions);

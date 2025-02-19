@@ -3,7 +3,7 @@
 declare(strict_types=1);
 $useAsImport; // for get_permissions.php
 $permsOnly = false;
-$disableLogging = true; // set to true to disable for this file
+// $disableLogging = true; // set to true to disable for this file
 require 'logging.php';
 require_once '../db/db.php';
 require 'get_all_perm_cols.php';
@@ -47,46 +47,54 @@ try {
   writeLog($allPermissions);
 
   // Fetch all indicators from the current active version 
-  $sql = "SELECT i.keyctr as id, i.indicator_code as code, i.relevance_def as description
-  from maintenance_area_indicators i 
-  inner join maintenance_criteria_setup cs
-  on cs.indicator_keyctr = i.keyctr 
-  inner join maintenance_criteria_version v
-  on v.keyctr = cs.version_keyctr
-  where v.active_ = 1";
+  $sql = "SELECT i.keyctr AS id, i.indicator_code AS code, i.relevance_def AS description
+  FROM maintenance_area_indicators i 
+  JOIN maintenance_criteria_setup cs ON cs.indicator_keyctr = i.keyctr 
+  JOIN maintenance_criteria_version v ON v.keyctr = cs.version_keyctr
+  WHERE v.active_ = 1";
   $stmt = $pdo->prepare($sql);
   $stmt->execute();
   $activeIndicators = $stmt->fetchAll(PDO::FETCH_ASSOC);
   // writeLog('active indicators was: ');
   // writeLog($activeIndicators);
 
-  // Fetch taken permissions by other users in user_roles_barangay (assessment)
-  // this excludes permissions taken by the given userID
-  // $sql = "SELECT  b.brgyid, b.brgyname, p.* from permissions p inner join user_roles_barangay rb on rb.permission_id = p.id inner join refbarangay b on b.brgyid = rb.barangay_id";
+  /* 
+  Fetch taken permissions by other users in user_roles_barangay (assessment)
+  include only the following:
+  - permissions that match the same role
+  - permissions that match the barangay & indicator
+  */
   $takenAssessment = [];
   $sql = "SELECT 
-    b.brgyid, 
+    urb.barangay_id as brgyid,
+    urb.indicator_id as indid,
     p.*
-FROM refbarangay b
-JOIN user_roles_barangay urb ON b.brgyid = urb.barangay_id
+FROM user_roles_barangay urb
+JOIN users u ON urb.user_id 
+JOIN roles r ON r.id = u.role_id 
 JOIN permissions p ON urb.permission_id = p.id
-WHERE urb.user_id != :uid
+WHERE urb.user_id != :uid AND r.id = :roleID
 ";
   $stmt = $pdo->prepare($sql);
-  $stmt->execute([':uid' => $userID]);
+  $stmt->execute([':uid' => $userID, ':roleID' => $roleID]);
   foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
     writeLog('original row');
     writeLog($row);
     $bid = $row['brgyid'];
+    $iid = $row['indid'];
     // remove int values (like p.id)
-    unset($row['brgyid'], $row['id'], $row['last_modified']);
+    unset($row['brgyid'], $row['indid'], $row['id'], $row['last_modified']);
     // writeLog('Filtered row');
     // writeLog($filteredRow);
+
     // get assessment perms
-    $assessmentData = array_keys(array_filter($row, fn($v, $k) => str_contains($k, 'assessment') && (int)$v == 1, ARRAY_FILTER_USE_BOTH));
+    $assessmentData = array_keys(array_filter($row, fn($v, $k) => str_contains($k, 'assessment') && $v == 1, ARRAY_FILTER_USE_BOTH));
     // writeLog('assessment data row');
     // writeLog($assessmentData);
-    $takenAssessment[$bid] = $assessmentData;
+
+    // filter out 
+    // if (!isset($takenAssessment[$bid][$iid])) $takenAssessment[$bid][$iid] = [];
+    $takenAssessment[$bid][$iid] = $assessmentData;
   }
   writeLog('taken assessment permissions was:');
   writeLog($takenAssessment);
@@ -95,7 +103,7 @@ WHERE urb.user_id != :uid
 
   // get the permission names only 
   $rolePermissions = array_keys($barPerms);
-  writeLog('orig bar perms:');
+  writeLog('orig bar perms of user:');
   writeLog($barPerms);
 
   // remove allow_bar and get only the assessment permissions
@@ -107,28 +115,32 @@ WHERE urb.user_id != :uid
   $userAssessmentPerms = [];
   if (!empty($userID)) {
     $sql = "SELECT 
-    b.brgyid, 
+    urb.barangay_id as brgyid,
+    urb.indicator_id as indid,
     p.*
-FROM refbarangay b 
-JOIN user_roles_barangay urb ON b.brgyid = urb.barangay_id 
+FROM user_roles_barangay urb 
+JOIN users u ON urb.user_id 
+JOIN roles r ON r.id = u.role_id 
 JOIN permissions p ON urb.permission_id = p.id 
-WHERE urb.user_id = :uid 
+WHERE urb.user_id = :uid AND r.id = :roleID
 ";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':uid' => $userID]);
+    $stmt->execute([':uid' => $userID, ':roleID' => $roleID]);
     foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
       // writeLog('original row');
       // writeLog($row);
       $bid = $row['brgyid'];
+      $iid = $row['indid'];
       // remove int values (like p.id)
-      unset($row['brgyid'], $row['id'], $row['last_modified']);
+      unset($row['brgyid'], $row['indid'], $row['id'], $row['last_modified']);
       // writeLog('Filtered row');
       // writeLog($filteredRow);
       // get assessment perms
-      $assessmentData = array_keys(array_filter($row, fn($v, $k) => str_contains($k, 'assessment') && (int)$v == 1, ARRAY_FILTER_USE_BOTH));
+      $assessmentData = array_keys(array_filter($row, fn($v, $k) => str_contains($k, 'assessment') && $v == 1, ARRAY_FILTER_USE_BOTH));
       // writeLog('assessment data row');
       // writeLog($assessmentData);
-      $userAssessmentPerms[$bid] = $assessmentData;
+      // if (!isset($userAssessmentPerms[$bid][$iid])) $userAssessmentPerms[$bid][$iid] = [];
+      $userAssessmentPerms[$bid][$iid] = $assessmentData;
     }
   }
   writeLog('user assessment permissions was:');
@@ -140,10 +152,19 @@ WHERE urb.user_id = :uid
     foreach ($activeIndicators as $indicator) {
       // Get available assessment permissions (exclude taken ones)
       // $takenPermissions = array_filter($allPermissions, $takenAssessment[$bid]);
-      $takenPermissions = $takenAssessment[$barangay['brgyid']] ?? [];
-      $curUserPerms = $userAssessmentPerms[$barangay['brgyid']] ?? [];
+      $takenPermissions = $takenAssessment[$barangay['brgyid']][$indicator['id']] ?? [];
+      $curUserPerms = $userAssessmentPerms[$barangay['brgyid']][$indicator['id']] ?? [];
       // writeLog('Taken permissions after: ');
       // writeLog($takenPermissions);
+
+      writeLog('ROW RESULT: ');
+      writeLog($barangay);
+      writeLog('taken perms: ');
+      writeLog($takenPermissions);
+      writeLog('current user perms: ');
+      writeLog($curUserPerms);
+      writeLog('available role perms: ');
+      writeLog($rolePermissions);
 
       // TODO: add a ternary to check if it is taken or not.
       // CREATE MODE: if taken, mark with check and disable
@@ -168,8 +189,8 @@ WHERE urb.user_id = :uid
     }
   }
 
-  writeLog('Final result was:');
-  writeLog($response);
+  // writeLog('Final result was:');
+  // writeLog($response);
   // Return JSON response
   echo json_encode($response, JSON_PRETTY_PRINT);
 } catch (\Throwable $th) {
