@@ -4,9 +4,9 @@ declare(strict_types=1);
 $useAsImport; // for get_permissions.php
 $permsOnly = false;
 // $disableLogging = true; // set to true to disable for this file
-require 'logging.php';
+require_once 'logging.php';
 require_once '../db/db.php';
-require 'get_all_perm_cols.php';
+require_once 'get_all_perm_cols.php';
 require_once 'get_role_permissions.php'; // gets the role permissions
 
 try {

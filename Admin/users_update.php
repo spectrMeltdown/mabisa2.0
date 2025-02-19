@@ -1,7 +1,7 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
-require 'common/auth.php';
+require_once 'common/auth.php';
 if (!userHasPerms(['users_create', 'users_update'], 'gen')) {
   header('Location:no_permissions.php');
   exit;
@@ -12,7 +12,7 @@ if (!userHasPerms(['users_create', 'users_update'], 'gen')) {
 <html lang="en">
 
 <head>
-  <?php require 'common/head.php';
+  <?php require_once 'common/head.php';
   ?>
   <script src="../js/util/confirmation.js" defer></script>
   <script src="../js/util/input-validation.js" defer></script>
@@ -44,7 +44,7 @@ if (!userHasPerms(['users_create', 'users_update'], 'gen')) {
 
     <!-- Sidebar -->
     <?php
-    require 'common/sidebar.php' ?>
+    require_once 'common/sidebar.php' ?>
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
@@ -54,7 +54,7 @@ if (!userHasPerms(['users_create', 'users_update'], 'gen')) {
       <div id="content">
 
         <!-- Topbar -->
-        <?php require 'common/nav.php' ?>
+        <?php require_once 'common/nav.php' ?>
         <!-- End of Topbar -->
 
         <!-- Begin Page Content -->

@@ -1,5 +1,5 @@
 <?php
-require 'admin_actions.php';
+require_once 'admin_actions.php';
 require_once '../../../db/db.php';
 $admin = new Admin_Actions($pdo);
 try {
@@ -23,7 +23,6 @@ try {
                 alert('" . $action . "d successfully');
                 window.location.href = document.referrer;
                 </script>";
-
             } else {
                 echo "Failed to perform action '$action'.";
             }

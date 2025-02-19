@@ -3,7 +3,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require 'user_actions.php';
+require_once 'user_actions.php';
 require_once '../../../db/db.php';
 require_once '../../../api/audit_log.php';
 

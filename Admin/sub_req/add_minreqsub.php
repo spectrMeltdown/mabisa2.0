@@ -1,5 +1,5 @@
 <?php
-require '../../db/db.php';
+require_once '../../db/db.php';
 include '../../api/audit_log.php';
 $log = new Audit_log($pdo);
 session_start();

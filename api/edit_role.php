@@ -7,8 +7,8 @@ declare(strict_types=1);
 // header('Content-Type: application/json');
 require_once 'logging.php';
 require_once '../db/db.php';
-require 'get_all_perm_cols.php';
-require 'update_perms.php';
+require_once 'get_all_perm_cols.php';
+require_once 'update_perms.php';
 require_once '../api/audit_log.php';
 $log = new Audit_log($pdo);
 
@@ -79,7 +79,7 @@ try {
   // writeLog('Role update');
   // writeLog($sql);
   // blank means everything went well
-  $log->userLog('Edited a Role with ID: '.$id.' to Name:'.$roleName);//logging
+  $log->userLog('Edited a Role with ID: ' . $id . ' to Name:' . $roleName); //logging
 } catch (\Throwable $th) {
   writeLog($th);
   echo json_encode($th->getMessage(), JSON_PRETTY_PRINT);

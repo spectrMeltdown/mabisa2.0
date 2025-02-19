@@ -2,7 +2,7 @@
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
 
-require 'common/auth.php';
+require_once 'common/auth.php';
 if (!userHasPerms('reports_read', 'gen')) {
   header('Location:no_permissions.php');
   exit;
@@ -13,7 +13,7 @@ if (!userHasPerms('reports_read', 'gen')) {
 <html lang="en">
 
 <head>
-  <?php require 'common/head.php';
+  <?php require_once 'common/head.php';
   ?>
 </head>
 
@@ -23,7 +23,7 @@ if (!userHasPerms('reports_read', 'gen')) {
     <!-- Sidebar -->
     <?php
     $isReports = true;
-    require 'common/sidebar.php' ?>
+    require_once 'common/sidebar.php' ?>
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
@@ -32,7 +32,7 @@ if (!userHasPerms('reports_read', 'gen')) {
       <div id="content">
 
         <!-- Topbar -->
-        <?php require 'common/nav.php' ?>
+        <?php require_once 'common/nav.php' ?>
         <!-- End of Topbar -->
 
         <!-- Begin Page Content -->

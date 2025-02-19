@@ -3,7 +3,7 @@ error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
 
 $isInFolder = true;
-require '../common/auth.php';
+require_once '../common/auth.php';
 if (!userHasPerms('criteria_read', 'gen')) {
   // header does not allow relative paths, so this is my temporary solution
   header('Location:' .  substr(__DIR__, 0, strrpos(__DIR__, '/')) . 'no_permissions.php');
@@ -26,7 +26,7 @@ unset($_SESSION['success']);
 
 <head>
   <?php
-  require '../common/head.php' ?>
+  require_once '../common/head.php' ?>
   <script src="../../vendor/jquery/jquery.min.js"></script>
   <script src="../../js/maintenance-criteria.js"></script>
 </head>
@@ -38,7 +38,7 @@ unset($_SESSION['success']);
     <!-- Sidebar -->
     <?php
     $isCriteriaPhp = true;
-    require '../common/sidebar.php' ?>
+    require_once '../common/sidebar.php' ?>
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
@@ -47,7 +47,7 @@ unset($_SESSION['success']);
       <div id="content">
 
         <!-- Topbar -->
-        <?php require '../common/nav.php' ?>
+        <?php require_once '../common/nav.php' ?>
         <!-- End of Topbar -->
         <!--Header-->
         <div class="container-fluid">
@@ -148,7 +148,7 @@ unset($_SESSION['success']);
       });
     });
   </script>
-  <?php require 'add.php' ?>
+  <?php require_once 'add.php' ?>
 </body>
 
 </html>

@@ -1,5 +1,5 @@
 <?php
-require 'common/auth.php';
+require_once 'common/auth.php';
 if (!userHasPerms('assessment', 'any')) {
     header('Location:no_permissions.php');
     exit;
@@ -11,7 +11,7 @@ if (!userHasPerms('assessment', 'any')) {
 
 <head>
     <?php
-    require 'common/head.php';
+    require_once 'common/head.php';
     require_once '../db/db.php';
     require_once 'bar_assessment/responses.php';
 

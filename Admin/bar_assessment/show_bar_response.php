@@ -1,6 +1,6 @@
 <?php
 $isInFolder = true;
-require '../common/auth.php';
+require_once '../common/auth.php';
 $barangay_id = isset($_GET['barangay_id']) ? $_GET['barangay_id'] : null;
 $barangay_name = isset($_GET['brgyname']) ? $_GET['brgyname'] : null;
 if (!userHasPerms('assessment', 'any', $barangay_id)) {
@@ -133,7 +133,7 @@ unset($_SESSION['success']);
 
     <?php
     $pathPrepend = '../../';
-    require '../common/head.php'
+    require_once '../common/head.php'
     ?>
     <script src="../../vendor/jquery/jquery.min.js"></script>
     <script src="../../js/bar-assessment.js"></script>
@@ -329,10 +329,10 @@ unset($_SESSION['success']);
     </div>
     </div>
     <script>
- var successMessage = "<?php echo $successMessage; ?>";
-      if (successMessage) {
-        alert(successMessage);
-      }
+        var successMessage = "<?php echo $successMessage; ?>";
+        if (successMessage) {
+            alert(successMessage);
+        }
 
         document.querySelectorAll(".file-input").forEach(input => {
             input.addEventListener("change", function() {
@@ -404,7 +404,7 @@ unset($_SESSION['success']);
     </script>
 
 
-    <?php require '../components/comment_section.php'; ?>
+    <?php require_once '../components/comment_section.php'; ?>
 </body>
 
 </html>

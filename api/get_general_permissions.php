@@ -3,7 +3,7 @@
 declare(strict_types=1);
 $useAsImport; // for get_permissions.php
 $disableLogging = true;
-require 'logging.php';
+require_once 'logging.php';
 require_once '../db/db.php';
 require_once 'get_role_permissions.php';
 

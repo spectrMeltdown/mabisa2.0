@@ -1,8 +1,10 @@
-'use strict';
-
 document.getElementById('logoutBtn').addEventListener('click', async () => {
   if (loading) return;
   loading = true;
+  /** @type {bool} */
+  let isInFolder = $('#isInFolder').length != 0;
+
+  console.log('is in folder: ' + isInFolder);
 
   const shouldLogout = await showConfirmationDialog(
     'Are you sure you want to logout?',
@@ -10,32 +12,26 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
     'Yes',
   );
   if (shouldLogout) {
-    fetch('../api/logout.php')
-      .then(async res => {
-        if (!res.ok) {
-          try {
-            // console.error(res.json());
-          } catch (error) {
-            // console.error(res.text());
+    try {
+      $.ajax({
+        url: isInFolder ? '../../' : '../' + 'api/logout.php',
+        success: res => {
+          console.log(res);
+          if (isInFolder) {
+            location.href = '../login.php';
+          } else {
+            location.href = 'login.php';
           }
-          console.error('res was not okay!' + (await res.text()));
-          throw 'Error';
-        } else {
-          console.log('res was okay!' + (await res.text()));
-        }
-        // return await res.json();
-      })
-      .catch(e => {
-        console.error('Error was:' + e);
-        throw e; //stop the chain
-      })
-      .then(data => {
-        if (data !== undefined && data.error) {
-          console.log('Data error:' + data.error);
-        } else {
-          location.href = 'login.php';
-        }
+          loading = false;
+        },
+        error: err => {
+          console.log(err.responseText);
+          loading = false;
+        },
       });
+    } catch (error) {
+      console.log(error);
+      loading = false;
+    }
   }
-  loading = false;
 });

@@ -1,5 +1,5 @@
 <?php
-require 'user_actions.php';
+require_once 'user_actions.php';
 require_once '../../../db/db.php';
 require_once '../../../api/audit_log.php';
 
@@ -30,9 +30,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
         $success = $barangayAssessment->uploadFile($barangay_id, $criteria_keyctr, $filePath, $fileName);
 
         if ($success) {
-          
-                $log->userLog("Uploaded file: $fileName for Barangay ID: $barangay_id, Criteria: $criteria_keyctr");
-           
+
+            $log->userLog("Uploaded file: $fileName for Barangay ID: $barangay_id, Criteria: $criteria_keyctr");
+
             echo json_encode(['success' => true, 'message' => 'File uploaded successfully.']);
             exit;
         } else {

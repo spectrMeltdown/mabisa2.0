@@ -1,7 +1,7 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
-require 'common/auth.php';
+require_once 'common/auth.php';
 if (!userHasPerms('users_read', 'gen')) {
   header('Location:no_permissions.php');
   exit;
@@ -12,7 +12,7 @@ if (!userHasPerms('users_read', 'gen')) {
 <html lang="en">
 
 <head>
-  <?php require 'common/head.php';
+  <?php require_once 'common/head.php';
   require_once '../api/logging.php';
   require_once '../db/db.php';
   ?>
@@ -31,7 +31,7 @@ if (!userHasPerms('users_read', 'gen')) {
     <!-- Sidebar -->
     <?php
     $isUsersPhp = true;
-    require 'common/sidebar.php' ?>
+    require_once 'common/sidebar.php' ?>
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
@@ -41,7 +41,7 @@ if (!userHasPerms('users_read', 'gen')) {
       <div id="content">
 
         <!-- Topbar -->
-        <?php require 'common/nav.php' ?>
+        <?php require_once 'common/nav.php' ?>
         <!-- End of Topbar -->
 
         <!-- Begin Page Content -->
