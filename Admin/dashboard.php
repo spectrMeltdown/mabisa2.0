@@ -16,7 +16,7 @@ $responses = new Responses($pdo);
   <?php
   require_once 'common/head.php' ?>
   <script src="../vendor/jquery/jquery.min.js"></script>
-  <script src="../js/demo/chart-bar-demo.js"></script>
+  <script src="../js/demo/chart-bar-demo.js" defer></script>
   <script src="../js/maintenance-criteria.js"></script>
 </head>
 
@@ -39,7 +39,7 @@ $responses = new Responses($pdo);
           <!-- Page Heading -->
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-           
+
           </div>
 
           <div class="container">
@@ -155,7 +155,7 @@ $responses = new Responses($pdo);
             </div>
             <div class="card-body">
               <div class="chart-area">
-                <canvas id="myAreaChart"></canvas>
+                <canvas id="myBarChart"></canvas>
               </div>
             </div>
           </div>
