@@ -25,7 +25,7 @@
           <!-- TODO: might migrate to js later, unless un-assignment of the auditor barangays will be done in the main crud dialog-->
           <ul class="list-group" id="barangaySelectList">
             <?php
-            require '../db/db.php';
+            require_once '../db/db.php';
             $sql = 'select brgyid, brgyname, auditor from refbarangay where auditor is null';
             $query = $pdo->prepare($sql);
             $query->execute();

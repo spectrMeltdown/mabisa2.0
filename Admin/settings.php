@@ -1,7 +1,7 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
-require 'common/auth.php';
+require_once 'common/auth.php';
 require_once '../db/db.php';
 ?>
 
@@ -9,7 +9,7 @@ require_once '../db/db.php';
 <html lang="en">
 
 <head>
-  <?php require 'common/head.php'; ?>
+  <?php require_once 'common/head.php'; ?>
   <script src="../js/settings.js" defer></script>
   <script src="../js/util/confirmation.js" defer></script>
   <script src="../js/util/phone-prepend.js" defer></script>
@@ -23,7 +23,7 @@ require_once '../db/db.php';
 
     <!-- Sidebar -->
     <?php
-    require 'common/sidebar.php' ?>
+    require_once 'common/sidebar.php' ?>
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
@@ -33,7 +33,7 @@ require_once '../db/db.php';
       <div id="content">
 
         <!-- Topbar -->
-        <?php require 'common/nav.php' ?>
+        <?php require_once 'common/nav.php' ?>
         <!-- End of Topbar -->
 
         <!-- Begin Page Content -->
@@ -131,6 +131,6 @@ require_once '../db/db.php';
       </div>
       <!-- End of Page Wrapper -->
 </body>
-<?php require 'components/change_setting_dialog.php' ?>
+<?php require_once 'components/change_setting_dialog.php' ?>
 
 </html>

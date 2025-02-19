@@ -1,5 +1,5 @@
 <?php
-require 'api/logging.php';
+require_once 'api/logging.php';
 if (empty($_COOKIE['id'])) {
     header('Location: Admin/login.php');
     exit;

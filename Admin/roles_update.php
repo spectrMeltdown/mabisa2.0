@@ -2,21 +2,21 @@
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
 
-require 'common/auth.php';
+require_once 'common/auth.php';
 if (!userHasPerms(['roles_create', 'roles_update'], 'gen')) {
   header('Location:no_permissions.php');
   exit;
 }
 
 // for general perms and role perms
-require '../api/get_all_perm_cols.php';
+require_once '../api/get_all_perm_cols.php';
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-  <?php require 'common/head.php';
+  <?php require_once 'common/head.php';
   ?>
   <script src="../js/role-change.js" defer></script>
   <script src="../js/util/confirmation.js" defer></script>
@@ -45,7 +45,7 @@ require '../api/get_all_perm_cols.php';
 
     <!-- Sidebar -->
     <?php
-    require 'common/sidebar.php' ?>
+    require_once 'common/sidebar.php' ?>
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
@@ -55,7 +55,7 @@ require '../api/get_all_perm_cols.php';
       <div id="content">
 
         <!-- Topbar -->
-        <?php require 'common/nav.php' ?>
+        <?php require_once 'common/nav.php' ?>
         <!-- End of Topbar -->
 
         <!-- Begin Page Content -->

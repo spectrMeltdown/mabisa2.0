@@ -1,5 +1,5 @@
 <?php
-require 'admin_actions.php';
+require_once 'admin_actions.php';
 require_once '../../../db/db.php';
 
 try {

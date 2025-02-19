@@ -2,7 +2,7 @@
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
 
-require 'common/auth.php';
+require_once 'common/auth.php';
 if (!userHasPerms('map_read', 'gen')) {
   header('Location:no_permissions.php');
   exit;
@@ -15,7 +15,7 @@ if (!userHasPerms('map_read', 'gen')) {
 <head>
   <?php
   $isLocationPhp = true;
-  require 'common/head.php';
+  require_once 'common/head.php';
   ?>
 </head>
 
@@ -23,7 +23,7 @@ if (!userHasPerms('map_read', 'gen')) {
   <!-- Page Wrapper -->
   <div id="wrapper">
     <!-- Sidebar -->
-    <?php require 'common/sidebar.php' ?>
+    <?php require_once 'common/sidebar.php' ?>
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
@@ -31,7 +31,7 @@ if (!userHasPerms('map_read', 'gen')) {
       <!-- Main Content -->
       <div id="content">
         <!-- Topbar -->
-        <?php require 'common/nav.php' ?>
+        <?php require_once 'common/nav.php' ?>
         <!-- End of Topbar -->
         <!-- Begin Page Content -->
         <div class="container-fluid">

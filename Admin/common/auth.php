@@ -11,7 +11,7 @@ $pathPrepend = isset($isInFolder) ? '../../' : '../';
 // get user data
 $customUserID = 'self';
 $userData;
-require $pathPrepend . 'api/get_user.php'; // this will provide userData array
+require_once $pathPrepend . 'api/get_user.php'; // this will provide userData array
 // unset after using
 unset($customUserID);
 

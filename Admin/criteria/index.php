@@ -3,7 +3,7 @@ error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
 
 $isInFolder = true;
-require '../common/auth.php';
+require_once '../common/auth.php';
 if (!userHasPerms('criteria_read', 'gen')) {
   // header does not allow relative paths, so this is my temporary solution
   header('Location:' .  substr(__DIR__, 0, strrpos(__DIR__, '/')) . 'no_permissions.php');
@@ -100,7 +100,7 @@ if (!empty($maintenance_area_description_result)) {
 
 <head>
   <?php
-  require '../common/head.php' ?>
+  require_once '../common/head.php' ?>
   <script src="../../vendor/jquery/jquery.min.js"></script>
 </head>
 
@@ -118,7 +118,7 @@ if (!empty($maintenance_area_description_result)) {
       <!-- Main Content -->
       <div id="content">
         <!-- Topbar -->
-        <?php require '../common/nav.php' ?>
+        <?php require_once '../common/nav.php' ?>
         <!-- End of Topbar -->
         <!-- Begin Page Content -->
         <div class="container-fluid">

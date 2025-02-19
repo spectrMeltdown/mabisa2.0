@@ -1,5 +1,5 @@
 <?php
-require '../../db/db.php';
+require_once '../../db/db.php';
 include '../../api/audit_log.php';
 $log = new Audit_log($pdo);
 session_start();
@@ -34,8 +34,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ]);
 
         $pdo->commit();
-        $log->userLog('Edited a Document Source with ID:'.$_POST['original_keyctr'] . ' to Source Code: '.$srccode.', and Source Description: '.$srcdesc);
-       
+        $log->userLog('Edited a Document Source with ID:' . $_POST['original_keyctr'] . ' to Source Code: ' . $srccode . ', and Source Description: ' . $srcdesc);
+
         $_SESSION['success'] = "Document Source modified successfully!";
     } catch (Exception $e) {
         $pdo->rollBack();

@@ -2,7 +2,7 @@
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
 
-require 'common/auth.php';
+require_once 'common/auth.php';
 require_once '../db/db.php';
 require_once 'bar_assessment/responses.php';
 
@@ -14,8 +14,9 @@ $responses = new Responses($pdo);
 
 <head>
   <?php
-  require 'common/head.php' ?>
+  require_once 'common/head.php' ?>
   <script src="../vendor/jquery/jquery.min.js"></script>
+  <script src="../js/demo/chart-bar-demo.js" defer></script>
   <script src="../js/maintenance-criteria.js"></script>
 </head>
 
@@ -23,7 +24,7 @@ $responses = new Responses($pdo);
   <!-- Page Wrapper -->
   <div id="wrapper">
     <!-- Sidebar -->
-    <?php require 'common/sidebar.php' ?>
+    <?php require_once 'common/sidebar.php' ?>
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
@@ -31,14 +32,14 @@ $responses = new Responses($pdo);
       <!-- Main Content -->
       <div id="content">
         <!-- Topbar -->
-        <?php require 'common/nav.php' ?>
+        <?php require_once 'common/nav.php' ?>
         <!-- End of Topbar -->
         <!-- Begin Page Content -->
         <div class="container-fluid">
           <!-- Page Heading -->
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-           
+
           </div>
 
           <div class="container">
@@ -148,13 +149,13 @@ $responses = new Responses($pdo);
           <!-- Content Row -->
           <div class="card shadow mb-4">
             <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary">
+              <h4 class="m-0 font-weight-bold text-primary">
                 Barangay Progress
-              </h6>
+              </h4>
             </div>
             <div class="card-body">
               <div class="chart-area">
-                <canvas id="myAreaChart"></canvas>
+                <canvas id="myBarChart"></canvas>
               </div>
             </div>
           </div>
@@ -165,18 +166,18 @@ $responses = new Responses($pdo);
         </div>
 
         <?php
-              require_once '../db/db.php';
+        require_once '../db/db.php';
 
-              try {
-                $sql = "SELECT * FROM audit_log ORDER BY time_and_date DESC";
-                $stmt = $pdo->prepare($sql);
-                $stmt->execute();
-                $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
-              } catch (PDOException $e) {
-                echo "<p class='text-danger'>Error fetching logs: " . $e->getMessage() . "</p>";
-                $logs = [];
-              }
-              ?>
+        try {
+          $sql = "SELECT * FROM audit_log ORDER BY time_and_date DESC";
+          $stmt = $pdo->prepare($sql);
+          $stmt->execute();
+          $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+          echo "<p class='text-danger'>Error fetching logs: " . $e->getMessage() . "</p>";
+          $logs = [];
+        }
+        ?>
         <div class="container-fluid">
           <div class="card shadow mb-4">
             <div class="card-header py-3">
@@ -193,7 +194,7 @@ $responses = new Responses($pdo);
                     <th>Username</th>
                     <th>Action</th>
                     <th>Time and Date</th>
-                   
+
                   </tr>
                 </thead>
                 <tbody>
@@ -204,7 +205,7 @@ $responses = new Responses($pdo);
                       <td><?php echo $log['username']; ?></td>
                       <td><?php echo $log['action']; ?></td>
                       <td><?php echo $log['time_and_date']; ?></td>
-                    
+
                     </tr>
 
                   <?php endforeach ?>

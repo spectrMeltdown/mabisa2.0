@@ -2,7 +2,7 @@
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
 
-require 'common/auth.php';
+require_once 'common/auth.php';
 require_once '../db/db.php';
 require_once '../Admin/bar_assessment/responses.php';
 
@@ -45,18 +45,22 @@ foreach ($categories as $category) {
 <html lang="en">
 
 <head>
-  <?php require 'common/head.php'; ?>
+  <?php require_once 'common/head.php'; ?>
 </head>
 
 <body id="page-top">
   <div id="wrapper">
     <?php
     $isReports = true;
+    require_once 'common/sidebar.php' ?>
+    <!-- End of Sidebar -->
+
+    <!-- Content Wrapper -->
     require 'common/sidebar.php';
     ?>
     <div id="content-wrapper" class="d-flex flex-column">
       <div id="content">
-        <?php require 'common/nav.php'; ?>
+        <?php require_once 'common/nav.php'; ?>
         <div class="container-fluid">
           <div class="card shadow mb-4">
             <div class="card-header py-3">

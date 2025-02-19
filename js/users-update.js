@@ -244,7 +244,7 @@ $('#roleSelect').on('change', async e => {
                         // TODO: add a ternary to check if it is taken or not.
                         // CREATE MODE: if taken, mark with check and disable
                         // EDIT MODE: if taken and user id match, mark with check. If taken and not user match, then check and disable
-                        return `<li class="d-inline-block m-1">
+                        return `<li class="d-inline-block">
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <div class="input-group-text">
@@ -257,7 +257,7 @@ $('#roleSelect').on('change', async e => {
                         }>
                     </div>
                   </div>
-                  <div class="card card-body border-secondary">
+                  <div class="card card-body border-secondary" style="padding: 0.5rem">
                     <label for="${uniqueID}" id="label-${uniqueID}">${val.replaceAll(
                           '_',
                           ' ',

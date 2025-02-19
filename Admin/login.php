@@ -16,7 +16,7 @@ if (!empty($_COOKIE['id'])) {
     <?php
     $isLoginPage;
     $pathPrepend = '../';
-    require 'common/head.php' ?>
+    require_once 'common/head.php' ?>
     <!-- import again if you are using inline scripts -->
     <script src="../vendor/jquery/jquery.min.js"></script>
     <style type="text/css">

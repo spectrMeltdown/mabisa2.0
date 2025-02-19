@@ -2,7 +2,7 @@
 
 $pathPrepend = isset($isInFolder) ? '../' : '';
 require_once $pathPrepend . '../db/db.php';
-require_once (__DIR__ . "/../api/audit_log.php");
+require_once(__DIR__ . "/../api/audit_log.php");
 $log = new Audit_log($pdo);
 
 
@@ -24,7 +24,7 @@ if (isset($_POST['add_maintenance_criteria_setup'])) {
             :version_keyctr, :indicator_keyctr, :minreqs_keyctr, 
             :sub_minimumreqs, :movdocs_reqs, :data_source, :trail
         )";
-         
+
 
         $stmt = $pdo->prepare($query);
         $stmt->execute([
@@ -38,7 +38,7 @@ if (isset($_POST['add_maintenance_criteria_setup'])) {
         ]);
 
         $pdo->commit();
-        $log->userLog('Created a New Criteria with Version ID: '.$version_keyctr.', Indicator ID: '.$indicator_keyctr.', Minimum Requirements ID: '. $minreqs_keyctr.', Sub Minimum Requirements: '.$sub_minimumreqs.', MOV Documents Requirements: '.$movdocs_reqs.', and Document Source: '.$data_source);
+        $log->userLog('Created a New Criteria with Version ID: ' . $version_keyctr . ', Indicator ID: ' . $indicator_keyctr . ', Minimum Requirements ID: ' . $minreqs_keyctr . ', Sub Minimum Requirements: ' . $sub_minimumreqs . ', MOV Documents Requirements: ' . $movdocs_reqs . ', and Document Source: ' . $data_source);
         echo "<script>alert('New record created successfully'); window.location.href = document.referrer;</script>";
     } catch (PDOException $e) {
         $pdo->rollBack();
@@ -82,7 +82,7 @@ if (isset($_POST['update_maintenance_criteria_setup'])) {
         ]);
 
         $pdo->commit();
-        $log->userLog('Edited a Criteria with id: '.$keyctr.', to Version ID: '.$version_keyctr.', Indicator ID: '.$indicator_keyctr.', Minimum Requirements ID: '. $minreqs_keyctr.', Sub Minimum Requirements: '.$sub_minimumreqs.', MOV Documents Requirements: '.$movdocs_reqs.', and Document Source: '.$data_source);
+        $log->userLog('Edited a Criteria with id: ' . $keyctr . ', to Version ID: ' . $version_keyctr . ', Indicator ID: ' . $indicator_keyctr . ', Minimum Requirements ID: ' . $minreqs_keyctr . ', Sub Minimum Requirements: ' . $sub_minimumreqs . ', MOV Documents Requirements: ' . $movdocs_reqs . ', and Document Source: ' . $data_source);
         echo "<script>alert('Record updated successfully'); window.location.href = document.referrer;</script>";
     } catch (PDOException $e) {
         $pdo->rollBack();
@@ -105,7 +105,7 @@ if (isset($_GET['delete_id'])) {
         }
 
         $pdo->commit();
-        $log->userLog('Deleted a Criteria with an ID: '.$id);
+        $log->userLog('Deleted a Criteria with an ID: ' . $id);
         echo "<script>alert('Deleted successfully'); window.location.href = document.referrer;</script>";
     } catch (Exception $e) {
         $pdo->rollBack();
