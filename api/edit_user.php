@@ -88,12 +88,10 @@ try {
   // get all perms
   $allPerms = getPermTableNames($pdo);
 
-  // get the bar perms id and gen perms id of current user
+  // get the bar perms id of current user (multiple)
   if (!empty($barPerms)) {
-    $sql = 'SELECT urb.permission_id AS barID FROM users u 
-  JOIN user_roles_barangay urb ON urb.user_id = u.id 
-  WHERE u.id = :id
-  ';
+    $sql = 'SELECT barangay_id as brgyid, indicator_id as indid, permission_id AS permid FROM user_roles_barangay WHERE user_id = :id';
+
     // actual fetch
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':id' => $id]);
@@ -106,16 +104,14 @@ try {
     writeLog($barPerms);
 
     // update bar perms
-    foreach ($result as $entry) {
-      updatePerms($pdo, $entry['barID'], $barPerms, $allPerms);
-    }
+    updateMultiBarPerms($pdo, $result, $barPerms, $allPerms);
   }
 
+  // get the gen perms id of current user
   if (!empty($genPerms)) {
-    $sql = 'SELECT ur.permissions_id AS genID FROM users u 
-  JOIN user_roles ur ON ur.user_id = u.id 
-  WHERE u.id = :id LIMIT 1
-  ';
+    // each user should only have one global/general perms
+    $sql = 'SELECT permissions_id AS genID FROM users WHERE user_id = :id LIMIT 1';
+
     // actual fetch
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':id' => $id]);
@@ -131,4 +127,43 @@ try {
   http_response_code(500);
   writeLog($th);
   echo json_encode($th->getMessage(), JSON_PRETTY_PRINT);
+}
+
+function updateMultiBarPerms(\PDO $pdo, array $urbRes, array $newPerms, array $allPerms)
+{
+  writeLog('update bar perms');
+  // create a new array where permissions are groups per indicator, and indicators are grouped per barangay
+  /** @var array */
+  $compiledNewPerms = [];
+  foreach ($newPerms as $newPermsEntry) {
+    // separate string to variables
+    $entry = explode('--', $newPermsEntry);
+    $barangayID = $entry[0];
+    $indicatorID = $entry[1];
+    $permissionCol = $entry[2];
+
+    if (!isset($compiledPerms[$barangayID][$indicatorID])) {
+      $compiledNewPerms[$barangayID][$indicatorID] = [];
+    }
+
+    // add permission column
+    $compiledNewPerms[$barangayID][$indicatorID][] = $permissionCol;
+  }
+
+  writeLog($compiledNewPerms);
+  // exit;
+
+  foreach ($compiledNewPerms as $barangayID => $indicators) {
+    foreach ($indicators as $indicatorID => $permissions) {
+      $sql = 'UPDATE permissions SET :permission = 1 WHERE id = :id';
+      $stmt = $pdo->prepare($sql);
+      $stmt->execute([
+        ':user_id' => $newUserID,
+        ':barangay_id' => $barangayID,
+        ':indicator_id' => $indicatorID,
+        ':permission_id' => $newPermissionID,
+      ]);
+      $newUserRolesBarangayPerms = $pdo->lastInsertId();
+    }
+  }
 }
