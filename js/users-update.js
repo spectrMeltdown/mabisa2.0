@@ -211,9 +211,9 @@ $('#roleSelect').on('change', async e => {
                         const uniqueID = `${row['barangay']['id']}--${row['indicators']['id']}--${val}`;
                         let userTaken = false;
                         let anotherTaken = false;
-                        console.log('the perms:');
-                        console.log(row['taken_perms']);
-                        console.log(row['current_perms']);
+                        // console.log('the perms:');
+                        // console.log(row['taken_perms']);
+                        // console.log(row['current_perms']);
                         if (
                           Array.isArray(row['taken_perms']) &&
                           row['taken_perms'].some((
