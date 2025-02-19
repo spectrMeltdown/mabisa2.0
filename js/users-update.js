@@ -174,25 +174,30 @@ $('#roleSelect').on('change', async e => {
               {
                 data: 'indicators',
                 title: 'Indicators',
-                render: function(data) {
-                  // console.log('Type is: ' + type);
+                render: function(data, type, row) {
+                  // console.log(data);
                   if (Array.isArray(data)) {
+                    // console.log('ARRAY!');
                     return data
-                      .map(ind => {
-                        // console.log(nl2br(ind['description']));
-                        return `<strong>Code: ${
-                          ind['code']
-                        }</strong>:<br> ${nl2br(ind['description'])}`;
+                      .map((ind, index) => {
+                        const uniqueID = `${row['barangay']['id']}--${row['indicators']['id']}--${ind}`;
+                        generateCollapsibleText(
+                          ind.code,
+                          ind.description,
+                          `row-${uniqueID}`,
+                        );
                       })
                       .join('<br>');
-                  } else if (typeof data == 'object') {
-                    return `<strong>Code: ${data.code}</strong><br>${nl2br(
+                  } else if (typeof data === 'object') {
+                    // console.log('OBJECT!');
+                    const uniqueID = `${row['barangay']['id']}--${row['indicators']['id']}`;
+                    return generateCollapsibleText(
+                      data.code,
                       data.description,
-                    )}`;
+                      `row-${uniqueID}`,
+                    );
                   }
-                  // console.log('Not array in render');
-                  // console.log(typeof data);
-                  return data; // Default display if not an array
+                  return data;
                 },
               },
               {
@@ -200,9 +205,32 @@ $('#roleSelect').on('change', async e => {
                 title: 'Permissions',
                 render: function(data, type, row) {
                   if (Array.isArray(data)) {
+                    // console.log('data was array!');
                     return data
                       .map(val => {
                         const uniqueID = `${row['barangay']['id']}--${row['indicators']['id']}--${val}`;
+                        let userTaken = false;
+                        let anotherTaken = false;
+                        // console.log('the perms:');
+                        // console.log(row['taken_perms']);
+                        // console.log(row['current_perms']);
+                        if (
+                          Array.isArray(row['taken_perms']) &&
+                          row['taken_perms'].some((
+                            /** @type {string} */ perm,
+                          ) => perm.includes(val))
+                        ) {
+                          anotherTaken = true;
+                          console.log('another taken: ' + anotherTaken);
+                        } else if (
+                          Array.isArray(row['current_perms']) &&
+                          row['current_perms'].some((
+                            /** @type {string} */ perm,
+                          ) => perm.includes(val))
+                        ) {
+                          userTaken = true;
+                          console.log('user taken: ' + userTaken);
+                        }
                         // TODO: add a ternary to check if it is taken or not.
                         // CREATE MODE: if taken, mark with check and disable
                         // EDIT MODE: if taken and user id match, mark with check. If taken and not user match, then check and disable
@@ -210,7 +238,13 @@ $('#roleSelect').on('change', async e => {
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <div class="input-group-text">
-                      <input type="checkbox" name="${uniqueID}" id="${uniqueID}" value="true">
+                      <input type="checkbox" name="${uniqueID}" id="${uniqueID}" value="true" ${
+                          anotherTaken
+                            ? 'checked disabled'
+                            : userTaken
+                            ? 'checked'
+                            : ''
+                        }>
                     </div>
                   </div>
                   <div class="card card-body border-secondary">
@@ -551,7 +585,7 @@ $('#save-user-btn').on('click', async () => {
 
   // loop details
   for (const [key, value] of detailsForm.entries()) {
-    console.log('Details forms: ' + key + value);
+    console.log('Details forms: ' + key + ' = ' + value);
     submitObj['details'][key] = value;
   }
 
@@ -564,14 +598,14 @@ $('#save-user-btn').on('click', async () => {
   // loop gen permissions (if needed)
   if ($('#genPermNoPerm').css('display') == 'none') {
     for (const [key, value] of genPermsForm.entries()) {
-      console.log('genPermsForm forms: ' + key + value);
+      console.log('genPermsForm forms: ' + key + ' + ' + value);
       submitObj['genPerms'][key] = value;
     }
   }
   // loop bar permissions (if needed)
   if ($('#barPermContainer').css('display') != 'none') {
     for (const [key, value] of barPermsForm.entries()) {
-      console.log('barPermsForm forms" ' + key + value);
+      console.log('barPermsForm forms: ' + key + ' + ' + value);
       submitObj['barPerms'][key] = value;
     }
   }
@@ -586,7 +620,7 @@ $('#save-user-btn').on('click', async () => {
         // check if null, empty, false, 0, infinity, etc
         if (!result) {
           $('#crud-user').modal('hide');
-          location.href = 'users.php';
+          // location.href = 'users.php';
           $('#main-toast-container').append(
             addToast('Success!', 'User created successfully.'),
           );
@@ -601,14 +635,12 @@ $('#save-user-btn').on('click', async () => {
     $.ajax({
       type: 'POST',
       url: '../api/edit_user.php',
-      data: detailsForm, // Use 'data' instead of 'body'
-      processData: false, // Prevent jQuery from processing the FormData
-      contentType: false, // Prevent jQuery from setting 1content type
+      data: submitObj,
       success: function(result) {
         // check if null, empty, false, 0, infinity, etc
         if (!result) {
           $('#crud-user').modal('hide');
-          location.href = 'users.php';
+          // location.href = 'users.php';
           $('#main-toast-container').append(
             addToast('Success!', 'User successfully edited.'),
           );
@@ -648,4 +680,66 @@ if (editMode) {
       console.error(err.responseText);
     },
   });
+
+  $.ajax({
+    url: '../api/get_user.php',
+    type: 'GET',
+    data: {
+      id: currentUserID,
+    },
+    success: data => {
+      console.log(data);
+      const userData = JSON.parse(data);
+
+      // fill the inputs
+      $('#username').val(userData.username);
+      $('#fullName').val(userData.full_name);
+      $('#email').val(userData.email);
+      $('#mobileNum').val('+63' + userData.mobile_num);
+
+      // trigger roles change. Checkboxes will be checked on this event listener.
+      $('#roleSelect')
+        .val(userData.role_id)
+        .trigger('change');
+    },
+    error: err => {
+      console.error(err.responseText);
+    },
+  });
+}
+
+function toggleText(id) {
+  const shortText = document.getElementById(`short-text-${id}`);
+  const fullText = document.getElementById(`full-text-${id}`);
+  const toggleLink = document.getElementById(`toggle-link-${id}`);
+
+  if (fullText.style.display === 'none') {
+    shortText.style.display = 'none';
+    fullText.style.display = 'inline';
+    toggleLink.textContent = 'See Less';
+  } else {
+    shortText.style.display = 'inline';
+    fullText.style.display = 'none';
+    toggleLink.textContent = 'See More';
+  }
+}
+
+function generateCollapsibleText(code, description, id) {
+  const shortText = description.substring(0, 300); // Show only first 100 chars
+  const isLong = description.length > 300;
+
+  return `
+  <div>
+    <strong>Code: ${code}</strong><br>
+    <span id="short-text-${id}">${shortText}${isLong ? '...' : ''}</span>
+    <span id="full-text-${id}" style="display: none;">${nl2br(
+    description,
+  )}</span>
+    ${
+      isLong
+        ? `<a href="#" id="toggle-link-${id}" onclick="toggleText('${id}'); return false;">See More</a>`
+        : ''
+    }
+  </div>
+`;
 }

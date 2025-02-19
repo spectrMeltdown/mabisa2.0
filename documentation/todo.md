@@ -46,6 +46,7 @@
   - writeLog (also all require/includes for this)
   - echo (that were used for logging)
   - comments
+  - JSON_PRETTY_PRINT (adds unnecessary newlines and spacing)
 - minify JS & PHP files
 
 # Code cleanup

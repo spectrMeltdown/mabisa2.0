@@ -29,7 +29,7 @@ class PubSubServer implements MessageComponentInterface
     $data = json_decode($msg, true);
 
     if (!isset($data['action'])) {
-      $from->send(json_encode(['error' => 'Invalid message format']));
+      $from->send(json_encode(['error' => 'Invalid message format'], JSON_PRETTY_PRINT));
       return;
     }
 
@@ -41,7 +41,7 @@ class PubSubServer implements MessageComponentInterface
         $this->publish($data['topic'], $data['message']);
         break;
       default:
-        $from->send(json_encode(['error' => 'Unknown action']));
+        $from->send(json_encode(['error' => 'Unknown action'], JSON_PRETTY_PRINT));
         break;
     }
   }
@@ -69,7 +69,7 @@ class PubSubServer implements MessageComponentInterface
 
     if (!in_array($client, $this->topics[$topic], true)) {
       $this->topics[$topic][] = $client;
-      $client->send(json_encode(['success' => "Subscribed to $topic"]));
+      $client->send(json_encode(['success' => "Subscribed to $topic"], JSON_PRETTY_PRINT));
       echo "Client {$client->resourceId} subscribed to $topic\n";
     }
   }
@@ -83,7 +83,7 @@ class PubSubServer implements MessageComponentInterface
 
     echo "Publishing message to topic $topic: $message\n";
     foreach ($this->topics[$topic] as $subscriber) {
-      $subscriber->sdend(json_encode(['topic' => $topic, 'message' => $message]));
+      $subscriber->sdend(json_encode(['topic' => $topic, 'message' => $message], JSON_PRETTY_PRINT));
     }
   }
 }

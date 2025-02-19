@@ -44,7 +44,7 @@ $(document).ready(function () {
           modal.find('#declineForm').hide();
           modal.find('#revertForm').show();
       } else if (status === 'declined') {
-          statusMessage.text('File is already declined').show();
+          statusMessage.text('File is returned').show();
           modal.find('#approveForm').hide();
           modal.find('#declineForm').hide();
           modal.find('#revertForm').show();

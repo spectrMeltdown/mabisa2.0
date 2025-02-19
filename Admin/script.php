@@ -116,7 +116,7 @@ if (isset($_GET['indicator_id'])) {
         $stmt = $pdo->prepare("SELECT * FROM maintenance_area_mininumreqs WHERE indicator_code = :indicator_id");
         $stmt->execute([':indicator_id' => $indicator_id]);
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        echo json_encode(['data' => $data]);
+        echo json_encode(['data' => $data], JSON_PRETTY_PRINT);
     } catch (PDOException $e) {
         echo json_encode(['error' => htmlspecialchars($e->getMessage())]);
     }

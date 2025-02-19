@@ -5,7 +5,7 @@ include '../../db/db.php';
 // Handle update
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['keyctr']) || empty($_POST['keyctr'])) {
-        die("Error: keyctr is missing in POST! Received: " . json_encode($_POST));
+        die("Error: keyctr is missing in POST! Received: " . json_encode($_POST, JSON_PRETTY_PRINT));
     }
 
     $keyctr = $_POST['keyctr'];
@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Handle the display
 if (!isset($_GET['keyctr']) || empty($_GET['keyctr'])) {
-    die("Error: keyctr is missing in GET! Received: " . json_encode($_GET));
+    die("Error: keyctr is missing in GET! Received: " . json_encode($_GET, JSON_PRETTY_PRINT));
 }
 
 $keyctr = $_GET['keyctr'];

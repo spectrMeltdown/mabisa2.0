@@ -1,12 +1,16 @@
 <?php
+require_once __DIR__ . '/../../api/audit_log.php';
+
 
 class Comments
 {
     private $pdo;
+    private $auditLog;
 
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
+        $this->auditLog = new Audit_log($pdo); 
     }
 
     public function add_comment(
@@ -15,7 +19,7 @@ class Comments
         string $commentText
     ): array {
         try {
-            $this->pdo->beginTransaction(); 
+            $this->pdo->beginTransaction();
 
             $sql = "SELECT comments FROM barangay_assessment_files WHERE file_id = :file_id FOR UPDATE";
             $stmt = $this->pdo->prepare($sql);
@@ -39,7 +43,7 @@ class Comments
                 'timestamp' => time()
             ];
 
-            $updatedComments = json_encode($comments);
+            $updatedComments = json_encode($comments, JSON_PRETTY_PRINT);
             $updateSql = "UPDATE barangay_assessment_files SET comments = :comments WHERE file_id = :file_id";
             $updateStmt = $this->pdo->prepare($updateSql);
             $updateStmt->bindParam(':comments', $updatedComments, PDO::PARAM_STR);
@@ -47,6 +51,9 @@ class Comments
 
             if ($updateStmt->execute()) {
                 $this->pdo->commit();
+
+                $action = "Added a comment to file ID: $file_id";
+                $this->auditLog->userLog($action);
 
                 echo "<script>
                     alert('Comment Added');

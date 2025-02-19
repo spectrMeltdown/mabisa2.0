@@ -9,10 +9,10 @@ try {
   $sql = "select name from roles";
   $query = $pdo->query($sql);
   $roleNames = $query->fetchAll(PDO::FETCH_ASSOC);
-  echo json_encode($roleNames);
+  echo json_encode($roleNames, JSON_PRETTY_PRINT);
 } catch (\Throwable $th) {
   http_response_code(500);
   $message = $th->getMessage();
   writeLog($message);
-  echo json_encode($message);
+  echo json_encode($message, JSON_PRETTY_PRINT);
 }

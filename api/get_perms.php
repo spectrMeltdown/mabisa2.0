@@ -26,7 +26,7 @@ try {
           $allPermissions[] = $col['Field'];
         }
       }
-      echo json_encode($rolePermissions);
+      echo json_encode($rolePermissions, JSON_PRETTY_PRINT);
       break;
     case $type !== 'bar':
       while ($col = $query->fetch(PDO::FETCH_ASSOC)) {
@@ -34,7 +34,7 @@ try {
           $allPermissions[] = $col['Field'];
         }
       }
-      echo json_encode($rolePermissions);
+      echo json_encode($rolePermissions, JSON_PRETTY_PRINT);
       break;
     default:
       // cancel if incorrect selection made
@@ -44,5 +44,5 @@ try {
   http_response_code(500);
   $message = $th->getMessage();
   writeLog($message);
-  echo json_encode($message);
+  echo json_encode($message, JSON_PRETTY_PRINT);
 }

@@ -105,7 +105,7 @@ try {
   http_response_code(500);
   $message = $th->getMessage();
   writeLog($message);
-  echo json_encode($message);
+  echo json_encode($message, JSON_PRETTY_PRINT);
 }
 
 function createSQL(array $permissions): string
