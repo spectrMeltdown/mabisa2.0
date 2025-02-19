@@ -7,10 +7,17 @@ session_start();
 if (isset($_GET['keyctr'])) {
     $keyctr = $_GET['keyctr'];
 
+    // Fetch the specific minimum requirement for editing
     $stmt = $pdo->prepare("SELECT * FROM maintenance_area_mininumreqs WHERE keyctr = :keyctr");
     $stmt->execute(['keyctr' => $keyctr]);
     $req = $stmt->fetch(PDO::FETCH_ASSOC);
 }
+
+// Fetch all indicators for the dropdown
+$query = 'SELECT * FROM `maintenance_area_indicators`';
+$stmt = $pdo->prepare($query);
+$stmt->execute();
+$indicators = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $keyctr = $_POST['keyctr'];
@@ -39,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ]);
 
         $pdo->commit();
-        $log->userLog('Created a new Minimum Requirement with ID: '.$keyctr.', to Indicator ID: '.$indicator_keyctr.', Requirements Code: '.$reqs_code.', Description: '.$description.', and Sub Minimum Requirements: '.$sub_mininumreqs);
+        $log->userLog('Updated Minimum Requirement with ID: '.$keyctr.', to Indicator ID: '.$indicator_keyctr.', Requirements Code: '.$reqs_code.', Description: '.$description.', and Sub Minimum Requirements: '.$sub_mininumreqs);
         $_SESSION['success'] = "Minimum requirement updated successfully!";
     } catch (Exception $e) {
         $pdo->rollBack();
@@ -50,7 +57,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     exit();
 }
 ?>
-
 
 <div class="modal fade" id="editMinimumReqModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
@@ -64,7 +70,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                     <div class="mb-3">
                         <label class="form-label">Indicator Keyctr:</label>
-                        <input type="number" class="form-control" name="indicator_keyctr" value="<?php echo htmlspecialchars($req['indicator_keyctr']); ?>" required>
+                        <select class="form-control" name="indicator_keyctr" required>
+                            <option value="">Select</option>
+                            <?php foreach ($indicators as $row) { ?>
+                                <option value="<?= htmlspecialchars($row['keyctr']) ?>" 
+                                    <?= $row['keyctr'] == $req['indicator_keyctr'] ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($row['indicator_code'] . " - " . $row['indicator_description']) ?>
+                                </option>
+                            <?php } ?>
+                        </select>
                     </div>
 
                     <div class="mb-3">

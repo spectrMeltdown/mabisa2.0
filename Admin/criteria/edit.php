@@ -32,10 +32,10 @@ try {
             </div>
             <div class="modal-body">
                 <form action="../script.php" method="post">
-                <input type="hidden" id="modalEditId" name="edit_id">
+                    <input type="hidden" id="modalEditId" name="edit_id">
 
                     <input type="hidden" name="keyctr" value="<?php echo $maintenance_criteria_setup_row['keyctr']; ?>" />
-                    
+
                     <div class="mb-3">
                         <label class="form-label">Version</label>
                         <select class="form-control" name="version_keyctr">
@@ -47,21 +47,22 @@ try {
                             <?php } ?>
                         </select>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="form-label">Indicator</label>
                         <select class="form-control" name="indicator_keyctr" id="indicatorSelect">
                             <option value="">Select</option>
                             <?php foreach ($maintenance_area_indicators_result as $row) { ?>
-                                <option 
+                                <option
                                     data-indicator-code="<?= htmlspecialchars($row['indicator_code']) ?>"
                                     value="<?= htmlspecialchars($row['keyctr']) ?>"
                                     <?= ($maintenance_criteria_setup_row['indicator_keyctr'] == $row['keyctr']) ? "selected" : "" ?>>
-                                    <?= htmlspecialchars($row['indicator_description']) ?>
+                                    <?= htmlspecialchars($row['indicator_code'] . " - " . $row['indicator_description']) ?>
                                 </option>
                             <?php } ?>
                         </select>
                     </div>
+
 
                     <div class="mb-3">
                         <label class="form-label">Minimum Requirements</label>
@@ -69,17 +70,17 @@ try {
                             <option value="">Select</option>
                         </select>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="form-label">Sub Minimum Requirements</label>
                         <input type="number" class="form-control" name="sub_minimumreqs" value="<?php echo $maintenance_criteria_setup_row['sub_minimumreqs']; ?>" />
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="form-label">DOCUMENTARY REQUIREMENTS/MOVs</label>
                         <textarea class="form-control" name="movdocs_reqs" rows="3"><?php echo trim($maintenance_criteria_setup_row['movdocs_reqs']); ?></textarea>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="form-label">Data Source</label>
                         <select class="form-control" name="data_source">
@@ -91,60 +92,66 @@ try {
                             <?php } ?>
                         </select>
                     </div>
-    
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary" name="update_maintenance_criteria_setup">Submit</button>
                     </div>
                 </form>
             </div>
-           
+
         </div>
     </div>
 </div>
 
-<!-- Trigger Script -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         var displayIdModal = new bootstrap.Modal(document.getElementById('displayIdModal'));
         displayIdModal.show();
 
     });
-    $(document).ready(function () {
-        function loadMinimumRequirements(indicatorCode, selectedMinReq) {
-            $.ajax({
-                url: '../script.php',
-                type: 'GET',
-                data: { 'indicator_id': indicatorCode },
-                dataType: 'JSON',
-                success: function (response) {
-                    let minReqDropdown = $('#minreqsSelect');
-                    minReqDropdown.empty().append('<option value="">Select</option>');
-                    if (response.data && Array.isArray(response.data)) {
-                        $.each(response.data, function (index, item) {
-                            let option = $('<option>', {
-                                value: item.keyctr,
-                                text: item.reqs_code + " " + item.description,
-                            });
-                            if (selectedMinReq == item.keyctr) {
-                                option.attr("selected", "selected");
-                            }
-                            minReqDropdown.append(option);
+
+    function loadMinimumRequirements(indicatorId, selectedMinReq) {
+        $.ajax({
+            url: '../script.php',
+            type: 'GET',
+            data: {
+                'indicator_id': indicatorId
+            },
+            dataType: 'JSON',
+            success: function(response) {
+                let minReqDropdown = $('#minreqsSelect');
+                minReqDropdown.empty().append('<option value="">Select</option>');
+
+                if (response.data && Array.isArray(response.data)) {
+                    $.each(response.data, function(index, item) {
+                        let option = $('<option>', {
+                            value: item.req_keyctr,
+                            text: item.reqs_code + " - " + item.min_requirement_desc
                         });
-                    }
+
+                        if (String(selectedMinReq) === String(item.req_keyctr)) {
+                            option.prop("selected", true);
+                        }
+
+                        minReqDropdown.append(option);
+                    });
                 }
-            });
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        let selectedIndicatorId = $('#indicatorSelect').val();
+        let selectedMinReq = "<?= htmlspecialchars($maintenance_criteria_setup_row['minreqs_keyctr']) ?>";
+
+        if (selectedIndicatorId) {
+            loadMinimumRequirements(selectedIndicatorId, selectedMinReq);
         }
 
-        let selectedIndicator = $('#indicatorSelect').find(":selected").data("indicator-code");
-        let selectedMinReq = "<?= htmlspecialchars($maintenance_criteria_setup_row['minreqs_keyctr']) ?>";
-        if (selectedIndicator) {
-            loadMinimumRequirements(selectedIndicator, selectedMinReq);
-        }
-        
-        $('#indicatorSelect').change(function () {
-            let newIndicatorCode = $(this).find(':selected').data('indicator-code');
-            loadMinimumRequirements(newIndicatorCode, '');
+        $('#indicatorSelect').change(function() {
+            let newIndicatorId = $(this).val();
+            loadMinimumRequirements(newIndicatorId, '');
         });
     });
 </script>

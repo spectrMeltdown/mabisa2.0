@@ -5,7 +5,7 @@ $log = new Audit_log($pdo);
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $keyctr = $_POST['keyctr'];
+    
     $srccode = $_POST['srccode'];
     $srcdesc = $_POST['srcdesc'];
     $trail = 'Created at ' . date('Y-m-d H:i:s');
@@ -13,11 +13,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
         $pdo->beginTransaction();
 
-        $sql = "INSERT INTO maintenance_document_source (keyctr, srccode, srcdesc, trail) 
-                VALUES (:keyctr, :srccode, :srcdesc, :trail)";
+        $sql = "INSERT INTO maintenance_document_source (srccode, srcdesc, trail) 
+                VALUES (:srccode, :srcdesc, :trail)";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            'keyctr' => $keyctr,
             'srccode' => $srccode,
             'srcdesc' => $srcdesc,
             'trail' => $trail
