@@ -1,5 +1,7 @@
 <?php
 require '../../db/db.php';
+include '../../api/audit_log.php';
+$log = new Audit_log($pdo);
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -22,6 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ]);
 
         $pdo->commit();
+        $log->userLog('Created a New Document Source with Source Code: '.$srccode.', and Source Description: '.$srcdesc);
         $_SESSION['success'] = "Document Source created successfully!";
     } catch (Exception $e) {
         $pdo->rollBack();

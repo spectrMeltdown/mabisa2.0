@@ -9,7 +9,8 @@ require_once 'logging.php';
 require_once '../db/db.php';
 require 'get_all_perm_cols.php';
 require 'update_perms.php';
-
+require_once '../api/audit_log.php';
+$log = new Audit_log($pdo);
 
 try {
   if ($_SERVER['REQUEST_METHOD'] != 'POST') throw new Exception('Invalid request.');
@@ -78,6 +79,7 @@ try {
   // writeLog('Role update');
   // writeLog($sql);
   // blank means everything went well
+  $log->userLog('Edited a Role with ID: '.$id.' to Name:'.$roleName);//logging
 } catch (\Throwable $th) {
   writeLog($th);
   echo json_encode($th->getMessage(), JSON_PRETTY_PRINT);

@@ -1,6 +1,9 @@
 <?php
 include '../../db/db.php';
+include '../../api/audit_log.php';
 session_start();
+
+$log = new Audit_log($pdo);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_area'])) {
     $description = $_POST['description'];
@@ -14,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_area'])) {
         $stmt->execute(['description' => $description, 'trail' => $trail]);
 
         $pdo->commit();
+        $log->userLog('Created a New Area: '.$description);
 
         $_SESSION['success'] = "Area created successfully!";
     } catch (PDOException $e) {

@@ -1,5 +1,7 @@
 <?php
 include '../../db/db.php';
+include '../../api/audit_log.php';
+$log = new Audit_log($pdo);
 session_start();
 
 if (isset($_GET['keyctr'])) {
@@ -12,7 +14,7 @@ if (isset($_GET['keyctr'])) {
         $stmt->execute(['keyctr' => $keyctr]);
 
         $pdo->commit();
-
+        $log->userLog('Deleted a Governance Entry with ID: '.$keyctr);
         $_SESSION['success'] = "Governance entry deleted successfully!";
         header('Location: index.php');
         exit();

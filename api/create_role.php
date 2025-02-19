@@ -8,7 +8,9 @@ declare(strict_types=1);
 require_once 'logging.php';
 require_once '../db/db.php';
 require_once 'has_permissions.php';
+require_once '../api/audit_log.php';
 
+$log = new Audit_log($pdo);
 try {
   if ($_SERVER['REQUEST_METHOD'] != 'POST') throw new Exception('Invalid request.');
   // redirect if logged out
@@ -100,6 +102,8 @@ try {
     ':bar_perms' => $barPermID,
     ':gen_perms' => $genPermID,
   ]);
+
+  $log->userLog('Created a New Role: '.$roleName);//logging
   // blank means everything went well
 } catch (\Throwable $th) {
   http_response_code(500);

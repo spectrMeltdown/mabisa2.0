@@ -5,6 +5,8 @@ declare(strict_types=1);
 // header('Content-Type: application/json');
 require_once '../db/db.php';
 require_once 'logging.php';
+require_once '../api/audit_log.php';
+$log = new Audit_log($pdo);
 
 try {
   if ($_SERVER['REQUEST_METHOD'] != 'POST') throw new Exception('Invalid request.');
@@ -55,6 +57,9 @@ try {
   ]);
   /** @var int */
   $newUserID = $pdo->lastInsertId();
+
+  //logging
+  $log->userLog('Created a New User with Username: '. $username. ', Fullname: '.$fullName.', Email: '.$email.', Mobile Number: '.$mobileNum.'and Role ID: '.$role_id);
 
   // update perms to set user_roles_barangay_id
   $newUserRolesBarangayPerms = null;

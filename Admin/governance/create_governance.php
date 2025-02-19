@@ -1,5 +1,7 @@
 <?php
 include '../../db/db.php';
+include '../../api/audit_log.php';
+$log = new Audit_log($pdo);
 session_start();
 
 $categories = $pdo->query("SELECT * FROM maintenance_category")->fetchAll(PDO::FETCH_ASSOC);
@@ -28,7 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         ]);
 
         $pdo->commit();
-
+        $log->userLog('Created a New Governance Entry with Cat Code: '.$cat_code.', Area ID: '.$area_keyctr.', Description ID: '.$desc_keyctr.', and Description: '.$description);
+       
         $_SESSION['success'] = "Governance entry created successfully!";
         header('Location: index.php');
         exit();

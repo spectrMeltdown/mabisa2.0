@@ -1,5 +1,7 @@
 <?php
 include '../../db/db.php';
+include '../../api/audit_log.php';
+$log = new Audit_log($pdo);
 session_start();
 
 if (isset($_GET['keyctr'])) {
@@ -43,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         ]);
 
         $pdo->commit();
-
+        $log->userLog('Edited a Version with ID:'.$_POST['original_keyctr']. ' to Short Definition: '.$short_def.', Description: '.$description.', Active Year: '.$active_yr.', and is Active: '.$active_);
         $_SESSION['success'] = "Criteria version updated successfully!";
     } catch (Exception $e) {
         $pdo->rollBack();

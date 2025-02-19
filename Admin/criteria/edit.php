@@ -91,12 +91,7 @@ try {
                             <?php } ?>
                         </select>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Trail</label>
-                        <textarea class="form-control" name="trail" rows="3"><?php echo trim($maintenance_criteria_setup_row['trail']); ?></textarea>
-                    </div>
-                    
+    
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary" name="update_maintenance_criteria_setup">Submit</button>

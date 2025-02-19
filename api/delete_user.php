@@ -3,6 +3,8 @@
 declare(strict_types=1);
 require_once '../db/db.php';
 require 'logging.php';
+require_once '../api/audit_log.php';
+$log = new Audit_log($pdo);
 // ini_set('display_errors', 0); // Disable error display
 // require_once 'auth/check_permissions.php'; // Ensure this checks admin privileges
 
@@ -44,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if ($stmt->execute()) {
       if ($stmt->rowCount() > 0) {
+        $log->userLog('Deleted a User with ID: '.$userId);//logging
         echo ''; // Blank response indicates success
       } else {
         http_response_code(404); // Not Found

@@ -1,7 +1,10 @@
 <?php
 include '../../db/db.php';
+include '../../api/audit_log.php';
 session_start();
 
+
+$log = new Audit_log($pdo);
 if (isset($_GET['keyctr'])) {
     $keyctr = $_GET['keyctr'];
 
@@ -12,7 +15,7 @@ if (isset($_GET['keyctr'])) {
         $stmt->execute(['keyctr' => $keyctr]);
 
         $pdo->commit();
-
+        $log->userLog('Deleted an Area with id:'.$keyctr);
         $_SESSION['success'] = "Area deleted successfully!";
     } catch (PDOException $e) {
         $pdo->rollBack();

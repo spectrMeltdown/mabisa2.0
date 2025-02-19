@@ -1,5 +1,7 @@
 <?php
 include '../../db/db.php';
+include '../../api/audit_log.php';
+$log = new Audit_log($pdo);
 session_start();
 
 if (isset($_GET['keyctr'])) {
@@ -12,6 +14,7 @@ if (isset($_GET['keyctr'])) {
         if ($stmt->execute([$keyctr]) && $stmt->rowCount() > 0) {
        
             $pdo->commit();
+            $log->userLog('Deleted a Sub Requirement with ID: '.$keyctr);
             $_SESSION['success'] = "Sub Requirement deleted successfully!";
         } else 
             $pdo->rollBack();

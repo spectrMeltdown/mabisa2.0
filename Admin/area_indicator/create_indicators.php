@@ -1,5 +1,7 @@
 <?php
 include '../../db/db.php';
+include '../../api/audit_log.php';
+$log = new Audit_log($pdo);
 session_start();
 
 $description_stmt = $pdo->query("SELECT DISTINCT keyctr, description FROM maintenance_area_description");
@@ -30,28 +32,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_indicator'])) {
             $stmt = $pdo->prepare("INSERT INTO maintenance_area_indicators (governance_code, desc_keyctr, area_description, indicator_code, indicator_description, relevance_def, min_requirement, trail) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
             if ($stmt->execute([$governance_code, $desc_keyctr, $area_description, $indicator_code, $indicator_description, $relevance_def, $min_requirement, $trail])) {
-              
+
                 $pdo->commit();
+                $log->userLog('Created a new Indicator with Governance Code: ' . $governance_code . ', Area Description: ' . $area_description . ', Indicator Description: ' . $indicator_description. ' and Relevance Definition: '. $relevance_def);
                 $_SESSION['success'] = "Indicator entry created successfully!";
             } else {
-               
+
                 $pdo->rollBack();
                 $_SESSION['error'] = "Failed to create indicator entry.";
             }
         } else {
-           
+
             $pdo->rollBack();
             $_SESSION['error'] = "Invalid Area Description selected.";
         }
     } catch (Exception $e) {
-  
+
         $pdo->rollBack();
         $_SESSION['error'] = "An error occurred: " . $e->getMessage();
     }
 
     header("Location: index.php");
     exit;
-}?>
+} ?>
 
 <!-- Modal -->
 <div class="modal fade" id="addIndicatorModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">

@@ -1,5 +1,7 @@
 <?php
 include '../../db/db.php';
+include '../../api/audit_log.php';
+$log = new Audit_log($pdo);
 session_start();
 
 if (isset($_GET['code'])) {
@@ -13,6 +15,7 @@ if (isset($_GET['code'])) {
         if ($stmt->execute([$code])) {
       
             $pdo->commit();
+            $log->userLog('Deleted a Category with Code: '.$code);
             $_SESSION['success'] = "Category deleted successfully!";
         } else {
             $pdo->rollBack();
