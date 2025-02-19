@@ -114,14 +114,32 @@ if (isset($_GET['delete_id'])) {
 }
 
 if (isset($_GET['indicator_id'])) {
-    $indicator_id = $_GET['indicator_id'];
+    $indicator_id = trim($_GET['indicator_id']); 
 
     try {
-        $stmt = $pdo->prepare("SELECT * FROM maintenance_area_mininumreqs WHERE indicator_code = :indicator_id");
-        $stmt->execute([':indicator_id' => $indicator_id]);
+        $stmt = $pdo->prepare("
+            SELECT 
+                mr.keyctr AS req_keyctr,
+                mr.indicator_keyctr,
+                mr.reqs_code,
+                mr.description AS min_requirement_desc,
+                mr.sub_mininumreqs
+            FROM maintenance_area_mininumreqs mr
+            WHERE mr.indicator_keyctr = :indicator_id
+            ORDER BY mr.reqs_code
+        ");
+
+        $stmt->bindParam(':indicator_id', $indicator_id, PDO::PARAM_STR); 
+        $stmt->execute();
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (empty($data)) {
+            error_log("No matching records for indicator_id: " . $indicator_id);
+        }
+
         echo json_encode(['data' => $data], JSON_PRETTY_PRINT);
     } catch (PDOException $e) {
+        error_log("DB Error: " . $e->getMessage());
         echo json_encode(['error' => htmlspecialchars($e->getMessage())]);
     }
 }

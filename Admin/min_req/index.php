@@ -68,7 +68,7 @@ unset($_SESSION['success']);
                   <thead>
                     <tr>
                       <th>Keyctr</th>
-                      <th>Indicator Keyctr</th>
+                      <th>Indicator Code</th>
                       <th>Reqs Code</th>
                       <th>Description</th>
                       <th>Sub Minimum Reqs</th>
@@ -77,10 +77,15 @@ unset($_SESSION['success']);
                   </thead>
                   <tbody>
                     <?php foreach ($data as $row):
+                      $stmt = $pdo->prepare("SELECT indicator_code FROM `maintenance_area_indicators` WHERE keyctr = :keyctr");
+                      $stmt->bindParam(':keyctr', $row['indicator_keyctr'], PDO::PARAM_INT);
+                      $stmt->execute();
+                      $indicator_code = $stmt->fetch(PDO::FETCH_ASSOC);
                     ?>
+
                       <tr>
                         <td><?php echo $row['keyctr']; ?></td>
-                        <td><?php echo $row['indicator_keyctr']; ?></td>
+                        <td><?php echo $indicator_code ? $indicator_code['indicator_code'] : 'N/A'; ?></td>
                         <td><?php echo $row['reqs_code']; ?></td>
                         <td><?php echo $row['description']; ?></td>
                         <td><?php echo $row['sub_mininumreqs']; ?></td>

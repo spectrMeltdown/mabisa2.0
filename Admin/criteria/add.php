@@ -36,7 +36,7 @@ $maintenance_document_source_result = fetchAllData($pdo, "SELECT * FROM `mainten
                     <form action="../script.php" method="post">
                         <div class="mb-3">
                             <label class="form-label">Version</label>
-                            <select class="form-control" name="version_keyctr">
+                            <select class="form-control" name="version_keyctr" required>
                                 <option value="">Select</option>
                                 <?php foreach ($maintenance_criteria_version_result as $row) { ?>
                                     <option value="<?= htmlspecialchars($row['keyctr']) ?>">
@@ -48,12 +48,12 @@ $maintenance_document_source_result = fetchAllData($pdo, "SELECT * FROM `mainten
 
                         <div class="mb-3">
                             <label class="form-label">Indicator</label>
-                            <select class="form-control" name="indicator_keyctr">
+                            <select class="form-control" name="indicator_keyctr" required>
                                 <option value="">Select</option>
                                 <?php foreach ($maintenance_area_indicators_result as $row) { ?>
                                     <option data-indicator-code="<?= htmlspecialchars($row['indicator_code']) ?>"
                                         value="<?= htmlspecialchars($row['keyctr']) ?>">
-                                        <?= htmlspecialchars($row['indicator_code'] . " " . $row['indicator_description']) ?>
+                                        <?= htmlspecialchars($row['indicator_code'] . " - " . $row['indicator_description']) ?>
                                     </option>
                                 <?php } ?>
                             </select>
@@ -61,24 +61,24 @@ $maintenance_document_source_result = fetchAllData($pdo, "SELECT * FROM `mainten
 
                         <div class="mb-3">
                             <label class="form-label">Minimum Requirements</label>
-                            <select class="form-control" name="minreqs_keyctr">
-                                <option value="">Select</option>
+                            <select class="form-control" name="minreqs_keyctr"required>
+                                <option value="" >Select</option>
                             </select>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Sub Minimum Requirements</label>
-                            <input type="number" class="form-control" name="sub_minimumreqs" />
+                            <input type="number" class="form-control" name="sub_minimumreqs" required/>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">DOCUMENTARY REQUIREMENTS/MOVs</label>
-                            <textarea class="form-control" name="movdocs_reqs" rows="3"></textarea>
+                            <textarea class="form-control" name="movdocs_reqs" rows="3" required></textarea>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Data Source</label>
-                            <select class="form-control" name="data_source">
+                            <select class="form-control" name="data_source" required>
                                 <option value="">Select</option>
                                 <?php foreach ($maintenance_document_source_result as $row) { ?>
                                     <option value="<?= htmlspecialchars($row['keyctr']) ?>">
@@ -100,33 +100,36 @@ $maintenance_document_source_result = fetchAllData($pdo, "SELECT * FROM `mainten
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
     <script>
-        $(document).ready(function () {
-            $('select[name="indicator_keyctr"]').change(function () {
-                const selectedOption = $(this).find(':selected');
-                const indicatorCode = selectedOption.data('indicator-code');
-
-                $.ajax({
-                    url: '../script.php',
-                    type: 'GET',
-                    data: { 'indicator_id': indicatorCode },
-                    dataType: 'JSON',
-                    success: function (response) {
-                        if (response.data && Array.isArray(response.data)) {
-                            $('select[name="minreqs_keyctr"]').empty().append('<option value="">Select</option>');
-                            $.each(response.data, function (index, item) {
-                                $('select[name="minreqs_keyctr"]').append(
-                                    $('<option>', {
-                                        value: item.keyctr,
-                                        text: item.reqs_code + " " + item.description
-                                    })
-                                );
-                            });
-                        } else {
-                            console.error("Unexpected response format:", response);
-                        }
-                    }
+        $(document).ready(function() {
+            $('select[name="indicator_keyctr"]').change(function() {
+    const indicatorKeyctr = $(this).val(); 
+    console.log("Selected Indicator:", indicatorKeyctr);
+    
+    $.ajax({
+        url: '../script.php',
+        type: 'GET',
+        data: { 'indicator_id': indicatorKeyctr },
+        dataType: 'JSON',
+        success: function(response) {
+            if (response.data && Array.isArray(response.data)) {
+                const minReqSelect = $('select[name="minreqs_keyctr"]');
+                minReqSelect.empty().append('<option value="">Select</option>');
+                
+                $.each(response.data, function(index, item) {
+                    minReqSelect.append(
+                        $('<option>', {
+                            value: item.req_keyctr,
+                            text: item.reqs_code + " - " + item.min_requirement_desc
+                        })
+                    );
                 });
-            });
+            } else {
+                console.error("Unexpected response format:", response);
+            }
+        }
+    });
+});
+
         });
     </script>
 
