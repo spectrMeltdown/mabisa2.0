@@ -87,12 +87,6 @@ $maintenance_document_source_result = fetchAllData($pdo, "SELECT * FROM `mainten
                                 <?php } ?>
                             </select>
                         </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Trail</label>
-                            <textarea class="form-control" name="trail" rows="3"></textarea>
-                        </div>
-
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-primary"

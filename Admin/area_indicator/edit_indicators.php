@@ -1,6 +1,8 @@
 <?php
 session_start();
 require_once '../../db/db.php';
+include '../../api/audit_log.php';
+$log = new Audit_log($pdo);
 
 $description_stmt = $pdo->query("SELECT DISTINCT keyctr, description FROM maintenance_area_description");
 $descriptions = $description_stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -43,6 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_indicator'])) {
             if ($stmt->execute([$governance_code, $desc_keyctr, $area_description, $indicator_description, $relevance_def, $min_requirement, $trail, $_POST['indicator_code']])) {
                 // Commit the transaction
                 $pdo->commit();
+                $log->userLog('Edited an Indicator with ID: '.$gov_data['keyctr'].', Indicator Code: '.$_POST['indicator_code'].', to Governance Code: ' . $governance_code . ', Area Description: ' . $area_description .', Indicator Description: ' . $indicator_description. ' and Relevance Definition: '. $relevance_def);
                 $_SESSION['success'] = "Indicator entry updated successfully!";
                 header("Location: index.php");
                 exit;

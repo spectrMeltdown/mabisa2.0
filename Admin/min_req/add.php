@@ -1,5 +1,7 @@
 <?php
     include '../../db/db.php';
+    include '../../api/audit_log.php';
+    $log = new Audit_log($pdo);
     session_start();
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['add_minreq'])) {
 
@@ -16,6 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['add_minreq'])) {
 
         if ($stmt->execute([$indicator_keyctr, $reqs_code, $description, $sub_mininumreqs])) {
             $pdo->commit();
+            $log->userLog('Created a new Minimum Requirement with Indicator ID: '.$indicator_keyctr.', Requirements Code: '.$reqs_code.', Description: '.$description.', and Sub Minimum Requirements: '.$sub_mininumreqs);
             $_SESSION['success'] = "Minimum Requirement created successfully!";
         } else {
             $pdo->rollBack();
@@ -39,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['add_minreq'])) {
                 <h5 class="modal-title" id="modalLabel">Add New Requirement</h5>
             </div>
             <div class="modal-body">
-                <form method="POST" action="add_req.php">
+                <form method="POST" action="add.php">
                     <div class="mb-3">
                         <label class="form-label">Indicator Keyctr</label>
                         <input type="number" class="form-control" name="indicator_keyctr" required>

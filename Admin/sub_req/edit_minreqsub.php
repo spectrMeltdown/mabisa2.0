@@ -1,5 +1,7 @@
 <?php
 require '../../db/db.php';
+include '../../api/audit_log.php';
+$log = new Audit_log($pdo);
 session_start();
 
 if (isset($_GET['keyctr'])) {
@@ -42,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ]);
 
         $pdo->commit();
-
+        $log->userLog('Edited a Minimum Requirement Sub Entry with ID: '.$keyctr.' to Minimum Requirement Keyctr: ' . $mininumreq_keyctr . ', Indicator Keyctr: ' . $indicator_keyctr . ', Requirements Code: ' . $reqs_code . ', and Description: ' . $description);
         $_SESSION['success'] = "Sub Requirement updated successfully!";
     } catch (Exception $e) {
         $pdo->rollBack();

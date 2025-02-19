@@ -1,5 +1,7 @@
 <?php
 include '../../db/db.php';
+include '../../api/audit_log.php';
+$log = new Audit_log($pdo);
 session_start();
 
 if (isset($_GET['code'])) {
@@ -33,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         ]);
 
         $pdo->commit(); 
-        
+        $log->userLog('Edited a Category to Code: '.$code.', Short Definiton: '.$short_def.', and Description: '.$description);
         $_SESSION['success'] = "Category updated successfully!";
     } catch (Exception $e) {
         $pdo->rollBack();

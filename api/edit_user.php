@@ -6,6 +6,8 @@ require_once 'logging.php';
 require_once '../db/db.php';
 require 'get_all_perm_cols.php';
 require 'update_perms.php';
+require_once '../api/audit_log.php';
+$log = new Audit_log($pdo);
 
 try {
   if ($_SERVER['REQUEST_METHOD'] != 'POST') throw new Exception('Invalid request method.');
@@ -123,6 +125,9 @@ try {
     // update gen perms
     updatePerms($pdo, $result[0]['genID'], $genPerms, $allPerms);
   }
+
+  //logging
+  $log->userLog('Edited a User with ID: '.$id.'to Username: '.$username.', Fullname: '.$fullName.', Email: '.$email.', and Mobile Num: '.$mobileNum);
 } catch (\Throwable $th) {
   http_response_code(500);
   writeLog($th);

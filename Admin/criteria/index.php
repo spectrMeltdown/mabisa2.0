@@ -217,7 +217,7 @@ if (!empty($maintenance_area_description_result)) {
                     <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
                       <thead>
                         <tr>
-                          <th style="width: 5%; text-align: center;">Action</th>
+                          <th style="width: 7%; text-align: center;">Action</th>
                           <th style="width: 20%; text-align: center;">Relevant/Definition</th>
                           <th style="width: 20%; text-align: center;">Minimum Requirements</th>
                           <th style="width: 20%; text-align: center;">Documentary Requirements/MOVs</th>
@@ -235,7 +235,7 @@ if (!empty($maintenance_area_description_result)) {
                           <button class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
                             Edit
                           </button>
-                          <a href="../script.php?delete_id=<?php echo $row['keyctr'] ?>">Delete</a>
+                          <a href="../script.php?delete_id=<?php echo $row['keyctr'] ?>" class="btn btn-danger delete-btn">Delete</a>
                         </td>
                         <td><?php echo $row['relevance_definition']; ?></td>
                         <td><?php echo $row['reqs_code'] . " " . $row['description']; ?></td>
@@ -281,9 +281,15 @@ if (!empty($maintenance_area_description_result)) {
         }
       });
     });
-  </script>
 
-  <script>
+    $(document).on("click", ".delete-btn", function(e) {
+      e.preventDefault();
+      var url = $(this).attr("href");
+      if (confirm("Are you sure you want to delete this category?")) {
+        window.location.href = url;
+      }
+    });
+
     $(document).on("click", ".open-modal", function() {
       var edit_id = $(this).data("id");
 

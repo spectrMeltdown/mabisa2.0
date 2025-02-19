@@ -1,5 +1,7 @@
 <?php
 require '../../db/db.php';
+include '../../api/audit_log.php';
+$log = new Audit_log($pdo);
 session_start();
 
 $keyctr = $_GET['keyctr'];
@@ -12,7 +14,7 @@ try {
     $stmt->execute(['keyctr' => $keyctr]);
 
     $pdo->commit();
-
+$log->userLog('Deleted a Document Source with ID:'. $keyctr);
     $_SESSION['success'] = "Document Source deleted successfully!";
 } catch (Exception $e) {
     $pdo->rollBack();

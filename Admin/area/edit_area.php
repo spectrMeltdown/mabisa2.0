@@ -1,6 +1,8 @@
 <?php
 session_start();
 include '../../db/db.php';
+include '../../api/audit_log.php';
+$log = new Audit_log($pdo);
 
 // Handle update
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -19,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute(['description' => $description, 'trail' => $trail, 'keyctr' => $keyctr]);
 
         $pdo->commit();
-
+        $log->userLog('Edited an Area with id: '.$keyctr.' to: '. $description);
         $_SESSION['success'] = "Area updated successfully!";
     } catch (PDOException $e) {
         $pdo->rollBack();

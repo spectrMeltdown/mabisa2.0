@@ -1,5 +1,7 @@
 <?php
 include '../../db/db.php';
+include '../../api/audit_log.php';
+$log = new Audit_log($pdo);
 session_start();
 
 if (isset($_GET['keyctr'])) {
@@ -43,7 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         ]);
 
         $pdo->commit();
-
+        $log->userLog('Edited a Governance Entry with ID: '.$keyctr.' to Cat Code: '.$cat_code.', Area ID: '.$area_keyctr.', Description ID: '.$desc_keyctr.', and Description: '.$description);
+      
         $_SESSION['success'] = "Governance entry updated successfully!";
         header('Location: index.php');
         exit();

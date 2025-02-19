@@ -1,5 +1,7 @@
 <?php
 include '../../db/db.php';
+include '../../api/audit_log.php';
+$log = new Audit_log($pdo);
 session_start();
 
 if (isset($_GET['keyctr'])) {
@@ -28,6 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $pdo->commit();
 
+        $log->userLog('Edited an Area Description with id: '.$keyctr.' to: '.$description);
         $_SESSION['success'] = "Description updated successfully!";
     } catch (Exception $e) {
         $pdo->rollBack();

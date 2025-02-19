@@ -1,5 +1,7 @@
 <?php
 include '../../db/db.php';
+include '../../api/audit_log.php';
+$log = new Audit_log($pdo);
 session_start();
 
 if (isset($_GET['keyctr'])) {
@@ -37,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ]);
 
         $pdo->commit();
-
+        $log->userLog('Created a new Minimum Requirement with ID: '.$keyctr.', to Indicator ID: '.$indicator_keyctr.', Requirements Code: '.$reqs_code.', Description: '.$description.', and Sub Minimum Requirements: '.$sub_mininumreqs);
         $_SESSION['success'] = "Minimum requirement updated successfully!";
     } catch (Exception $e) {
         $pdo->rollBack();

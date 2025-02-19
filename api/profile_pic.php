@@ -8,6 +8,8 @@ declare(strict_types=1);
 // ini_set('log_errors', 1);    // Enable error logging
 require_once '../db/db.php';
 require 'logging.php';
+require_once '../api/audit_log.php';
+$log = new Audit_log($pdo);
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
   http_response_code(405); // Method Not Allowed
@@ -74,10 +76,11 @@ try {
   global $pdo;
   $stmt = $pdo->prepare('UPDATE users SET profile_pic = :image WHERE id = :id');
   $stmt->execute([':image' => $filePath, ':id' => $userId]);
+
 } catch (Exception $e) {
   http_response_code(500);
   echo 'Database error: ' . $e->getMessage();
   exit;
 }
-
+$log->userLog('Updated their Profile Picture');//logging
 http_response_code(200); // Success

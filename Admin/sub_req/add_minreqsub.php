@@ -1,5 +1,7 @@
 <?php
 require '../../db/db.php';
+include '../../api/audit_log.php';
+$log = new Audit_log($pdo);
 session_start();
 
 // Fetch values for foreign key mininumreq_keyctr
@@ -26,6 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['add_minreq_sub'])) {
 
         if ($stmt->execute([$mininumreq_keyctr, $indicator_keyctr, $reqs_code, $description, $trail])) {
             $pdo->commit();
+            $log->userLog('Created a New Minimum Requirement Sub Entry with Minimum Requirement Keyctr: ' . $mininumreq_keyctr . ', Indicator Keyctr: ' . $indicator_keyctr . ', Requirements Code: ' . $reqs_code . ', and Description: ' . $description);
             $_SESSION['success'] = "Minimum Requirement Sub entry created successfully!";
         } else {
             $pdo->rollBack();
@@ -56,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['add_minreq_sub'])) {
                             <option value="">Select Minimum Requirement</option>
                             <?php foreach ($mininumreqs as $mininumreq): ?>
                                 <option value="<?= htmlspecialchars($mininumreq['keyctr']) ?>">
-                                <?= htmlspecialchars($mininumreq['keyctr'] .'.     ' . $mininumreq['description']); ?>
+                                    <?= htmlspecialchars($mininumreq['keyctr'] . '.     ' . $mininumreq['description']); ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
