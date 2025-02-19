@@ -180,17 +180,19 @@ if (!userHasPerms(['users_create', 'users_update'], 'gen')) {
                 ?>
                   <div class="my-3 form-group d-flex">
                     <label for="roleSelect" class="form-label mt-2 mr-3">Role</label>
-                    <select class="custom-select" name="role" id="roleSelect" required>
-                      <option value="" disabled selected hidden>Select one</option>
-                      <?php
-                      $options = '';
-                      foreach ($roles as $role) {
-                        $options .= '<option value="' . htmlspecialchars($role['id']) . '">' . htmlspecialchars($role['name']) . '</option>';
-                      }
-                      echo $options;
-                      ?>
-                    </select>
-                    <div class="invalid-feedback">
+                    <div class="container">
+                      <select class="custom-select" name="role" id="roleSelect" required>
+                        <option value="" disabled selected hidden>Select one</option>
+                        <?php
+                        $options = '';
+                        foreach ($roles as $role) {
+                          $options .= '<option value="' . htmlspecialchars($role['id']) . '">' . htmlspecialchars($role['name']) . '</option>';
+                        }
+                        echo $options;
+                        ?>
+                      </select>
+                      <div class="invalid-feedback">
+                      </div>
                     </div>
                   </div>
                 <?php else: ?>
