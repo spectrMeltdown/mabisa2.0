@@ -153,17 +153,17 @@ function updateMultiBarPerms(\PDO $pdo, array $urbRes, array $newPerms, array $a
   writeLog($compiledNewPerms);
   // exit;
 
-  foreach ($compiledNewPerms as $barangayID => $indicators) {
-    foreach ($indicators as $indicatorID => $permissions) {
-      $sql = 'UPDATE permissions SET :permission = 1 WHERE id = :id';
-      $stmt = $pdo->prepare($sql);
-      $stmt->execute([
-        ':user_id' => $newUserID,
-        ':barangay_id' => $barangayID,
-        ':indicator_id' => $indicatorID,
-        ':permission_id' => $newPermissionID,
-      ]);
-      $newUserRolesBarangayPerms = $pdo->lastInsertId();
-    }
-  }
+  // foreach ($compiledNewPerms as $barangayID => $indicators) {
+  //   foreach ($indicators as $indicatorID => $permissions) {
+  //     $sql = 'UPDATE permissions SET :permission = 1 WHERE id = :id';
+  //     $stmt = $pdo->prepare($sql);
+  //     $stmt->execute([
+  //       ':user_id' => $newUserID,
+  //       ':barangay_id' => $barangayID,
+  //       ':indicator_id' => $indicatorID,
+  //       ':permission_id' => $newPermissionID,
+  //     ]);
+  //     $newUserRolesBarangayPerms = $pdo->lastInsertId();
+  //   }
+  // }
 }
