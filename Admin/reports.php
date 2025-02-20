@@ -56,8 +56,6 @@ foreach ($categories as $category) {
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
-    require_once 'common/sidebar.php';
-    ?>
     <div id="content-wrapper" class="d-flex flex-column">
       <div id="content">
         <?php require_once 'common/nav.php'; ?>

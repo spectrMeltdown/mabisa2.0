@@ -30,7 +30,7 @@ class Audit_log
         }
     }
 
-    public function userLog($action)
+    public function userLog($action, $userID = null)
     {
         try {
             $query = "INSERT INTO audit_log 
@@ -40,7 +40,7 @@ class Audit_log
             $stmt = $this->pdo->prepare($query);
 
             $stmt->execute([
-                ':user_id' => $this->userId,
+                ':user_id' => $userID ? $userID : $this->userId,
                 ':username' => $this->username,
                 ':action' => $action,
             ]);
