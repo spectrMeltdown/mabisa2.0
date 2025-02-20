@@ -12,11 +12,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $cat_code = $_POST['cat_code'];
     $area_keyctr = $_POST['area_keyctr'];
     $desc_keyctr = $_POST['desc_keyctr'];
-    $description = $_POST['description'];
     $trail = 'Created at ' . date('Y-m-d H:i:s');
 
     try {
         $pdo->beginTransaction();
+
+        $desc_stmt = $pdo->prepare("SELECT description FROM maintenance_area_description WHERE keyctr = ?");
+        $desc_stmt->execute([$desc_keyctr]);
+        $desc = $desc_stmt->fetch(PDO::FETCH_ASSOC);
+
 
         $sql = "INSERT INTO maintenance_governance (cat_code, area_keyctr, desc_keyctr, description, trail) 
                 VALUES (:cat_code, :area_keyctr, :desc_keyctr, :description, :trail)";
@@ -25,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'cat_code' => $cat_code,
             'area_keyctr' => $area_keyctr,
             'desc_keyctr' => $desc_keyctr,
-            'description' => $description,
+            'description' => $desc['description'],
             'trail' => $trail
         ]);
 
@@ -90,10 +94,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </select>
                     </div>
 
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label class="form-label">Description</label>
                         <textarea class="form-control" name="description" required></textarea>
-                    </div>
+                    </div> -->
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

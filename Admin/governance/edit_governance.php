@@ -21,11 +21,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $cat_code = $_POST['cat_code'];
     $area_keyctr = $_POST['area_keyctr'];
     $desc_keyctr = $_POST['desc_keyctr'];
-    $description = $_POST['description'];
     $trail = 'Updated at ' . date('Y-m-d H:i:s');
 
     try {
         $pdo->beginTransaction();
+
+        $desc_stmt = $pdo->prepare("SELECT description FROM maintenance_area_description WHERE keyctr = ?");
+        $desc_stmt->execute([$desc_keyctr]);
+        $desc = $desc_stmt->fetch(PDO::FETCH_ASSOC);
 
         $sql = "UPDATE maintenance_governance SET 
                 cat_code = :cat_code, 
@@ -39,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'cat_code' => $cat_code,
             'area_keyctr' => $area_keyctr,
             'desc_keyctr' => $desc_keyctr,
-            'description' => $description,
+            'description' => $desc['description'],
             'trail' => $trail,
             'keyctr' => $keyctr
         ]);
@@ -110,10 +113,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </select>
                     </div>
 
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label class="form-label">Description</label>
                         <textarea class="form-control" name="description" required><?= htmlspecialchars($governance['description'] ?? '') ?></textarea>
-                    </div>
+                    </div> -->
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

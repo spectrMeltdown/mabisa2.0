@@ -88,7 +88,7 @@ $maintenance_document_source_result = fetchAllData($pdo, "SELECT * FROM `mainten
                             </select>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-primary"
                                 name="add_maintenance_criteria_setup">Submit</button>
                         </div>
