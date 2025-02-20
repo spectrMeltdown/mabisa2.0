@@ -45,10 +45,10 @@ function getPermissions($isBarPerms = false): array | string
     $permissions = $query->fetch(PDO::FETCH_ASSOC);
   }
   if ($permissions == false) return [];
-  // writeLog('bar perms was: ');
-  // writeLog($isBarPerms);
-  // writeLog('Permissions is: ');
-  // writeLog($permissions);
+  writeLog('bar perms was: ');
+  writeLog($isBarPerms);
+  writeLog('Permissions is: ');
+  writeLog($permissions);
 
   if ($isBarPerms) {
     // note: modifying original permissions array
@@ -109,10 +109,10 @@ function userHasPerms(string | array  $perms, string $permType, string $barID = 
   }
   // check if barangay perms
   else if ($permType == 'bar') {
-    writeLog('perm type is ' . $permType);
-    return checkPerms($userBarPerms, $perms, $barID, (string)$indicatorID);
+    // writeLog('perm type is ' . $permType);
+    return checkPerms($userBarPerms, $perms, $barID, (string)$indicatorID, $barID, (string)$indicatorID);
   } else if ($permType == 'any') {
-    writeLog('perm type is ' . $permType);
+    // writeLog('perm type is ' . $permType);
     return checkPerms(array_merge($userGenPerms, $userBarPerms), $perms, $barID, (string)$indicatorID);
   }
   // throw if none of the above
@@ -123,10 +123,10 @@ function userHasPerms(string | array  $perms, string $permType, string $barID = 
 function checkPerms($grantedPerms, $permsQuery, string $barID = null, string $indicatorID = null)
 {
   if (count(array_filter($grantedPerms, 'is_array')) > 0) {
-    // writeLog(gettype($permsQuery));
+    writeLog('granted perms has array');
     // if array, loop and check against each item
     if (is_array($permsQuery)) {
-      // writeLog('perms was array');
+      writeLog('permsQuery was array');
       // writeLog('granted perms are: ');
       // writeLog($grantedPerms);
       $result = [];
@@ -144,7 +144,7 @@ function checkPerms($grantedPerms, $permsQuery, string $barID = null, string $in
         // if they are equal, means that all specified perms are granted
       }
       // writeLog('perms count was: ' . count($permsQuery));
-      // writeLog($permsQuery);
+      // 1writeLog($permsQuery);
       // writeLog('result count was: ' . count($result));
       // writeLog($result);
       // writeLog('');
@@ -152,10 +152,11 @@ function checkPerms($grantedPerms, $permsQuery, string $barID = null, string $in
     }
     // if string, loop only through the permissions array
     else if (is_string($permsQuery)) {
-      // writeLog('perms was string');
+      writeLog('permsQuery was string');
       // writeLog('granted perms are: ');
       // writeLog($grantedPerms);
       if (!empty($barID) && !empty($indicatorID)) {
+        writeLog('barID & indicatorID');
         $result = array_filter($grantedPerms, function ($entry) use ($permsQuery, $barID, $indicatorID) {
           // writeLog('granted: ');
           // writeLog($entry);
@@ -181,6 +182,7 @@ function checkPerms($grantedPerms, $permsQuery, string $barID = null, string $in
         });
         return count($result) > 0;
       } else if (!empty($barID)) {
+        writeLog('barID only');
         $result = array_filter($grantedPerms, function ($entry) use ($permsQuery, $barID) {
           // writeLog('granted: ');
           // writeLog($entry);
@@ -189,19 +191,24 @@ function checkPerms($grantedPerms, $permsQuery, string $barID = null, string $in
           // writeLog('');
           // writeLog(str_contains($genPerm, $permsQuery));
           if (is_array($entry)) {
+            writeLog('is array');
             // filter the array in the array 
             $entryBarID = $entry['bid'];
             return !empty(array_filter($entry, function ($item) use ($permsQuery, $barID, $entryBarID) {
-              // writeLog('entryBarID');
-              // writeLog($entryBarID . ' ' . $barID);
+              writeLog('Bar id is: ' . $barID);
+              writeLog('Entry id is: ' . $entryBarID);
               return str_contains((string)$item, $permsQuery) && $barID == $entryBarID;
             }));
           } else {
+            writeLog('is string');
             return str_contains((string)$entry, $permsQuery);
           }
         });
+        writeLog('result is: ');
+        writeLog(count($result) > 0);
         return count($result) > 0;
       } else {
+        writeLog('no ids');
         $result = array_filter($grantedPerms, function ($entry) use ($permsQuery) {
           // writeLog('granted: ');
           // writeLog($entry);
@@ -210,12 +217,14 @@ function checkPerms($grantedPerms, $permsQuery, string $barID = null, string $in
           // writeLog('');
           // writeLog(str_contains($genPerm, $permsQuery));
           if (is_array($entry)) {
+            writeLog('entry is array');
             return !empty(array_filter($entry, function ($item) use ($permsQuery) {
-              writeLog('entryBarID');
-              writeLog($item);
+              // writeLog('entryBarID');
+              // writeLog($item);
               return str_contains((string)$item, $permsQuery);
             }));
           } else {
+            writeLog('entry is string');
             return str_contains((string)$entry, $permsQuery);
           }
         });
@@ -250,9 +259,9 @@ function checkPerms($grantedPerms, $permsQuery, string $barID = null, string $in
         });
         // if they are equal, means that all specified perms are granted
       }
-      // writeLog('perms count was: ' . count($permsQuery));
+      writeLog('perms count was: ' . count($permsQuery));
       // writeLog($permsQuery);
-      // writeLog('result count was: ' . count($result));
+      writeLog('result count was: ' . count($result));
       // writeLog($result);
       // writeLog('');
       return count($permsQuery) == count($result);

@@ -9,22 +9,24 @@ class Audit_log
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
-        
+
         if (isset($_COOKIE['id'])) {
             $this->userId = $_COOKIE['id'];
-            
+
             $sql = "SELECT username FROM users WHERE id = :id";
             $query = $this->pdo->prepare($sql);
             $query->execute(['id' => $this->userId]);
             $user = $query->fetch(PDO::FETCH_ASSOC);
-            
+
             if ($user) {
                 $this->username = $user['username'];
             } else {
                 throw new Exception("User not found.");
             }
         } else {
-            throw new Exception("User ID not found in cookies.");
+            writeLog("User ID not found in cookies.");
+            // commented this out because i cannot login because it throws exception
+            // throw new Exception("User ID not found in cookies.");
         }
     }
 

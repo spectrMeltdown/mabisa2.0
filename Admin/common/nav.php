@@ -1,9 +1,11 @@
 <?php
 $pathPrepend = isset($isInFolder) ? '../' : '';
 $doublePathPrepend = isset($isInFolder) ? '../../' : '../';
+if (isset($isInFolder)):
 ?>
-<script src="<?= $doublePathPrepend ?>js/nav.js" defer></script>
-<div class="d-none" id="isInFolder"></div> <!-- for letting js know that this file is nested in folder -->
+  <div class="d-none" id="isInFolder"></div>
+<?php endif; ?>
+<script src="<?= $doublePathPrepend ?>js/nav.js" defer></script> <!-- for letting js know that this file is nested in folder -->
 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
   <!-- Sidebar Toggle (Topbar) -->
   <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
