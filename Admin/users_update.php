@@ -177,6 +177,7 @@ if (!userHasPerms(['users_create', 'users_update'], 'gen')) {
                   });
                 }
                 if (!empty($roles)):
+
                 ?>
                   <div class="my-3 form-group d-flex">
                     <label for="roleSelect" class="form-label mt-2 mr-3">Role</label>
