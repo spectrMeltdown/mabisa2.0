@@ -12,8 +12,8 @@ $('#loginBtn').on('click', e => {
   const password = $('#password')
     .val()
     .trim();
-  const rememberMe = $('#rememberMe').prop('checked');
-  
+  const rememberMe = $('#rememberMe').prop('checked') ?? false;
+
   resetAlert('alert');
   if (!password) {
     addAlert('Password cannot be empty.');
@@ -27,26 +27,15 @@ $('#loginBtn').on('click', e => {
     loading = false;
     return;
   }
-  fetch('../api/login.php', {
-    method: 'POST',
-    // when passing data to php via js, don't use json because php $_POST doesn't read that (there is a workaround to reading json
-    // in php, but lets just stick with this m'kay?)
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: new URLSearchParams({
+  $.ajax({
+    url:'../api/login.php',
+    method: 'POST' ,
+    data: {
       username: username,
       password: password,
       rememberMe: rememberMe,
-    }),
-  })
-    .then(async res => {
-      const text = await res.text();
-      console.log(text);
-      return JSON.parse(text);
-    })
-    .catch(e => console.log(e))
-    .then(user => {
+    },
+    success: user => {
       console.log('user is: ' + JSON.stringify(user));
 
       // show error on #alert if invalid
@@ -59,8 +48,11 @@ $('#loginBtn').on('click', e => {
       }
       // redirect to dashboard
       location.href = 'dashboard.php';
-    })
-    .catch(e => console.log(e));
+    },
+    error: err => {
+      console.log(err);
+    }
+  });
   loading = false;
 });
 
