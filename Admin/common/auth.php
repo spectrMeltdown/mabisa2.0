@@ -1,5 +1,4 @@
 <?php
-
 // redirect if logged out, except on login page
 if (empty($_COOKIE['id']) && !isset($isLoginPage)) {
   header('location:logged_out.php');
@@ -14,6 +13,12 @@ $userData;
 require_once $pathPrepend . 'api/get_user.php'; // this will provide userData array
 // unset after using
 unset($customUserID);
+global $userData;
+if (isset($userData['error'])) {
+  setcookie('id', '', time() - 3600, '/');
+  require_once 'account_error.php';
+  exit;
+}
 
 // get the general permissions
 function getPermissions($isBarPerms = false): array | string
@@ -45,10 +50,10 @@ function getPermissions($isBarPerms = false): array | string
     $permissions = $query->fetch(PDO::FETCH_ASSOC);
   }
   if ($permissions == false) return [];
-  writeLog('bar perms was: ');
-  writeLog($isBarPerms);
-  writeLog('Permissions is: ');
-  writeLog($permissions);
+  // writeLog('bar perms was: ');
+  // writeLog($isBarPerms);
+  // writeLog('Permissions is: ');
+  // writeLog($permissions);
 
   if ($isBarPerms) {
     // note: modifying original permissions array
@@ -132,14 +137,28 @@ function checkPerms($grantedPerms, $permsQuery, string $barID = null, string $in
       $result = [];
       foreach ($permsQuery as $perm) {
         // if the a granted perm matches a query perm, then add to result
-        $result = array_filter($grantedPerms, function ($grantedP) use ($perm) {
-          // writeLog('granted: ');
-          // writeLog($grantedP);
-          // writeLog('query: ');
-          // writeLog($perm);
+        $result = array_filter($grantedPerms, function ($grantedP) use ($perm, $barID, $indicatorID) {
+          writeLog('granted in array filter: ');
+          writeLog($grantedP);
+          writeLog('query in array filter: ');
+          writeLog($perm);
           // writeLog('');
           // writeLog(str_contains($genPerm, $perm));
-          return str_contains((string)$grantedP, $perm);
+          if (is_array($grantedP)) {
+            // get the current entry barID and indicatorID
+            $entryBarID = $grantedP['bid'];
+            $entryIndID = $grantedP['iid'];
+            // filter the array in the array 
+            return !empty(array_filter($grantedP, function ($item) use ($perm, $barID, $indicatorID, $entryBarID, $entryIndID) {
+              // writeLog('entryBarID');
+              // writeLog($entryBarID . ' ' . $barID);
+              // writeLog('entryIndID');
+              // writeLog($entryIndID . ' ' . $indicatorID);
+              return str_contains((string)$item, $perm) && $barID == $entryBarID && $indicatorID == $entryIndID;
+            }));
+          } else {
+            return str_contains((string)$grantedP, $perm);
+          }
         });
         // if they are equal, means that all specified perms are granted
       }

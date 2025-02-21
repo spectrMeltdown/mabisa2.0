@@ -128,7 +128,7 @@ if (!empty($_COOKIE['id'])) {
                                         </div>
                                         <div class="form-group">
                                             <div class="custom-control custom-checkbox small">
-                                                <input type="checkbox" class="custom-control-input" id="rememberMe" name="rememberMe">
+                                                <input type="checkbox" class="custom-control-input" id="rememberMe" name="rememberMe" value="true">
                                                 <label class="custom-control-label text-grey" for="rememberMe">Remember
                                                     Me?</label>
                                             </div>

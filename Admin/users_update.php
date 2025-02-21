@@ -177,6 +177,7 @@ if (!userHasPerms(['users_create', 'users_update'], 'gen')) {
                   });
                 }
                 if (!empty($roles)):
+
                 ?>
                   <div class="my-3 form-group d-flex">
                     <label for="roleSelect" class="form-label mt-2 mr-3">Role</label>
@@ -209,7 +210,11 @@ if (!userHasPerms(['users_create', 'users_update'], 'gen')) {
               <!-- General permissions selector, if has barangays-->
               <form id="user-gen-permissions-form" class="ml-3" novalidate>
                 <div class="mb-3 form-group container-fluid" id="genPermContainer" style="display: none">
-                  <h4 class="mb-3" id="gen-perm-title"><strong>Global scope</strong></h4>
+                  <div class="row align-items-center mb-3 ">
+                    <h4 class="mr-5" id="gen-perm-title"><strong>Global scope</strong></h4>
+                    <input class="mr-1" type="checkbox" name="selectAllGen" id="selectAllGenBtn">
+                    <label for="inputEmail4" style="margin-bottom: 0;">Select All</label>
+                  </div>
                   <div class="invalid-feedback"></div>
                   <div id="genPermAlert" class="text-danger"></div>
                   <p id="genPermNoPerm" style="display: none;">No general permissions available.</p>

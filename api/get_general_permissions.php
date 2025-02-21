@@ -21,6 +21,8 @@ try {
 
   writeLog('role id: ');
   writeLog($roleID);
+  writeLog('user id: ');
+  writeLog($userID);
 
   // get the role
   $sql = "select name from roles where id = :role_id limit 1";
@@ -37,35 +39,39 @@ try {
     exit;
   }
 
+  $response = [];
+
   // get general permissions
+
   global $genPerms;
+  $roleGenPerms = $genPerms;
   writeLog('original gen perms were:');
-  writeLog($genPerms);
+  writeLog($roleGenPerms);
 
   // remove allow barangay from the perms
-  $genPerms = array_filter($genPerms, fn($perm) => !str_contains($perm, 'allow') && !str_contains($perm, 'bar'), ARRAY_FILTER_USE_KEY);
-
-  writeLog('after filter: ');
-  writeLog($genPerms);
-
-  // // check if role allows barangays
-  // if ($hasBarangay == 1) {
-  //   writeLog('has barangay!');
-  //   // TODO: allow this later on, because then the user can access all barangays if so
-  //   // remove all permissions that start with the name 'assessment'
-  //   $rolePermissions = array_filter($rolePermissions, function ($permission) {
-  //     writeLog($permission);
-  //     return !str_contains((string)$permission, 'assessment');
-  //   }, ARRAY_FILTER_USE_KEY);
-  // }
-
+  $roleGenPerms = array_filter($roleGenPerms, fn($value, $perm) => !str_contains($perm, 'allow') && !str_contains($perm, 'bar') && $value == 1, ARRAY_FILTER_USE_BOTH);
+  // writeLog('after filter: ');
+  // writeLog($roleGenPerms);
+  $response['available'] = array_keys($roleGenPerms);
+  if ($userID != null) {
+    $sql = 'SELECT * FROM permissions p JOIN user_roles ur ON ur.permissions_id = p.id WHERE ur.user_id = :id LIMIT 1';
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([':id' => $userID]);
+    $permissions = $stmt->fetch(PDO::FETCH_ASSOC);
+    writeLog('user taken perms are');
+    writeLog($permissions);
+    if ($permissions != false) {
+      writeLog('perms not false!!');
+      $permissions = array_filter($permissions, fn($value) => $value == 1);
+      $response['taken'] = array_keys($permissions);
+    }
+  }
 
   writeLog('Final result: ');
-  writeLog($genPerms);
-  echo json_encode($genPerms, JSON_PRETTY_PRINT);
+  writeLog($response);
+  echo json_encode($response, JSON_PRETTY_PRINT);
 } catch (\Throwable $th) {
   http_response_code(500);
-  $message = $th->getMessage();
-  writeLog($message);
-  echo json_encode($message, JSON_PRETTY_PRINT);
+  writeLog($th);
+  echo json_encode($th->getMessage(), JSON_PRETTY_PRINT);
 }

@@ -6,12 +6,12 @@ class Audit_log
     private $userId;
     private $username;
 
-    public function __construct(PDO $pdo)
+    public function __construct(PDO $pdo, int $userID = null)
     {
         $this->pdo = $pdo;
 
-        if (isset($_COOKIE['id'])) {
-            $this->userId = $_COOKIE['id'];
+        if (isset($_COOKIE['id']) || !empty($userID)) {
+            $this->userId = isset($_COOKIE['id']) ? $_COOKIE['id'] : $userID;
 
             $sql = "SELECT username FROM users WHERE id = :id";
             $query = $this->pdo->prepare($sql);
@@ -30,7 +30,7 @@ class Audit_log
         }
     }
 
-    public function userLog($action, $userID = null)
+    public function userLog($action)
     {
         try {
             $query = "INSERT INTO audit_log 
@@ -40,7 +40,7 @@ class Audit_log
             $stmt = $this->pdo->prepare($query);
 
             $stmt->execute([
-                ':user_id' => $userID ? $userID : $this->userId,
+                ':user_id' => $this->userId,
                 ':username' => $this->username,
                 ':action' => $action,
             ]);

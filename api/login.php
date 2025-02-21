@@ -9,8 +9,6 @@ header('Content-Type: application/json; charset=utf-8');
 require_once '../db/db.php';
 require_once 'logging.php';
 require_once '../api/audit_log.php';
-$log = new Audit_log($pdo);
-
 
 try {
   if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -57,8 +55,9 @@ try {
     'httponly' => true, // Prevent JavaScript access
     'samesite' => 'Strict', // Prevent CSRF
   ]);
-  //logging 
-  $log->userLog('Logged In', (string)$row['id']);
+  //logging
+  $log = new Audit_log($pdo, $row['id']);
+  $log->userLog('Logged In');
   echo json_encode($response, JSON_PRETTY_PRINT);
 } catch (Exception $e) {
   // http_response_code(500); // Set HTTP 500 response code
