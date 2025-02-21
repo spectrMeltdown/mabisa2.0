@@ -30,7 +30,11 @@ function getUser(string $id)
 
   $user = $stmt->fetch(PDO::FETCH_ASSOC);
   if (!$user) {
-    throw new Exception('User not found');
+    writeLog('User not found');
+    $user = [];
+    $user['error'] = 'deleted';
+    return (isset($customUserID) ? $user :  json_encode($user, JSON_PRETTY_PRINT));
+    // throw new Exception('User not found');
   }
 
   $user['role'] = getRoleName($pdo, $user['role_id']);

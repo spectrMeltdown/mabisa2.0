@@ -121,19 +121,37 @@ LEFT JOIN user_roles_barangay urb
 
   // get the gen perms id of current user
   if (!empty($genPerms)) {
+    writeLog('GEN PERMS WAS');
+    writeLog($genPerms);
     // each user should only have one global/general perms
-    $sql = 'SELECT permissions_id AS genID FROM users WHERE user_id = :id LIMIT 1';
+    $sql = 'SELECT permissions_id AS genID FROM user_roles WHERE user_id = :id LIMIT 1';
 
     // actual fetch
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':id' => $id]);
-    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
     writeLog('GEN PERM ID WAS');
     writeLog($result);
 
     // update gen perms
-    updatePerms($pdo, $result[0]['genID'], $genPerms, $allPerms);
+    $genPermsID = updatePerms($pdo, isset($result['genID']) ? $result['genID'] : null, array_keys(array_filter($genPerms, function ($perm) {
+      return $perm != 'selectAllGen';
+    }, ARRAY_FILTER_USE_KEY)), $allPerms, true);
+    if (!empty($genPermsID)) {
+      writeLog('SQL params: ');
+      writeLog([
+        ':user_id' => $id,
+        ':permissions_id' => $genPermsID
+      ]);
+      // insert the new entry into user_roles
+      $sql = 'INSERT INTO user_roles(user_id, permissions_id) VALUES (:user_id,  :permissions_id)';
+      $stmt = $pdo->prepare($sql);
+      $stmt->execute([
+        ':user_id' => $id,
+        ':permissions_id' => $genPermsID
+      ]);
+    }
   }
 
   //logging
@@ -167,10 +185,20 @@ function updateMultiBarPerms(\PDO $pdo, array $urbRes, array $newPerms, array $a
 
   foreach ($compiledNewPerms as $barangayID => $indicators) {
     foreach ($indicators as $indicatorID => $permissions) {
+      // writeLog('urb result is: ');
+      // writeLog($urbRes);
       foreach ($urbRes as $entry) {
         if ($entry['brgyid'] == $barangayID && $entry['indid'] == $indicatorID) {
+          writeLog('Updating: ' . $barangayID . ' ' . $indicatorID);
           $permID = updatePerms($pdo, $entry['permid'], array_map(fn($value) => 'assessment_' . $value, $permissions), $allPerms, true);
-          if ($permID != null) {
+          if (!empty($permID)) {
+            writeLog('SQL params: ');
+            writeLog([
+              ':user_id' => $userID,
+              ':barangay_id' => $entry['brgyid'],
+              ':indicator_id' => $entry['indid'],
+              ':permission_id' => $permID
+            ]);
             // insert the new entry into user_roles_barangay
             $sql = 'INSERT INTO user_roles_barangay(user_id, barangay_id, indicator_id, permission_id) VALUES (:user_id, :barangay_id, :indicator_id, :permission_id)';
             $stmt = $pdo->prepare($sql);

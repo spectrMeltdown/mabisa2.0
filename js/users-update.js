@@ -13,6 +13,8 @@ const params = new URLSearchParams(location.search);
 let currentUserID = Number(params.get('id'));
 /** @var {bool} */
 let editMode = currentUserID ? true : false;
+/** @var {array} */
+let itemsCheckViaJS = [];
 addPhonePrepend();
 
 //cancel button confirmation
@@ -78,7 +80,10 @@ $('#roleSelect').on('change', async e => {
           let testPermissions = JSON.parse(permissions);
 
           // if super admin, just display "all permissions are granted"
-          if (!testPermissions || testPermissions.length == 0) {
+          if (
+            !testPermissions.available ||
+            testPermissions.available.length == 0
+          ) {
             console.log('blank global permissions!');
             $('#genPermNoPerm').css('display', 'block');
           } else if (permissions == '"Super Admin"') {
@@ -95,19 +100,31 @@ $('#roleSelect').on('change', async e => {
             // remove the superAdminLabel if present
             if ($('#superAdminLabel').length) $('#superAdminLabel').remove();
             // convert permissions to a object first
+            /** @type {object} */
             permissions = JSON.parse(permissions);
             // populate the permissions (already filtered by server)
-            for (let [key, value] of Object.entries(permissions)) {
+            /** @type {string} */
+            let perm = '';
+            for (perm of Object.values(permissions.available)) {
+              const permID = 'gen-' + perm;
+              if (
+                permissions.taken &&
+                Object.values(permissions.taken).some(takenPerm =>
+                  perm.includes(takenPerm),
+                )
+              ) {
+                itemsCheckViaJS.push(permID);
+              }
               $('#genPermList').append(`
                   <li class="d-inline-block m-1">
                              <div class="input-group mb-3 d-flex flex-row">
                                <div class="input-group-prepend">
                                  <div class="input-group-text">
-                                   <input type="checkbox" name="${key}" id="${key}" value="true">
+                                   <input type="checkbox" name="${perm}" id="${permID}" value="true">
                                  </div>
                                </div>
                                <div class="card card-body border-secondary">
-                                 <label for="${key}" id="label-${value}">${key.replaceAll(
+                                 <label for="${permID}" id="label-${permID}">${perm.replaceAll(
                 '_',
                 ' ',
               )}</label>
@@ -124,6 +141,13 @@ $('#roleSelect').on('change', async e => {
           console.log('Error: ' + JSON.stringify(res));
           rej();
         },
+      }).then(() => {
+        // after all the js is done, then check the boxes with ids defined in itemsCheckViaJS
+        for (const item of itemsCheckViaJS) {
+          // console.log(item + ' checked!');
+          $('#' + item).prop('checked', true);
+        }
+        itemsCheckViaJS = [];
       });
     });
 
@@ -223,15 +247,15 @@ $('#roleSelect').on('change', async e => {
                           row['taken_perms'].some((
                             /** @type {string} */ perm,
                           ) => {
-                            console.log('current perm to check: ');
-                            console.log(val);
-                            console.log('current perm taken perm: ');
-                            console.log(perm);
+                            // console.log('current perm to check: ');
+                            // console.log(val);
+                            // console.log('current perm taken perm: ');
+                            // console.log(perm);
                             return perm.includes(val);
                           })
                         ) {
                           anotherTaken = true;
-                          console.log('another taken: ' + anotherTaken);
+                          // console.log('another taken: ' + anotherTaken);
                         } else if (
                           Array.isArray(row['current_perms']) &&
                           row['current_perms'].some((
@@ -239,21 +263,17 @@ $('#roleSelect').on('change', async e => {
                           ) => perm.includes(val))
                         ) {
                           userTaken = true;
-                          console.log('user taken: ' + userTaken);
+                          // console.log('user taken: ' + userTaken);
                         }
-                        // TODO: add a ternary to check if it is taken or not.
-                        // CREATE MODE: if taken, mark with check and disable
-                        // EDIT MODE: if taken and user id match, mark with check. If taken and not user match, then check and disable
+                        if (anotherTaken || userTaken) {
+                          itemsCheckViaJS.push(uniqueID);
+                        }
                         return `<li class="d-inline-block">
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <div class="input-group-text">
                       <input type="checkbox" name="${uniqueID}" id="${uniqueID}" value="true" ${
-                          anotherTaken
-                            ? 'checked disabled'
-                            : userTaken
-                            ? 'checked'
-                            : ''
+                          anotherTaken ? 'disabled' : ''
                         }>
                     </div>
                   </div>
@@ -308,6 +328,13 @@ $('#roleSelect').on('change', async e => {
           console.log('Error: ' + JSON.stringify(res));
           rej();
         },
+      }).then(() => {
+        // after all the js is done, then check the boxes with ids defined in itemsCheckViaJS
+        for (const item of itemsCheckViaJS) {
+          // console.log(item + ' checked!');
+          $('#' + item).prop('checked', true);
+        }
+        itemsCheckViaJS = [];
       });
     });
   } catch (error) {
@@ -524,10 +551,17 @@ $('#save-user-btn').on('click', async () => {
 
   // GEN PERMISSIONS
   const genPermsForm = new FormData($('#user-gen-permissions-form').get(0));
+  console.log('gen perms form entry is: ' + genPermsForm.entries().next().done);
+  console.log(
+    'gen no perm displayed is: ' + $('#genPermNoPerm').css('display') == 'none',
+  );
+  console.log(
+    'super admin label displayed is: ' + $('#superAdminLabel').length != 0,
+  );
   if (
     genPermsForm.entries().next().done && // if not permissions are selected
     $('#genPermNoPerm').css('display') == 'none' && // if there are general permissions available
-    !$('#superAdminLabel').length // if super admin is selected, don't display error
+    $('#superAdminLabel').length != 0 // if super admin is selected, don't display error
   ) {
     addError($('#gen-perm-title'), 'Please select permissions.');
     ok = false;
@@ -595,13 +629,16 @@ $('#save-user-btn').on('click', async () => {
         // check if null, empty, false, 0, infinity, etc
         if (!result) {
           $('#crud-user').modal('hide');
-          // location.href = 'users.php';
+          location.href = 'users.php';
           $('#main-toast-container').append(
             addToast('Success!', 'User created successfully.'),
           );
         } else {
           console.log('error!: ' + result);
         }
+      },
+      error: err => {
+        console.log('error!: ' + err.responseText);
       },
     });
   } else {
@@ -615,13 +652,16 @@ $('#save-user-btn').on('click', async () => {
         // check if null, empty, false, 0, infinity, etc
         if (!result) {
           $('#crud-user').modal('hide');
-          // location.href = 'users.php';
+          location.href = 'users.php';
           $('#main-toast-container').append(
             addToast('Success!', 'User successfully edited.'),
           );
         } else {
           console.log('error!: ' + result);
         }
+      },
+      error: err => {
+        console.log('error!: ' + err.responseText);
       },
     });
   }
@@ -766,3 +806,8 @@ function resetFieldStates() {
     .first()
     .text('');
 }
+
+// select all buttion
+$('#selectAllGenBtn').on('change', function() {
+  $('#genPermList input[type="checkbox"]').prop('checked', this.checked);
+});

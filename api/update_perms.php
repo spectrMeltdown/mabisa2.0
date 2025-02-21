@@ -1,14 +1,19 @@
 <?php
 
+// new perms must be indexed array with each value equal to a perm in the permissions table!
 function updatePerms(\PDO $pdo, int|string|null $permID, array $newPerms, array $allPerms, bool $createPermIfNone = false): string|null
 {
   // initialize statement
   $sql = 'update permissions set';
-  writeLog('New perms is set to: ');
-  writeLog($newPerms);
+  writeLog('Perm id!');
+  writeLog($permID);
+  // writeLog('New perms is set to: ');
+  // writeLog($newPerms);
 
   $execute = [];
-  if ($createPermIfNone && $permID == null) {
+  if ($createPermIfNone && empty($permID)) {
+    writeLog('creating new perm');
+
     $sql = 'insert into permissions (';
     // construct the statement
     foreach ($newPerms as $perm) {
@@ -33,10 +38,14 @@ function updatePerms(\PDO $pdo, int|string|null $permID, array $newPerms, array 
     $sql = rtrim($sql, ',');
     // add continuation
     $sql .= ');';
-  } else if (!empty($permID)) {
+  } else if (empty($permID)) {
+    writeLog('Empty perm id!');
+
     // throw new Exception('PermID was null!!');
     return null;
   } else {
+    writeLog('updating instead');
+
     // construct the statement
     foreach ($allPerms as $key) {
       // add an equals between name of column and new value
@@ -62,6 +71,8 @@ function updatePerms(\PDO $pdo, int|string|null $permID, array $newPerms, array 
   $stmt = $pdo->prepare($sql);
   $stmt->execute($execute);
   $lastID = $pdo->lastInsertId();
+  writeLog('last id was');
+  writeLog($lastID);
   if ($lastID != $permID) {
     return $lastID;
   }
