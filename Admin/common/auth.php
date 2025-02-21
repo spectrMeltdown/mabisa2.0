@@ -137,14 +137,28 @@ function checkPerms($grantedPerms, $permsQuery, string $barID = null, string $in
       $result = [];
       foreach ($permsQuery as $perm) {
         // if the a granted perm matches a query perm, then add to result
-        $result = array_filter($grantedPerms, function ($grantedP) use ($perm) {
+        $result = array_filter($grantedPerms, function ($grantedP) use ($perm, $barID, $indicatorID) {
           writeLog('granted in array filter: ');
           writeLog($grantedP);
           writeLog('query in array filter: ');
           writeLog($perm);
           // writeLog('');
           // writeLog(str_contains($genPerm, $perm));
-          return str_contains((string)$grantedP, $perm);
+          if (is_array($grantedP)) {
+            // get the current entry barID and indicatorID
+            $entryBarID = $grantedP['bid'];
+            $entryIndID = $grantedP['iid'];
+            // filter the array in the array 
+            return !empty(array_filter($grantedP, function ($item) use ($perm, $barID, $indicatorID, $entryBarID, $entryIndID) {
+              // writeLog('entryBarID');
+              // writeLog($entryBarID . ' ' . $barID);
+              // writeLog('entryIndID');
+              // writeLog($entryIndID . ' ' . $indicatorID);
+              return str_contains((string)$item, $perm) && $barID == $entryBarID && $indicatorID == $entryIndID;
+            }));
+          } else {
+            return str_contains((string)$grantedP, $perm);
+          }
         });
         // if they are equal, means that all specified perms are granted
       }

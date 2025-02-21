@@ -78,7 +78,7 @@ if ($barangay_id) {
                                     mam.description,
                                     mam.reqs_code,
                                     msc.movdocs_reqs AS documentary_requirements,
-                                    mds.srcdesc AS data_source,
+                                    mds.srcdesc AS data_source
                                 FROM `maintenance_criteria_setup` msc 
                                 LEFT JOIN maintenance_criteria_version AS mcv ON msc.version_keyctr = mcv.keyctr
                                 LEFT JOIN maintenance_area_mininumreqs AS mam ON msc.minreqs_keyctr = mam.keyctr
@@ -96,8 +96,8 @@ if ($barangay_id) {
                                         $maintenance_area_description_row['area_description'] . ": " .
                                         $maintenance_area_description_row['description']][] = [
                                         'keyctr' => $maintenance_criteria_setup_row['keyctr'],
-                                        'indicator_code' => $maintenance_area_indicators_row['indicator_code'],
                                         'indicator_keyctr' => $maintenance_area_indicators_row['keyctr'],
+                                        'indicator_code' => $maintenance_area_indicators_row['indicator_code'],
                                         'indicator_description' => $maintenance_area_indicators_row['indicator_description'],
                                         'relevance_definition' => $maintenance_area_indicators_row['relevance_def'],
                                         'reqs_code' => $maintenance_criteria_setup_row['reqs_code'],
@@ -250,7 +250,7 @@ unset($_SESSION['success']);
                                                     <?php if (!$data): ?>
                                                         <?php
                                                         writeLog('IN BAR RESPONSE');
-                                                        if (userHasPerms(['assessment_submissions_create'], 'any', $barangay_id, $row['indicator_code'])): ?>
+                                                        if (userHasPerms(['assessment_submissions_create'], 'any', $barangay_id, $row['indicator_keyctr'])): ?>
                                                             <form action="../bar_assessment/user_actions/upload.php" method="POST"
                                                                 enctype="multipart/form-data"
                                                                 id="uploadForm-<?php echo $row['keyctr']; ?>">
