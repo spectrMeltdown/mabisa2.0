@@ -275,7 +275,7 @@ unset($_SESSION['success']);
                                                     <?php if (!$data): ?>
                                                         <?php
                                                         writeLog('IN BAR RESPONSE');
-                                                        if (userHasPerms(['assessment_submissions_create'], 'any', $barangay_id, $row['indicator_keyctr'])): ?>
+                                                        if (userHasPerms(['submissions_create'], 'any', $barangay_id, $row['indicator_keyctr'])): ?>
                                                             <form action="../bar_assessment/user_actions/upload.php" method="POST"
                                                                 enctype="multipart/form-data" id="uploadForm-<?php echo $row['keyctr']; ?>">
                                                                 <input type="hidden" name="barangay_id"
@@ -289,7 +289,7 @@ unset($_SESSION['success']);
                                                                     <i class="fa fa-upload"></i>
                                                                 </button>
                                                             </form>
-                                                        <?php elseif (userHasPerms('submissions_read', 'bar') || userHasPerms('comments_read', 'bar')): ?>
+                                                        <?php elseif (userHasPerms(['submissions_approve'], 'any', $barangay_id, $row['indicator_keyctr']) || userHasPerms(['comments_read'], 'any', $barangay_id, $row['indicator_keyctr'])): ?>
                                                             <p>No Uploads Yet</p>
                                                         <?php endif; ?>
                                                     <?php else: ?>
@@ -301,7 +301,7 @@ unset($_SESSION['success']);
                                                             data-status="<?= htmlspecialchars($data['status']); ?>">
                                                             <i class="fa fa-eye"></i>
                                                         </button>
-                                                        <?php if (userHasPerms('submissions_delete', 'any')): ?>
+                                                        <?php if (userHasPerms('submissions_delete', 'any') && $data['status'] !== 'approved'): ?>
                                                             <button class="btn btn-danger mb-3 delete-btn"
                                                                 data-file-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
                                                                 <i class="fa fa-trash"></i>
