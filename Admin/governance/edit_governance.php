@@ -25,7 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     try {
         $pdo->beginTransaction();
-
         $desc_stmt = $pdo->prepare("SELECT description FROM maintenance_area_description WHERE keyctr = ?");
         $desc_stmt->execute([$desc_keyctr]);
         $desc = $desc_stmt->fetch(PDO::FETCH_ASSOC);

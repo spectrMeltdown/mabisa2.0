@@ -130,16 +130,29 @@ unset($_SESSION['success']);
 <html lang="en">
 
 <head>
-
     <?php
     $pathPrepend = '../../';
-    require_once '../common/head.php'
+    require_once '../common/head.php';
     ?>
+
     <script src="../../vendor/jquery/jquery.min.js"></script>
     <script src="../../js/bar-assessment.js"></script>
 
+    <style>
+        table {
+            border-collapse: collapse !important;
+            border: 1px solid black !important;
+        }
 
+        th,
+        td {
+            border: 1px solid black !important;
+            padding: 10px !important;
+            text-align: center !important;
+        }
+    </style>
 </head>
+
 
 <body id="page-top">
     <!-- Page Wrapper -->
@@ -181,12 +194,10 @@ unset($_SESSION['success']);
                         <div class="card-body">
                             <?php
                             foreach ($data as $key => $rows):
-                                // Filter rows : the purpose is to show admin all the rows, while only show specific roles their rows(indicated in the document source)
                                 $filtered_rows = array_filter($rows, function ($row) use ($role) {
                                     return $role === 'Barangay Admin' || $role === $row['data_source'];
                                 });
 
-                                // Skip rendering if no matching rows exist
                                 if (empty($filtered_rows)) {
                                     continue;
                                 }
@@ -197,20 +208,31 @@ unset($_SESSION['success']);
                                     </div>
                                 </div>
 
+
+
+
                                 <?php
                                 $last_indicator = '';
                                 $table_started = false;
+                                $requirement_counts = [];
+                                foreach ($filtered_rows as $row) {
+                                    $req_key = $row['reqs_code'] . " " . $row['description'];
+                                    if (!isset($requirement_counts[$req_key])) {
+                                        $requirement_counts[$req_key] = 0;
+                                    }
+                                    $requirement_counts[$req_key]++;
+                                }
+
+                                $printed_reqs = [];
 
                                 foreach ($filtered_rows as $row):
                                     $current_indicator = $row['indicator_code'] . " " . $row['indicator_description'];
 
                                     if ($current_indicator !== $last_indicator):
-
                                         if ($table_started) {
                                             echo "</tbody></table>";
-                                        }
+                                         }
                                 ?>
-
                                         <div class="row bg-info" style="margin: 0; padding: 10px 0;">
                                             <h6 class="col-lg-12 text-center text-white" style="margin: 0;">
                                                 <?php echo htmlspecialchars($current_indicator); ?>
@@ -220,46 +242,45 @@ unset($_SESSION['success']);
                                         <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
                                             <thead>
                                                 <tr>
-                                                    <th style="width: 17%; text-align: center;">Requirement Code</th>
-                                                    <th style="width: 17%;">Requirement Description</th>
+                                                    <th style="width: 17%; text-align: center;">Requirement Description</th>
+                                                    <th style="width: 17%;">Requirement MOV's</th>
                                                     <th style="width: 9%; text-align: center;">Attachment</th>
                                                     <th style="width: 6%; text-align: center;">Status</th>
                                                     <th style="width: 9%; text-align: center;">Last Modified</th>
-
-
                                                 </tr>
                                             </thead>
-                                            <tbod>
-
+                                            <tbody>
                                             <?php
                                             $last_indicator = $current_indicator;
                                             $table_started = true;
                                         endif;
-                                            ?>
 
+                                        $req_key = $row['reqs_code'] . " " . $row['description'];
+                                            ?>
                                             <tr>
-                                                <td><?php echo $row['relevance_definition']; ?></td>
-                                                <td><?php echo $row['reqs_code'] . " " . $row['description']; ?></td>
+                                                <?php if (!isset($printed_reqs[$req_key])): ?>
+                                                    <td rowspan="<?= $requirement_counts[$req_key]; ?>">
+                                                        <?= htmlspecialchars($req_key); ?>
+                                                    </td>
+                                                    <?php $printed_reqs[$req_key] = true; ?>
+                                                <?php endif; ?>
+
+                                                <td><?= htmlspecialchars($row['documentary_requirements']); ?></td>
 
                                                 <?php
                                                 $data = $responses->getData($barangay_id, $row['keyctr']);
                                                 ?>
-                                                <td class="data-cell-upload-view"
-                                                    style="text-align: center; vertical-align: middle;">
+                                                <td class="data-cell-upload-view" style="text-align: center; vertical-align: middle;">
                                                     <?php if (!$data): ?>
-                                                        <?php
-                                                        writeLog('IN BAR RESPONSE');
-                                                        if (userHasPerms(['assessment_submissions_create'], 'any')): ?>
+                                                        <?php if (userHasPerms(['assessment_submissions_create'], 'any')): ?>
                                                             <form action="../bar_assessment/user_actions/upload.php" method="POST"
-                                                                enctype="multipart/form-data"
-                                                                id="uploadForm-<?php echo $row['keyctr']; ?>">
+                                                                enctype="multipart/form-data" id="uploadForm-<?php echo $row['keyctr']; ?>">
                                                                 <input type="hidden" name="barangay_id"
                                                                     value="<?php echo htmlspecialchars($barangay_id, ENT_QUOTES, 'UTF-8'); ?>">
                                                                 <input type="hidden" name="criteria_keyctr"
                                                                     value="<?php echo htmlspecialchars($row['keyctr'], ENT_QUOTES, 'UTF-8'); ?>">
                                                                 <input type="file" name="file" id="file-<?php echo $row['keyctr']; ?>"
-                                                                    class="file-input" style="display: none;" required
-                                                                    accept="application/pdf">
+                                                                    class="file-input" style="display: none;" required accept="application/pdf">
                                                                 <button type="button" class="btn btn-primary" title="Upload"
                                                                     onclick="document.getElementById('file-<?php echo $row['keyctr']; ?>').click();">
                                                                     <i class="fa fa-upload"></i>
@@ -277,8 +298,6 @@ unset($_SESSION['success']);
                                                             data-status="<?= htmlspecialchars($data['status']); ?>">
                                                             <i class="fa fa-eye"></i>
                                                         </button>
-                                                        <?php //if ($role === $row['data_source'] && $data['status'] !== 'approved'): 
-                                                        ?>
                                                         <?php if (userHasPerms('submissions_delete', 'any')): ?>
                                                             <button class="btn btn-danger mb-3 delete-btn"
                                                                 data-file-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
@@ -287,8 +306,7 @@ unset($_SESSION['success']);
                                                         <?php endif; ?>
                                                     <?php endif; ?>
                                                 </td>
-                                                <td class="data-cell-status"
-                                                    style="text-align: center; vertical-align: middle;">
+                                                <td class="data-cell-status" style="text-align: center; vertical-align: middle;">
                                                     <?php if (!empty($data)): ?>
                                                         <?php if ($data['status'] === 'approved'): ?>
                                                             <div class="rounded bg-success text-white">
@@ -305,12 +323,10 @@ unset($_SESSION['success']);
                                                         <?php endif; ?>
                                                     <?php endif; ?>
                                                 </td>
-                                                <td class="data-cell-date-uploaded"
-                                                    style="text-align: center; vertical-align: middle;">
+                                                <td class="data-cell-date-uploaded" style="text-align: center; vertical-align: middle;">
                                                     <?php echo !empty($data) ? htmlspecialchars($data['date_uploaded']) : ''; ?>
                                                 </td>
                                             </tr>
-
                                         <?php endforeach; ?>
 
                                         <?php
@@ -318,6 +334,7 @@ unset($_SESSION['success']);
                                             echo "</tbody></table>";
                                         }
                                         ?>
+
 
                                     <?php endforeach; ?>
                         </div>

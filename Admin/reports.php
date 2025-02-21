@@ -25,7 +25,7 @@ foreach ($barangayList as $data) {
 }
 
 usort($barangayProgress, fn($a, $b) => $b['progress'] <=> $a['progress']);
-$topBarangays = array_slice($barangayProgress, 0, 3); // Set how many barangays to show
+$topBarangays = array_slice($barangayProgress, 0, 38); // Set how many barangays to show
 
 $allAreaDescriptions = [];
 foreach ($categories as $category) {
