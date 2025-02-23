@@ -60,25 +60,19 @@ date_default_timezone_set('Asia/Manila');
           <div class="card-body">
             <h3 class="mb-4">Account Recovery</h3>
             <div class="step active form-group">
-              <form id="email-form" class="needs-validation" novalidate>
-                <label for="email" class="form-label">Enter your email:</label>
-                <input class="form-control" style="margin:auto; max-width: 20rem;" name="email" id="email" type="email" maxlength="100" minlength="7" required>
-                <div class="invalid-feedback">testing</div>
-              </form>
+              <label for="email" class="form-label">Enter your email:</label>
+              <input class="form-control" style="margin:auto; max-width: 20rem;" name="email" id="email" type="email" maxlength="100" minlength="7" required>
+              <div class="alert" id="emailErr"></div>
             </div>
             <div class="step form-group">
-              <form id="code-form" class="needs-validation" novalidate>
-                <label for="email" class="form-label">A code was sent to your email address.<br>Please visit your email and enter the code below:<br></label>
-                <input class="form-control mt-2 no-spinner" style="transform: scale(1.2, 1.2); max-width: 5.3rem; margin: auto;" name="code" id="code" type="number" maxlength="6" minlength="6" placeholder="Code" required>
-                <div class="invalid-feedback">testing</div>
-              </form>
+              <label for="email" class="form-label">A code was sent to your email address.<br>Please visit your email and enter the code below:<br></label>
+              <input class="form-control mt-2 no-spinner" style="transform: scale(1.2, 1.2); max-width: 5.3rem; margin: auto;" name="code" id="code" type="number" maxlength="6" minlength="6" placeholder="Code" required>
+              <div class="alert" id="codeErr"></div>
             </div>
             <div class="step form-group">
-              <form id="new-pass-form" class="needs-validation" novalidate>
-                <label for="email" class="form-label">New password:</label>
-                <input class="form-control" name="password" id="password" type="password" maxlength="100" minlength="8" required>
-                <div class="invalid-feedback"></div>
-              </form>
+              <label for="email" class="form-label">New password:</label>
+              <input class="form-control" name="newPass" id="newPass" type="password" maxlength="100" minlength="8" required>
+              <div class="alert" id="newPassErr"></div>
             </div>
             <div class="buttons mt-4">
               <button id="cancel" class="btn btn-danger">Cancel</button>

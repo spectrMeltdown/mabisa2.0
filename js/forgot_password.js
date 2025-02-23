@@ -24,27 +24,63 @@ async function showStep(index) {
   steps.forEach((step, i) => step.classList.toggle('active', i === index));
 }
 
+// populate error
+function addErr(id, text) {
+  $('#' + id).text(text);
+}
+
 // checks if code matches in server
 function validateCode() {
-
+  return true;
 }
 
 // checks if new password is valid
 function validateNewPass() {
-
+  return true;
+  const newPass = $('#newPass')
+    .val()
+    ?.trim();
+  if (newPass === '') {
+    addErr('newPassErr', 'Cannot be empty.');
+  }
+  else if (newPass.length < 8) {
+    addErr('newPassErr', 'Password must be at least 8 characters.');
+  }
+  return new Promise((res, rej) => {
+    try {
+      $.ajax({
+        url: '..api/forgot_password.php',
+        type: 'POST',
+        data: {
+          pass: newPass,
+        },
+        success: data => {
+          console.log(data);
+          res(true);
+        },
+        error: err => {
+          console.log(err);
+          res(false);
+        },
+      });
+    } catch (error) {
+      rej(error);
+    }
+  });
 }
 
 // checks if email exists in database
 function emailExists() {
-
+  return true;
 }
 
 // request code from server
 function generateCode() {
-
+  return true;
 }
 
-$('#nextStep').on('click', async () => {
+$('#nextStep').on('click', async e => {
+  e.preventDefault();
   let shouldProceed = false;
   if (currentStep == 0 && emailExists()) shouldProceed = true;
   if (currentStep == 1 && validateCode()) shouldProceed = true;
