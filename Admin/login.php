@@ -17,8 +17,6 @@ if (!empty($_COOKIE['id'])) {
     $isLoginPage;
     $pathPrepend = '../';
     require_once 'common/head.php' ?>
-    <!-- import again if you are using inline scripts -->
-    <script src="../vendor/jquery/jquery.min.js"></script>
     <style type="text/css">
         @media (max-width: 768px) {
             .mv_hide {
@@ -36,13 +34,13 @@ if (!empty($_COOKIE['id'])) {
             /* Adjust the margin as needed */
         }
 
-        /* Make text smaller */
+        /* Make text smaller
         h2,
         h5,
         label,
         .form-control {
             font-size: 0.8em !important;
-        }
+        } */
 
         /* Reduce padding */
         .p-5 {
@@ -51,8 +49,8 @@ if (!empty($_COOKIE['id'])) {
 
         /* Adjust button size */
         .btn {
-            padding: 0.25rem 0.5rem !important;
-            font-size: 0.8em !important;
+            padding: 0.5rem 0.5rem !important;
+            font-size: 1.2em !important;
         }
 
         body {
@@ -84,13 +82,13 @@ if (!empty($_COOKIE['id'])) {
                                 <div class="col-lg-12 text-center" style="padding-right: 0px;"> <!-- Center the content and add padding -->
                                     <div class="p-5" style="color: white">
                                         <h2> <b style="font-size: 30px;">Vision</b></h2>
-                                        <h5 class="text-justify">A strongly determined and highly trusted Department committed to capacitate and nurture local government units, public order and safety institutions to sustain peaceful, progressive, and resilient communities where people live happily.</h5>
+                                        <p class="text-justify">A strongly determined and highly trusted Department committed to capacitate and nurture local government units, public order and safety institutions to sustain peaceful, progressive, and resilient communities where people live happily.</p>
                                     </div>
                                 </div>
                                 <div class="col-lg-12 text-center" style="padding-right: 0px;"> <!-- Center the content and add padding -->
                                     <div class="p-5" style="color: white;">
                                         <h2><b style="font-size: 30px; ">Mission</b></h2>
-                                        <h5 class="text-justify">The Department shall promote peace and order, ensure public safety, strengthen capability of Local Government Units through active people's participation and professionalized corps and civil servants.</h5>
+                                        <p class="text-justify">The Department shall promote peace and order, ensure public safety, strengthen capability of Local Government Units through active people's participation and professionalized corps and civil servants.</p>
                                     </div>
                                 </div>
                             </div>
@@ -126,12 +124,15 @@ if (!empty($_COOKIE['id'])) {
 
                                             </div>
                                         </div>
-                                        <div class="form-group">
-                                            <div class="custom-control custom-checkbox small">
-                                                <input type="checkbox" class="custom-control-input" id="rememberMe" name="rememberMe" value="true">
-                                                <label class="custom-control-label text-grey" for="rememberMe">Remember
-                                                    Me?</label>
+                                        <div class="d-flex align-items-center justify-content-between mb-4">
+                                            <div class="form-group" style="margin-bottom: 0;">
+                                                <div class="custom-control custom-checkbox small">
+                                                    <input type="checkbox" class="custom-control-input" id="rememberMe" name="rememberMe" value="true">
+                                                    <label class="custom-control-label text-grey" for="rememberMe">Remember
+                                                        Me?</label>
+                                                </div>
                                             </div>
+                                            <a href="forgot_password.php" style="font-size: 15;">Forgot Password? </a>
                                         </div>
                                         <!-- dont make it type=submit, because we are using js to handle form submission -->
                                         <button type="button" id="loginBtn" class="btn btn-primary btn-user btn-block">

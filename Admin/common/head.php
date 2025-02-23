@@ -56,3 +56,17 @@ header("Pragma: no-cache");
 <script src="<?= $pathPrepend ?>js/app.js" defer></script>
 
 <?= isset($customTitle) ? '' : '<title>MABISA</title>' ?>
+
+<style>
+  /* Hide number input controls */
+  .no-spinner::-webkit-inner-spin-button,
+  .no-spinner::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .no-spinner {
+    -moz-appearance: textfield;
+    /* Firefox */
+  }
+</style>
