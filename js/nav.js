@@ -31,7 +31,7 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
       });
     } catch (error) {
       console.log(error);
-      loading = false;
     }
   }
+  loading = false;
 });

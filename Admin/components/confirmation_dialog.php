@@ -8,7 +8,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <p id="confirmMessage">Are you sure you want to proceed?</p>
+        <p id="confirmMessage" class="text-align-center">Are you sure you want to proceed?</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" id="confirmBtn">Confirm</button>

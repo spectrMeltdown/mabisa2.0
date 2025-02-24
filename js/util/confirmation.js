@@ -6,7 +6,10 @@ async function showConfirmationDialog(
   cancelText = 'Cancel',
   confirmText = 'Confirm',
 ) {
-  if (message) $('#confirmMessage').text(message);
+  if (message) {
+    $('#confirmMessage').text(message);
+    $('#confirmMessage').html(message.replace(/\n/g, '<br>'));
+  }
   if (cancelText) $('#cancelBtn').text(cancelText);
   if (confirmText) $('#confirmBtn').text(confirmText);
 
