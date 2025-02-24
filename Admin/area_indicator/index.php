@@ -88,7 +88,14 @@ unset($_SESSION['success']);
                         <td><?php echo $row['area_description']; ?></td>
                         <td><?php echo $row['indicator_code']; ?></td>
                         <td><?php echo $row['indicator_description']; ?></td>
-                        <td><?php echo $row['relevance_def']; ?></td>
+                        <td>  <span class="short-text">
+                  <?= htmlspecialchars(substr($row['relevance_def'], 0, 200)) . '...'; ?>
+                </span>
+                <span class="full-text" style="display: none;">
+                  <?= htmlspecialchars($row['relevance_def']); ?>
+                </span>
+                <a href="#" class="see-more">See more</a></td>
+                      
                         <td><?php echo $row['min_requirement']; ?></td>
                         <td><?php echo $row['trail']; ?></td>
                         <td>
@@ -131,9 +138,7 @@ unset($_SESSION['success']);
         alert(successMessage);
       }
     });
-  </script>
 
-  <script>
     $(document).on('click', '.open-modal', function() {
       var keyctr = $(this).data('id');
       $.ajax({
@@ -151,6 +156,18 @@ unset($_SESSION['success']);
         }
       });
     });
+
+    document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll(".see-more").forEach(function(link) {
+      link.addEventListener("click", function(event) {
+        event.preventDefault();
+        let parent = this.parentElement;
+        parent.querySelector(".short-text").style.display = "none";
+        parent.querySelector(".full-text").style.display = "inline";
+        this.style.display = "none";
+      });
+    });
+  });
   </script>
 
   <?php include 'create_indicators.php' ?>

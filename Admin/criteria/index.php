@@ -102,6 +102,19 @@ if (!empty($maintenance_area_description_result)) {
   <?php
   require_once '../common/head.php' ?>
   <script src="../../vendor/jquery/jquery.min.js"></script>
+  <style>
+        table {
+            border-collapse: collapse !important;
+            border: 1px solid black !important;
+        }
+
+        th,
+        td {
+            border: 1px solid black !important;
+            padding: 10px !important;
+            text-align: center !important;
+        }
+    </style>
 </head>
 
 <body id="page-top">

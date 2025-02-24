@@ -87,7 +87,14 @@ unset($_SESSION['success']);
                         <td><?php echo $row['keyctr']; ?></td>
                         <td><?php echo $indicator_code ? $indicator_code['indicator_code'] : 'N/A'; ?></td>
                         <td><?php echo $row['reqs_code']; ?></td>
-                        <td><?php echo $row['description']; ?></td>
+                        <td><span class="short-text">
+                            <?= htmlspecialchars(substr($row['description'], 0, 200)) . '...'; ?>
+                          </span>
+                          <span class="full-text" style="display: none;">
+                            <?= htmlspecialchars($row['description']); ?>
+                          </span>
+                          <a href="#" class="see-more">See more</a>
+                        </td>
                         <td><?php echo $row['sub_mininumreqs']; ?></td>
                         <td>
                           <a class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
@@ -150,6 +157,18 @@ unset($_SESSION['success']);
         error: function() {
           alert('Error retrieving data.');
         }
+      });
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+      document.querySelectorAll(".see-more").forEach(function(link) {
+        link.addEventListener("click", function(event) {
+          event.preventDefault();
+          let parent = this.parentElement;
+          parent.querySelector(".short-text").style.display = "none";
+          parent.querySelector(".full-text").style.display = "inline";
+          this.style.display = "none";
+        });
       });
     });
   </script>
