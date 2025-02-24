@@ -212,6 +212,8 @@ unset($_SESSION['success']);
 
 
 
+
+
                                 <?php
                                 $last_indicator = '';
                                 $table_started = false;
@@ -232,7 +234,7 @@ unset($_SESSION['success']);
                                     if ($current_indicator !== $last_indicator):
                                         if ($table_started) {
                                             echo "</tbody></table>";
-                                         }
+                                        }
                                 ?>
                                         <div class="row bg-info" style="margin: 0; padding: 10px 0;">
                                             <h6 class="col-lg-12 text-center text-white" style="margin: 0;">
@@ -261,7 +263,13 @@ unset($_SESSION['success']);
                                             <tr>
                                                 <?php if (!isset($printed_reqs[$req_key])): ?>
                                                     <td rowspan="<?= $requirement_counts[$req_key]; ?>">
-                                                        <?= htmlspecialchars($req_key); ?>
+                                                        <span class="short-text">
+                                                            <?= htmlspecialchars(substr($req_key, 0, 300)) . '...'; ?>
+                                                        </span> <span class="full-text" style="display: none;">
+                                                            <?= htmlspecialchars($req_key); ?>
+                                                        </span>
+                                                        <a href="#" class="see-more">See more</a>
+
                                                     </td>
                                                     <?php $printed_reqs[$req_key] = true; ?>
                                                 <?php endif; ?>
@@ -419,6 +427,19 @@ unset($_SESSION['success']);
                         }
                     })
                     .catch(error => console.error('Error:', error));
+            });
+        });
+
+
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll(".see-more").forEach(function(link) {
+                link.addEventListener("click", function(event) {
+                    event.preventDefault();
+                    let parent = this.parentElement;
+                    parent.querySelector(".short-text").style.display = "none";
+                    parent.querySelector(".full-text").style.display = "inline";
+                    this.style.display = "none";
+                });
             });
         });
     </script>

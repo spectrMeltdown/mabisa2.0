@@ -187,73 +187,107 @@ if (!empty($maintenance_area_description_result)) {
                 </div>
               </div>
             </div>
+
+
+
             <div class="card-body">
-              <?php
-              $last_indicator = '';
-              foreach ($data as $key => $rows): ?>
-                <div class="card-header bg-primary text-center py-3">
-                  <div class="card-body">
-                    <h5 class="text-white"><?php echo htmlspecialchars($key); ?></h5>
-                  </div>
-                </div>
+  <?php
+  $last_indicator = '';
+  foreach ($data as $key => $rows): ?>
+    <div class="card-header bg-primary text-center py-3">
+      <div class="card-body">
+        <h5 class="text-white"><?php echo htmlspecialchars($key); ?></h5>
+      </div>
+    </div>
 
-                <?php
-                $table_started = false; // Track if table has been started for current indicator
-                foreach ($rows as $row):
-                  $current_indicator = $row['indicator_code'] . " " . $row['indicator_description'];
+    <?php
+    $table_started = false;
+    $req_counts = [];
 
-                  if ($current_indicator !== $last_indicator):
-                    // Close previous table if it was opened
-                    if ($table_started) {
-                      echo "</tbody></table>";
-                    }
-                ?>
-                    <div class="row bg-info" style="margin: 0; padding: 10px 0;">
-                      <h6 class="col-lg-12 text-center text-white" style="margin: 0;">
-                        <?php echo htmlspecialchars($current_indicator); ?>
-                      </h6>
-                    </div>
+    foreach ($rows as $row) {
+      $req_key = $row['relevance_definition'] . " " . $row['reqs_code'] . " " . $row['description'];
+      if (!isset($req_counts[$req_key])) {
+        $req_counts[$req_key] = 0;
+      }
+      $req_counts[$req_key]++;
+    }
 
-                    <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
-                      <thead>
-                        <tr>
-                          <th style="width: 7%; text-align: center;">Action</th>
-                          <th style="width: 20%; text-align: center;">Relevant/Definition</th>
-                          <th style="width: 20%; text-align: center;">Minimum Requirements</th>
-                          <th style="width: 20%; text-align: center;">Documentary Requirements/MOVs</th>
-                          <th style="width: 10%; text-align: center;">Data Source</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                      <?php
-                      $last_indicator = $current_indicator;
-                      $table_started = true;
-                    endif;
-                      ?>
-                      <tr>
-                        <td>
-                          <button class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
-                            Edit
-                          </button>
-                          <a href="../script.php?delete_id=<?php echo $row['keyctr'] ?>" class="btn btn-danger delete-btn">Delete</a>
-                        </td>
-                        <td><?php echo $row['relevance_definition']; ?></td>
-                        <td><?php echo $row['reqs_code'] . " " . $row['description']; ?></td>
-                        <td><?php echo $row['documentary_requirements']; ?></td>
-                        <td><?php echo $row['data_source']; ?></td>
-                      </tr>
-                    <?php endforeach; ?>
+    $printed_reqs = [];
 
-                    <?php
-                    // Close last table if it was started
-                    if ($table_started) {
-                      echo "</tbody></table>";
-                    }
-                    ?>
+    foreach ($rows as $row):
+      $current_indicator = $row['indicator_code'] . " " . $row['indicator_description'];
 
-                  <?php endforeach; ?>
+      if ($current_indicator !== $last_indicator):
+        if ($table_started) {
+          echo "</tbody></table>";
+        }
+    ?>
+        <div class="row bg-info" style="margin: 0; padding: 10px 0;">
+          <h6 class="col-lg-12 text-center text-white" style="margin: 0;">
+            <?php echo htmlspecialchars($current_indicator); ?>
+          </h6>
+        </div>
 
-            </div>
+        <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
+          <thead>
+            <tr>
+              <th style="width: 20%; text-align: center;">Relevant/Definition</th>
+              <th style="width: 20%; text-align: center;">Minimum Requirements</th>
+              <th style="width: 20%; text-align: center;">Documentary Requirements/MOVs</th>
+              <th style="width: 10%; text-align: center;">Data Source</th>
+              <th style="width: 7%; text-align: center;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+          <?php
+          $last_indicator = $current_indicator;
+          $table_started = true;
+        endif;
+
+        $req_key = $row['relevance_definition'] . " " . $row['reqs_code'] . " " . $row['description'];
+          ?>
+          <tr>
+            <?php if (!isset($printed_reqs[$req_key])): ?>
+              <td rowspan="<?= $req_counts[$req_key]; ?>">
+                <span class="short-text">
+                  <?= htmlspecialchars(substr($row['relevance_definition'], 0, 300)) . '...'; ?>
+                </span>
+                <span class="full-text" style="display: none;">
+                  <?= htmlspecialchars($row['relevance_definition']); ?>
+                </span>
+                <a href="#" class="see-more">See more</a>
+              </td>
+              <td rowspan="<?= $req_counts[$req_key]; ?>">
+                <span class="short-text">
+                  <?= htmlspecialchars(substr($row['reqs_code'] . " " . $row['description'], 0, 300)) . '...'; ?>
+                </span>
+                <span class="full-text" style="display: none;">
+                  <?= htmlspecialchars($row['reqs_code'] . " " . $row['description']); ?>
+                </span>
+                <a href="#" class="see-more">See more</a>
+              </td>
+              <?php $printed_reqs[$req_key] = true; ?>
+            <?php endif; ?>
+
+            <td><?php echo htmlspecialchars($row['documentary_requirements']); ?></td>
+            <td><?php echo htmlspecialchars($row['data_source']); ?></td>
+            <td>
+              <button class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
+                Edit
+              </button>
+              <a href="../script.php?delete_id=<?php echo $row['keyctr'] ?>" class="btn btn-danger delete-btn">Delete</a>
+            </td>
+          </tr>
+        <?php endforeach; ?>
+
+        <?php
+        if ($table_started) {
+          echo "</tbody></table>";
+        }
+        ?>
+      <?php endforeach; ?>
+</div>
+            
           </div>
 
           <!-- End of Main Content -->
@@ -311,6 +345,20 @@ if (!empty($maintenance_area_description_result)) {
         }
       });
     });
+
+
+
+    document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll(".see-more").forEach(function(link) {
+      link.addEventListener("click", function(event) {
+        event.preventDefault();
+        let parent = this.parentElement;
+        parent.querySelector(".short-text").style.display = "none";
+        parent.querySelector(".full-text").style.display = "inline";
+        this.style.display = "none";
+      });
+    });
+  });
   </script>
 
 
