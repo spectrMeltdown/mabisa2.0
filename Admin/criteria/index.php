@@ -5,17 +5,22 @@ date_default_timezone_set('Asia/Manila');
 $isInFolder = true;
 require_once '../common/auth.php';
 if (!userHasPerms('criteria_read', 'gen')) {
-  // header does not allow relative paths, so this is my temporary solution
-  header('Location:' .  substr(__DIR__, 0, strrpos(__DIR__, '/')) . 'no_permissions.php');
+  header('Location:' . substr(__DIR__, 0, strrpos(__DIR__, '/')) . 'no_permissions.php');
   exit;
 }
 
 include '../script.php';
 
-// set pathprepend again for the requires/import below
+// Set pathprepend again for the requires/import below
 $pathPrepend = isset($isInFolder) ? '../../' : '../';
 
 $data = [];
+
+// Fetch Active Version Keyctr
+$stmt = $pdo->prepare("SELECT keyctr FROM maintenance_criteria_version WHERE active_ = 1 LIMIT 1");
+$stmt->execute();
+$version = $stmt->fetch(PDO::FETCH_ASSOC);
+$active_version_keyctr = $version ? $version['keyctr'] : null; // Get the active version or null
 
 $maintenance_area_description_query = "
     SELECT
@@ -52,23 +57,29 @@ if (!empty($maintenance_area_description_result)) {
         if (!empty($maintenance_area_indicators_result)) {
           foreach ($maintenance_area_indicators_result as $maintenance_area_indicators_row) {
 
-            // maintenance_criteria_setup
+            // maintenance_criteria_setup with active version filtering
             $maintenance_criteria_setup_query = "
-                            SELECT 
-                                msc.keyctr AS keyctr,
-                                mam.description,
-                                mam.reqs_code,
-                                msc.movdocs_reqs AS documentary_requirements,
-                                mds.srcdesc AS data_source
-                            FROM `maintenance_criteria_setup` msc 
-                            LEFT JOIN maintenance_criteria_version AS mcv ON msc.version_keyctr = mcv.keyctr
-                            LEFT JOIN maintenance_area_mininumreqs AS mam ON msc.minreqs_keyctr = mam.keyctr
-                            LEFT JOIN maintenance_document_source AS mds ON msc.data_source = mds.keyctr 
-                            WHERE msc.indicator_keyctr = :indicator_keyctr
-                            ORDER BY mam.reqs_code ASC
-                        ";
+                SELECT 
+                    msc.keyctr AS keyctr,
+                    mam.description,
+                    mam.reqs_code,
+                    msc.movdocs_reqs AS documentary_requirements,
+                    msc.template, 
+                    mds.srcdesc AS data_source
+                FROM `maintenance_criteria_setup` msc 
+                LEFT JOIN maintenance_criteria_version AS mcv ON msc.version_keyctr = mcv.keyctr
+                LEFT JOIN maintenance_area_mininumreqs AS mam ON msc.minreqs_keyctr = mam.keyctr
+                LEFT JOIN maintenance_document_source AS mds ON msc.data_source = mds.keyctr 
+                WHERE msc.indicator_keyctr = :indicator_keyctr
+                AND msc.version_keyctr = :active_version_keyctr
+                ORDER BY mam.reqs_code ASC
+            ";
+
             $stmt = $pdo->prepare($maintenance_criteria_setup_query);
-            $stmt->execute(['indicator_keyctr' => $maintenance_area_indicators_row['keyctr']]);
+            $stmt->execute([
+              'indicator_keyctr' => $maintenance_area_indicators_row['keyctr'],
+              'active_version_keyctr' => $active_version_keyctr
+            ]);
             $maintenance_criteria_setup_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             if (!empty($maintenance_criteria_setup_result)) {
@@ -84,6 +95,7 @@ if (!empty($maintenance_area_description_result)) {
                   'documentary_requirements' => $maintenance_criteria_setup_row['documentary_requirements'],
                   'description' => $maintenance_criteria_setup_row['description'],
                   'data_source' => $maintenance_criteria_setup_row['data_source'],
+                  'template' => $maintenance_criteria_setup_row['template'],
                 ];
               }
             }
@@ -103,18 +115,18 @@ if (!empty($maintenance_area_description_result)) {
   require_once '../common/head.php' ?>
   <script src="../../vendor/jquery/jquery.min.js"></script>
   <style>
-        table {
-            border-collapse: collapse !important;
-            border: 1px solid black !important;
-        }
+    table {
+      border-collapse: collapse !important;
+      border: 1px solid black !important;
+    }
 
-        th,
-        td {
-            border: 1px solid black !important;
-            padding: 10px !important;
-            text-align: center !important;
-        }
-    </style>
+    th,
+    td {
+      border: 1px solid black !important;
+      padding: 10px !important;
+      text-align: center !important;
+    }
+  </style>
 </head>
 
 <body id="page-top">
@@ -196,113 +208,130 @@ if (!empty($maintenance_area_description_result)) {
               </div>
               <div style="float: right;">
                 <div class="row">
+                  <a class="btn btn-primary" id="open-duration-modal" style="margin-right: 10px;">Edit Duration</a>
                   <a class="btn btn-primary" id="open-add-modal">Add Maintenance Criteria</a>
                 </div>
+
               </div>
             </div>
 
 
-
             <div class="card-body">
-  <?php
-  $last_indicator = '';
-  foreach ($data as $key => $rows): ?>
-    <div class="card-header bg-primary text-center py-3">
-      <div class="card-body">
-        <h5 class="text-white"><?php echo htmlspecialchars($key); ?></h5>
-      </div>
-    </div>
+              <?php if ($data): ?>
+                <?php
+                $last_indicator = '';
+                foreach ($data as $key => $rows): ?>
+                  <div class="card-header bg-primary text-center py-3">
+                    <div class="card-body">
+                      <h5 class="text-white"><?php echo htmlspecialchars($key); ?></h5>
+                    </div>
+                  </div>
+                  <?php
+                  $table_started = false;
+                  $req_counts = [];
 
-    <?php
-    $table_started = false;
-    $req_counts = [];
+                  foreach ($rows as $row) {
+                    $req_key = $row['relevance_definition'] . " " . $row['reqs_code'] . " " . $row['description'];
+                    if (!isset($req_counts[$req_key])) {
+                      $req_counts[$req_key] = 0;
+                    }
+                    $req_counts[$req_key]++;
+                  }
 
-    foreach ($rows as $row) {
-      $req_key = $row['relevance_definition'] . " " . $row['reqs_code'] . " " . $row['description'];
-      if (!isset($req_counts[$req_key])) {
-        $req_counts[$req_key] = 0;
-      }
-      $req_counts[$req_key]++;
-    }
+                  $printed_reqs = [];
 
-    $printed_reqs = [];
+                  foreach ($rows as $row):
+                    $current_indicator = $row['indicator_code'] . " " . $row['indicator_description'];
 
-    foreach ($rows as $row):
-      $current_indicator = $row['indicator_code'] . " " . $row['indicator_description'];
+                    if ($current_indicator !== $last_indicator):
+                      if ($table_started) {
+                        echo "</tbody></table>";
+                      }
+                  ?>
+                      <div class="row bg-info" style="margin: 0; padding: 10px 0;">
+                        <h6 class="col-lg-12 text-center text-white" style="margin: 0;">
+                          <?php echo htmlspecialchars($current_indicator); ?>
+                        </h6>
+                      </div>
 
-      if ($current_indicator !== $last_indicator):
-        if ($table_started) {
-          echo "</tbody></table>";
-        }
-    ?>
-        <div class="row bg-info" style="margin: 0; padding: 10px 0;">
-          <h6 class="col-lg-12 text-center text-white" style="margin: 0;">
-            <?php echo htmlspecialchars($current_indicator); ?>
-          </h6>
-        </div>
+                      <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
+                        <thead>
+                          <tr>
+                            <th style="width: 20%; text-align: center;">Relevant/Definition</th>
+                            <th style="width: 20%; text-align: center;">Minimum Requirements</th>
+                            <th style="width: 20%; text-align: center;">Documentary Requirements/MOVs</th>
+                            <th style="width: 10%; text-align: center;">Data Source</th>
+                            <th style="width: 7%; text-align: center;">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        $last_indicator = $current_indicator;
+                        $table_started = true;
+                      endif;
 
-        <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
-          <thead>
-            <tr>
-              <th style="width: 20%; text-align: center;">Relevant/Definition</th>
-              <th style="width: 20%; text-align: center;">Minimum Requirements</th>
-              <th style="width: 20%; text-align: center;">Documentary Requirements/MOVs</th>
-              <th style="width: 10%; text-align: center;">Data Source</th>
-              <th style="width: 7%; text-align: center;">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-          <?php
-          $last_indicator = $current_indicator;
-          $table_started = true;
-        endif;
+                      $req_key = $row['relevance_definition'] . " " . $row['reqs_code'] . " " . $row['description'];
+                        ?>
+                        <tr>
+                          <?php if (!isset($printed_reqs[$req_key])): ?>
+                            <td rowspan="<?= $req_counts[$req_key]; ?>">
+                              <span class="short-text">
+                                <?= htmlspecialchars(substr($row['relevance_definition'], 0, 300)) . '...'; ?>
+                              </span>
+                              <span class="full-text" style="display: none;">
+                                <?= htmlspecialchars($row['relevance_definition']); ?>
+                              </span>
+                              <a href="#" class="see-more">See more</a>
+                            </td>
+                            <td rowspan="<?= $req_counts[$req_key]; ?>">
+                              <span class="short-text">
+                                <?= htmlspecialchars(substr($row['reqs_code'] . " " . $row['description'], 0, 300)) . '...'; ?>
+                              </span>
+                              <span class="full-text" style="display: none;">
+                                <?= htmlspecialchars($row['reqs_code'] . " " . $row['description']); ?>
+                              </span>
+                              <a href="#" class="see-more">See more</a>
+                            </td>
+                            <?php $printed_reqs[$req_key] = true; ?>
+                          <?php endif; ?>
 
-        $req_key = $row['relevance_definition'] . " " . $row['reqs_code'] . " " . $row['description'];
-          ?>
-          <tr>
-            <?php if (!isset($printed_reqs[$req_key])): ?>
-              <td rowspan="<?= $req_counts[$req_key]; ?>">
-                <span class="short-text">
-                  <?= htmlspecialchars(substr($row['relevance_definition'], 0, 300)) . '...'; ?>
-                </span>
-                <span class="full-text" style="display: none;">
-                  <?= htmlspecialchars($row['relevance_definition']); ?>
-                </span>
-                <a href="#" class="see-more">See more</a>
-              </td>
-              <td rowspan="<?= $req_counts[$req_key]; ?>">
-                <span class="short-text">
-                  <?= htmlspecialchars(substr($row['reqs_code'] . " " . $row['description'], 0, 300)) . '...'; ?>
-                </span>
-                <span class="full-text" style="display: none;">
-                  <?= htmlspecialchars($row['reqs_code'] . " " . $row['description']); ?>
-                </span>
-                <a href="#" class="see-more">See more</a>
-              </td>
-              <?php $printed_reqs[$req_key] = true; ?>
-            <?php endif; ?>
+                          <td>
+                            <?php
+                            $link = htmlspecialchars($row['template']);
+                            echo htmlspecialchars($row['documentary_requirements']) . '<br> <br>';
+                            if (!empty($link)) {
+                              echo '<a href="' . $link . '" target="_blank">View Template</a>';
+                            } else {
+                              echo 'No template available';
+                            }
+                            ?>
 
-            <td><?php echo htmlspecialchars($row['documentary_requirements']); ?></td>
-            <td><?php echo htmlspecialchars($row['data_source']); ?></td>
-            <td>
-              <button class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
-                Edit
-              </button>
-              <a href="../script.php?delete_id=<?php echo $row['keyctr'] ?>" class="btn btn-danger delete-btn">Delete</a>
-            </td>
-          </tr>
-        <?php endforeach; ?>
 
-        <?php
-        if ($table_started) {
-          echo "</tbody></table>";
-        }
-        ?>
-      <?php endforeach; ?>
-</div>
-            
+                          <td><?php echo htmlspecialchars($row['data_source']); ?></td>
+                          <td>
+                            <button class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
+                              Edit
+                            </button>
+                            <a href="../script.php?delete_id=<?php echo $row['keyctr'] ?>" class="btn btn-danger delete-btn">Delete</a>
+                          </td>
+                        </tr>
+                      <?php endforeach; ?>
+
+                      <?php
+                      if ($table_started) {
+                        echo "</tbody></table>";
+                      }
+                      ?>
+                    <?php endforeach; ?>
+
+                  <?php else: ?>
+
+                    <div style="display: flex; justify-content: center;">
+                      No Requirements Yet
+                    </div>
+                  <?php endif; ?>
+            </div>
           </div>
-
           <!-- End of Main Content -->
         </div>
       </div>
@@ -321,6 +350,23 @@ if (!empty($maintenance_area_description_result)) {
           setTimeout(function() {
             var addMaintenanceCriteriaModal = new bootstrap.Modal(document.getElementById("addMaintenanceCriteriaModal"));
             addMaintenanceCriteriaModal.show();
+          }, 200);
+        },
+        error: function(xhr, status, error) {
+          console.log("Error: " + error);
+        }
+      });
+    });
+
+    $(document).on("click", "#open-duration-modal", function() {
+      $.ajax({
+        url: "duration.php",
+        type: "GET",
+        success: function(response) {
+          $("#modalContainer").html(response);
+          setTimeout(function() {
+            var addDurationModal = new bootstrap.Modal(document.getElementById("addDurationModal"));
+            addDurationModal.show();
           }, 200);
         },
         error: function(xhr, status, error) {
@@ -362,16 +408,16 @@ if (!empty($maintenance_area_description_result)) {
 
 
     document.addEventListener("DOMContentLoaded", function() {
-    document.querySelectorAll(".see-more").forEach(function(link) {
-      link.addEventListener("click", function(event) {
-        event.preventDefault();
-        let parent = this.parentElement;
-        parent.querySelector(".short-text").style.display = "none";
-        parent.querySelector(".full-text").style.display = "inline";
-        this.style.display = "none";
+      document.querySelectorAll(".see-more").forEach(function(link) {
+        link.addEventListener("click", function(event) {
+          event.preventDefault();
+          let parent = this.parentElement;
+          parent.querySelector(".short-text").style.display = "none";
+          parent.querySelector(".full-text").style.display = "inline";
+          this.style.display = "none";
+        });
       });
     });
-  });
   </script>
 
 

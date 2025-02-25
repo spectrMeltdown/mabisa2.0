@@ -25,7 +25,13 @@ foreach ($barangayList as $data) {
 }
 
 usort($barangayProgress, fn($a, $b) => $b['progress'] <=> $a['progress']);
-$topBarangays = array_slice($barangayProgress, 0, 38); // Set how many barangays to show
+
+$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 5;
+if ($limit !== 0) {
+  $topBarangays = array_slice($barangayProgress, 0, $limit);
+} else {
+  $topBarangays = $barangayProgress; 
+}
 
 $allAreaDescriptions = [];
 foreach ($categories as $category) {
@@ -61,8 +67,14 @@ foreach ($categories as $category) {
         <?php require_once 'common/nav.php'; ?>
         <div class="container-fluid">
           <div class="card shadow mb-4">
-            <div class="card-header py-3">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
               <h6 class="m-0 font-weight-bold text-primary">Top Performing Barangays</h6>
+              <select id="limitSelect" class="form-control w-auto">
+                <option value="5" <?= $limit == 5 ? 'selected' : '' ?>>5</option>
+                <option value="10" <?= $limit == 10 ? 'selected' : '' ?>>10</option>
+                <option value="20" <?= $limit == 20 ? 'selected' : '' ?>>20</option>
+                <option value="0" <?= $limit == 0 ? 'selected' : '' ?>>All</option>
+              </select>
             </div>
             <div class="card-body">
               <ul class="list-group list-group-flush">
@@ -176,16 +188,15 @@ foreach ($categories as $category) {
                         ?>
                             <td>
 
-                            <?php
-if ($submittedCount == $totalCriteria && $submittedCount != 0) {
-  echo '<i class="fa fa-check text-success" aria-hidden="true"></i>';
-
-} elseif ($submittedCount == 0 && $totalCriteria == 0) {
-    echo '';
-} else {
-    echo $submittedCount . '/' . $totalCriteria;
-}
-?>
+                              <?php
+                              if ($submittedCount == $totalCriteria && $submittedCount != 0) {
+                                echo '<i class="fa fa-check text-success" aria-hidden="true"></i>';
+                              } elseif ($submittedCount == 0 && $totalCriteria == 0) {
+                                echo '';
+                              } else {
+                                echo $submittedCount . '/' . $totalCriteria;
+                              }
+                              ?>
 
                             </td>
                         <?php }
@@ -202,6 +213,11 @@ if ($submittedCount == $totalCriteria && $submittedCount != 0) {
       </div>
     </div>
   </div>
+  <script>
+    document.getElementById('limitSelect').addEventListener('change', function() {
+      window.location.href = "?limit=" + this.value;
+    });
+  </script>
 </body>
 
 </html>

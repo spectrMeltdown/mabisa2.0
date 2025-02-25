@@ -13,16 +13,17 @@ if (isset($_POST['add_maintenance_criteria_setup'])) {
     $sub_minimumreqs = $_POST['sub_minimumreqs'] ?? null;
     $movdocs_reqs = $_POST['movdocs_reqs'] ?? null;
     $data_source = $_POST['data_source'] ?? null;
+    $template = $_POST['template'] ?? null;
 
     try {
         $pdo->beginTransaction();
         $trail = 'Created at ' . date('Y-m-d H:i:s');
         $query = "INSERT INTO `maintenance_criteria_setup` (
             `version_keyctr`, `indicator_keyctr`, `minreqs_keyctr`, 
-            `sub_minimumreqs`, `movdocs_reqs`, `data_source`, `trail`
+            `sub_minimumreqs`, `movdocs_reqs`, `template` , `data_source`, `trail`
         ) VALUES (
             :version_keyctr, :indicator_keyctr, :minreqs_keyctr, 
-            :sub_minimumreqs, :movdocs_reqs, :data_source, :trail
+            :sub_minimumreqs, :movdocs_reqs, :template ,:data_source, :trail
         )";
 
 
@@ -32,6 +33,7 @@ if (isset($_POST['add_maintenance_criteria_setup'])) {
             ':indicator_keyctr' => $indicator_keyctr,
             ':minreqs_keyctr' => $minreqs_keyctr,
             ':sub_minimumreqs' => $sub_minimumreqs,
+            ':template' => $template,
             ':movdocs_reqs' => $movdocs_reqs,
             ':data_source' => $data_source,
             ':trail' => $trail
@@ -55,6 +57,7 @@ if (isset($_POST['update_maintenance_criteria_setup'])) {
     $sub_minimumreqs = $_POST['sub_minimumreqs'];
     $movdocs_reqs = $_POST['movdocs_reqs'];
     $data_source = $_POST['data_source'];
+    $template = $_POST['template'];
 
     try {
         $pdo->beginTransaction();
@@ -65,6 +68,7 @@ if (isset($_POST['update_maintenance_criteria_setup'])) {
                     minreqs_keyctr = :minreqs_keyctr, 
                     sub_minimumreqs = :sub_minimumreqs, 
                     movdocs_reqs = :movdocs_reqs, 
+                    template =  :template,
                     data_source = :data_source, 
                     trail = :trail 
                 WHERE keyctr = :keyctr";
@@ -76,6 +80,7 @@ if (isset($_POST['update_maintenance_criteria_setup'])) {
             ':minreqs_keyctr' => $minreqs_keyctr,
             ':sub_minimumreqs' => $sub_minimumreqs,
             ':movdocs_reqs' => $movdocs_reqs,
+            ':template' => $template,
             ':data_source' => $data_source,
             ':trail' => $trail,
             ':keyctr' => $keyctr
@@ -83,6 +88,35 @@ if (isset($_POST['update_maintenance_criteria_setup'])) {
 
         $pdo->commit();
         $log->userLog('Edited a Criteria with id: ' . $keyctr . ', to Version ID: ' . $version_keyctr . ', Indicator ID: ' . $indicator_keyctr . ', Minimum Requirements ID: ' . $minreqs_keyctr . ', Sub Minimum Requirements: ' . $sub_minimumreqs . ', MOV Documents Requirements: ' . $movdocs_reqs . ', and Document Source: ' . $data_source);
+        echo "<script>alert('Record updated successfully'); window.location.href = document.referrer;</script>";
+    } catch (PDOException $e) {
+        $pdo->rollBack();
+        echo "Error: " . htmlspecialchars($e->getMessage());
+    }
+}
+
+if (isset($_POST['edit_duration'])) {
+
+    $duration = $_POST['duration'];
+    $is_accepting_response = $_POST['is_accepting_response'] ?? 0 ;
+
+    try {
+        $pdo->beginTransaction();
+        $sql = "UPDATE maintenance_criteria_version SET 
+        duration = :duration,
+        is_accepting_response = :is_accepting_response
+    ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':duration' => $duration,
+            ':is_accepting_response' => $is_accepting_response
+        ]);
+
+        $status = $is_accepting_response ? 'true' : 'false';
+
+        $pdo->commit();
+        $log->userLog('Edited Assessment Duration to Duration: ' . $duration . ' and is_accepting_response to ' . $status);
         echo "<script>alert('Record updated successfully'); window.location.href = document.referrer;</script>";
     } catch (PDOException $e) {
         $pdo->rollBack();
@@ -114,7 +148,7 @@ if (isset($_GET['delete_id'])) {
 }
 
 if (isset($_GET['indicator_id'])) {
-    $indicator_id = trim($_GET['indicator_id']); 
+    $indicator_id = trim($_GET['indicator_id']);
 
     try {
         $stmt = $pdo->prepare("
@@ -129,7 +163,7 @@ if (isset($_GET['indicator_id'])) {
             ORDER BY mr.reqs_code
         ");
 
-        $stmt->bindParam(':indicator_id', $indicator_id, PDO::PARAM_STR); 
+        $stmt->bindParam(':indicator_id', $indicator_id, PDO::PARAM_STR);
         $stmt->execute();
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

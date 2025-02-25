@@ -93,4 +93,30 @@ class Comments
             return [];
         }
     }
+
+    public function show_all_comments(string $barangay_id): array {
+        try {
+            $sql = "SELECT file_id, comments FROM barangay_assessment_files WHERE barangay_id = :barangay_id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':barangay_id', $barangay_id, PDO::PARAM_STR);
+            $stmt->execute();
+            
+            $allComments = [];
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                if (!empty($row['comments'])) {
+                    $comments = json_decode($row['comments'], true);
+                    if (is_array($comments)) {
+                        foreach ($comments as $comment) {
+                            $comment['file_id'] = $row['file_id'];
+                            $allComments[] = $comment;
+                        }
+                    }
+                }
+            }
+            return $allComments;
+        } catch (PDOException $e) {
+            error_log('Database error: ' . $e->getMessage());
+            return [];
+        }
+    }
 }

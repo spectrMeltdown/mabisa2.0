@@ -77,6 +77,11 @@ $maintenance_document_source_result = fetchAllData($pdo, "SELECT * FROM `mainten
                         </div>
 
                         <div class="mb-3">
+                            <label class="form-label">Template Link</label>
+                            <input type="text" class="form-control" name="template" required/>
+                        </div>
+
+                        <div class="mb-3">
                             <label class="form-label">Data Source</label>
                             <select class="form-control" name="data_source" required>
                                 <option value="">Select</option>

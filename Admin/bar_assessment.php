@@ -4,20 +4,27 @@ if (!userHasPerms('assessment', 'any')) {
     header('Location:no_permissions.php');
     exit;
 }
+require_once 'common/head.php';
+require_once '../db/db.php';
+require_once 'bar_assessment/responses.php';
+
+$responsesObj = new Responses($pdo);
+$responses = $responsesObj->show_responses();
+
+$stmt = $pdo->prepare("SELECT * FROM maintenance_criteria_version WHERE active_ = 1 LIMIT 1");
+$stmt->execute();
+$version = $stmt->fetch(PDO::FETCH_ASSOC);
+$duration = $version ? $version['duration'] : null;
+$is_accepting = isset($version['is_accepting_response']) ? ($version['is_accepting_response'] ? 'Yes' : 'No') : null;
+
+
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <?php
-    require_once 'common/head.php';
-    require_once '../db/db.php';
-    require_once 'bar_assessment/responses.php';
-
-    $responsesObj = new Responses($pdo);
-    $responses = $responsesObj->show_responses();
-    ?>
+  
     <script src="../vendor/jquery/jquery.min.js"></script>
     <script src="../js/bar-assessment.js"></script>
 </head>
@@ -47,11 +54,14 @@ if (!userHasPerms('assessment', 'any')) {
                 <div class="container-fluid">
 
                     <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <div style="float: left;">
-                                <h3 class="m-0 font-weight-bold text-primary">Barangay Assessment</h3>
-                            </div>
-                        </div>
+                     <div class="card-header py-3 d-flex justify-content-between align-items-center">
+    <h3 class="m-0 font-weight-bold text-primary">Barangay Assessment</h3>
+    <div class="text-right">
+        <p class="mb-1"><strong>Duration:</strong> <?php echo $duration; ?></p>
+        <p class="mb-0"><strong>Accepting Responses:</strong> <?php echo $is_accepting; ?></p>
+    </div>
+</div>
+
                         <div class="card-body">
                             <div class="table table-responsive">
                                 <table id="barangayTable" class="table table-bordered">

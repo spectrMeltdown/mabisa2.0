@@ -1,9 +1,8 @@
 $(".delete-user-btn").on("click", (e) => {
   const userID = $(e.target).data("id");
   const username = $(e.target).data("username");
-  const role = $(e.target).data("role");
 
-  console.log(`ID: ${userID}, Username: ${username}, Role: ${role}`);
+  console.log(`ID: ${userID}, Username: ${username}`);
 });
 
 
@@ -11,16 +10,17 @@ $(document).ready(function () {
   $('#commentModal').on('show.bs.modal', function (event) {
       var button = $(event.relatedTarget);
       var fileId = button.data('fileid');
-      var role = button.data('role');
       var name = button.data('name');
       var status = button.data('status'); 
       var modal = $(this);
 
       console.log('Modal is being shown');
       console.log('File ID:', fileId);
-      console.log('Role:', role);
       console.log('Name:', name);
       console.log('Status:', status);
+
+      modal.find('#commentModalLabel').text('File & Comments for File with ID: ' + fileId);
+
 
       modal.find('#fileDisplay').attr('src', "../bar_assessment/admin_actions/view.php?file_id=" + fileId);
 

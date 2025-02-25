@@ -17,8 +17,10 @@ $log = new Audit_log($pdo);
     }
 
     .comments-container {
-        height: 450px;
+        height: 400px;
         overflow-y: auto;
+        display: flex;
+        flex-direction: column-reverse;
     }
 </style>
 
@@ -41,9 +43,13 @@ $log = new Audit_log($pdo);
                     </div>
 
                     <div class="col-md-3">
+                    <div>
+           Comments
+        </div>
+
                         <?php if (userHasPerms('comments_read', 'any')): ?>
                             <div class="border rounded p-3 bg-light mb-3 comments-container">
-                                <h6 class="text-muted">Comments</h6>
+                                
                                 <div id="commentsContainer">
                                     <p class="text-muted">Loading comments...</p>
                                 </div>

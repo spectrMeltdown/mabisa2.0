@@ -29,12 +29,18 @@ if ($barangay_id) {
     } else {
         $barangay_name = 'Unknown';
     }
+
     $stmt = $pdo->prepare("SELECT * FROM barangay_assessment_files WHERE barangay_id = ?");
     $stmt->bindParam(1, $barangay_id, PDO::PARAM_INT);
     $stmt->execute();
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
     include '../script.php';
     $data = [];
+
+    $stmt = $pdo->prepare("SELECT * FROM maintenance_criteria_version WHERE active_ = 1 LIMIT 1");
+    $stmt->execute();
+    $version = $stmt->fetch(PDO::FETCH_ASSOC);
+    $active_version_keyctr = $version ? $version['keyctr'] : null;
 
     $maintenance_area_description_query = "
         SELECT
@@ -53,7 +59,6 @@ if ($barangay_id) {
     if (!empty($maintenance_area_description_result)) {
         foreach ($maintenance_area_description_result as $maintenance_area_description_row) {
 
-            // maintenance_governance
             $maintenance_governance_query = "SELECT * FROM `maintenance_governance` WHERE desc_keyctr = :desc_keyctr";
             $stmt = $pdo->prepare($maintenance_governance_query);
             $stmt->execute(['desc_keyctr' => $maintenance_area_description_row['keyctr']]);
@@ -62,7 +67,6 @@ if ($barangay_id) {
             if (!empty($maintenance_governance_result)) {
                 foreach ($maintenance_governance_result as $maintenance_governance_row) {
 
-                    // maintenance_area_indicators
                     $maintenance_area_indicators_query = "SELECT * FROM `maintenance_area_indicators` WHERE governance_code = :governance_code";
                     $stmt = $pdo->prepare($maintenance_area_indicators_query);
                     $stmt->execute(['governance_code' => $maintenance_governance_row['keyctr']]);
@@ -71,7 +75,6 @@ if ($barangay_id) {
                     if (!empty($maintenance_area_indicators_result)) {
                         foreach ($maintenance_area_indicators_result as $maintenance_area_indicators_row) {
 
-                            // maintenance_criteria_setup
                             $maintenance_criteria_setup_query = "
                                 SELECT 
                                     msc.keyctr AS keyctr,
@@ -84,10 +87,15 @@ if ($barangay_id) {
                                 LEFT JOIN maintenance_area_mininumreqs AS mam ON msc.minreqs_keyctr = mam.keyctr
                                 LEFT JOIN maintenance_document_source AS mds ON msc.data_source = mds.keyctr 
                                 WHERE msc.indicator_keyctr = :indicator_keyctr
+                                AND msc.version_keyctr = :active_version_keyctr
                                 ORDER BY mam.reqs_code ASC
                             ";
+
                             $stmt = $pdo->prepare($maintenance_criteria_setup_query);
-                            $stmt->execute(['indicator_keyctr' => $maintenance_area_indicators_row['keyctr']]);
+                            $stmt->execute([
+                                'indicator_keyctr' => $maintenance_area_indicators_row['keyctr'],
+                                'active_version_keyctr' => $active_version_keyctr
+                            ]);
                             $maintenance_criteria_setup_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                             if (!empty($maintenance_criteria_setup_result)) {
@@ -118,7 +126,7 @@ if ($barangay_id) {
     $barangay_name = 'Unknown';
 }
 // echo '<pre>';
-// print_r($data);
+// print_r($version);
 // echo'</pre>';
 session_start();
 $successMessage = isset($_SESSION['success']) ? $_SESSION['success'] : '';
@@ -189,166 +197,159 @@ unset($_SESSION['success']);
                             <p><strong>Barangay ID:</strong> <?php echo htmlspecialchars($barangay_id); ?></p>
                             <p><strong>Barangay Name:</strong> <?php echo htmlspecialchars($barangay_name); ?></p>
                             <a href="../bar_assessment.php" class="btn btn-secondary">Back</a>
+                            <button class="btn btn-info" onclick="fetchAllComments(<?php echo $barangay_id; ?>)" data-toggle="modal" data-target="#allCommentsModal">
+                                View All Comments Summary
+                            </button>
+
                         </div>
                     </div>
                     <div class="card shadow mb-4">
-                        <div class="card-body">
+                    <div class="card-body">
+    <?php if ($data) { ?>
+        <?php foreach ($data as $key => $rows): ?>
+            <div class="card-header bg-primary text-center py-3">
+                <div class="card-body">
+                    <h5 class="text-white"><?php echo htmlspecialchars($key); ?></h5>
+                </div>
+            </div>
+
+            <?php
+            $last_indicator = '';
+            $table_started = false;
+            $requirement_counts = [];
+
+            foreach ($rows as $row) {
+                $req_key = $row['reqs_code'] . " " . $row['description'];
+                if (!isset($requirement_counts[$req_key])) {
+                    $requirement_counts[$req_key] = 0;
+                }
+                $requirement_counts[$req_key]++;
+            }
+
+            $printed_reqs = [];
+
+            foreach ($rows as $row):
+                $current_indicator = $row['indicator_code'] . " " . $row['indicator_description'];
+
+                if ($current_indicator !== $last_indicator):
+                    if ($table_started) {
+                        echo "</tbody></table>";
+                    }
+            ?>
+                    <div class="row bg-info" style="margin: 0; padding: 10px 0;">
+                        <h6 class="col-lg-12 text-center text-white" style="margin: 0;">
+                            <?php echo htmlspecialchars($current_indicator); ?>
+                        </h6>
+                    </div>
+
+                    <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th style="width: 17%; text-align: center;">Requirement Description</th>
+                                <th style="width: 17%;">Requirement MOV's</th>
+                                <th style="width: 9%; text-align: center;">Attachment</th>
+                                <th style="width: 6%; text-align: center;">Status</th>
+                                <th style="width: 9%; text-align: center;">Last Modified</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        $last_indicator = $current_indicator;
+                        $table_started = true;
+                    endif;
+
+                    $req_key = $row['reqs_code'] . " " . $row['description'];
+                        ?>
+                        <tr>
+                            <?php if (!isset($printed_reqs[$req_key])): ?>
+                                <td rowspan="<?= $requirement_counts[$req_key]; ?>">
+                                    <span class="short-text">
+                                        <?= htmlspecialchars(substr($req_key, 0, 300)) . '...'; ?>
+                                    </span> 
+                                    <span class="full-text" style="display: none;">
+                                        <?= htmlspecialchars($req_key); ?>
+                                    </span>
+                                    <a href="#" class="see-more">See more</a>
+                                </td>
+                                <?php $printed_reqs[$req_key] = true; ?>
+                            <?php endif; ?>
+
+                            <td><?= htmlspecialchars($row['documentary_requirements']); ?></td>
+
                             <?php
-                            foreach ($data as $key => $rows):
-                                $filtered_rows = array_filter($rows, function ($row) use ($role) {
-                                    return $role === 'Barangay Admin' || $role === $row['data_source'];
-                                });
-
-                                if (empty($filtered_rows)) {
-                                    continue;
-                                }
+                            $data = $responses->getData($barangay_id, $row['keyctr']);
                             ?>
-                                <div class="card-header bg-primary text-center py-3">
-                                    <div class="card-body">
-                                        <h5 class="text-white"><?php echo htmlspecialchars($key); ?></h5>
-                                    </div>
-                                </div>
-
-
-
-
-
-
-                                <?php
-                                $last_indicator = '';
-                                $table_started = false;
-                                $requirement_counts = [];
-                                foreach ($filtered_rows as $row) {
-                                    $req_key = $row['reqs_code'] . " " . $row['description'];
-                                    if (!isset($requirement_counts[$req_key])) {
-                                        $requirement_counts[$req_key] = 0;
-                                    }
-                                    $requirement_counts[$req_key]++;
-                                }
-
-                                $printed_reqs = [];
-
-                                foreach ($filtered_rows as $row):
-                                    $current_indicator = $row['indicator_code'] . " " . $row['indicator_description'];
-
-                                    if ($current_indicator !== $last_indicator):
-                                        if ($table_started) {
-                                            echo "</tbody></table>";
-                                        }
-                                ?>
-                                        <div class="row bg-info" style="margin: 0; padding: 10px 0;">
-                                            <h6 class="col-lg-12 text-center text-white" style="margin: 0;">
-                                                <?php echo htmlspecialchars($current_indicator); ?>
-                                            </h6>
+                            <td class="data-cell-upload-view" style="text-align: center; vertical-align: middle;">
+                                <?php if (!$data): ?>
+                                    <?php
+                                    writeLog('IN BAR RESPONSE');
+                                    if (userHasPerms(['submissions_create'], 'any', $barangay_id, $row['indicator_keyctr']) && $version['is_accepting_response'] == '1') : ?>
+                                        <form action="../bar_assessment/user_actions/upload.php" method="POST"
+                                            enctype="multipart/form-data" id="uploadForm-<?php echo $row['keyctr']; ?>">
+                                            <input type="hidden" name="barangay_id"
+                                                value="<?php echo htmlspecialchars($barangay_id, ENT_QUOTES, 'UTF-8'); ?>">
+                                            <input type="hidden" name="criteria_keyctr"
+                                                value="<?php echo htmlspecialchars($row['keyctr'], ENT_QUOTES, 'UTF-8'); ?>">
+                                            <input type="file" name="file" id="file-<?php echo $row['keyctr']; ?>"
+                                                class="file-input" style="display: none;" required accept="application/pdf">
+                                            <button type="button" class="btn btn-primary" title="Upload"
+                                                onclick="document.getElementById('file-<?php echo $row['keyctr']; ?>').click();">
+                                                <i class="fa fa-upload"></i>
+                                            </button>
+                                        </form>
+                                    <?php elseif (userHasPerms(['submissions_approve'], 'any', $barangay_id, $row['indicator_keyctr']) || userHasPerms(['comments_read'], 'any', $barangay_id, $row['indicator_keyctr'])): ?>
+                                        <p>No Uploads Yet</p>
+                                    <?php endif; ?>
+                                <?php else: ?>
+                                    <button type="button" class="btn btn-success mb-3" title="View"
+                                        data-toggle="modal" data-target="#commentModal"
+                                        data-fileid="<?= htmlspecialchars($data['file_id']); ?>"
+                                        data-name="<?= htmlspecialchars($name); ?>"
+                                        data-status="<?= htmlspecialchars($data['status']); ?>">
+                                        <i class="fa fa-eye"></i>
+                                    </button>
+                                    <?php if (userHasPerms('submissions_delete', 'any') && $data['status'] !== 'approved'): ?>
+                                        <button class="btn btn-danger mb-3 delete-btn"
+                                            data-file-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                            </td>
+                            <td class="data-cell-status" style="text-align: center; vertical-align: middle;">
+                                <?php if (!empty($data)): ?>
+                                    <?php if ($data['status'] === 'approved'): ?>
+                                        <div class="rounded bg-success text-white">
+                                            <p>Approved</p>
                                         </div>
+                                    <?php elseif ($data['status'] === 'declined'): ?>
+                                        <div class="rounded bg-danger text-white">
+                                            <p>Returned</p>
+                                        </div>
+                                    <?php else: ?>
+                                        <div class="rounded bg-secondary text-white">
+                                            <p>Waiting for Approval</p>
+                                        </div>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                            </td>
+                            <td class="data-cell-date-uploaded" style="text-align: center; vertical-align: middle;">
+                                <?php echo !empty($data) ? htmlspecialchars($data['date_uploaded']) : ''; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
 
-                                        <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
-                                            <thead>
-                                                <tr>
-                                                    <th style="width: 17%; text-align: center;">Requirement Description</th>
-                                                    <th style="width: 17%;">Requirement MOV's</th>
-                                                    <th style="width: 9%; text-align: center;">Attachment</th>
-                                                    <th style="width: 6%; text-align: center;">Status</th>
-                                                    <th style="width: 9%; text-align: center;">Last Modified</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                            <?php
-                                            $last_indicator = $current_indicator;
-                                            $table_started = true;
-                                        endif;
+                    <?php if ($table_started) {
+                        echo "</tbody></table>";
+                    } ?>
+                <?php endforeach; ?>
+    <?php } else { ?>
+        <div style="display: flex; justify-content: center;">
+            No Requirements Yet
+        </div>
+    <?php } ?>
+</div>
 
-                                        $req_key = $row['reqs_code'] . " " . $row['description'];
-                                            ?>
-                                            <tr>
-                                                <?php if (!isset($printed_reqs[$req_key])): ?>
-                                                    <td rowspan="<?= $requirement_counts[$req_key]; ?>">
-                                                        <span class="short-text">
-                                                            <?= htmlspecialchars(substr($req_key, 0, 300)) . '...'; ?>
-                                                        </span> <span class="full-text" style="display: none;">
-                                                            <?= htmlspecialchars($req_key); ?>
-                                                        </span>
-                                                        <a href="#" class="see-more">See more</a>
-
-                                                    </td>
-                                                    <?php $printed_reqs[$req_key] = true; ?>
-                                                <?php endif; ?>
-
-                                                <td><?= htmlspecialchars($row['documentary_requirements']); ?></td>
-
-                                                <?php
-                                                $data = $responses->getData($barangay_id, $row['keyctr']);
-                                                ?>
-                                                <td class="data-cell-upload-view" style="text-align: center; vertical-align: middle;">
-                                                    <?php if (!$data): ?>
-                                                        <?php
-                                                        writeLog('IN BAR RESPONSE');
-                                                        if (userHasPerms(['submissions_create'], 'any', $barangay_id, $row['indicator_keyctr'])): ?>
-                                                            <form action="../bar_assessment/user_actions/upload.php" method="POST"
-                                                                enctype="multipart/form-data" id="uploadForm-<?php echo $row['keyctr']; ?>">
-                                                                <input type="hidden" name="barangay_id"
-                                                                    value="<?php echo htmlspecialchars($barangay_id, ENT_QUOTES, 'UTF-8'); ?>">
-                                                                <input type="hidden" name="criteria_keyctr"
-                                                                    value="<?php echo htmlspecialchars($row['keyctr'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                                <input type="file" name="file" id="file-<?php echo $row['keyctr']; ?>"
-                                                                    class="file-input" style="display: none;" required accept="application/pdf">
-                                                                <button type="button" class="btn btn-primary" title="Upload"
-                                                                    onclick="document.getElementById('file-<?php echo $row['keyctr']; ?>').click();">
-                                                                    <i class="fa fa-upload"></i>
-                                                                </button>
-                                                            </form>
-                                                        <?php elseif (userHasPerms(['submissions_approve'], 'any', $barangay_id, $row['indicator_keyctr']) || userHasPerms(['comments_read'], 'any', $barangay_id, $row['indicator_keyctr'])): ?>
-                                                            <p>No Uploads Yet</p>
-                                                        <?php endif; ?>
-                                                    <?php else: ?>
-                                                        <button type="button" class="btn btn-success mb-3" title="View"
-                                                            data-toggle="modal" data-target="#commentModal"
-                                                            data-fileid="<?= htmlspecialchars($data['file_id']); ?>"
-                                                            data-role="<?= htmlspecialchars($role); ?>"
-                                                            data-name="<?= htmlspecialchars($name); ?>"
-                                                            data-status="<?= htmlspecialchars($data['status']); ?>">
-                                                            <i class="fa fa-eye"></i>
-                                                        </button>
-                                                        <?php if (userHasPerms('submissions_delete', 'any') && $data['status'] !== 'approved'): ?>
-                                                            <button class="btn btn-danger mb-3 delete-btn"
-                                                                data-file-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                                                <i class="fa fa-trash"></i>
-                                                            </button>
-                                                        <?php endif; ?>
-                                                    <?php endif; ?>
-                                                </td>
-                                                <td class="data-cell-status" style="text-align: center; vertical-align: middle;">
-                                                    <?php if (!empty($data)): ?>
-                                                        <?php if ($data['status'] === 'approved'): ?>
-                                                            <div class="rounded bg-success text-white">
-                                                                <p>Approved</p>
-                                                            </div>
-                                                        <?php elseif ($data['status'] === 'declined'): ?>
-                                                            <div class="rounded bg-danger text-white">
-                                                                <p>Returned</p>
-                                                            </div>
-                                                        <?php else: ?>
-                                                            <div class="rounded bg-secondary text-white">
-                                                                <p>Waiting for Approval</p>
-                                                            </div>
-                                                        <?php endif; ?>
-                                                    <?php endif; ?>
-                                                </td>
-                                                <td class="data-cell-date-uploaded" style="text-align: center; vertical-align: middle;">
-                                                    <?php echo !empty($data) ? htmlspecialchars($data['date_uploaded']) : ''; ?>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-
-                                        <?php
-                                        if ($table_started) {
-                                            echo "</tbody></table>";
-                                        }
-                                        ?>
-
-
-                                    <?php endforeach; ?>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -442,10 +443,28 @@ unset($_SESSION['success']);
                 });
             });
         });
+
+        function fetchAllComments(barangayId) {
+            $.ajax({
+                url: '../bar_assessment/fetch_all_comments.php',
+                type: 'POST',
+                data: {
+                    barangay_id: barangayId
+                },
+                success: function(response) {
+                  
+                    $('#allCommentsContainer').html(response);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Failed to fetch all comments:', error);
+                }
+            });
+        }
     </script>
 
 
     <?php require_once '../components/comment_section.php'; ?>
+    <?php require_once '../components/all_comments.php'; ?>
 </body>
 
 </html>
