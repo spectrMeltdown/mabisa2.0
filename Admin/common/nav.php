@@ -24,23 +24,36 @@ if (isset($isInFolder)):
         aria-haspopup="true" aria-expanded="false">
         <i class="fas fa-bell fa-fw"></i>
         <!-- Counter - Alerts -->
-        <span class="badge badge-danger badge-counter">3+</span>
+        <?php
+        require_once '../db/db.php';
+        $stmt = $pdo->query('SELECT COUNT(*) as count FROM notifications WHERE is_read = 0');
+        $alertsCount = $stmt->fetch(PDO::FETCH_ASSOC);
+        $count = ($alertsCount['count'] > 99) ? '99+' : $alertsCount['count'];
+        ?>
+        <span class="badge badge-danger badge-counter"><?= $count ?></span>
       </a>
       <!-- Dropdown - Alerts -->
       <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
         aria-labelledby="alertsDropdown">
-        <h6 class="dropdown-header">Alerts Center</h6>
-        <a class="dropdown-item d-flex align-items-center" href="#">
-          <div class="mr-3">
-            <div class="icon-circle bg-primary">
-              <i class="fas fa-file-alt text-white"></i>
+        <h6 class="dropdown-header">Notifications</h6>
+        <?php
+        $stmt = $pdo->prepare('SELECT * FROM notifications WHERE user_id = :user_id LIMIT 5');
+        $stmt->execute([':user_id' => $userData['id']]);
+        $alerts = $stmt->fetchAll();
+        foreach ($alerts as $alert):
+        ?>
+          <a class="dropdown-item d-flex align-items-center" href="mark_read.php?id=<?php echo $alert['id']; ?>">
+            <div class="mr-3">
+              <div class="icon-circle <?php echo $alert['is_read'] ? 'bg-secondary' : 'bg-primary'; ?>">
+                <i class="fas fa-file-alt text-white"></i>
+              </div>
             </div>
-          </div>
-          <div>
-            <div class="small text-gray-500">December 12, 2019</div>
-            <span class="font-weight-bold">A new monthly report is ready to download!</span>
-          </div>
-        </a>
+            <div>
+              <div class="small text-gray-500"><?php echo $alert['created_at'] ?></div>
+              <span class="font-weight-bold"><?php echo $alert['title'] ?></span>
+            </div>
+          </a>
+        <?php endforeach; ?>
         <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
       </div>
     </li>
