@@ -6,6 +6,7 @@ if (isset($isInFolder)):
   <div class="d-none" id="isInFolder"></div>
 <?php endif; ?>
 <script src="<?= $doublePathPrepend ?>js/nav.js" defer></script> <!-- for letting js know that this file is nested in folder -->
+<script src="<?= $doublePathPrepend ?>js/read_notif.js" defer></script>
 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
   <!-- Sidebar Toggle (Topbar) -->
   <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
@@ -26,11 +27,14 @@ if (isset($isInFolder)):
         <!-- Counter - Alerts -->
         <?php
         require_once $doublePathPrepend . 'db/db.php';
-        $stmt = $pdo->query('SELECT COUNT(*) as count FROM notifications WHERE is_read = 0');
+        $stmt = $pdo->prepare('SELECT COUNT(*) as count FROM notifications WHERE is_read = 0 AND user_id = :user_id');
+        $stmt->execute([':user_id' => $userData['id']]);
         $alertsCount = $stmt->fetch(PDO::FETCH_ASSOC);
         $count = ($alertsCount['count'] > 99) ? '99+' : $alertsCount['count'];
+        if ($count > 0):
         ?>
-        <span class="badge badge-danger badge-counter"><?= $count ?></span>
+          <span class="badge badge-danger badge-counter"><?= $count ?></span>
+        <?php endif; ?>
       </a>
       <!-- Dropdown - Alerts -->
       <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -39,21 +43,34 @@ if (isset($isInFolder)):
         <?php
         $stmt = $pdo->prepare('SELECT * FROM notifications WHERE user_id = :user_id LIMIT 5');
         $stmt->execute([':user_id' => $userData['id']]);
+        /** @var array */
         $alerts = $stmt->fetchAll();
-        foreach ($alerts as $alert):
+        if ($alerts != false && $count > 0):
+          foreach ($alerts as $alert):
         ?>
-          <a class="dropdown-item d-flex align-items-center" href="mark_read.php?id=<?php echo $alert['id']; ?>">
-            <div class="mr-3">
-              <div class="icon-circle <?php echo $alert['is_read'] ? 'bg-secondary' : 'bg-primary'; ?>">
-                <i class="fas fa-file-alt text-white"></i>
+            <a class="dropdown-item d-flex align-items-center" href="#read-notif"
+              data-toggle="modal"
+              data-target="#readNotifModal"
+              data-title="<?= $alert['title'] ?>"
+              data-message="<?= $alert['message'] ?>">
+              <div class="mr-3">
+                <div class="icon-circle <?php echo $alert['is_read'] ? 'bg-secondary' : 'bg-primary'; ?>">
+                  <i class="fas fa-file-alt text-white"></i>
+                </div>
               </div>
-            </div>
-            <div>
-              <div class="small text-gray-500"><?php echo $alert['created_at'] ?></div>
-              <span class="font-weight-bold"><?php echo $alert['title'] ?></span>
-            </div>
-          </a>
-        <?php endforeach; ?>
+              <div>
+                <div class="small text-gray-500"><?php echo $alert['created_at'] ?></div>
+                <span class="font-weight-bold"><?php echo $alert['title'] ?></span>
+              </div>
+            </a>
+          <?php
+          endforeach;
+        else:
+          ?>
+          <p class="my-3 text-center">No notifications yet..</p>
+        <?php
+        endif;
+        ?>
         <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
       </div>
     </li>

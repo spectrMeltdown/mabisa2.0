@@ -305,7 +305,9 @@ unset($_SESSION['success']);
                                                                 data-toggle="modal" data-target="#commentModal"
                                                                 data-fileid="<?= htmlspecialchars($data['file_id']); ?>"
                                                                 data-name="<?= htmlspecialchars($name); ?>"
-                                                                data-status="<?= htmlspecialchars($data['status']); ?>">
+                                                                data-status="<?= htmlspecialchars($data['status']); ?>"
+                                                                data-bid="<?= htmlspecialchars($barangay_id); ?>"
+                                                                data-iid="<?= htmlspecialchars($row['indicator_keyctr']); ?>">
                                                                 <i class="fa fa-eye"></i>
                                                             </button>
                                                             <?php if (userHasPerms('submissions_delete', 'any') && $data['status'] !== 'approved'): ?>
@@ -465,6 +467,7 @@ unset($_SESSION['success']);
 
     <?php require_once '../components/comment_section.php'; ?>
     <?php require_once '../components/all_comments.php'; ?>
+    <?php require_once '../components/read_notif.php'; ?>
 </body>
 
 </html>
