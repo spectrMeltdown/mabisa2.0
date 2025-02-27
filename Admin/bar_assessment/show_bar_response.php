@@ -184,8 +184,7 @@ unset($_SESSION['success']);
                 <!-- Topbar -->
                 <?php
                 include '../common/nav.php';
-                $role = 'Barangay Admin'; //temporary role
-                $name = $userData['full_name']; //temporary name
+                $name = $userData['full_name']; 
                 ?>
                 <!-- End of Topbar -->
 
