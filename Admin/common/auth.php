@@ -25,7 +25,6 @@ function getPermissions($isBarPerms = false): array | string
 {
   // auto-skip if super admin
   global $userData;
-  // writeLog($userData);
   if (strtolower($userData['role']) == 'super admin') return 'all';
   $sql = '';
   if ($isBarPerms) {
@@ -50,11 +49,6 @@ function getPermissions($isBarPerms = false): array | string
     $permissions = $query->fetch(PDO::FETCH_ASSOC);
   }
   if ($permissions == false) return [];
-  // writeLog('bar perms was: ');
-  // writeLog($isBarPerms);
-  // writeLog('Permissions is: ');
-  // writeLog($permissions);
-
   if ($isBarPerms) {
     // note: modifying original permissions array
     foreach ($permissions as &$entry) {
@@ -86,12 +80,11 @@ $userGenPerms = getPermissions();
 $userBarPerms = getPermissions(true);
 
 // a function to check user perms. Used on almost all pages that import this file.
-// TODO: update to accept barID, versionID, and indicatorID and check against that. For bar permissions
 /** @param perms can be a single perm or a array of perms. If array is used, the user must contain all those permissions to be true.
  *  @param permType must be 'gen' for global/general permissions,'bar' for barangay permissions 'any' for either of them.
  * @return bool return true if has all perms specified. False if otherwise.
  */
-function userHasPerms(string | array  $perms, string $permType, string $barID = null, string $indicatorID = null): bool
+function userHasPerms(string $perms, string $permType, string|null $barID = null, string|null $indicatorID = null): bool
 {
   // some parameter checks
   if (!empty($indicatorID) && empty($barID)) throw new Exception('indicatorID provided, but no barID!!');
@@ -105,214 +98,69 @@ function userHasPerms(string | array  $perms, string $permType, string $barID = 
   // check if super admin 
   if ($userGenPerms == 'all' && ($permType == 'gen' || $permType == 'any')) return true;
   if ($userBarPerms == 'all' && ($permType == 'bar' || $permType == 'any')) return true;
-  // if ($userBarPerms == 'all' && $permType == 'any') return true;
 
   // check if global/general perms
-  if ($permType == 'gen') {
-    writeLog('perm type is ' . $permType);
-    return checkPerms($userGenPerms, $perms);
-  }
+  if ($permType == 'gen') return checkPerms($userGenPerms, $perms);
+
   // check if barangay perms
-  else if ($permType == 'bar') {
-    // writeLog('perm type is ' . $permType);
-    return checkPerms($userBarPerms, $perms, $barID, (string)$indicatorID, $barID, (string)$indicatorID);
-  } else if ($permType == 'any') {
-    // writeLog('perm type is ' . $permType);
-    return checkPerms(array_merge($userGenPerms, $userBarPerms), $perms, $barID, (string)$indicatorID);
-  }
+  else if ($permType == 'bar') return checkPerms($userBarPerms, $perms, $barID, (string)$indicatorID);
+  else if ($permType == 'any') return checkPerms(array_merge($userGenPerms, $userBarPerms), $perms, $barID, (string)$indicatorID);
+
   // throw if none of the above
   else throw new Exception('Invalid perm passed.');
 }
 
-// TODO: apply the barID and indicator id checks. Modify user bar perms to include the ids in each array entry.
-function checkPerms($grantedPerms, $permsQuery, string $barID = null, string $indicatorID = null)
+function checkPerms(array $grantedPerms, string $permsQuery, string $barID = null, string $indicatorID = null)
 {
+  // if bar perms
   if (count(array_filter($grantedPerms, 'is_array')) > 0) {
-    // writeLog('granted perms has array');
-    // if array, loop and check against each item
-    if (is_array($permsQuery)) {
-      // writeLog('permsQuery was array');
-      // writeLog('granted perms are: ');
-      // writeLog($grantedPerms);
-      $result = [];
-      foreach ($permsQuery as $perm) {
-        // if the a granted perm matches a query perm, then add to result
-        $result = array_filter($grantedPerms, function ($grantedP) use ($perm, $barID, $indicatorID) {
-          // writeLog('granted in array filter: ');
-          // writeLog($grantedP);
-          // writeLog('query in array filter: ');
-          // writeLog($perm);
-          // writeLog('');
-          // writeLog(str_contains($genPerm, $perm));
-          if (is_array($grantedP)) {
-            // get the current entry barID and indicatorID
-            $entryBarID = $grantedP['bid'];
-            $entryIndID = $grantedP['iid'];
-            // filter the array in the array 
-            return !empty(array_filter($grantedP, function ($item) use ($perm, $barID, $indicatorID, $entryBarID, $entryIndID) {
-              if ($entryBarID  == '104201001' && $barID == '104201001' && $indicatorID == 1 && $entryIndID) {
-writeLog('ang perm kay');
-writeLog(str_contains((string)$item, $perm));
-              }
-              // writeLog('entryBarID');
-              // writeLog($entryBarID . ' == ' . $barID);
-              // writeLog('entryIndID');
-              // writeLog($entryIndID . ' == ' . $indicatorID);
-              // writeLog(str_contains((string)$item, $perm));
-              return str_contains((string)$item, $perm) && $barID == $entryBarID && $indicatorID == $entryIndID;
-            }));
-          } else {
-            writeLog('grantedP is string');
-            return str_contains((string)$grantedP, $perm);
-          }
-        });
-        // if they are equal, means that all specified perms are granted
-      }
-      // writeLog('perms count was: ' . count($permsQuery));
-      // 1writeLog($permsQuery);
-      // writeLog('result count was: ' . count($result));
-      // writeLog($result);
-      // writeLog('');
+    if (!empty($barID) && !empty($indicatorID)) {
+      $result = array_filter($grantedPerms, function ($entry) use ($permsQuery, $barID, $indicatorID) {
+        if (is_array($entry)) {
+          // get the current entry barID and indicatorID
+          $entryBarID = $entry['bid'];
+          $entryIndID = $entry['iid'];
+          // filter the array in the array 
+          return !empty(array_filter($entry, function ($item) use ($permsQuery, $barID, $indicatorID, $entryBarID, $entryIndID) {
+            return str_contains((string)$item, $permsQuery) && $barID == $entryBarID && $indicatorID == $entryIndID;
+          }));
+        } else {
+          return str_contains((string)$entry, $permsQuery);
+        }
+      });
+      return count($result) > 0;
+    } else if (!empty($barID)) {
+      $result = array_filter($grantedPerms, function ($entry) use ($permsQuery, $barID) {
+        if (is_array($entry)) {
+          // filter the array in the array 
+          $entryBarID = $entry['bid'];
+          return !empty(array_filter($entry, function ($item) use ($permsQuery, $barID, $entryBarID) {
+            return str_contains((string)$item, $permsQuery) && $barID == $entryBarID;
+          }));
+        } else {
+          return str_contains((string)$entry, $permsQuery);
+        }
+      });
+      return count($result) > 0;
+    } else {
+      $result = array_filter($grantedPerms, function ($entry) use ($permsQuery) {
+        if (is_array($entry)) {
+          return !empty(array_filter($entry, function ($item) use ($permsQuery) {
+            return str_contains((string)$item, $permsQuery);
+          }));
+        } else {
+          return str_contains((string)$entry, $permsQuery);
+        }
+      });
       return !empty($result);
-      // return count($permsQuery) == count($result);
-    }
-    // if string, loop only through the permissions array
-    else if (is_string($permsQuery)) {
-      // writeLog('permsQuery was string');
-      // writeLog('granted perms are: ');
-      // writeLog($grantedPerms);
-      if (!empty($barID) && !empty($indicatorID)) {
-        writeLog('barID & indicatorID');
-        $result = array_filter($grantedPerms, function ($entry) use ($permsQuery, $barID, $indicatorID) {
-          // writeLog('granted: ');
-          // writeLog($entry);
-          // writeLog('permsQuery: ');
-          // writeLog($permsQuery);
-          // writeLog('');
-          // writeLog(str_contains($genPerm, $permsQuery));
-          if (is_array($entry)) {
-            // get the current entry barID and indicatorID
-            $entryBarID = $entry['bid'];
-            $entryIndID = $entry['iid'];
-            // filter the array in the array 
-            return !empty(array_filter($entry, function ($item) use ($permsQuery, $barID, $indicatorID, $entryBarID, $entryIndID) {
-              // writeLog('entryBarID');
-              // writeLog($entryBarID . ' ' . $barID);
-              // writeLog('entryIndID');
-              // writeLog($entryIndID . ' ' . $indicatorID);
-              return str_contains((string)$item, $permsQuery) && $barID == $entryBarID && $indicatorID == $entryIndID;
-            }));
-          } else {
-            return str_contains((string)$entry, $permsQuery);
-          }
-        });
-        return count($result) > 0;
-      } else if (!empty($barID)) {
-        writeLog('barID only');
-        $result = array_filter($grantedPerms, function ($entry) use ($permsQuery, $barID) {
-          // writeLog('granted: ');
-          // writeLog($entry);
-          // writeLog('permsQuery: ');
-          // writeLog($permsQuery);
-          // writeLog('');
-          // writeLog(str_contains($genPerm, $permsQuery));
-          if (is_array($entry)) {
-            writeLog('is array');
-            // filter the array in the array 
-            $entryBarID = $entry['bid'];
-            return !empty(array_filter($entry, function ($item) use ($permsQuery, $barID, $entryBarID) {
-              writeLog('Bar id is: ' . $barID);
-              writeLog('Entry id is: ' . $entryBarID);
-              return str_contains((string)$item, $permsQuery) && $barID == $entryBarID;
-            }));
-          } else {
-            writeLog('is string');
-            return str_contains((string)$entry, $permsQuery);
-          }
-        });
-        writeLog('result is: ');
-        writeLog(count($result) > 0);
-        return count($result) > 0;
-      } else {
-        writeLog('no ids');
-        $result = array_filter($grantedPerms, function ($entry) use ($permsQuery) {
-          // writeLog('granted: ');
-          // writeLog($entry);
-          // writeLog('permsQuery: ');
-          // writeLog($permsQuery);
-          // writeLog('');
-          // writeLog(str_contains($genPerm, $permsQuery));
-          if (is_array($entry)) {
-            writeLog('entry is array');
-            return !empty(array_filter($entry, function ($item) use ($permsQuery) {
-              // writeLog('entryBarID');
-              // writeLog($item);
-              return str_contains((string)$item, $permsQuery);
-            }));
-          } else {
-            writeLog('entry is string');
-            return str_contains((string)$entry, $permsQuery);
-          }
-        });
-        // if there is a match, return true
-        return !empty($result);
-      }
-    }
-    // throw if neither
-    else {
-      throw new Exception('permsQuery was not a string or array.');
     }
   }
-  // IF NOT BAR PERMS
+  // if global/gen perms
   else {
-    // writeLog(gettype($permsQuery));
-    // if array, loop and check against each item
-    if (is_array($permsQuery)) {
-      // writeLog('perms was array');
-      // writeLog('granted perms are: ');
-      // writeLog($grantedPerms);
-      $result = [];
-      foreach ($permsQuery as $perm) {
-        // if the a granted perm matches a query perm, then add to result
-        $result = array_filter($grantedPerms, function ($grantedP) use ($perm) {
-          // writeLog('granted: ');
-          // writeLog($grantedP);
-          // writeLog('query: ');
-          // writeLog($perm);
-          // writeLog('');
-          // writeLog(str_contains($genPerm, $perm));
-          return str_contains((string)$grantedP, $perm);
-        });
-        // if they are equal, means that all specified perms are granted
-      }
-      writeLog('perms count was: ' . count($permsQuery));
-      // writeLog($permsQuery);
-      writeLog('result count was: ' . count($result));
-      // writeLog($result);
-      // writeLog('');
-      return count($permsQuery) == count($result);
-    }
-    // if string, loop only through the permissions array
-    else if (is_string($permsQuery)) {
-      // writeLog('perms was string');
-      // writeLog('granted perms are: ');
-      // writeLog($grantedPerms);
-      $result = array_filter($grantedPerms, function ($grantedP) use ($permsQuery) {
-        // writeLog('granted: ');
-        // writeLog($grantedP);
-        // writeLog('permsQuery: ');
-        // writeLog($permsQuery);
-        // writeLog('');
-        // writeLog(str_contains($genPerm, $permsQuery));
-        return str_contains((string)$grantedP, $permsQuery);
-      });
-      // if there is a match, return true
-      return !empty($result);
-    }
-    // throw if neither
-    else {
-      throw new Exception('permsQuery was not a string or array.');
-    }
+    $result = array_filter($grantedPerms, function ($grantedP) use ($permsQuery) {
+      return str_contains((string)$grantedP, $permsQuery);
+    });
+    return !empty($result);
   }
   throw new Exception('no processing happened!');
 }

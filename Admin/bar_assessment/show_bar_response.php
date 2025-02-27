@@ -283,7 +283,7 @@ unset($_SESSION['success']);
                                                         <?php if (!$data): ?>
                                                             <?php
                                                             writeLog('IN BAR RESPONSE');
-                                                            if (userHasPerms(['submissions_create'], 'any', $barangay_id, $row['indicator_keyctr']) && $version['is_accepting_response'] == '1') : ?>
+                                                            if (userHasPerms('submissions_create', 'any', $barangay_id, $row['indicator_keyctr']) && $version['is_accepting_response'] == '1') : ?>
                                                                 <form action="../bar_assessment/user_actions/upload.php" method="POST"
                                                                     enctype="multipart/form-data" id="uploadForm-<?php echo $row['keyctr']; ?>">
                                                                     <input type="hidden" name="barangay_id"
@@ -297,7 +297,7 @@ unset($_SESSION['success']);
                                                                         <i class="fa fa-upload"></i>
                                                                     </button>
                                                                 </form>
-                                                            <?php elseif (userHasPerms(['submissions_approve'], 'any', $barangay_id, $row['indicator_keyctr']) || userHasPerms(['comments_read'], 'any', $barangay_id, $row['indicator_keyctr'])): ?>
+                                                            <?php else: ?>
                                                                 <p>No Uploads Yet</p>
                                                             <?php endif; ?>
                                                         <?php else: ?>
@@ -310,15 +310,19 @@ unset($_SESSION['success']);
                                                                 data-iid="<?= htmlspecialchars($row['indicator_keyctr']); ?>">
                                                                 <i class="fa fa-eye"></i>
                                                             </button>
-                                                            <?php if (userHasPerms('submissions_delete', 'any') && $data['status'] !== 'approved'): ?>
+                                                            <?php if (userHasPerms('submissions_delete', 'any', $barangay_id, $row['indicator_keyctr']) && $data['status'] !== 'approved'): ?>
                                                                 <button class="btn btn-danger mb-3 delete-btn"
                                                                     data-file-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
                                                                     <i class="fa fa-trash"></i>
                                                                 </button>
                                                             <?php endif; ?>
+
+
                                                         <?php endif; ?>
                                                     </td>
                                                     <td class="data-cell-status" style="text-align: center; vertical-align: middle;">
+                                                        <?php //if (!empty($data) && userHasPerms(['submissions_approve'], 'any', $barangay_id, $row['indicator_keyctr']) || userHasPerms(['comments_read'], 'any', $barangay_id, $row['indicator_keyctr'])):  
+                                                        ?>
                                                         <?php if (!empty($data)): ?>
                                                             <?php if ($data['status'] === 'approved'): ?>
                                                                 <div class="rounded bg-success text-white">
@@ -333,10 +337,12 @@ unset($_SESSION['success']);
                                                                     <p>Waiting for Approval</p>
                                                                 </div>
                                                             <?php endif; ?>
+                                                        <?php else: ?>
+                                                            <p>--</p>
                                                         <?php endif; ?>
                                                     </td>
                                                     <td class="data-cell-date-uploaded" style="text-align: center; vertical-align: middle;">
-                                                        <?php echo !empty($data) ? htmlspecialchars($data['date_uploaded']) : ''; ?>
+                                                        <?php echo !empty($data) ? htmlspecialchars($data['date_uploaded']) : '--'; ?>
                                                     </td>
                                                 </tr>
                                             <?php endforeach; ?>

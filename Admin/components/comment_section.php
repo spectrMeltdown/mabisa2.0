@@ -93,6 +93,8 @@ $log = new Audit_log($pdo);
 
                             <div id="revertForm" style="display: none;">
                                 <form method="POST" action="admin_actions/change_status.php">
+                                    <input class="bid" type="hidden" name="bid">
+                                    <input class="iid" type="hidden" name="iid">
                                     <input type="hidden" name="file_id" id="revertFileId">
                                     <input type="hidden" name="action" value="revert">
                                     <button type="submit" class="btn btn-warning btn-block">Revert to Pending</button>
