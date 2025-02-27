@@ -3,7 +3,7 @@ $isInFolder = true;
 require_once '../common/auth.php';
 $barangay_id = isset($_GET['barangay_id']) ? $_GET['barangay_id'] : null;
 $barangay_name = isset($_GET['brgyname']) ? $_GET['brgyname'] : null;
-if (!userHasPerms('assessment', 'any', $barangay_id)) {
+if (!userHasPerms('assessment', 'any')) {
     // header does not allow relative paths, so this is my temporary solution
     header('Location:' . substr(__DIR__, 0, strrpos(__DIR__, '/')) . 'no_permissions.php');
     exit;

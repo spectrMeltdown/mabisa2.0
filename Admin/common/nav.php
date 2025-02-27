@@ -25,7 +25,7 @@ if (isset($isInFolder)):
         <i class="fas fa-bell fa-fw"></i>
         <!-- Counter - Alerts -->
         <?php
-        require_once '../db/db.php';
+        require_once $doublePathPrepend . 'db/db.php';
         $stmt = $pdo->query('SELECT COUNT(*) as count FROM notifications WHERE is_read = 0');
         $alertsCount = $stmt->fetch(PDO::FETCH_ASSOC);
         $count = ($alertsCount['count'] > 99) ? '99+' : $alertsCount['count'];
