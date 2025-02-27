@@ -115,5 +115,31 @@ class Responses
         }
     }
     
-    
+    public function getResponseCount($barangay_id) {
+        try {
+            $query1 = "SELECT COUNT(*) as totalRequirements FROM maintenance_criteria_setup";
+            $stmt1 = $this->pdo->prepare($query1);
+            $stmt1->execute();
+            $result1 = $stmt1->fetch(PDO::FETCH_ASSOC);
+            
+            $totalRequirements = (int)$result1['totalRequirements'];
+            
+            if ($totalRequirements === 0) {
+                return "0/0";
+            }
+            
+            $query2 = "SELECT COUNT(*) as barangayCount FROM barangay_assessment_files WHERE barangay_id = :barangay_id";
+            $stmt2 = $this->pdo->prepare($query2);
+            $stmt2->bindParam(':barangay_id', $barangay_id, PDO::PARAM_INT);
+            $stmt2->execute();
+            $result2 = $stmt2->fetch(PDO::FETCH_ASSOC);
+            
+            $barangayCount = (int)$result2['barangayCount'];
+            
+            return "$barangayCount/$totalRequirements";
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return false;
+        }
+    }
 }

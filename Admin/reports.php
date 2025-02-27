@@ -18,19 +18,32 @@ $categories = $pdo->query("SELECT * FROM maintenance_governance")->fetchAll(PDO:
 $barangayProgress = [];
 foreach ($barangayList as $data) {
   $progress = $response->getProgress($data['barangay_id']);
+
+  $stmt = $pdo->prepare("SELECT MAX(date_uploaded) AS date_uploaded FROM barangay_assessment_files WHERE barangay_id = :barangay_id");
+  $stmt->bindParam(':barangay_id', $data['barangay_id'], PDO::PARAM_INT);
+  $stmt->execute();
+  $lastModified = $stmt->fetch(PDO::FETCH_ASSOC)['date_uploaded'] ?? '0000-00-00 00:00:00';
+
   $barangayProgress[] = [
     'barangay_id' => $data['barangay_id'],
-    'progress' => $progress
+    'progress' => $progress,
+    'date_uploaded' => $lastModified
   ];
 }
 
-usort($barangayProgress, fn($a, $b) => $b['progress'] <=> $a['progress']);
+
+usort($barangayProgress, function ($a, $b) {
+  if ($b['progress'] !== $a['progress']) {
+    return $b['progress'] <=> $a['progress'];
+  }
+  return strtotime($a['date_uploaded']) <=> strtotime($b['date_uploaded']);
+});
 
 $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 5;
 if ($limit !== 0) {
   $topBarangays = array_slice($barangayProgress, 0, $limit);
 } else {
-  $topBarangays = $barangayProgress; 
+  $topBarangays = $barangayProgress;
 }
 
 $allAreaDescriptions = [];
@@ -67,15 +80,22 @@ foreach ($categories as $category) {
         <?php require_once 'common/nav.php'; ?>
         <div class="container-fluid">
           <div class="card shadow mb-4">
+
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
-              <h6 class="m-0 font-weight-bold text-primary">Top Performing Barangays</h6>
-              <select id="limitSelect" class="form-control w-auto">
-                <option value="5" <?= $limit == 5 ? 'selected' : '' ?>>5</option>
-                <option value="10" <?= $limit == 10 ? 'selected' : '' ?>>10</option>
-                <option value="20" <?= $limit == 20 ? 'selected' : '' ?>>20</option>
-                <option value="0" <?= $limit == 0 ? 'selected' : '' ?>>All</option>
-              </select>
+              <div class="d-flex justify-content-start w-10">
+                <h6 class="m-0 font-weight-bold text-primary">Top Performing Barangays</h6>
+              </div>
+              <div class="d-flex justify-content-end">
+                <select id="limitSelect" class="form-control w-auto mx-2">
+                  <option value="5" <?= $limit == 5 ? 'selected' : '' ?>>5</option>
+                  <option value="10" <?= $limit == 10 ? 'selected' : '' ?>>10</option>
+                  <option value="20" <?= $limit == 20 ? 'selected' : '' ?>>20</option>
+                  <option value="0" <?= $limit == 0 ? 'selected' : '' ?>>All</option>
+                </select>
+                <a href="reports_ranking.php" class="btn btn-danger">Download PDF</a>
+              </div>
             </div>
+
             <div class="card-body">
               <ul class="list-group list-group-flush">
                 <?php
@@ -110,9 +130,11 @@ foreach ($categories as $category) {
         <!-- Barangay Responses Table -->
         <div class="container-fluid">
           <div class="card shadow mb-4">
-            <div class="card-header py-3">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
               <h6 class="m-0 font-weight-bold text-primary">Barangay Responses</h6>
+              <a href="reports_generate.php" class="btn btn-danger">Download PDF</a>
             </div>
+
             <div class="card-body">
               <div class="table-responsive">
                 <table class="table table-bordered">
