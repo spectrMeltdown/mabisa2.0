@@ -43,13 +43,12 @@ $log = new Audit_log($pdo);
                     </div>
 
                     <div class="col-md-3">
-                    <div>
-           Comments
-        </div>
+                        <div>
+                            Comments
+                        </div>
 
                         <?php if (userHasPerms('comments_read', 'any')): ?>
                             <div class="border rounded p-3 bg-light mb-3 comments-container">
-                                
                                 <div id="commentsContainer">
                                     <p class="text-muted">Loading comments...</p>
                                 </div>
@@ -59,6 +58,8 @@ $log = new Audit_log($pdo);
                             <form method="post" action="../bar_assessment/admin_actions/add_comment.php">
                                 <input type="hidden" name="file_id">
                                 <input type="hidden" name="name">
+                                <input class="bid" type="hidden" name="bid">
+                                <input class="iid" type="hidden" name="iid">
                                 <div class="form-group">
                                     <textarea class="form-control" id="commentText" name="commentText" rows="2"
                                         placeholder="Write your comment here..." required></textarea>
@@ -72,6 +73,8 @@ $log = new Audit_log($pdo);
                         <?php if (userHasPerms('submissions_approve', 'any')): ?>
                             <div id="approveForm" style="display: none;">
                                 <form method="POST" action="admin_actions/change_status.php">
+                                    <input class="bid" type="hidden" name="bid">
+                                    <input class="iid" type="hidden" name="iid">
                                     <input type="hidden" name="file_id" id="approveFileId">
                                     <input type="hidden" name="action" value="approve">
                                     <button type="submit" class="btn btn-success btn-block">Approve</button>
@@ -80,6 +83,8 @@ $log = new Audit_log($pdo);
 
                             <div id="declineForm" style="display: none;">
                                 <form method="POST" action="admin_actions/change_status.php">
+                                    <input class="bid" type="hidden" name="bid">
+                                    <input class="iid" type="hidden" name="iid">
                                     <input type="hidden" name="file_id" id="declineFileId">
                                     <input type="hidden" name="action" value="decline">
                                     <button type="submit" class="btn btn-danger btn-block">Return</button>

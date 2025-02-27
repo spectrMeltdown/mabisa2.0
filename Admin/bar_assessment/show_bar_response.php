@@ -3,7 +3,7 @@ $isInFolder = true;
 require_once '../common/auth.php';
 $barangay_id = isset($_GET['barangay_id']) ? $_GET['barangay_id'] : null;
 $barangay_name = isset($_GET['brgyname']) ? $_GET['brgyname'] : null;
-if (!userHasPerms('assessment', 'any', $barangay_id)) {
+if (!userHasPerms('assessment', 'any')) {
     // header does not allow relative paths, so this is my temporary solution
     header('Location:' . substr(__DIR__, 0, strrpos(__DIR__, '/')) . 'no_permissions.php');
     exit;
@@ -304,7 +304,9 @@ unset($_SESSION['success']);
                                                                 data-toggle="modal" data-target="#commentModal"
                                                                 data-fileid="<?= htmlspecialchars($data['file_id']); ?>"
                                                                 data-name="<?= htmlspecialchars($name); ?>"
-                                                                data-status="<?= htmlspecialchars($data['status']); ?>">
+                                                                data-status="<?= htmlspecialchars($data['status']); ?>"
+                                                                data-bid="<?= htmlspecialchars($barangay_id); ?>"
+                                                                data-iid="<?= htmlspecialchars($row['indicator_keyctr']); ?>">
                                                                 <i class="fa fa-eye"></i>
                                                             </button>
                                                             <?php if (userHasPerms('submissions_delete', 'any') && $data['status'] !== 'approved'): ?>
@@ -464,6 +466,7 @@ unset($_SESSION['success']);
 
     <?php require_once '../components/comment_section.php'; ?>
     <?php require_once '../components/all_comments.php'; ?>
+    <?php require_once '../components/read_notif.php'; ?>
 </body>
 
 </html>

@@ -10,14 +10,14 @@ class Comments
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
-        $this->auditLog = new Audit_log($pdo); 
+        $this->auditLog = new Audit_log($pdo);
     }
 
     public function add_comment(
         string $file_id,
         string $commentName,
         string $commentText
-    ): array {
+    ) {
         try {
             $this->pdo->beginTransaction();
 
@@ -57,9 +57,10 @@ class Comments
 
                 echo "<script>
                     alert('Comment Added');
-                    window.location.href = document.referrer;
+                    // window.location.href = document.referrer;
                 </script>";
-                exit;
+                // dont exist yet because we have to send notif after this
+                // exit;
             } else {
                 $this->pdo->rollBack();
                 return ['success' => false, 'message' => 'Failed to update comments'];
@@ -94,13 +95,14 @@ class Comments
         }
     }
 
-    public function show_all_comments(string $barangay_id): array {
+    public function show_all_comments(string $barangay_id): array
+    {
         try {
             $sql = "SELECT file_id, comments FROM barangay_assessment_files WHERE barangay_id = :barangay_id";
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':barangay_id', $barangay_id, PDO::PARAM_STR);
             $stmt->execute();
-            
+
             $allComments = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 if (!empty($row['comments'])) {

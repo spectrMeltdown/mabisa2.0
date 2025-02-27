@@ -132,7 +132,7 @@ if (!empty($_COOKIE['id'])) {
                                                         Me?</label>
                                                 </div>
                                             </div>
-                                            <a href="forgot_password.php" style="font-size: 15;">Forgot Password? </a>
+                                            <!-- <a href="forgot_password.php" style="font-size: 15;">Forgot Password? </a> -->
                                         </div>
                                         <!-- dont make it type=submit, because we are using js to handle form submission -->
                                         <button type="button" id="loginBtn" class="btn btn-primary btn-user btn-block">

@@ -16,7 +16,7 @@ const steps = document.querySelectorAll('.step');
 const forms = ['email-form', 'code-form', 'password-form'];
 
 async function showStep(index) {
-  if (currentStep == 0) {
+  if (index >= 1) {
     $('#prevStep').removeClass('d-none');
   } else {
     $('#prevStep').addClass('d-none');
@@ -83,8 +83,8 @@ $('#nextStep').on('click', async e => {
   e.preventDefault();
   let shouldProceed = false;
   if (currentStep == 0 && emailExists()) shouldProceed = true;
-  if (currentStep == 1 && validateCode()) shouldProceed = true;
-  if (currentStep == 2 && validateNewPass()) shouldProceed = true;
+  else if (currentStep == 1 && validateCode()) shouldProceed = true;
+  else if (currentStep == 2 && validateNewPass()) shouldProceed = true;
   if (currentStep < steps.length - 1 && shouldProceed) {
     currentStep++;
     await showStep(currentStep);
