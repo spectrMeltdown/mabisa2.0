@@ -16,21 +16,63 @@ $categories = $pdo->query("SELECT * FROM maintenance_governance")->fetchAll(PDO:
 $orientation = (count($categories) > 5) ? 'L' : 'P';
 $pdf = new TCPDF($orientation, 'mm', 'A4');
 $pdf->SetTitle('Barangay Responses Report');
+$pdf->setPrintHeader(false);
 $pdf->AddPage();
 
-$pageWidth = ($orientation == 'L') ? 290 : 190; 
-$margin = 10;
-$totalWidth = $pageWidth - (2 * $margin);
+// logo
+$leftLogo = '../img/dilg_logo.jpg'; 
+$rightLogo = '../img/mabisa-logo.jpg'; 
 
+$logoWidth = 30; 
+$headerY = 10;    
+$pageWidth = ($orientation == 'L') ? 290 : 190; 
+
+$pdf->Image($leftLogo, 10, $headerY, $logoWidth, $logoWidth); 
+
+$pdf->SetFont('helvetica', 'B', 14);
+$pdf->SetXY(0, $headerY + 5);
+$pdf->Cell($pageWidth, 10, 'DEPARTMENT OF INTERIOR AND LOCAL GOVERNMENT', 0, 1, 'C');
+
+$pdf->SetX(0);
+$pdf->Cell($pageWidth, 10, 'Barangay Responses Report', 0, 1, 'C');
+
+$pdf->SetFont('helvetica', 'B', 12);
+
+
+$pdf->SetX(0);
+$pdf->Cell($pageWidth, 8, 'Municipality of Aloran', 0, 1, 'C'); 
+
+$pdf->SetFont('helvetica', 'I', 10);
+
+
+$pdf->SetX(0);
+$pdf->Cell($pageWidth, 6, 'Report generated on: ' . date('F d, Y'), 0, 1, 'C'); 
+
+
+
+
+
+$pdf->Image($rightLogo, $pageWidth - $logoWidth - 10, $headerY, $logoWidth, $logoWidth); 
+
+$pdf->Ln(10);
+
+
+
+$pageWidth -= 20; 
 $barangayColumnWidth = 55;  
-$categoryColumnWidth = ($totalWidth - $barangayColumnWidth) / count($categories);
+$categoryColumnWidth = ($pageWidth - $barangayColumnWidth) / count($categories);
 
 $pdf->SetFont('helvetica', 'B', 9);
-$pdf->Cell($barangayColumnWidth, 8, 'Barangay', 1, 0, 'C');
-
+$pdf->Cell($barangayColumnWidth, 8, 'Barangay', 1, 0, 'C'); 
+$pdf->SetFont('helvetica', 'B', 6.5);
 foreach ($categories as $category) {
-    $pdf->Cell($categoryColumnWidth, 8, $category['cat_code'], 'LRB', 0, 'C');
+    $x = $pdf->GetX(); 
+    $y = $pdf->GetY(); 
+    $pdf->MultiCell($categoryColumnWidth, 8, $category['description'], 1, 'C'); 
+
+    $pdf->SetXY($x + $categoryColumnWidth, $y);
 }
+
 $pdf->Ln();
 
 $pdf->SetFont('helvetica', '', 9);
@@ -66,7 +108,7 @@ foreach ($barangayList as $barangay) {
             }
         }
 
-        $displayText = ($submittedCount == $totalCriteria && $totalCriteria != 0) ? '✔' : "$submittedCount / $totalCriteria";
+        $displayText = ($submittedCount == $totalCriteria && $totalCriteria != 0) ? 'Complete' : "$submittedCount / $totalCriteria";
         $pdf->Cell($categoryColumnWidth, 8, $displayText, 1, 0, 'C');
     }
     $pdf->Ln();
