@@ -81,6 +81,7 @@ if ($barangay_id) {
                                     mam.description,
                                     mam.reqs_code,
                                     msc.movdocs_reqs AS documentary_requirements,
+                                    msc.template,
                                     mds.srcdesc AS data_source
                                 FROM `maintenance_criteria_setup` msc 
                                 LEFT JOIN maintenance_criteria_version AS mcv ON msc.version_keyctr = mcv.keyctr
@@ -112,6 +113,7 @@ if ($barangay_id) {
                                         'documentary_requirements' => $maintenance_criteria_setup_row['documentary_requirements'],
                                         'description' => $maintenance_criteria_setup_row['description'],
                                         'data_source' => $maintenance_criteria_setup_row['data_source'],
+                                        'template' => $maintenance_criteria_setup_row['template'],
                                     ];
                                 }
                             }
@@ -273,8 +275,17 @@ unset($_SESSION['success']);
                                                         <?php $printed_reqs[$req_key] = true; ?>
                                                     <?php endif; ?>
 
-                                                    <td><?= htmlspecialchars($row['documentary_requirements']); ?></td>
-
+                                                    <td>
+                            <?php
+                            $link = htmlspecialchars($row['template']);
+                            echo htmlspecialchars($row['documentary_requirements']) . '<br> <br>';
+                            if (!empty($link)) {
+                              echo '<a href="' . $link . '" target="_blank">View Template</a>';
+                            } else {
+                              echo 'No template available';
+                            }
+                            ?>
+</td>
                                                     <?php
                                                     $data = $responses->getData($barangay_id, $row['keyctr']);
                                                     ?>

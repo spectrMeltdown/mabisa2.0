@@ -305,7 +305,7 @@ if (!empty($maintenance_area_description_result)) {
                               echo 'No template available';
                             }
                             ?>
-
+</td>
 
                           <td><?php echo htmlspecialchars($row['data_source']); ?></td>
                           <td>

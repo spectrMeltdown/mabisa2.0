@@ -169,7 +169,7 @@ $responses = new Responses($pdo);
         require_once '../db/db.php';
 
         try {
-          $sql = "SELECT * FROM audit_log ORDER BY time_and_date DESC";
+          $sql = "SELECT * FROM audit_log WHERE DATE(time_and_date) = CURDATE() ORDER BY time_and_date DESC";
           $stmt = $pdo->prepare($sql);
           $stmt->execute();
           $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -177,13 +177,14 @@ $responses = new Responses($pdo);
           echo "<p class='text-danger'>Error fetching logs: " . $e->getMessage() . "</p>";
           $logs = [];
         }
+        
         ?>
         <div class="container-fluid">
           <div class="card shadow mb-4">
             <div class="card-header py-3">
-              <div style="float: left;">
-                <h3 class="m-0 font-weight-bold text-primary">User Logs</h3>
-              </div>
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+              <h3 class="m-0 font-weight-bold text-primary">User Logs Today</h3>
+              <a href="user_log.php" class="btn btn-danger">Show All Logs</a>
             </div>
             <div class="card-body">
               <div class="table table-responsive"></div>
