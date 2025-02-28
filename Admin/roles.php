@@ -3,7 +3,7 @@ error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
 
 require_once 'common/auth.php';
-if (!userHasPerms(['roles_read'], 'gen')) {
+if (!userHasPerms('roles_read', 'gen')) {
   header('Location:no_permissions.php');
   exit;
 }
@@ -197,5 +197,6 @@ if (!userHasPerms(['roles_read'], 'gen')) {
     <!-- End of Content Wrapper -->
   </div>
 </body>
+
 
 </html>

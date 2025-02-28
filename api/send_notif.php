@@ -39,21 +39,31 @@ function sendNotif(\PDO $pdo, string $creatorID, string $title, string $message)
   return null;
 }
 
-function sendNotifBar(\PDO $pdo, string $creatorID, string $title, string $message, int|null $bid = null, int|null $iid = null): ?string
+function sendNotifBar(\PDO $pdo, string $creatorID, string $title, string $message, int|null $bid = null, int|null $iid = null, array $perms): ?string
 {
   writeLog('IN SEND NOTIF BAR');
   try {
-    $sql = '';
+    $sql = 'SELECT urb.user_id as uid, p.*
+  FROM user_roles_barangay urb
+  JOIN permissions p ON urb.permission_id = p.id
+  WHERE ';
     $params = [':creator_id' => $creatorID];
+
+    // construct the where statement from the permissions provided
+    foreach ($perms as $perm) {
+      $sql .= ' p.' . $perm .  '=1 AND';
+    }
+
+    // remove trailing AND
+    $sql = preg_replace('/AND\s*$/', '', $sql);
 
     // if both barangay and indicator ids are provided
     if (!empty($bid) && !empty($iid)) {
-      $sql = '
-  SELECT urb.user_id as uid, p.*
-  FROM user_roles_barangay urb
-  JOIN permissions p ON urb.permission_id = p.id
-  WHERE p.assessment_comments_read = 1 AND p.assessment_submissions_read = 1 
-  AND urb.barangay_id = :bid
+      writeLog($creatorID);
+      writeLog($bid);
+      writeLog($iid);
+
+      $sql .= ' AND urb.barangay_id = :bid
   AND urb.indicator_id = :iid
   AND urb.user_id != :creator_id
 ';
@@ -67,10 +77,11 @@ function sendNotifBar(\PDO $pdo, string $creatorID, string $title, string $messa
       SELECT urb.user_id as uid, p.*
       FROM user_roles_barangay urb
       JOIN permissions p ON urb.permission_id = p.id
-      WHERE p.assessment_comments_read = 1 AND p.assessment_submissions_read = 1 
-      AND urb.barangay_id = :bid
-      AND urb.user_id != :creator_id
     ';
+
+      $sql .= ' AND urb.barangay_id = :bid
+  AND urb.user_id != :creator_id
+';
       $params[':bid'] = $bid;
     }
 
@@ -80,9 +91,11 @@ function sendNotifBar(\PDO $pdo, string $creatorID, string $title, string $messa
       SELECT urb.user_id as uid, p.*
       FROM user_roles_barangay urb
       JOIN permissions p ON urb.permission_id = p.id
-      WHERE p.assessment_comments_read = 1 AND p.assessment_submissions_read = 1 
-      AND urb.user_id != :creator_id
     ';
+      $sql .= ' AND urb.barangay_id = :bid
+  AND urb.indicator_id = :iid
+  AND urb.user_id != :creator_id
+';
     }
 
     if (empty($sql)) throw new Exception('sql empty!');
@@ -139,9 +152,11 @@ try {
   $bid = empty($_POST['bid']) ? null : $_POST['bid'];
   /** @var string */
   $iid = empty($_POST['iid']) ? null : $_POST['iid'];
+  /** @var array */
+  $perms = empty($_POST['perms']) ? null : $_POST['perms'];
 
   global $pdo;
-  sendNotifBar($pdo, $creatorID, $title, $message, (int)$bid, (int)$iid);
+  sendNotifBar($pdo, $creatorID, $title, $message, (int)$bid, (int)$iid, $perms);
 } catch (\Throwable $th) {
   http_response_code(500);
   $message = $th->getMessage();

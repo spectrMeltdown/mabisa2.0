@@ -13,7 +13,6 @@ $('#dismissBtn')
   .off('click')
   .on('click', () => {
     console.log('confirm clicked');
-    readNotifModal.hide();
   });
 
 $('#readNotifModal')

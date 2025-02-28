@@ -4,19 +4,15 @@ declare(strict_types=1);
 require_once '../db/db.php';
 require_once 'logging.php';
 require_once '../api/audit_log.php';
-$log = new Audit_log($pdo);
 // ini_set('display_errors', 0); // Disable error display
 // require_once 'auth/check_permissions.php'; // Ensure this checks admin privileges
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  // Ensure `id` is passed in the request
-  if (empty($_POST['id'])) {
-    http_response_code(400); // Bad Request
-    writeLog('Missing user ID.');
-    echo 'Missing user ID.';
-    exit;
-  }
+try {
+  $log = new Audit_log($pdo);
+  if ($_SERVER['REQUEST_METHOD'] != 'POST') throw new Exception('Invalid request');
+  if (empty($_POST['id'])) throw new Exception('Missing user ID.');
 
+  /** @var int */
   $userId = trim($_POST['id']);
 
   // Validate UUID format using a regex
@@ -34,31 +30,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // }
 
   global $pdo;
-  // TODO: check first if there is more than one super admin left. Only delete
-  // if true, otherwise, return deletion error "Cannot delete last admin."
+
+  // proceed only if there is more than one admin available
+  $sql = 'SELECT COUNT(*) FROM users WHERE id != :id';
+  $stmt = $pdo->prepare($sql);
+  $stmt->execute([':id' => $userId]);
+  $users = $stmt->fetch();
+  if ($users == 0) throw new Exception('You are the last admin. Your account cannot be deleted.');
+
+  // delete permissions (safe because users will set null on its permission id)
+  $sql = '
+  DELETE p
+FROM permissions p
+JOIN user_roles ur ON p.permission_id = ur.permission_id
+JOIN user_roles_barangay urb ON p.permission_id = urb.permission_id
+WHERE ur.user_id = :id OR urb.user_id = :id;';
+  $pdo->beginTransaction();
+  $stmt = $pdo->prepare($sql);
+
+  // delete the user (will also delete entries in user_roles and user_roles_barangay)
   $sql = 'DELETE FROM users WHERE id = :id';
+  $stmt = $pdo->prepare($sql);
+  // bindParam is same sa execute, only this allows specifying data type. 
+  // use execute for passing array i.e less verbose, however data types not checked
+  $stmt->bindParam(':id', $userId, PDO::PARAM_STR);
 
-  try {
-    $stmt = $pdo->prepare($sql);
-    // bindParam is same sa execute, only this allows specifying data type. 
-    // use execute for passing array i.e less verbose, however data types not checked
-    $stmt->bindParam(':id', $userId, PDO::PARAM_STR);
-
-    if ($stmt->execute()) {
-      if ($stmt->rowCount() > 0) {
-        $log->userLog('Deleted a User with ID: ' . $userId); //logging
-        echo ''; // Blank response indicates success
-      } else {
-        http_response_code(404); // Not Found
-        echo 'User not found or already deleted.';
-      }
+  if ($stmt->execute()) {
+    if ($stmt->rowCount() > 0) {
+      $log->userLog('Deleted a User with ID: ' . $userId); //logging
     } else {
-      http_response_code(500); // Internal Server Error
-      echo 'Failed to delete user. Please try again.';
+      http_response_code(404); // Not Found
+      echo 'User not found or already deleted.';
     }
-  } catch (Exception $e) {
+  } else {
     http_response_code(500); // Internal Server Error
-    writeLog($e->getMessage());
-    echo 'An error occurred: ' . $e->getMessage();
+    echo 'Failed to delete user. Please try again.';
   }
+  $pdo->commit();
+} catch (\Throwable $th) {
+  http_response_code(500); // Internal Server Error
+  writeLog($th);
+  echo 'An error occurred: ' . $th->getMessage();
 }

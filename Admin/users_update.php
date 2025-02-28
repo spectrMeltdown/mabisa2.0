@@ -2,7 +2,7 @@
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
 require_once 'common/auth.php';
-if (!userHasPerms(['users_create', 'users_update'], 'gen')) {
+if (!(userHasPerms('users_create', 'gen') || userHasPerms('users_update', 'gen'))) {
   header('Location:no_permissions.php');
   exit;
 }
@@ -249,5 +249,6 @@ if (!userHasPerms(['users_create', 'users_update'], 'gen')) {
     <i class="fas fa-angle-up"></i> Scroll to Top
   </a>
 </body>
+
 
 </html>

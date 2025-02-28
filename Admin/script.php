@@ -3,6 +3,8 @@
 $pathPrepend = isset($isInFolder) ? '../' : '';
 require_once $pathPrepend . '../db/db.php';
 require_once(__DIR__ . "/../api/audit_log.php");
+$useAsFunction = true;
+require_once(__DIR__ . "/../api/send_notif.php");
 $log = new Audit_log($pdo);
 
 
@@ -41,6 +43,18 @@ if (isset($_POST['add_maintenance_criteria_setup'])) {
 
         $pdo->commit();
         $log->userLog('Created a New Criteria with Version ID: ' . $version_keyctr . ', Indicator ID: ' . $indicator_keyctr . ', Minimum Requirements ID: ' . $minreqs_keyctr . ', Sub Minimum Requirements: ' . $sub_minimumreqs . ', MOV Documents Requirements: ' . $movdocs_reqs . ', and Document Source: ' . $data_source);
+
+        // get the user data
+        $stmt = $pdo->prepare('SELECT u.*, r.name as role_name FROM users u JOIN roles r ON u.role_id = r.id WHERE u.id = :id LIMIT 1');
+        $stmt->execute([':id' => $_COOKIE['id']]);
+        $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // send notif to all relevant users
+        $notifResult = sendNotif($pdo, $userData['id'], 'New Criteria Setup!', 'The ' . $userData['role_name'] . ' ' . $userData['full_name'] . ' created new criteria. Please check them in your respective barangays.');
+        if ($notifResult) {
+            writeLog($notifResult);
+        }
+
         echo "<script>alert('New record created successfully'); window.location.href = document.referrer;</script>";
     } catch (PDOException $e) {
         $pdo->rollBack();
@@ -98,7 +112,7 @@ if (isset($_POST['update_maintenance_criteria_setup'])) {
 if (isset($_POST['edit_duration'])) {
 
     $duration = $_POST['duration'];
-    $is_accepting_response = $_POST['is_accepting_response'] ?? 0 ;
+    $is_accepting_response = $_POST['is_accepting_response'] ?? 0;
 
     try {
         $pdo->beginTransaction();

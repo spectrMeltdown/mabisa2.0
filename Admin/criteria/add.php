@@ -61,14 +61,14 @@ $maintenance_document_source_result = fetchAllData($pdo, "SELECT * FROM `mainten
 
                         <div class="mb-3">
                             <label class="form-label">Minimum Requirements</label>
-                            <select class="form-control" name="minreqs_keyctr"required>
-                                <option value="" >Select</option>
+                            <select class="form-control" name="minreqs_keyctr" required>
+                                <option value="">Select</option>
                             </select>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Sub Minimum Requirements</label>
-                            <input type="number" class="form-control" name="sub_minimumreqs" required/>
+                            <input type="number" class="form-control" name="sub_minimumreqs" required />
                         </div>
 
                         <div class="mb-3">
@@ -78,7 +78,7 @@ $maintenance_document_source_result = fetchAllData($pdo, "SELECT * FROM `mainten
 
                         <div class="mb-3">
                             <label class="form-label">Template Link</label>
-                            <input type="text" class="form-control" name="template" required/>
+                            <input type="text" class="form-control" name="template" required />
                         </div>
 
                         <div class="mb-3">
@@ -107,33 +107,35 @@ $maintenance_document_source_result = fetchAllData($pdo, "SELECT * FROM `mainten
     <script>
         $(document).ready(function() {
             $('select[name="indicator_keyctr"]').change(function() {
-    const indicatorKeyctr = $(this).val(); 
-    console.log("Selected Indicator:", indicatorKeyctr);
-    
-    $.ajax({
-        url: '../script.php',
-        type: 'GET',
-        data: { 'indicator_id': indicatorKeyctr },
-        dataType: 'JSON',
-        success: function(response) {
-            if (response.data && Array.isArray(response.data)) {
-                const minReqSelect = $('select[name="minreqs_keyctr"]');
-                minReqSelect.empty().append('<option value="">Select</option>');
-                
-                $.each(response.data, function(index, item) {
-                    minReqSelect.append(
-                        $('<option>', {
-                            value: item.req_keyctr,
-                            text: item.reqs_code + " - " + item.min_requirement_desc
-                        })
-                    );
+                const indicatorKeyctr = $(this).val();
+                console.log("Selected Indicator:", indicatorKeyctr);
+
+                $.ajax({
+                    url: '../script.php',
+                    type: 'GET',
+                    data: {
+                        'indicator_id': indicatorKeyctr
+                    },
+                    dataType: 'JSON',
+                    success: function(response) {
+                        if (response.data && Array.isArray(response.data)) {
+                            const minReqSelect = $('select[name="minreqs_keyctr"]');
+                            minReqSelect.empty().append('<option value="">Select</option>');
+
+                            $.each(response.data, function(index, item) {
+                                minReqSelect.append(
+                                    $('<option>', {
+                                        value: item.req_keyctr,
+                                        text: item.reqs_code + " - " + item.min_requirement_desc
+                                    })
+                                );
+                            });
+                        } else {
+                            console.error("Unexpected response format:", response);
+                        }
+                    }
                 });
-            } else {
-                console.error("Unexpected response format:", response);
-            }
-        }
-    });
-});
+            });
 
         });
     </script>
@@ -143,5 +145,6 @@ $maintenance_document_source_result = fetchAllData($pdo, "SELECT * FROM `mainten
 
 
 </body>
+
 
 </html>

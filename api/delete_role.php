@@ -20,7 +20,9 @@ try {
   $barPermID  = empty($_POST['barPerms']) ? null : $_POST['barPerms'];
   $genPermID  = empty($_POST['genPerms']) ? null : $_POST['genPerms'];
 
-  // delete role  (delete first because of foreign key)
+  $pdo->beginTransaction();
+
+  // delete role
   $sql = 'delete from roles where id = :id';
   $query = $pdo->prepare($sql);
   $query->execute([':id' => $id]);
@@ -38,13 +40,13 @@ try {
     $query = $pdo->prepare($sql);
     $query->execute([':bar_perms' => $barPermID]);
   }
+  $pdo->commit();
 
   //logging
-$log->userLog('Deleted a Role with ID: '.$id);
+  $log->userLog('Deleted a Role with ID: ' . $id);
   echo json_encode('Success', JSON_PRETTY_PRINT);
 } catch (\Throwable $th) {
   http_response_code(500);
-  $message = $th->getMessage();
-  writeLog($message);
-  echo json_encode($message, JSON_PRETTY_PRINT);
+  writeLog($th);
+  echo json_encode($th->getMessage(), JSON_PRETTY_PRINT);
 }

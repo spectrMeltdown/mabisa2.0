@@ -3,7 +3,7 @@ error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
 
 require_once 'common/auth.php';
-if (!userHasPerms(['roles_create', 'roles_update'], 'gen')) {
+if (!(userHasPerms('roles_create', 'gen') || userHasPerms('roles_update', 'gen'))) {
   header('Location:no_permissions.php');
   exit;
 }
@@ -195,5 +195,6 @@ require_once '../api/get_all_perm_cols.php';
     <i class="fas fa-angle-up"></i> Scroll to Top
   </a>
 </body>
+
 
 </html>
