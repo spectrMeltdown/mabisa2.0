@@ -2,15 +2,29 @@
 require_once 'user_actions.php';
 require_once '../../../db/db.php';
 require_once '../../../api/audit_log.php';
+$useAsFunction = true;  
+require_once '../../../api/send_notif.php';
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 header('Content-Type: application/json');
 
 $barangayAssessment = new User_Actions($pdo);
 $log = new Audit_log($pdo);
 
-
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
+    if (!isset($_POST['barangay_id'], $_POST['criteria_keyctr'])) {
+        echo json_encode(['success' => false, 'message' => 'Missing required parameters.']);
+        exit;
+    }
+
+    if (!isset($_COOKIE['id'])) {
+        echo json_encode(['success' => false, 'message' => 'User ID cookie not found.']);
+        exit;
+    }
+
     $barangay_id = $_POST['barangay_id'];
     $criteria_keyctr = $_POST['criteria_keyctr'];
 
@@ -19,7 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
 
     // Define upload directory
     $uploadDir = '../../files/';
-
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0777, true);
     }
@@ -30,18 +43,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
         $success = $barangayAssessment->uploadFile($barangay_id, $criteria_keyctr, $filePath, $fileName);
 
         if ($success) {
+            $file_id = $pdo->lastInsertId(); // Retrieve last inserted ID
 
             $log->userLog("Uploaded file: $fileName for Barangay ID: $barangay_id, Criteria: $criteria_keyctr");
 
-            // get the user data
+            // Fetch user data
             $stmt = $pdo->prepare('SELECT u.*, r.name as role_name FROM users u JOIN roles r ON u.role_id = r.id WHERE u.id = :id LIMIT 1');
             $stmt->execute([':id' => $_COOKIE['id']]);
             $userData = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // send notif to all relevant users
-            $notifResult = sendNotifBar($pdo, $userData['id'], ($userData['role_name'] . ' commented on your submission'), 'The ' . $userData['role_name'] . ' ' . $userData['full_name'] . ' commented File ID ' . $file_id . '.', (int)$bid, (int)$iid, ['assessment_comments_read', 'assessment_submissions_read']);
-            if ($notifResult) {
-                writeLog($notifResult);
+            if ($userData) {
+                $bid = (int)$barangay_id;
+                $iid = (int)$criteria_keyctr;
+
+                $notifResult = sendNotifBar($pdo, $userData['id'], ($userData['role_name'] . ' uploaded a new submission'), 
+                    'The ' . $userData['role_name'] . ' ' . $userData['full_name'] . ' uploaded File ID ' . $file_id . '.', 
+                    $bid, $iid, ['assessment_comments_read', 'assessment_submissions_read']);
+
+                if ($notifResult) {
+                    writeLog($notifResult);
+                }
             }
 
             echo json_encode(['success' => true, 'message' => 'File uploaded successfully.']);
