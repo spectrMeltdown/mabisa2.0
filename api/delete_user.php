@@ -38,7 +38,7 @@ try {
   $users = $stmt->fetch();
   if ($users == 0) throw new Exception('You are the last admin. Your account cannot be deleted.');
 
-  // delete permissions (safe because users will set null on permission id)
+  // delete permissions (safe because users will set null on its permission id)
   $sql = '
   DELETE p
 FROM permissions p
@@ -48,11 +48,8 @@ WHERE ur.user_id = :id OR urb.user_id = :id;';
   $pdo->beginTransaction();
   $stmt = $pdo->prepare($sql);
 
-
   // delete the user (will also delete entries in user_roles and user_roles_barangay)
   $sql = 'DELETE FROM users WHERE id = :id';
-
-  $pdo->beginTransaction();
   $stmt = $pdo->prepare($sql);
   // bindParam is same sa execute, only this allows specifying data type. 
   // use execute for passing array i.e less verbose, however data types not checked
@@ -61,7 +58,6 @@ WHERE ur.user_id = :id OR urb.user_id = :id;';
   if ($stmt->execute()) {
     if ($stmt->rowCount() > 0) {
       $log->userLog('Deleted a User with ID: ' . $userId); //logging
-      echo ''; // Blank response indicates success
     } else {
       http_response_code(404); // Not Found
       echo 'User not found or already deleted.';
@@ -73,6 +69,6 @@ WHERE ur.user_id = :id OR urb.user_id = :id;';
   $pdo->commit();
 } catch (\Throwable $th) {
   http_response_code(500); // Internal Server Error
-  writeLog($e);
-  echo 'An error occurred: ' . $e->getMessage();
+  writeLog($th);
+  echo 'An error occurred: ' . $th->getMessage();
 }

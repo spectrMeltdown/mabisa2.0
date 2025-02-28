@@ -20,6 +20,13 @@ try {
   $barPermID  = empty($_POST['barPerms']) ? null : $_POST['barPerms'];
   $genPermID  = empty($_POST['genPerms']) ? null : $_POST['genPerms'];
 
+  $pdo->beginTransaction();
+
+  // delete role
+  $sql = 'delete from roles where id = :id';
+  $query = $pdo->prepare($sql);
+  $query->execute([':id' => $id]);
+
   // delete gen permissions
   if ($genPermID) {
     $sql = 'delete from permissions where id = :gen_perms';
@@ -33,14 +40,8 @@ try {
     $query = $pdo->prepare($sql);
     $query->execute([':bar_perms' => $barPermID]);
   }
-
-  // delete role
-  $pdo->beginTransaction();
-  $sql = 'delete from roles where id = :id';
-  $query = $pdo->prepare($sql);
-  $query->execute([':id' => $id]);
-
   $pdo->commit();
+
   //logging
   $log->userLog('Deleted a Role with ID: ' . $id);
   echo json_encode('Success', JSON_PRETTY_PRINT);
