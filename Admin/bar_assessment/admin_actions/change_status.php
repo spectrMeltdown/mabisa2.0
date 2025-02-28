@@ -18,7 +18,7 @@ try {
             $userData = $stmt->fetch(PDO::FETCH_ASSOC);
 
             $title = $userData['role_name'] . ' ' . $action . 'd your submission.';
-            $message = 'The ' . $userData['role_name']  . ' ' . $userData['full_name'] . $action . 'd the submission with file ID ' . $file_id . '.';
+            $message = 'The ' . $userData['role_name']  . ' ' . $userData['full_name']  . ' ' . $action . 'd the submission with file ID ' . $file_id . '.';
             if ($action === 'approve') {
                 $result = $admin->approve($file_id);
             } elseif ($action === 'decline') {
@@ -27,11 +27,12 @@ try {
                 $result = $admin->revert($file_id);
                 // add 'ed' instead of just 'd'
                 $title = $userData['role_name'] . ' ' . $action . 'ed your submission.';
-                $message = 'The ' . $userData['role_name']  . ' ' . $userData['full_name'] . $action . 'ed the submission with file ID ' . $file_id . '.';
+                $message = 'The ' . $userData['role_name']  . ' ' . $userData['full_name']  . ' ' . $action . 'ed the submission with file ID ' . $file_id . '.';
             } else {
                 throw new Exception('Invalid action specified.');
             }
-            sendNotifBar($pdo, $userData['id'], $title, $message, $bid, $iid);
+            $notifResult = sendNotifBar($pdo, $userData['id'], $title, $message, $bid, $iid);
+            if ($notifResult) echo $notifResult;
 
             if ($result) {
                 echo "<script>

@@ -154,3 +154,6 @@ if (!empty($_COOKIE['id'])) {
         </div>
 
     </div>
+</body>
+
+</html>

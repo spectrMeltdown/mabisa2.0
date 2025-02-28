@@ -184,7 +184,7 @@ unset($_SESSION['success']);
                 <!-- Topbar -->
                 <?php
                 include '../common/nav.php';
-                $name = $userData['full_name']; 
+                $name = $userData['full_name'];
                 ?>
                 <!-- End of Topbar -->
 
@@ -315,8 +315,6 @@ unset($_SESSION['success']);
                                                                     <i class="fa fa-trash"></i>
                                                                 </button>
                                                             <?php endif; ?>
-
-
                                                         <?php endif; ?>
                                                     </td>
                                                     <td class="data-cell-status" style="text-align: center; vertical-align: middle;">
@@ -472,7 +470,6 @@ unset($_SESSION['success']);
 
     <?php require_once '../components/comment_section.php'; ?>
     <?php require_once '../components/all_comments.php'; ?>
-    <?php require_once '../components/read_notif.php'; ?>
 </body>
 
 </html>

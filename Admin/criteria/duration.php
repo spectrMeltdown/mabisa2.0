@@ -20,7 +20,7 @@ if (!empty($active_version)) {
 
 echo '<pre>';
 print_r($active_version);
-echo'</pre>';
+echo '</pre>';
 ?>
 
 <!DOCTYPE html>
@@ -42,8 +42,8 @@ echo'</pre>';
                     <form action="../script.php" method="post">
                         <div class="mb-3">
                             <label class="form-label">Assessment Duration</label>
-                            <input type="text" class="form-control" name="duration" value="<?php echo $active_version['duration']; ?>" required/>
-                     
+                            <input type="text" class="form-control" name="duration" value="<?php echo $active_version['duration']; ?>" required />
+
                         </div>
                         <div class="form-check mb-3">
                             <input class="form-check-input" type="checkbox" name="is_accepting_response" value="1"
@@ -69,5 +69,6 @@ echo'</pre>';
 
 
 </body>
+
 
 </html>

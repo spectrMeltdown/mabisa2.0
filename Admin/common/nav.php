@@ -108,4 +108,5 @@ if (isset($isInFolder)):
   </ul>
 </nav>
 <?php require_once (isset($isInFolder) ? '../' : '') . 'components/confirmation_dialog.php'; ?>
+<?php require_once (isset($isInFolder) ? '../' : '') . 'components/read_notif.php'; ?>
 <!-- End of Topbar -->

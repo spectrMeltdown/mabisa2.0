@@ -20,22 +20,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Add New Area</title>
 </head>
+
 <body>
 
-<h1>Add New Area</h1>
+    <h1>Add New Area</h1>
 
-<form method="POST" action="create_area.php">
-    <label>Description:</label><br>
-    <textarea name="description" required></textarea><br><br>
+    <form method="POST" action="create_area.php">
+        <label>Description:</label><br>
+        <textarea name="description" required></textarea><br><br>
 
-    <button type="submit">Add Area</button>
-</form>
+        <button type="submit">Add Area</button>
+    </form>
 
-<a href="index.php">Back to List</a>
+    <a href="index.php">Back to List</a>
 
 </body>
+
+
 </html>

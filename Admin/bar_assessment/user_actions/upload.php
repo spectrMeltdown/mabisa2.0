@@ -33,6 +33,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
 
             $log->userLog("Uploaded file: $fileName for Barangay ID: $barangay_id, Criteria: $criteria_keyctr");
 
+            // get the user data
+            $stmt = $pdo->prepare('SELECT u.*, r.name as role_name FROM users u JOIN roles r ON u.role_id = r.id WHERE u.id = :id LIMIT 1');
+            $stmt->execute([':id' => $_COOKIE['id']]);
+            $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            // send notif to all relevant users
+            $notifResult = sendNotifBar($pdo, $userData['id'], ($userData['role_name'] . ' commented on your submission'), 'The ' . $userData['role_name'] . ' ' . $userData['full_name'] . ' commented File ID ' . $file_id . '.', (int)$bid, (int)$iid, ['assessment_comments_read', 'assessment_submissions_read']);
+            if ($notifResult) {
+                writeLog($notifResult);
+            }
+
             echo json_encode(['success' => true, 'message' => 'File uploaded successfully.']);
             exit;
         } else {

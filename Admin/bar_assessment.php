@@ -24,7 +24,7 @@ $is_accepting = isset($version['is_accepting_response']) ? ($version['is_accepti
 <html lang="en">
 
 <head>
-  
+
     <script src="../vendor/jquery/jquery.min.js"></script>
     <script src="../js/bar-assessment.js"></script>
 </head>
@@ -54,13 +54,13 @@ $is_accepting = isset($version['is_accepting_response']) ? ($version['is_accepti
                 <div class="container-fluid">
 
                     <div class="card shadow mb-4">
-                     <div class="card-header py-3 d-flex justify-content-between align-items-center">
-    <h3 class="m-0 font-weight-bold text-primary">Barangay Assessment</h3>
-    <div class="text-right">
-        <p class="mb-1"><strong>Duration:</strong> <?php echo $duration; ?></p>
-        <p class="mb-0"><strong>Accepting Responses:</strong> <?php echo $is_accepting; ?></p>
-    </div>
-</div>
+                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                            <h3 class="m-0 font-weight-bold text-primary">Barangay Assessment</h3>
+                            <div class="text-right">
+                                <p class="mb-1"><strong>Duration:</strong> <?php echo $duration; ?></p>
+                                <p class="mb-0"><strong>Accepting Responses:</strong> <?php echo $is_accepting; ?></p>
+                            </div>
+                        </div>
 
                         <div class="card-body">
                             <div class="table table-responsive">

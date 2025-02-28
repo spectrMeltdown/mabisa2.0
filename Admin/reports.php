@@ -242,4 +242,5 @@ foreach ($categories as $category) {
   </script>
 </body>
 
+
 </html>

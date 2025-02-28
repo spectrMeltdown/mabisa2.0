@@ -137,4 +137,5 @@ unset($_SESSION['success']);
   <?php include 'create_category.php' ?>
 </body>
 
+
 </html>

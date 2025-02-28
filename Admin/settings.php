@@ -131,6 +131,7 @@ require_once '../db/db.php';
       </div>
       <!-- End of Page Wrapper -->
 </body>
+
 <?php require_once 'components/change_setting_dialog.php' ?>
 
 </html>

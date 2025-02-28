@@ -30,24 +30,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Edit Area</title>
 </head>
+
 <body>
 
-<h1>Edit Area</h1>
+    <h1>Edit Area</h1>
 
-<form method="POST" action="edit_area.php">
-    <input type="hidden" name="keyctr" value="<?php echo $area['keyctr']; ?>">
+    <form method="POST" action="edit_area.php">
+        <input type="hidden" name="keyctr" value="<?php echo $area['keyctr']; ?>">
 
-    <label>Description:</label><br>
-    <textarea name="description" required><?php echo $area['description']; ?></textarea><br><br>
+        <label>Description:</label><br>
+        <textarea name="description" required><?php echo $area['description']; ?></textarea><br><br>
 
-    <button type="submit">Update Area</button>
-</form>
+        <button type="submit">Update Area</button>
+    </form>
 
-<a href="index.php">Back to List</a>
+    <a href="index.php">Back to List</a>
 
 </body>
+
+
 </html>
