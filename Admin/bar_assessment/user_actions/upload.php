@@ -1,5 +1,6 @@
 <?php
 require_once 'user_actions.php';
+require_once '../../../api/logging.php';
 require_once '../../../db/db.php';
 require_once '../../../api/audit_log.php';
 $useAsFunction = true;  
@@ -65,18 +66,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
                 }
             }
 
+            writeLog('upload success');
             echo json_encode(['success' => true, 'message' => 'File uploaded successfully.']);
             exit;
         } else {
             unlink($filePath);
+            writeLog('Failed to save file in db');
             echo json_encode(['success' => false, 'message' => 'Failed to save file information in the database.']);
             exit;
         }
     } else {
+        writeLog('Failed to upload');
         echo json_encode(['success' => false, 'message' => 'Failed to upload the file.']);
         exit;
     }
 } else {
+    writeLog('Invalid request');
     echo json_encode(['success' => false, 'message' => 'Invalid request.']);
     exit;
 }
