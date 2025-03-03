@@ -7,6 +7,8 @@ require_once '../../../api/logging.php';
 
 $comments = new Comments($pdo);
 
+if ($_SERVER['REQUEST_METHOD'] != 'POST') throw new Exception('Invalid request.');
+
 $file_id = $_POST['file_id'] ?? '';
 $name = $_POST['name'] ?? '';
 $commentText = $_POST['commentText'] ?? '';

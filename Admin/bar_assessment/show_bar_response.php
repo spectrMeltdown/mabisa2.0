@@ -121,7 +121,6 @@ if ($barangay_id) {
                     }
                 }
             }
-            
         }
     }
 } else {
@@ -300,7 +299,7 @@ unset($_SESSION['success']);
                                                             <td class="data-cell-upload-view" style="text-align: center; vertical-align: middle;">
                                                                 <?php if (!$data): ?>
                                                                     <?php
-                                                                    if (userHasPerms('submissions_create', 'any', $barangay_id, $row['indicator_keyctr']) && $version['is_accepting_response'] == '1') : ?>
+                                                                    if (!str_contains(strtolower($userData['role']), 'admin') && userHasPerms('submissions_create', 'any', $barangay_id, $row['indicator_keyctr']) && $version['is_accepting_response'] == '1') : ?>
                                                                         <form action="../bar_assessment/user_actions/upload.php" method="POST"
                                                                             enctype="multipart/form-data" id="uploadForm-<?php echo $row['keyctr']; ?>">
                                                                             <input type="hidden" name="barangay_id"
@@ -327,7 +326,7 @@ unset($_SESSION['success']);
                                                                         data-iid="<?= htmlspecialchars($row['indicator_keyctr']); ?>">
                                                                         <i class="fa fa-eye"></i>
                                                                     </button>
-                                                                    <?php if (userHasPerms('submissions_delete', 'any', $barangay_id, $row['indicator_keyctr']) && $data['status'] !== 'approved'): ?>
+                                                                    <?php if (!str_contains(strtolower($userData['role']), 'admin') && userHasPerms('submissions_delete', 'any', $barangay_id, $row['indicator_keyctr']) && $data['status'] !== 'approved'): ?>
                                                                         <button class="btn btn-danger mb-3 delete-btn"
                                                                             data-file-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
                                                                             <i class="fa fa-trash"></i>

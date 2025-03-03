@@ -213,7 +213,7 @@ if (!(userHasPerms('users_create', 'gen') || userHasPerms('users_update', 'gen')
                   <div class="row align-items-center mb-3 ">
                     <h4 class="mr-5" id="gen-perm-title"><strong>Global scope</strong></h4>
                     <input class="mr-1" type="checkbox" name="selectAllGen" id="selectAllGenBtn">
-                    <label for="inputEmail4" style="margin-bottom: 0;">Select All</label>
+                    <label id="selectAllLabel" for="selectAllGenBtn" style="margin-bottom: 0;">Select All</label>
                   </div>
                   <div class="invalid-feedback"></div>
                   <div id="genPermAlert" class="text-danger"></div>

@@ -55,6 +55,12 @@ try {
   $stmt = $pdo->prepare($sql);
   $stmt->execute();
   $activeIndicators = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+  // make sure ids are unique
+  $activeIndicators = array_values(array_intersect_key($activeIndicators, array_unique(array_column($activeIndicators, 'id'))));
+
+  // filter out duplicate indicators
+
   // writeLog('active indicators was: ');
   // writeLog($activeIndicators);
 

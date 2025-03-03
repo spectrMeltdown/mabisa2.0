@@ -47,11 +47,11 @@ function sendNotifBar(\PDO $pdo, string $creatorID, string $title, string $messa
   FROM user_roles_barangay urb
   JOIN permissions p ON urb.permission_id = p.id
   WHERE ';
-    $params = [':creator_id' => $creatorID];
+    $params = [':creator_id' => (int)$creatorID];
 
     // construct the where statement from the permissions provided
     foreach ($perms as $perm) {
-      $sql .= ' p.' . $perm .  '=1 AND';
+      $sql .= ' p.' . $perm .  ' = 1 AND';
     }
 
     // remove trailing AND
@@ -59,47 +59,41 @@ function sendNotifBar(\PDO $pdo, string $creatorID, string $title, string $messa
 
     // if both barangay and indicator ids are provided
     if (!empty($bid) && !empty($iid)) {
-      writeLog($creatorID);
-      writeLog($bid);
-      writeLog($iid);
+      writeLog('bid and iid');
 
-      $sql .= ' AND urb.barangay_id = :bid
+      $sql .= ' 
+      AND urb.barangay_id = :bid
   AND urb.indicator_id = :iid
   AND urb.user_id != :creator_id
 ';
-      $params[':bid'] = $bid;
-      $params[':iid'] = $iid;
+      $params[':bid'] = (int)$bid;
+      $params[':iid'] = (int)$iid;
     }
 
     // barangay-wide notif
     else if (!empty($bid)) {
+      writeLog('bid only');
       $sql = '
       SELECT urb.user_id as uid, p.*
       FROM user_roles_barangay urb
       JOIN permissions p ON urb.permission_id = p.id
     ';
 
-      $sql .= ' AND urb.barangay_id = :bid
+      $sql .= ' 
+      AND urb.barangay_id = :bid
   AND urb.user_id != :creator_id
 ';
-      $params[':bid'] = $bid;
+      $params[':bid'] = (int)$bid;
     }
 
     // all users notif
     else {
-      $sql = '
-      SELECT urb.user_id as uid, p.*
-      FROM user_roles_barangay urb
-      JOIN permissions p ON urb.permission_id = p.id
-    ';
-      $sql .= ' AND urb.barangay_id = :bid
-  AND urb.indicator_id = :iid
-  AND urb.user_id != :creator_id
-';
+      throw new Exception('NO IID & BID');
     }
 
     if (empty($sql)) throw new Exception('sql empty!');
     // get all roles with the assessment_comments_read && assessment_submissions_read permissions, excluding the creator of the notif
+    writeLog($sql);
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
     $users = $stmt->fetchAll();

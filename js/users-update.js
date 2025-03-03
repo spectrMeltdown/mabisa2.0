@@ -151,6 +151,9 @@ $('#roleSelect').on('change', async e => {
       });
     });
 
+    // looping for the select all btn
+    let addSelectAll = true;
+
     // get barangay permissions
     await new Promise((resolve, rej) => {
       // 5-second timeout if ajax never completes
@@ -166,7 +169,7 @@ $('#roleSelect').on('change', async e => {
           id: currentUserID,
         },
         success: res => {
-          // console.log('bar permissions are : ' + res);
+          console.log('bar permissions are : ' + res);
           if (!res) {
             rej();
             return;
@@ -234,59 +237,65 @@ $('#roleSelect').on('change', async e => {
                 render: function(data, type, row) {
                   if (Array.isArray(data)) {
                     // console.log('data was array!');
-                    return data
-                      .map(val => {
-                        const uniqueID = `${row['barangay']['id']}--${row['indicators']['id']}--${val}`;
-                        let userTaken = false;
-                        let anotherTaken = false;
-                        // console.log('the perms:');
-                        // console.log(row['taken_perms']);
-                        // console.log(row['current_perms']);
-                        if (
-                          Array.isArray(row['taken_perms']) &&
-                          row['taken_perms'].some((
-                            /** @type {string} */ perm,
-                          ) => {
-                            // console.log('current perm to check: ');
-                            // console.log(val);
-                            // console.log('current perm taken perm: ');
-                            // console.log(perm);
-                            return perm.includes(val);
-                          })
-                        ) {
-                          anotherTaken = true;
-                          // console.log('another taken: ' + anotherTaken);
-                        } else if (
-                          Array.isArray(row['current_perms']) &&
-                          row['current_perms'].some((
-                            /** @type {string} */ perm,
-                          ) => perm.includes(val))
-                        ) {
-                          userTaken = true;
-                          // console.log('user taken: ' + userTaken);
-                        }
-                        if (anotherTaken || userTaken) {
-                          itemsCheckViaJS.push(uniqueID);
-                        }
-                        return `<li class="d-inline-block">
+                    let uniqueID = `${row['barangay']['id']}--${row['indicators']['id']}`;
+                    let selectAllBtn = '';
+                    selectAllBtn = createBarSelectAllBtn(uniqueID) + '<br><br>';
+                    return (
+                      selectAllBtn +
+                      data
+                        .map(val => {
+                          let uniqueIDVal = uniqueID + `--${val}`;
+                          let userTaken = false;
+                          let anotherTaken = false;
+                          // console.log('the perms:');
+                          // console.log(row['taken_perms']);
+                          // console.log(row['current_perms']);
+                          if (
+                            Array.isArray(row['taken_perms']) &&
+                            row['taken_perms'].some((
+                              /** @type {string} */ perm,
+                            ) => {
+                              // console.log('current perm to check: ');
+                              // console.log(val);
+                              // console.log('current perm taken perm: ');
+                              // console.log(perm);
+                              return perm.includes(val);
+                            })
+                          ) {
+                            anotherTaken = true;
+                            // console.log('another taken: ' + anotherTaken);
+                          } else if (
+                            Array.isArray(row['current_perms']) &&
+                            row['current_perms'].some((
+                              /** @type {string} */ perm,
+                            ) => perm.includes(val))
+                          ) {
+                            userTaken = true;
+                            // console.log('user taken: ' + userTaken);
+                          }
+                          if (anotherTaken || userTaken) {
+                            itemsCheckViaJS.push(uniqueIDVal);
+                          }
+                          return `<li class="d-inline-block" id="${uniqueID}-container">
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <div class="input-group-text">
-                      <input type="checkbox" name="${uniqueID}" id="${uniqueID}" value="true" ${
-                          anotherTaken ? 'disabled' : ''
-                        }>
+                      <input type="checkbox" name="${uniqueIDVal}" id="${uniqueIDVal}" value="true" ${
+                            anotherTaken ? 'disabled' : ''
+                          }>
                     </div>
                   </div>
                   <div class="card card-body border-secondary" style="padding: 0.5rem">
-                    <label for="${uniqueID}" id="label-${uniqueID}">${val.replaceAll(
-                          '_',
-                          ' ',
-                        )}</label>
+                    <label for="${uniqueIDVal}" id="label-${uniqueIDVal}">${val.replaceAll(
+                            '_',
+                            ' ',
+                          )}</label>
                   </div>
                 </div>
               </li>`;
-                      })
-                      .join('<br>');
+                        })
+                        .join('<br>')
+                    );
                   }
                   // console.log('unknown data');
                   // console.log(typeof data);
@@ -811,3 +820,21 @@ function resetFieldStates() {
 $('#selectAllGenBtn').on('change', function() {
   $('#genPermList input[type="checkbox"]').prop('checked', this.checked);
 });
+
+// for creating select all btns in barangay scope permissions
+function createBarSelectAllBtn(uniqueID) {
+  // select all buttion
+  $(`#selectAllBarBtn-${uniqueID}`).on('change', e => {
+    if ($(e.target).prop('checked')) {
+      console.log('uncheck');
+      $(`#${uniqueID}-container input[type="checkbox"]`).prop('checked', false);
+    } else {
+      console.log('check');
+      $(`#${uniqueID}-container input[type="checkbox"]`).prop('checked', true);
+    }
+  });
+
+  // html
+  return `<input class="mr-1" type="checkbox" name="selectAll-${uniqueID}" id="selectAllBarBtn-${uniqueID}">
+                    <label id="selectAllLabel-${uniqueID}" for="selectAllBarBtn-${uniqueID}" style="margin-bottom: 0;">Select All</label>`;
+}
