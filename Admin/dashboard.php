@@ -6,7 +6,24 @@ require_once 'common/auth.php';
 require_once '../db/db.php';
 require_once 'bar_assessment/responses.php';
 
+
 $responses = new Responses($pdo);
+
+$barangayData = $pdo->query('SELECT brgyid, brgyname FROM refbarangay')->fetchAll(PDO::FETCH_ASSOC);
+
+$labels = [];
+$data = [];
+
+foreach ($barangayData as $barangay) {
+    $responseCount = $responses->getResponseCount($barangay['brgyid']);
+    
+    // Extract the first number from "X/Y"
+    $submitted = explode('/', $responseCount)[0];
+
+    $labels[] = $barangay['brgyname'];
+    $data[] = (int)$submitted;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -16,7 +33,7 @@ $responses = new Responses($pdo);
   <?php
   require_once 'common/head.php' ?>
   <script src="../vendor/jquery/jquery.min.js"></script>
-  <script src="../js/demo/chart-bar-demo.js" defer></script>
+  <!-- <script src="../js/demo/chart-bar-demo.js" defer></script> -->
   <script src="../js/maintenance-criteria.js"></script>
 </head>
 
@@ -154,9 +171,12 @@ $responses = new Responses($pdo);
               </h4>
             </div>
             <div class="card-body">
-              <div class="chart-area">
-                <canvas id="myBarChart"></canvas>
-              </div>
+            <div style="overflow-x: auto; width: 100%;">
+  <div style="width: 1500px;">
+    <canvas id="myBarChart"></canvas>
+  </div>
+</div>
+
             </div>
           </div>
           <!-- Content Row -->
@@ -229,6 +249,81 @@ $responses = new Responses($pdo);
       <i class="fas fa-angle-up"></i>
     </a>
   </div>
+  <script>
+$(document).ready(function () {
+  $.ajax({
+    url: "chart_data.php", 
+    method: "GET",
+    dataType: "json",
+    success: function (response) {
+      if (!response || response.labels.length === 0) {
+        console.error("No data returned for chart.");
+        return;
+      }
+
+      var ctx = document.getElementById("myBarChart").getContext("2d");
+
+      new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: response.labels,
+          datasets: [
+            {
+              label: "Submissions",
+              backgroundColor: "#4e73df",
+              hoverBackgroundColor: "#2e59d9",
+              borderColor: "#4e73df",
+              data: response.data,
+            },
+          ],
+        },
+        options: {
+          maintainAspectRatio: false,
+          layout: {
+            padding: { left: 10, right: 25, top: 25, bottom: 10 },
+          },
+          scales: {
+            xAxes: [{
+              categoryPercentage: 0.6, // Increase spacing between bars
+              barPercentage: 0.5, // Adjust bar width
+              gridLines: { display: false },
+              ticks: { 
+                autoSkip: false,
+                padding: 15, // space between label and bar
+                fontSize: 14, // label size
+                 maxRotation: 45, //label angle
+                minRotation: 45 
+              }
+            }],
+            yAxes: [{
+              ticks: { 
+                beginAtZero: true, 
+                stepSize: 5, //increments per label
+                fontSize: 14 //y axes label size
+              },
+              gridLines: {
+                color: "rgb(234, 236, 244)",
+                zeroLineColor: "rgb(234, 236, 244)",
+                drawBorder: false,
+                borderDash: [2],
+                zeroLineBorderDash: [2],
+              },
+            }],
+          },
+          legend: { display: false },
+        },
+      });
+    },
+    error: function (xhr, status, error) {
+      console.error("Error loading chart data:", error);
+    },
+  });
+});
+
+// Make the chart container taller
+document.getElementById("myBarChart").parentNode.style.height = "300px";
+
+  </script>
 </body>
 
 </html>
