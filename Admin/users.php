@@ -75,7 +75,7 @@ if (!userHasPerms('users_read', 'gen')) {
                         <th>Full Name</th>
                         <th>Username</th>
                         <th>Role</th>
-                        <th>Barangays</th>
+                        <th>Barangays & Indicators</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
@@ -85,7 +85,7 @@ if (!userHasPerms('users_read', 'gen')) {
                           <th>Full Name</th>
                           <th>Username</th>
                           <th>Role</th>
-                          <th>Barangays</th>
+                          <th>Barangays & Indicators</th>
                           <th>Actions</th>
                         </tr>
                       </tfoot>
@@ -105,18 +105,41 @@ if (!userHasPerms('users_read', 'gen')) {
                           <td><?php echo $row['username'] ?></td>
                           <td><?php echo $row['role_id'] ? getRoleName($pdo, $row['role_id']) : '--' ?></td>
                           <td><?php
-                              $query = $pdo->prepare("SELECT b.brgyname as barangay from refbarangay b inner join user_roles_barangay ub on ub.barangay_id = b.brgyid where ub.user_id = :id");
+                              $query = $pdo->prepare(
+                                "
+                              SELECT b.brgyname as barangay, mai.indicator_code as code from refbarangay b 
+                              join user_roles_barangay urb on urb.barangay_id = b.brgyid
+                              join maintenance_area_indicators mai ON mai.keyctr = urb.indicator_id
+                              where urb.user_id = :id"
+                              );
                               // writeLog($userData);
                               $query->execute([':id' => $row['id']]);
                               if ($query->rowCount() <= 0) {
-                                echo 'No barangay assignments';
+                                echo 'N/A';
                               } else {
-                                $brgys = $query->fetchAll(PDO::FETCH_ASSOC);
-                                echo '<ul>';
-                                foreach ($brgys as $brgy) {
-                                  echo '<li>' . htmlspecialchars($brgy['barangay']) . '</li>';
+                                $data = $query->fetchAll();
+                                /** @var array */
+                                $sortedData = [];
+                                foreach ($data as $item) {
+                                  if (!isset($sortedData[$item['barangay']])) {
+                                    $sortedData[$item['barangay']] = [];
+                                  }
+                                  $sortedData[$item['barangay']][] = $item['code'];
                                 }
-                                echo '</ul>';
+                                foreach ($sortedData as $brgy => $codes) {
+                                  echo $brgy . '<br><br>';
+                                  echo '<ul class="list-unstyled">';
+                                  foreach ($codes as $code) {
+                                    echo '
+                                    <li class="d-inline-block">
+                <div class="card card-body border-secondary" style="padding: 0.5rem">
+                   ' . htmlspecialchars($code) . '
+                  </div>
+              </li>
+              ';
+                                  }
+                                  echo '</ul>';
+                                }
                               }
                               ?>
                           </td>

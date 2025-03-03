@@ -15,6 +15,8 @@ let currentUserID = Number(params.get('id'));
 let editMode = currentUserID ? true : false;
 /** @var {array} */
 let itemsCheckViaJS = [];
+/** @var {array} */
+let registeredIDs = [];
 addPhonePrepend();
 
 //cancel button confirmation
@@ -151,9 +153,6 @@ $('#roleSelect').on('change', async e => {
       });
     });
 
-    // looping for the select all btn
-    let addSelectAll = true;
-
     // get barangay permissions
     await new Promise((resolve, rej) => {
       // 5-second timeout if ajax never completes
@@ -239,6 +238,9 @@ $('#roleSelect').on('change', async e => {
                     // console.log('data was array!');
                     let uniqueID = `${row['barangay']['id']}--${row['indicators']['id']}`;
                     let selectAllBtn = '';
+                    // if (registeredIDs.some(id => id != uniqueID)) {
+                    //   selectAllBtn = createBarSelectAllBtn(uniqueID) + '<br><br>';
+                    // }
                     selectAllBtn = createBarSelectAllBtn(uniqueID) + '<br><br>';
                     return (
                       selectAllBtn +
@@ -276,12 +278,12 @@ $('#roleSelect').on('change', async e => {
                           if (anotherTaken || userTaken) {
                             itemsCheckViaJS.push(uniqueIDVal);
                           }
-                          return `<li class="d-inline-block" id="${uniqueID}-container">
+                          return `<li class="d-inline-block ${uniqueID}-container">
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <div class="input-group-text">
                       <input type="checkbox" name="${uniqueIDVal}" id="${uniqueIDVal}" value="true" ${
-                            anotherTaken ? 'disabled' : ''
+                            anotherTaken ? '' : ''
                           }>
                     </div>
                   </div>
@@ -623,8 +625,10 @@ $('#save-user-btn').on('click', async () => {
   // loop bar permissions (if needed)
   if ($('#barPermContainer').css('display') != 'none') {
     for (const [key, value] of barPermsForm.entries()) {
-      console.log('barPermsForm forms: ' + key + ' + ' + value);
-      submitObj['barPerms'][key] = value;
+      if (!key.includes('selectAll')) {
+        console.log('barPermsForm forms: ' + key + ' + ' + value);
+        submitObj['barPerms'][key] = value;
+      }
     }
   }
 
@@ -824,15 +828,25 @@ $('#selectAllGenBtn').on('change', function() {
 // for creating select all btns in barangay scope permissions
 function createBarSelectAllBtn(uniqueID) {
   // select all buttion
-  $(`#selectAllBarBtn-${uniqueID}`).on('change', e => {
-    if ($(e.target).prop('checked')) {
-      console.log('uncheck');
-      $(`#${uniqueID}-container input[type="checkbox"]`).prop('checked', false);
-    } else {
-      console.log('check');
-      $(`#${uniqueID}-container input[type="checkbox"]`).prop('checked', true);
-    }
-  });
+  $(`#selectAllBarBtn-${uniqueID}`)
+    .off()
+    .on('change', e => {
+      console.log($(e.target).prop('checked'));
+      if ($(e.target).prop('checked')) {
+        // console.log('uncheck');
+        $(`.${uniqueID}-container input[type="checkbox"]`).prop(
+          'checked',
+          true,
+        );
+      } else {
+        // console.log('check');
+        // console.log($(`.${uniqueID}-container input[type="checkbox"]`));
+        $(`.${uniqueID}-container input[type="checkbox"]`).prop(
+          'checked',
+          false,
+        );
+      }
+    });
 
   // html
   return `<input class="mr-1" type="checkbox" name="selectAll-${uniqueID}" id="selectAllBarBtn-${uniqueID}">

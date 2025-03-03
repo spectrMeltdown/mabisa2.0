@@ -45,6 +45,7 @@ try {
   writeLog($barPerms);
   // die;
 
+  $pdo->beginTransaction();
   // create user first to get user id needed for later
   $sql = 'insert into users (username, full_name, email, mobile_num, password, role_id) values (:username, :full_name, :email, :mobile_num, :password, :role_id)';
   $stmt = $pdo->prepare($sql);
@@ -60,7 +61,7 @@ try {
   $newUserID = $pdo->lastInsertId();
 
   //logging
-  $log->userLog('Created a New User with Username: '. $username. ', Fullname: '.$fullName.', Email: '.$email.', Mobile Number: '.$mobileNum.'and Role ID: '.$role_id);
+  $log->userLog('Created a New User with Username: ' . $username . ', Fullname: ' . $fullName . ', Email: ' . $email . ', Mobile Number: ' . $mobileNum . 'and Role ID: ' . $role_id);
 
   // update perms to set user_roles_barangay_id
   $newUserRolesBarangayPerms = null;
@@ -132,7 +133,11 @@ try {
   }
   // writeLog('Execution permissions was: ');
   // writeLog($permissions);
+  $pdo->commit();
 } catch (\Throwable $th) {
+  if ($pdo->inTransaction()) {
+    $pdo->rollBack();
+  }
   http_response_code(500);
   $message = $th->getMessage();
   writeLog($th);
