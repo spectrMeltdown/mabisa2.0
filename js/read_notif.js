@@ -33,4 +33,5 @@ $('#readNotifModal')
   .off('hidden.bs.modal')
   .on('hidden.bs.modal', () => {
     console.log('cancelled');
+    window.location.href = document.referrer;
   });

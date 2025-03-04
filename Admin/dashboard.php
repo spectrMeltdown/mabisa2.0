@@ -203,7 +203,7 @@ foreach ($barangayData as $barangay) {
           <div class="card shadow mb-4">
             <div class="card-header py-3">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
-              <h3 class="m-0 font-weight-bold text-primary">User Logs Today</h3>
+              <h3 class="m-0 font-weight-bold text-primary">Activity Logs Today</h3>
               <a href="user_log.php" class="btn btn-danger">Show All Logs</a>
             </div>
             <div class="card-body">

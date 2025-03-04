@@ -305,7 +305,7 @@ if (!empty($maintenance_area_description_result)) {
                               echo 'No template available';
                             }
                             ?>
-</td>
+                          </td>
 
                           <td><?php echo htmlspecialchars($row['data_source']); ?></td>
                           <td>
@@ -332,6 +332,9 @@ if (!empty($maintenance_area_description_result)) {
                   <?php endif; ?>
             </div>
           </div>
+          <a class="scroll-to-top rounded" href="#page-top">
+            <i class="fas fa-angle-up"></i>
+          </a>
           <!-- End of Main Content -->
         </div>
       </div>
