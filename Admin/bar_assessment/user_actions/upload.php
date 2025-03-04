@@ -3,7 +3,7 @@ require_once 'user_actions.php';
 require_once '../../../api/logging.php';
 require_once '../../../db/db.php';
 require_once '../../../api/audit_log.php';
-$useAsFunction = true;  
+$useAsFunction = true;
 require_once '../../../api/send_notif.php';
 
 ini_set('display_errors', 1);
@@ -55,11 +55,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
 
             if ($userData) {
                 $bid = (int)$barangay_id;
-                $iid = (int)$criteria_keyctr;
+                $iid = (int)$_POST['iid'];
 
-                $notifResult = sendNotifBar($pdo, $userData['id'], ($userData['role_name'] . ' uploaded a new submission'), 
-                    'The ' . $userData['role_name'] . ' ' . $userData['full_name'] . ' uploaded File ID ' . $file_id . '.', 
-                    $bid, $iid, ['assessment_comments_read', 'assessment_submissions_read']);
+                $notifResult = sendNotifBar(
+                    $pdo,
+                    $userData['id'],
+                    ($userData['role_name'] . ' uploaded a new submission'),
+                    'The ' . $userData['role_name'] . ' ' . $userData['full_name'] . ' uploaded File ID ' . $file_id . '.',
+                    $bid,
+                    $iid,
+                    ['assessment_comments_read', 'assessment_submissions_read']
+                );
 
                 if ($notifResult) {
                     writeLog($notifResult);

@@ -14,7 +14,7 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
   if (shouldLogout) {
     try {
       $.ajax({
-        url: isInFolder ? '../../' : '../' + 'api/logout.php',
+        url: (isInFolder ? '../../' : '../') + 'api/logout.php',
         success: res => {
           console.log(res);
           if (isInFolder) {

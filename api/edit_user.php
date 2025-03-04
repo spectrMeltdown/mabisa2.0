@@ -94,7 +94,7 @@ try {
   // get the bar perms id of current user (multiple)
   if (!empty($barPerms)) {
     // get all barangays with all indicators, with its permissions id, or null
-    $sql = 'SELECT
+    $stmt = $pdo->prepare('SELECT
   rb.brgyid AS brgyid,
   i.keyctr AS indid,
   urb.permission_id AS permid
@@ -104,12 +104,18 @@ LEFT JOIN user_roles_barangay urb
   ON urb.barangay_id = rb.brgyid
   AND urb.indicator_id = i.keyctr
   AND urb.user_id = :id;
-';
-    // all barangays, indicators, with perms id or null
-    $stmt = $pdo->prepare($sql);
+');
     $stmt->execute([':id' => $id]);
     $urbPerms = $stmt->fetchAll();
 
+    $stmt = $pdo->prepare('SELECT
+  urb.permission_id AS permid
+FROM user_roles_barangay as urb
+JOIN permissions p ON urb.permission_id = p.id
+  WHERE urb.user_id = :id;
+  ');
+    $stmt->execute([':id' => $id]);
+    $oldPerms = $stmt->fetchAll();
     // some logging
     // writeLog('BAR PERM IDs WAS');
     // writeLog($urbPerms);
@@ -117,7 +123,7 @@ LEFT JOIN user_roles_barangay urb
     // writeLog($barPerms);
 
     // update bar perms
-    updateMultiBarPerms($pdo, $urbPerms, array_keys($barPerms), $allPerms, (int)$id);
+    updateMultiBarPerms($pdo, $urbPerms, array_keys($barPerms), $oldPerms, $allPerms, (int)$id);
   }
 
   // get the gen perms id of current user
@@ -167,9 +173,45 @@ LEFT JOIN user_roles_barangay urb
   echo json_encode($th->getMessage(), JSON_PRETTY_PRINT);
 }
 
-function updateMultiBarPerms(\PDO $pdo, array $urbPerms, array $newPerms, array $allPerms, int $userID)
+function updateMultiBarPerms(\PDO $pdo, array $urbPerms, array $newPerms, array $oldPerms, array $allPerms, int $userID)
 {
   writeLog('update bar perms');
+  // create new array that is the difference from old perms and new perms
+  $permsToRemove = [];
+  writeLog($newPerms);
+  // array of only perm ids from new perms
+  $newPermsIDs = array_column($newPerms, 'permid');
+  foreach ($oldPerms as $oldPerm) {
+    $oldPermID = $oldPerm['permid'];
+    // if old perms is not in new, remove it
+    if (!in_array($oldPermID, $newPerms)) {
+      $permsToRemove[] = $oldPermID;
+    }
+  }
+
+  // remove all perms marked for removal
+  if (!empty($permsToRemove)) {
+    writeLog('Perms to remove');
+    writeLog($permsToRemove);
+    // generate question marks equal to the number of perms to remove. Separate by comma
+    $placeholders = implode(',', array_fill(0, count($permsToRemove), '?'));
+
+    // Delete from user_roles_barangay
+    // $sql = "DELETE FROM user_roles_barangay WHERE permission_id IN ($placeholders) AND user_id = ?";
+    $sql = "DELETE urb, p 
+FROM user_roles_barangay urb 
+JOIN permissions p ON urb.permission_id = p.id 
+WHERE urb.permission_id IN ($placeholders) AND urb.user_id = ?;
+";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([...$permsToRemove, $userID]);
+
+    // remove permissions
+    // $sql = "DELETE FROM permissions WHERE id IN ($placeholders)";
+    // $stmt = $pdo->prepare($sql);
+    // $stmt->execute([...$permsToRemove, $userID]);
+  }
+
   // create a new array where permissions are groups per indicator, and indicators are grouped per barangay
   /** @var array */
   $compiledNewPerms = [];

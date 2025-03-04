@@ -42,6 +42,8 @@ function sendNotif(\PDO $pdo, string $creatorID, string $title, string $message)
 function sendNotifBar(\PDO $pdo, string $creatorID, string $title, string $message, int|null $bid = null, int|null $iid = null, array $perms): ?string
 {
   writeLog('IN SEND NOTIF BAR');
+  writeLog($bid);
+  writeLog($iid);
   try {
     $sql = 'SELECT urb.user_id as uid, p.*
   FROM user_roles_barangay urb
@@ -78,7 +80,6 @@ function sendNotifBar(\PDO $pdo, string $creatorID, string $title, string $messa
       FROM user_roles_barangay urb
       JOIN permissions p ON urb.permission_id = p.id
     ';
-
       $sql .= ' 
       AND urb.barangay_id = :bid
   AND urb.user_id != :creator_id

@@ -302,6 +302,7 @@ unset($_SESSION['success']);
                                                                     if (!str_contains(strtolower($userData['role']), 'admin') && userHasPerms('submissions_create', 'any', $barangay_id, $row['indicator_keyctr']) && $version['is_accepting_response'] == '1') : ?>
                                                                         <form action="../bar_assessment/user_actions/upload.php" method="POST"
                                                                             enctype="multipart/form-data" id="uploadForm-<?php echo $row['keyctr']; ?>">
+                                                                            <input type="hidden" name="iid" value="<?= $row['indicator_keyctr'] ?>">
                                                                             <input type="hidden" name="barangay_id"
                                                                                 value="<?php echo htmlspecialchars($barangay_id, ENT_QUOTES, 'UTF-8'); ?>">
                                                                             <input type="hidden" name="criteria_keyctr"

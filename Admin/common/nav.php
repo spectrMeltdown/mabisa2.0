@@ -41,26 +41,28 @@ if (isset($isInFolder)):
         aria-labelledby="alertsDropdown">
         <h6 class="dropdown-header">Notifications</h6>
         <?php
-        $stmt = $pdo->prepare('SELECT * FROM notifications WHERE user_id = :user_id LIMIT 5');
+        $stmt = $pdo->prepare('SELECT * FROM notifications WHERE user_id = :user_id ORDER BY is_read LIMIT 5 ');
         $stmt->execute([':user_id' => $userData['id']]);
         /** @var array */
         $alerts = $stmt->fetchAll();
-        if ($alerts != false && $count > 0):
+
+        if ($alerts != false && count($alerts) > 0):
           foreach ($alerts as $alert):
         ?>
             <a class="dropdown-item d-flex align-items-center" href="#read-notif"
               data-toggle="modal"
               data-target="#readNotifModal"
               data-title="<?= $alert['title'] ?>"
-              data-message="<?= $alert['message'] ?>">
+              data-message="<?= $alert['message'] ?>"
+              data-id="<?= $alert['id'] ?>">
               <div class="mr-3">
-                <div class="icon-circle <?php echo $alert['is_read'] ? 'bg-secondary' : 'bg-primary'; ?>">
+                <div class="icon-circle bg-primary">
                   <i class="fas fa-file-alt text-white"></i>
                 </div>
               </div>
               <div>
                 <div class="small text-gray-500"><?php echo $alert['created_at'] ?></div>
-                <span class="font-weight-bold"><?php echo $alert['title'] ?></span>
+                <span class="<?= $alert['is_read'] ? 'text-gray-500' : 'font-weight-bold' ?>"><?php echo $alert['title'] ?></span>
               </div>
             </a>
           <?php
