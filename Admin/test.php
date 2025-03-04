@@ -50,3 +50,21 @@ if ($test) {
     echo 'Success';
     $pdo->rollBack();
 }
+
+$yes = $pdo->query('SELECT * FROM refbarangay')->fetchAll(PDO::FETCH_ASSOC);
+
+
+foreach ($yes as $no){
+    $test = $response->getResponseCount($no['brgyid']);
+
+
+    echo '<pre>';
+echo 'Barangay: '.$no['brgyname'].' Responses: '.$test;
+echo '</pre>';
+
+}
+
+
+
+
+
