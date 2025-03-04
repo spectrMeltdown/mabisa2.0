@@ -5,7 +5,7 @@
   <footer class="sticky-footer bg-white">
     <div class="container my-auto">
       <div class="copyright text-center my-auto">
-        <span>Copyright &copy; MABISA 2024</span>
+        <span>Copyright &copy; Willow the Great</span>
       </div>
     </div>
   </footer>

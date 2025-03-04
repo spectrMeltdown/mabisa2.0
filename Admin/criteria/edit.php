@@ -4,7 +4,7 @@ require_once '../script.php';
 $id = isset($_POST['edit_id']) ? trim($_POST['edit_id']) : null;
 
 if (!$id) {
-    die("Error: No valid ID received.");
+    // die("Error: No valid ID received.");
 }
 try {
     $stmt = $pdo->prepare("SELECT * FROM `maintenance_criteria_setup` WHERE keyctr = :id");
