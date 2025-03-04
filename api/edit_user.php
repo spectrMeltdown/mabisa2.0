@@ -70,6 +70,7 @@ try {
     $shouldExecute = true;
   }
 
+  $pdo->beginTransaction();
   // will execute only if at least on parameter was passed
   if ($shouldExecute) {
     // remove trailing space and comma on sql statement
@@ -92,6 +93,7 @@ try {
 
   // get the bar perms id of current user (multiple)
   if (!empty($barPerms)) {
+    // get all barangays with all indicators, with its permissions id, or null
     $sql = 'SELECT
   rb.brgyid AS brgyid,
   i.keyctr AS indid,
@@ -103,20 +105,19 @@ LEFT JOIN user_roles_barangay urb
   AND urb.indicator_id = i.keyctr
   AND urb.user_id = :id;
 ';
-
-    // actual fetch
+    // all barangays, indicators, with perms id or null
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':id' => $id]);
-    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $urbPerms = $stmt->fetchAll();
 
     // some logging
     // writeLog('BAR PERM IDs WAS');
-    // writeLog($result);
+    // writeLog($urbPerms);
     // writeLog('BAR PERMS WAS');
     // writeLog($barPerms);
 
     // update bar perms
-    updateMultiBarPerms($pdo, $result, array_keys($barPerms), $allPerms, (int)$id);
+    updateMultiBarPerms($pdo, $urbPerms, array_keys($barPerms), $allPerms, (int)$id);
   }
 
   // get the gen perms id of current user
@@ -154,15 +155,19 @@ LEFT JOIN user_roles_barangay urb
     }
   }
 
+  $pdo->commit();
   //logging
   $log->userLog('Edited a User with ID: ' . $id . 'to Username: ' . $username . ', Fullname: ' . $fullName . ', Email: ' . $email . ', and Mobile Num: ' . $mobileNum);
 } catch (\Throwable $th) {
+  if ($pdo->inTransaction()) {
+    $pdo->rollBack();
+  }
   http_response_code(500);
   writeLog($th);
   echo json_encode($th->getMessage(), JSON_PRETTY_PRINT);
 }
 
-function updateMultiBarPerms(\PDO $pdo, array $urbRes, array $newPerms, array $allPerms, int $userID)
+function updateMultiBarPerms(\PDO $pdo, array $urbPerms, array $newPerms, array $allPerms, int $userID)
 {
   writeLog('update bar perms');
   // create a new array where permissions are groups per indicator, and indicators are grouped per barangay
@@ -183,11 +188,13 @@ function updateMultiBarPerms(\PDO $pdo, array $urbRes, array $newPerms, array $a
   writeLog($compiledNewPerms);
   $allPerms = getPermTableNames($pdo);
 
+  // loop barangays
   foreach ($compiledNewPerms as $barangayID => $indicators) {
+    // loop indicators per barangay
     foreach ($indicators as $indicatorID => $permissions) {
       // writeLog('urb result is: ');
       // writeLog($urbRes);
-      foreach ($urbRes as $entry) {
+      foreach ($urbPerms as $entry) {
         if ($entry['brgyid'] == $barangayID && $entry['indid'] == $indicatorID) {
           writeLog('Updating: ' . $barangayID . ' ' . $indicatorID);
           $permID = updatePerms($pdo, $entry['permid'], array_map(fn($value) => 'assessment_' . $value, $permissions), $allPerms, true);

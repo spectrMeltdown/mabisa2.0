@@ -31,7 +31,7 @@ function updatePerms(\PDO $pdo, int|string|null $permID, array $newPerms, array 
       // set all perms that are in newPerms to true, leave the rest false
       $sql .= ' ' . $colonPerm . ',';
       // add to execute
-      $execute[$colonPerm] = 'true';
+      $execute[$colonPerm] = 1;
     }
 
     // remove trailing comma
@@ -40,8 +40,6 @@ function updatePerms(\PDO $pdo, int|string|null $permID, array $newPerms, array 
     $sql .= ');';
   } else if (empty($permID)) {
     writeLog('Empty perm id!');
-
-    // throw new Exception('PermID was null!!');
     return null;
   } else {
     writeLog('updating instead');
