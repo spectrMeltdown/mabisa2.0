@@ -124,7 +124,7 @@ if (!empty($_COOKIE['id'])) {
 
                                             </div>
                                         </div>
-                                        <div class="d-flex align-items-center justify-content-between mb-4">
+                                        <!-- <div class="d-flex align-items-center justify-content-between mb-4">
                                             <div class="form-group" style="margin-bottom: 0;">
                                                 <div class="custom-control custom-checkbox small">
                                                     <input type="checkbox" class="custom-control-input" id="rememberMe" name="rememberMe" value="true">
@@ -132,8 +132,8 @@ if (!empty($_COOKIE['id'])) {
                                                         Me?</label>
                                                 </div>
                                             </div>
-                                            <!-- <a href="forgot_password.php" style="font-size: 15;">Forgot Password? </a> -->
-                                        </div>
+                                        </div> -->
+                                        <!-- <a href="forgot_password.php" style="font-size: 15;">Forgot Password? </a> -->
                                         <!-- dont make it type=submit, because we are using js to handle form submission -->
                                         <button type="button" id="loginBtn" class="btn btn-primary btn-user btn-block">
                                             Login
