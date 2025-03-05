@@ -31,10 +31,12 @@ if (!empty($file_id) && !empty($name) && !empty($commentText)) {
     if ($notifResult) {
         writeLog($notifResult);
     }
+    writeLog('expand');
+    writeLog($expand);
     echo "<script>
-        let url = new URL(document.referrer + '#file-" . $file_id . "');
+        let url = new URL(document.referrer);
                 url.searchParams.set('expand', '" . $expand . "' );
-                location.href = url.toString();
+                location.href = (url.toString() + '#" . $bid . $iid . "');
     </script>";
     exit;
     // header('Content-Type: application/json');

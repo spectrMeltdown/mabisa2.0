@@ -111,13 +111,17 @@ const governance = params.get('expand');
 
 console.log(indicator + governance);
 if (indicator && governance) {
+  console.log('Yes');
+
   // expand the govenance
-  $('#' + governance).dropdown();
+  $(governance).collapse('show');
 
   // focus on the indicator
   let targetElement = document.getElementById(indicator);
   if (targetElement) {
     targetElement.classList.add('highlight'); // Example: Add a highlight class
-    targetElement.scrollIntoView({ behavior: 'smooth' }); // Scroll into view
+    setTimeout(function() {
+      targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' }); // Scroll into view
+    }, 100);
   }
 }

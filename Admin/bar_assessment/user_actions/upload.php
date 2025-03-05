@@ -54,15 +54,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
             $userData = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($userData) {
-                $bid = (int)$barangay_id;
                 $iid = (int)$_POST['iid'];
-
                 $notifResult = sendNotifBar(
                     $pdo,
                     $userData['id'],
                     ($userData['role_name'] . ' uploaded a new submission'),
                     'The ' . $userData['role_name'] . ' ' . $userData['full_name'] . ' uploaded File ID ' . $file_id . '.',
-                    $bid,
+                    $barangay_id,
                     $iid,
                     ['assessment_comments_read', 'assessment_submissions_read']
                 );
@@ -74,20 +72,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
 
             writeLog('upload success');
             echo json_encode(['success' => true, 'message' => 'File uploaded successfully.']);
-            exit;
         } else {
             unlink($filePath);
             writeLog('Failed to save file in db');
             echo json_encode(['success' => false, 'message' => 'Failed to save file information in the database.']);
-            exit;
         }
     } else {
         writeLog('Failed to upload');
         echo json_encode(['success' => false, 'message' => 'Failed to upload the file.']);
-        exit;
     }
 } else {
     writeLog('Invalid request');
     echo json_encode(['success' => false, 'message' => 'Invalid request.']);
-    exit;
 }
+exit;
