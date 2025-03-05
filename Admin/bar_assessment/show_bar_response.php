@@ -171,10 +171,8 @@ unset($_SESSION['success']);
 
         <!--sidebar start  -->
         <?php
-        include '../common/sidebar.php'
-
+        include_once '../common/sidebar.php';
         ?>
-
         <!-- sidebar end -->
 
         <!-- Content Wrapper -->
@@ -185,7 +183,7 @@ unset($_SESSION['success']);
 
                 <!-- Topbar -->
                 <?php
-                include '../common/nav.php';
+                include_once '../common/nav.php';
                 $name = $userData['full_name'];
                 ?>
                 <!-- End of Topbar -->

@@ -150,3 +150,18 @@ global $userGenPerms;
   </div>
 </ul>
 <!-- End of Sidebar -->
+
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion">
+  <!-- Sidebar - Brand -->
+  <a class="sidebar-brand d-flex align-items-center justify-content-center"
+    href="dashboard.php">
+    <div class="sidebar-brand-icon">
+      <i><img src="<?= $pathPrepend ?>img/logo.png" height="60px" /></i>
+    </div>
+    <div class="sidebar-brand-text mx-3">MABISA</div>
+  </a>
+  <!-- Sidebar Toggler (Sidebar) -->
+  <div class="text-center d-none d-md-inline">
+    <button class="rounded-circle border-0" id="sidebarToggle"></button>
+  </div>
+</ul>

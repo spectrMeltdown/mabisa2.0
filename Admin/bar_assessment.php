@@ -37,7 +37,7 @@ $is_accepting = isset($version['is_accepting_response']) ? ($version['is_accepti
         <!--sidebar start  -->
         <?php
         $isInFolderessmentPhp = true;
-        include 'common/sidebar.php' ?>
+        require_once 'common/sidebar.php' ?>
         <!-- sidebar end -->
 
         <!-- Content Wrapper -->

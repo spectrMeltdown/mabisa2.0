@@ -10264,6 +10264,10 @@ a:focus {
   overflow-x: hidden;
 }
 
+#content-wrapper {
+  padding-left: 25px;
+}
+
 #wrapper #content-wrapper #content {
   flex: 1 0 auto;
 }

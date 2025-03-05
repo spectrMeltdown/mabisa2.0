@@ -45,8 +45,8 @@ header("Pragma: no-cache");
 <!-- <script src="vendor/rowsgroup/dataTables.rowsGroup.js" defer></script> -->
 
 <!-- Template css -->
-<link href="<?= $pathPrepend ?>css/sb-admin-2.min.css" rel="stylesheet" />
-<script src="<?= $pathPrepend ?>js/sb-admin-2.min.js" defer></script>
+<link href="<?= $pathPrepend ?>css/sb-admin-2.css" rel="stylesheet" />
+<script src="<?= $pathPrepend ?>js/sb-admin-2.js" defer></script>
 
 <!-- Other -->
 <script src="<?= $pathPrepend ?>js/util/toast.js" defer></script>
@@ -58,6 +58,19 @@ header("Pragma: no-cache");
 <?= isset($customTitle) ? '' : '<title>MABISA</title>' ?>
 
 <style>
+  #accordionSidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    /* Adjust width as needed */
+    background-color: #4e73df;
+    /* Ensure background color */
+    z-index: 1030;
+    /* Higher than content */
+    overflow-y: auto;
+    /* Enable scrolling if needed */
+  }
+
   /* Hide number input controls */
   .no-spinner::-webkit-inner-spin-button,
   .no-spinner::-webkit-outer-spin-button {
