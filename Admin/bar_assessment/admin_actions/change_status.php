@@ -37,7 +37,9 @@ try {
             if ($result) {
                 echo "<script>
                 alert('" . $action . "d successfully');
-                window.location.href = document.referrer;
+                let url = new URL(document.referrer + '#file-" . $file_id . "');
+                url.searchParams.set('expand', '');
+                window.location.href = ;
                 </script>";
             } else {
                 echo "Failed to perform action '$action'.";
