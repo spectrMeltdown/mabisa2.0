@@ -84,6 +84,7 @@ unset($_SESSION['success']);
                     <th>ID</th>
                     <th>Category Code</th>
                     <th>Area</th>
+                    <th>Area Description</th>
                     <th>Trail</th>
                     <th>Actions</th>
                   </tr>
@@ -92,7 +93,8 @@ unset($_SESSION['success']);
                   <?php foreach ($data as $row):
                   ?>
                     <tr>
-                      <td><?php echo $row['keyctr']; ?></td>
+                      <td><?php echo $row['keyctr']; ?></td>                      
+                      <td><?php echo $row['cat_code']; ?></td>
                       <td><?php echo $row['area_name']; ?></td>
                       <td><?php echo $row['area_description']; ?></td>
                       <td><?php echo $row['trail']; ?></td>
