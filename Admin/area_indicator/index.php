@@ -66,14 +66,12 @@ unset($_SESSION['success']);
                 <table id="maintenanceTable" class="table table-bordered">
                   <thead>
                     <tr>
-                      <th>KeyCtr</th>
                       <th>Governance Code</th>
                       <th>Description Key</th>
                       <th>Area Description</th>
                       <th>Indicator Code</th>
                       <th>Indicator Description</th>
                       <th>Relevance Definition</th>
-                      <th>Minimum Requirement</th>
                       <th>Trail</th>
                       <th>Actions</th>
                     </tr>
@@ -82,7 +80,6 @@ unset($_SESSION['success']);
                     <?php foreach ($data as $row):
                     ?>
                       <tr>
-                        <td><?php echo $row['keyctr']; ?></td>
                         <td><?php echo $row['cat_code']; ?></td>
                         <td><?php echo $row['desc_keyctr']; ?></td>
                         <td><?php echo $row['area_description']; ?></td>
@@ -96,8 +93,6 @@ unset($_SESSION['success']);
                           </span>
                           <a href="#" class="see-more">See more</a>
                         </td>
-
-                        <td><?php echo $row['min_requirement']; ?></td>
                         <td><?php echo $row['trail']; ?></td>
                         <td>
                           <a class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">

@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_indicator'])) {
     $indicator_code = $_POST['indicator_code'];
     $indicator_description = $_POST['indicator_description'];
     $relevance_def = $_POST['relevance_def'];
-    $min_requirement = isset($_POST['min_requirement']) ? 1 : 0;
+    $min_requirement = $_POST['min_requirement'];
     $trail = 'Created at ' . date('Y-m-d H:i:s');
 
     try {
@@ -23,10 +23,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_indicator'])) {
         $desc_data = $desc_stmt->fetch(PDO::FETCH_ASSOC);
         $desc_keyctr = $desc_data ? $desc_data['keyctr'] : null;
 
-        $gov_stmt = $pdo->prepare("SELECT keyctr FROM maintenance_governance WHERE description = ? LIMIT 1");
-        $gov_stmt->execute([$area_description]);
-        $gov_data = $gov_stmt->fetch(PDO::FETCH_ASSOC);
-        $governance_code = $gov_data ? $gov_data['keyctr'] : null;
+        $gov_stmt = $pdo->prepare("SELECT keyctr FROM maintenance_governance WHERE desc_keyctr = ? LIMIT 1");
+$gov_stmt->execute([$desc_keyctr]);
+$gov_data = $gov_stmt->fetch(PDO::FETCH_ASSOC);
+$governance_code = $gov_data ? $gov_data['keyctr'] : null;
+
 
         if ($desc_keyctr && $governance_code) {
             $stmt = $pdo->prepare("INSERT INTO maintenance_area_indicators (governance_code, desc_keyctr, area_description, indicator_code, indicator_description, relevance_def, min_requirement, trail) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
@@ -34,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_indicator'])) {
             if ($stmt->execute([$governance_code, $desc_keyctr, $area_description, $indicator_code, $indicator_description, $relevance_def, $min_requirement, $trail])) {
 
                 $pdo->commit();
-                $log->userLog('Created a new Indicator with Governance Code: ' . $governance_code . ', Area Description: ' . $area_description . ', Indicator Description: ' . $indicator_description. ' and Relevance Definition: '. $relevance_def);
+                $log->userLog('Created a new Indicator with Governance Code: ' . $governance_code . ', Area Description: ' . $area_description . ', Indicator Description: ' . $indicator_description . ' and Relevance Definition: ' . $relevance_def);
                 $_SESSION['success'] = "Indicator entry created successfully!";
             } else {
 
@@ -92,10 +93,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_indicator'])) {
                         <input type="text" class="form-control" name="relevance_def" required>
                     </div>
 
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" name="min_requirement" value="1">
-                        <label class="form-check-label">Minimum Requirement</label>
-                    </div>
+                    <input type="hidden" name="min_requirement" value="1">
+
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

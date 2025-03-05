@@ -67,7 +67,6 @@ unset($_SESSION['success']);
               <table id="maintenanceTable" class="table table-bordered">
                 <thead>
                   <tr>
-                    <th>ID</th>
                     <th>Short Definition</th>
                     <th>Description</th>
                     <th>Active Year</th>
@@ -80,7 +79,6 @@ unset($_SESSION['success']);
                   <?php foreach ($data as $row):
                   ?>
                     <tr>
-                      <td><?php echo $row['keyctr']; ?></td>
                       <td><?php echo $row['short_def']; ?></td>
                       <td><?php echo $row['description']; ?></td>
                       <td><?php echo $row['active_yr']; ?></td>

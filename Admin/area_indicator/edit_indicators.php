@@ -9,10 +9,10 @@ $descriptions = $description_stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_indicator'])) {
+    $indicator_code = $_POST['indicator_code'];
     $area_description = $_POST['area_description'];
     $indicator_description = $_POST['indicator_description'];
     $relevance_def = $_POST['relevance_def'];
-    $min_requirement = isset($_POST['min_requirement']) ? 1 : 0;
     $trail = 'Updated at ' . date('Y-m-d H:i:s');
 
     try {
@@ -25,9 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_indicator'])) {
         $desc_data = $desc_stmt->fetch(PDO::FETCH_ASSOC);
         $desc_keyctr = $desc_data ? $desc_data['keyctr'] : null;
 
-        // Fetch governance cat_code from maintenance_governance
-        $gov_stmt = $pdo->prepare("SELECT keyctr FROM maintenance_governance WHERE description = ? LIMIT 1");
-        $gov_stmt->execute([$area_description]);
+        // Fetch governance keyctr using desc_keyctr from maintenance_governance
+        $gov_stmt = $pdo->prepare("SELECT keyctr FROM maintenance_governance WHERE desc_keyctr = ? LIMIT 1");
+        $gov_stmt->execute([$desc_keyctr]);
         $gov_data = $gov_stmt->fetch(PDO::FETCH_ASSOC);
         $governance_code = $gov_data ? $gov_data['keyctr'] : null;
 
@@ -38,14 +38,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_indicator'])) {
                 area_description = ?, 
                 indicator_description = ?, 
                 relevance_def = ?, 
-                min_requirement = ?, 
                 trail = ? 
                 WHERE indicator_code = ?");
 
-            if ($stmt->execute([$governance_code, $desc_keyctr, $area_description, $indicator_description, $relevance_def, $min_requirement, $trail, $_POST['indicator_code']])) {
+            if ($stmt->execute([$governance_code, $desc_keyctr, $area_description, $indicator_description, $relevance_def, $trail, $indicator_code])) {
                 // Commit the transaction
                 $pdo->commit();
-                $log->userLog('Edited an Indicator with ID: '.$gov_data['keyctr'].', Indicator Code: '.$_POST['indicator_code'].', to Governance Code: ' . $governance_code . ', Area Description: ' . $area_description .', Indicator Description: ' . $indicator_description. ' and Relevance Definition: '. $relevance_def);
+                $log->userLog('Updated Indicator: ' . $indicator_code . ', Governance Code: ' . $governance_code . ', Area Description: ' . $area_description . ', Indicator Description: ' . $indicator_description . ', Relevance Definition: ' . $relevance_def);
                 $_SESSION['success'] = "Indicator entry updated successfully!";
                 header("Location: index.php");
                 exit;
@@ -88,8 +87,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['indicator_code']) && 
         die("Error: Indicator not found during update!");
     }
 }
-
 ?>
+
 
 <div class="modal fade" id="editIndicatorModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -124,13 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['indicator_code']) && 
                         <input type="text" class="form-control" name="relevance_def" value="<?php echo htmlspecialchars($indicator['relevance_def']); ?>" required>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Minimum Requirement</label>
-                        <input type="checkbox" name="min_requirement" value="1" 
-    <?php echo isset($indicator['min_requirement']) && $indicator['min_requirement'] ? 'checked' : ''; ?>>
- 
-                    </div>
-
+                   
                     <div class="modal-footer">
     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
     <button type="submit" name="edit_indicator" class="btn btn-primary">Update Indicator</button>

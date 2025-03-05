@@ -57,19 +57,21 @@ global $userGenPerms;
       <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
           <h6 class="collapse-header">Settings</h6>
+          
+          <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>version/">Version</a>
+          <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>category/">Category</a>
           <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>area/">Area</a>
+          
+          <a class="collapse-item"
+            href="<?php echo isset($isInFolder) ? '../' : ''; ?>governance/">Governance</a>
            <a class="collapse-item"
             href="<?php echo isset($isInFolder) ? '../' : ''; ?>area_indicator/">Area Indicators</a>
           <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>min_req/">Minimum
             Requirements</a>
           <a class="collapse-item"
             href="<?php echo isset($isInFolder) ? '../' : ''; ?>sub_req/">Sub-Requirements</a>
-          <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>category/">Category</a>
-          <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>version/">Version</a>
           <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>docu_source/">Document
             Source</a>
-          <a class="collapse-item"
-            href="<?php echo isset($isInFolder) ? '../' : ''; ?>governance/">Governance</a>
         </div>
       </div>
     </li>

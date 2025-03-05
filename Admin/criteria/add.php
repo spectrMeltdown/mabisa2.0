@@ -138,6 +138,10 @@ $maintenance_document_source_result = fetchAllData($pdo, "SELECT * FROM `mainten
             });
 
         });
+        $(document).on('click', '[data-dismiss="modal"]', function () {
+    $('#addMaintenanceCriteriaModal').modal('hide');
+});
+
     </script>
 
 

@@ -159,4 +159,13 @@ try {
             loadMinimumRequirements(newIndicatorId, '');
         });
     });
+    $(document).on('click', '[data-dismiss="modal"]', function () {
+    $('#addMaintenanceCriteriaModal').modal('hide');
+});
+$('#addMaintenanceCriteriaModal').on('hidden.bs.modal', function () {
+    $(this).find('input, select, textarea').val(''); 
+    $(this).find('form')[0].reset(); 
+});
+
+
 </script>

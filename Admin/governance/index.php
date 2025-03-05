@@ -81,7 +81,6 @@ unset($_SESSION['success']);
               <table id="maintenanceTable" class="table table-bordered">
                 <thead>
                   <tr>
-                    <th>ID</th>
                     <th>Category Code</th>
                     <th>Area</th>
                     <th>Area Description</th>
@@ -92,8 +91,7 @@ unset($_SESSION['success']);
                 <tbody>
                   <?php foreach ($data as $row):
                   ?>
-                    <tr>
-                      <td><?php echo $row['keyctr']; ?></td>                      
+                    <tr>                   
                       <td><?php echo $row['cat_code']; ?></td>
                       <td><?php echo $row['area_name']; ?></td>
                       <td><?php echo $row['area_description']; ?></td>
