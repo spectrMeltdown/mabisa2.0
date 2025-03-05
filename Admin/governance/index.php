@@ -11,7 +11,16 @@ if (!userHasPerms('criteria_read', 'gen')) {
 }
 
 require_once '../../db/db.php';
-$stmt = $pdo->query("SELECT * FROM maintenance_governance");
+$stmt = $pdo->query("SELECT 
+    mg.*, 
+    ma.description AS area_name, 
+    mad.description AS area_description
+FROM maintenance_governance AS mg
+LEFT JOIN maintenance_area AS ma 
+    ON mg.area_keyctr = ma.keyctr
+LEFT JOIN maintenance_area_description AS mad 
+    ON mg.desc_keyctr = mad.keyctr;
+");
 $stmt->execute();
 $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -19,6 +28,10 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 session_start();
 $successMessage = isset($_SESSION['success']) ? $_SESSION['success'] : '';
 unset($_SESSION['success']);
+
+// echo '<pre>';
+// print_r($data);
+// echo'</pre>';
 ?>
 
 
@@ -70,9 +83,7 @@ unset($_SESSION['success']);
                   <tr>
                     <th>ID</th>
                     <th>Category Code</th>
-                    <th>Area Keyctr</th>
-                    <th>Description Keyctr</th>
-                    <th>Description</th>
+                    <th>Area</th>
                     <th>Trail</th>
                     <th>Actions</th>
                   </tr>
@@ -82,10 +93,8 @@ unset($_SESSION['success']);
                   ?>
                     <tr>
                       <td><?php echo $row['keyctr']; ?></td>
-                      <td><?php echo $row['cat_code']; ?></td>
-                      <td><?php echo $row['area_keyctr']; ?></td>
-                      <td><?php echo $row['desc_keyctr']; ?></td>
-                      <td><?php echo $row['description']; ?></td>
+                      <td><?php echo $row['area_name']; ?></td>
+                      <td><?php echo $row['area_description']; ?></td>
                       <td><?php echo $row['trail']; ?></td>
                       <td>
                         <a class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">

@@ -86,7 +86,7 @@ $headerY = 10;
 $pageWidth = 190;
 
 $pdf->Image($leftLogo, 10, $headerY, $logoWidth, $logoWidth);
-$pdf->Image($rightLogo, 170, $headerY, $logoWidth, $logoWidth);
+// $pdf->Image($rightLogo, 170, $headerY, $logoWidth, $logoWidth);
 
 $pdf->SetFont('helvetica', 'B', 12);
 $pdf->SetXY(10, $headerY + 5);

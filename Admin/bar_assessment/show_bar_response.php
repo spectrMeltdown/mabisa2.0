@@ -297,7 +297,7 @@ unset($_SESSION['success']);
                                                             <td class="data-cell-upload-view" style="text-align: center; vertical-align: middle;">
                                                                 <?php if (!$data): ?>
                                                                     <?php
-                                                                    if (!str_contains(strtolower($userData['role']), 'admin') && userHasPerms('submissions_create', 'any', $barangay_id, $row['indicator_keyctr']) && $version['is_accepting_response'] == '1') : ?>
+                                                                    if (!str_contains(strtolower($userData['role']), 'admin') && userHasPerms('submissions_create', 'any', $barangay_id, $row['indicator_keyctr']) && $version['is_accepting_response'] == '0') : ?>
                                                                         <form action="../bar_assessment/user_actions/upload.php" method="POST"
                                                                             enctype="multipart/form-data" id="uploadForm-<?php echo $row['keyctr']; ?>">
                                                                             <input type="hidden" name="iid" value="<?= $row['indicator_keyctr'] ?>">
@@ -312,8 +312,12 @@ unset($_SESSION['success']);
                                                                                 <i class="fa fa-upload"></i>
                                                                             </button>
                                                                         </form>
-                                                                    <?php else: ?>
-                                                                        <p>No Uploads Yet</p>
+                                                                    <?php else: 
+                                                                        if ($version['is_accepting_response'] == '1') :?>
+                                                                        <p>Submission Closed</p>
+                                                                        <?php else: ?>
+                                                                            <p>No Uploads Yet</p>
+                                                                        <?php endif; ?>    
                                                                     <?php endif; ?>
                                                                 <?php else: ?>
                                                                     <button type="button" class="btn btn-success mb-3" title="View"

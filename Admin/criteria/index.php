@@ -86,7 +86,7 @@ if (!empty($maintenance_area_description_result)) {
               foreach ($maintenance_criteria_setup_result as $maintenance_criteria_setup_row) {
                 $data[$maintenance_area_description_row['category'] . " " .
                   $maintenance_area_description_row['area_description'] . ": " .
-                  $maintenance_area_description_row['description']][] = [
+                  $maintenance_area_description_row['desc_keyctr']][] = [
                   'keyctr' => $maintenance_criteria_setup_row['keyctr'],
                   'indicator_code' => $maintenance_area_indicators_row['indicator_code'],
                   'indicator_description' => $maintenance_area_indicators_row['indicator_description'],
