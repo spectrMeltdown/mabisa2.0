@@ -24,6 +24,12 @@ if ($barangay_id) {
     $stmt->execute();
     $barangay = $stmt->fetch(PDO::FETCH_ASSOC);
 
+
+    $stmt = $pdo->prepare("SELECT is_ready FROM barangay_assessment WHERE barangay_id = ?");
+    $stmt->bindParam(1, $barangay_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $ready = $result['is_ready'] ?? 0;
     if ($barangay) {
         $barangay_name = $barangay['brgyname'];
     } else {
@@ -134,7 +140,7 @@ if ($barangay_id) {
     $barangay_name = 'Unknown';
 }
 // echo '<pre>';
-// print_r($maintenance_area_description_result);
+// print_r($ready);
 // echo'</pre>';
 session_start();
 $successMessage = isset($_SESSION['success']) ? $_SESSION['success'] : '';
@@ -206,7 +212,16 @@ unset($_SESSION['success']);
                                 View All Comments Summary
                             </button>
 
+                            <?php if ($ready == 1) : ?>
+                                <p class="text-success float-right"><strong>Submitted for Validation</strong></p>
+                            <?php else : ?>
+                                <button class="btn btn-success float-right submit-btn" data-bar-id="<?php echo htmlspecialchars($barangay_id); ?>">
+                                    Submit for Validation
+                                </button>
+                            <?php endif; ?>
                         </div>
+
+
                     </div>
                     <div class="card shadow mb-4">
                         <div class="card-body">
@@ -487,6 +502,38 @@ unset($_SESSION['success']);
             });
         });
 
+        document.querySelectorAll('.submit-btn').forEach(button => {
+            button.addEventListener('click', e => {
+                let barangayid = e.target.getAttribute('data-bar-id');
+
+                if (!confirm('Are you sure you want to submit for validation? This process cannot be undone')) {
+                    return;
+                }
+
+                console.log(barangayid);
+
+                fetch('../bar_assessment/user_actions/validate.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            barangay_id: barangayid
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Submitted for validation successfully.');
+                            location.reload();
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        });
+
 
         document.addEventListener("DOMContentLoaded", function() {
             document.querySelectorAll(".see-more").forEach(function(link) {
@@ -516,6 +563,19 @@ unset($_SESSION['success']);
                 }
             });
         }
+
+        $(document).ready(function() {
+    $(document).on("click", ".go-to-file", function() {
+        let fileId = $(this).data("fileid");
+
+        $("#allCommentsModal").modal("hide");
+
+        setTimeout(function() {
+            $('button[data-target="#commentModal"][data-fileid="' + fileId + '"]').trigger("click");
+        }, 500);
+    });
+});
+
     </script>
 
 

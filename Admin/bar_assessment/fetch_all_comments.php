@@ -16,7 +16,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['barangay_id'])) {
 
         foreach ($groupedComments as $file_id => $comments) {
             echo "<div class='file-comments-container mb-4 p-3 border rounded bg-white shadow-sm'>";
-            echo "<h6 class='font-weight-bold bg-primary text-white p-2 rounded'>Comments for File ID: " . htmlspecialchars($file_id) . "</h6>";
+            echo "<h6 class='font-weight-bold bg-primary text-white p-2 rounded d-flex justify-content-between'>
+                    Comments for File ID: " . htmlspecialchars($file_id) . "
+                    <button class='btn btn-success go-to-file' data-fileid='" . htmlspecialchars($file_id) . "'>Go to File</button>
+                  </h6>";
+            
             foreach ($comments as $comment) {
                 echo "<div class='comment-item mb-2 p-2 border-bottom'>";
                 echo "<strong>" . htmlspecialchars($comment['name']) . ":</strong>";
@@ -24,8 +28,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['barangay_id'])) {
                 echo "<small class='text-muted'>" . date('F j, Y, g:i a', $comment['timestamp']) . "</small>";
                 echo "</div>";
             }
+            
             echo "</div>";
         }
+        
     } else {
         echo "<p>No comments Yet.</p>";
     }
