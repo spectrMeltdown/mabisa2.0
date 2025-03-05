@@ -58,7 +58,7 @@ $is_accepting = isset($version['is_accepting_response']) ? ($version['is_accepti
                             <h3 class="m-0 font-weight-bold text-primary">Barangay Assessment</h3>
                             <div class="text-right">
                                 <p class="mb-1"><strong>Duration:</strong> <?php echo $duration; ?></p>
-                                <p class="mb-0"><strong>Accepting Responses:</strong> <?php echo $is_accepting; ?></p>
+                                <p class="mb-0"><strong>Accepting Responses:</strong> <?php echo $is_accepting ? 'Yes':'No'; ?></p>
                             </div>
                         </div>
 

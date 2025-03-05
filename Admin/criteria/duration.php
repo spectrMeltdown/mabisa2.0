@@ -49,7 +49,7 @@ echo '</pre>';
                             <input class="form-check-input" type="checkbox" name="is_accepting_response" value="1"
                                 <?php echo !empty($active_version['is_accepting_response']) && $active_version['is_accepting_response'] ? 'checked' : ''; ?>>
 
-                            <label class="form-check-label">Still Accepting Response</label>
+                            <label class="form-check-label">End of Assessment</label>
                         </div>
 
                         <div class="modal-footer">
