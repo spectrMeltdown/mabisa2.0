@@ -38,9 +38,9 @@ try {
             if ($result) {
                 echo "<script>
                 alert('" . $action . "d successfully');
-                let url = new URL(document.referrer + '#file-" . $file_id . "');
+                let url = new URL(document.referrer);
                 url.searchParams.set('expand', '" . $expand . "' );
-                location.href = url.toString();
+                location.href = (url.toString() + '#" . $bid . $iid . "');
                 </script>";
             } else {
                 echo "Failed to perform action '$action'.";

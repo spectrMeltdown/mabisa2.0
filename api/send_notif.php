@@ -34,7 +34,7 @@ function sendNotif(\PDO $pdo, string $creatorID, string $title, string $message)
   } catch (\Throwable $th) {
     if ($pdo->inTransaction()) $pdo->rollBack();
     writeLog($th);
-    return $th;
+    return (string)$th;
   }
   return null;
 }
@@ -119,7 +119,7 @@ function sendNotifBar(\PDO $pdo, string $creatorID, string $title, string $messa
   } catch (\Throwable $th) {
     if ($pdo->inTransaction()) $pdo->rollBack();
     writeLog($th);
-    return $th;
+    return (string)$th;
   }
   return null;
 }

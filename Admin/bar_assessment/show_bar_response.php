@@ -153,7 +153,7 @@ unset($_SESSION['success']);
     ?>
 
     <script src="../../vendor/jquery/jquery.min.js"></script>
-    <script src="../../js/bar-assessment.js"></script>
+    <script src="../../js/bar-assessment.js" defer></script>
 
     <style>
         table {
@@ -214,6 +214,7 @@ unset($_SESSION['success']);
                                 <?php foreach ($data as $key => $rows): ?>
                                     <!-- Collapsible Button -->
                                     <div class="card-header bg-primary text-center py-3"
+                                        id="collapseBtn-<?php echo md5($key); ?>"
                                         data-toggle="collapse"
                                         data-target="#collapse-<?php echo md5($key); ?>"
                                         aria-expanded="false"
@@ -300,7 +301,7 @@ unset($_SESSION['success']);
                                                             <?php
                                                             $data = $responses->getData($barangay_id, $row['keyctr']);
                                                             ?>
-                                                            <td class="data-cell-upload-view" style="text-align: center; vertical-align: middle;">
+                                                            <td class="data-cell-upload-view" style="text-align: center; vertical-align: middle;" id="<?php echo htmlspecialchars($barangay_id . $row['indicator_keyctr']) ?>">
                                                                 <?php if (!$data): ?>
                                                                     <?php
                                                                     if (!str_contains(strtolower($userData['role']), 'admin') && userHasPerms('submissions_create', 'any', $barangay_id, $row['indicator_keyctr']) && $version['is_accepting_response'] == '0') : ?>
@@ -339,7 +340,10 @@ unset($_SESSION['success']);
                                                                     </button>
                                                                     <?php if (!str_contains(strtolower($userData['role']), 'admin') && userHasPerms('submissions_delete', 'any', $barangay_id, $row['indicator_keyctr']) && $data['status'] !== 'approved'): ?>
                                                                         <button class="btn btn-danger mb-3 delete-btn"
-                                                                            data-file-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                                            data-file-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>"
+                                                                            data-bid="<?= htmlspecialchars($barangay_id); ?>"
+                                                                            data-iid="<?= htmlspecialchars($row['indicator_keyctr']); ?>"
+                                                                            data-expand="#collapse-<?php echo md5($key); ?>">
                                                                             <i class="fa fa-trash"></i>
                                                                         </button>
                                                                     <?php endif; ?>
@@ -424,7 +428,15 @@ unset($_SESSION['success']);
                         .then(data => {
                             if (data.success) {
                                 alert("File uploaded successfully!");
-                                location.reload();
+                                if (formData.has('barangay_id') && formData.has('iid') && formData.has('expand')) {
+                                    console.log('has all three');
+                                    let url = new URL(location.href);
+                                    url.searchParams.set('expand', formData.get('expand'));
+                                    location.href = (url.toString() + '#' + formData.get('barangay_id') + formData.get('iid'));
+                                } else {
+                                    console.log('nope');
+                                    location.reload();
+                                }
                             } else {
                                 alert("Error: " + data.message);
                             }
@@ -435,8 +447,8 @@ unset($_SESSION['success']);
         });
 
         document.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                let fileId = this.getAttribute('data-file-id');
+            button.addEventListener('click', e => {
+                let fileId = e.target.getAttribute('data-file-id');
 
                 if (!confirm('Are you sure you want to delete this file?')) {
                     return;
@@ -455,7 +467,18 @@ unset($_SESSION['success']);
                     .then(data => {
                         if (data.success) {
                             alert('File deleted successfully.');
-                            location.reload();
+                            const bid = e.target.dataset.bid;
+                            const iid = e.target.dataset.iid;
+                            const expand = e.target.dataset.expand;
+                            if (bid && iid && expand) {
+                                console.log('has all three');
+                                let url = new URL(location.href);
+                                url.searchParams.set('expand', expand);
+                                location.href = (url.toString() + '#' + bid + iid);
+                            } else {
+                                console.log('nope');
+                                location.reload();
+                            }
                         } else {
                             alert('Error: ' + data.message);
                         }
