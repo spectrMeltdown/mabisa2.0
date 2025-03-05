@@ -14,6 +14,7 @@ $name = $_POST['name'] ?? '';
 $commentText = $_POST['commentText'] ?? '';
 $bid = $_POST['bid'] ?? '';
 $iid = $_POST['iid'] ?? '';
+$expand = $_POST['expand'];
 writeLog('bid was ' . $bid);
 writeLog('iid was ' . $iid);
 
@@ -31,7 +32,9 @@ if (!empty($file_id) && !empty($name) && !empty($commentText)) {
         writeLog($notifResult);
     }
     echo "<script>
-        window.location.href = document.referrer;
+        let url = new URL(document.referrer + '#file-" . $file_id . "');
+                url.searchParams.set('expand', '" . $expand . "' );
+                location.href = url.toString();
     </script>";
     exit;
     // header('Content-Type: application/json');

@@ -13,6 +13,7 @@ $(document).ready(function() {
     let status = button.data('status');
     let bid = button.data('bid');
     let iid = button.data('iid');
+    let expand = button.data('expand');
     let modal = $(this);
 
     console.log('Modal is being shown');
@@ -21,6 +22,7 @@ $(document).ready(function() {
     console.log('Status:', status);
     console.log('brgy id:', bid);
     console.log('indicator :', iid);
+    console.log('expand :', expand);
 
     modal
       .find('#commentModalLabel')
@@ -35,6 +37,7 @@ $(document).ready(function() {
 
     modal.find('.bid').val(bid);
     modal.find('.iid').val(iid);
+    modal.find('.expand').val(expand);
     modal.find('input[name="file_id"]').val(fileId);
     modal.find('input[name="name"]').val(name);
     modal.find('input[name="status"]').val(status);
@@ -100,3 +103,21 @@ $(document).ready(function() {
     },
   });
 });
+
+const indicator = window.location.hash.substring(1);
+
+const params = new URLSearchParams(location.search);
+const governance = params.get('expand');
+
+console.log(indicator + governance);
+if (indicator && governance) {
+  // expand the govenance
+  $('#' + governance).dropdown();
+
+  // focus on the indicator
+  let targetElement = document.getElementById(indicator);
+  if (targetElement) {
+    targetElement.classList.add('highlight'); // Example: Add a highlight class
+    targetElement.scrollIntoView({ behavior: 'smooth' }); // Scroll into view
+  }
+}

@@ -301,6 +301,7 @@ unset($_SESSION['success']);
                                                                         <form action="../bar_assessment/user_actions/upload.php" method="POST"
                                                                             enctype="multipart/form-data" id="uploadForm-<?php echo $row['keyctr']; ?>">
                                                                             <input type="hidden" name="iid" value="<?= $row['indicator_keyctr'] ?>">
+                                                                            <input type="hidden" name="expand" value="#collapse-<?php echo md5($key); ?>">
                                                                             <input type="hidden" name="barangay_id"
                                                                                 value="<?php echo htmlspecialchars($barangay_id, ENT_QUOTES, 'UTF-8'); ?>">
                                                                             <input type="hidden" name="criteria_keyctr"
@@ -312,12 +313,12 @@ unset($_SESSION['success']);
                                                                                 <i class="fa fa-upload"></i>
                                                                             </button>
                                                                         </form>
-                                                                    <?php else: 
-                                                                        if ($version['is_accepting_response'] == '1') :?>
-                                                                        <p>Submission Closed</p>
+                                                                        <?php else:
+                                                                        if ($version['is_accepting_response'] == '1') : ?>
+                                                                            <p>Submission Closed</p>
                                                                         <?php else: ?>
                                                                             <p>No Uploads Yet</p>
-                                                                        <?php endif; ?>    
+                                                                        <?php endif; ?>
                                                                     <?php endif; ?>
                                                                 <?php else: ?>
                                                                     <button type="button" class="btn btn-success mb-3" title="View"
@@ -326,7 +327,8 @@ unset($_SESSION['success']);
                                                                         data-name="<?= htmlspecialchars($name); ?>"
                                                                         data-status="<?= htmlspecialchars($data['status']); ?>"
                                                                         data-bid="<?= htmlspecialchars($barangay_id); ?>"
-                                                                        data-iid="<?= htmlspecialchars($row['indicator_keyctr']); ?>">
+                                                                        data-iid="<?= htmlspecialchars($row['indicator_keyctr']); ?>"
+                                                                        data-expand="#collapse-<?php echo md5($key); ?>">
                                                                         <i class="fa fa-eye"></i>
                                                                     </button>
                                                                     <?php if (!str_contains(strtolower($userData['role']), 'admin') && userHasPerms('submissions_delete', 'any', $barangay_id, $row['indicator_keyctr']) && $data['status'] !== 'approved'): ?>
