@@ -13,9 +13,24 @@ if (!userHasPerms('criteria_read', 'gen')) {
 require_once '../../db/db.php';
 
 //query for display 
-$stmt = $pdo->query("SELECT * FROM maintenance_area");
-$stmt->execute();
+$stmt = $pdo->query("
+SELECT 
+    ma.keyctr,
+    ma.description AS area_description,
+    mai.description AS indicator_description,
+    ma.trail AS trail
+FROM maintenance_area AS ma
+JOIN maintenance_area_description AS mai 
+    ON ma.keyctr = mai.keyctr;
+
+");
+$stmt->execute(); 
 $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// echo '<pre>';
+// print_r($data);
+// echo'</pre>';
+
 
 // Check for success message
 session_start();
@@ -54,6 +69,7 @@ unset($_SESSION['success']);
                 <table id="maintenanceTable" class="table table-bordered">
                   <thead>
                     <tr>
+                      <th>Area</th>
                       <th>Description</th>
                       <th>Trail</th>
                       <th>Actions</th>
@@ -62,7 +78,9 @@ unset($_SESSION['success']);
                   <tbody>
                     <?php foreach ($data as $row): ?>
                       <tr>
-                        <td style="font-size: 20px;"><?php echo $row['description']; ?></td>
+                        
+                      <td style="font-size: 20px;"><?php echo $row['area_description']; ?></td>
+                        <td style="font-size: 20px;"><?php echo $row['indicator_description']; ?></td>
                         <td style="font-size: 20px;"><?php echo $row['trail']; ?></td>
                         <td>
                           <button class="btn btn-primary edit-btn" data-id="<?php echo $row['keyctr']; ?>">

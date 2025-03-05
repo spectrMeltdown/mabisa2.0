@@ -6,18 +6,25 @@ session_start();
 $log = new Audit_log($pdo);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_area'])) {
+    $area = $_POST['area'];
     $description = $_POST['description'];
     $trail = 'Created at ' . date('Y-m-d H:i:s');
 
     try {
         $pdo->beginTransaction();
 
-        $sql = "INSERT INTO maintenance_area (description, trail) VALUES (:description, :trail)";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute(['description' => $description, 'trail' => $trail]);
+        $sql1 = "INSERT INTO maintenance_area (description, trail) VALUES (:area, :trail)";
+        $stmt1 = $pdo->prepare($sql1);
+        $stmt1->execute(['area' => $area, 'trail' => $trail]);
+
+        $keyctr = $pdo->lastInsertId();
+
+        $sql2 = "INSERT INTO maintenance_area_description (keyctr, description) VALUES (:keyctr, :description)";
+        $stmt2 = $pdo->prepare($sql2);
+        $stmt2->execute(['keyctr' => $keyctr, 'description' => $description]);
 
         $pdo->commit();
-        $log->userLog('Created a New Area: '.$description);
+        $log->userLog('Created a New Area: ' . $area . ' with Description: ' . $description);
 
         $_SESSION['success'] = "Area created successfully!";
     } catch (PDOException $e) {
@@ -31,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_area'])) {
 ?>
 
 
+
 <div class="modal fade" id="addAreaModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -39,6 +47,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_area'])) {
             </div>
             <div class="modal-body">
                 <form method="POST" action="create_area.php">
+                    <div class="mb-3">
+                        <label class="form-label">Area</label>
+                        <input type="text" class="form-control" name="area" required></input>
+                    </div>
                     <div class="mb-3">
                         <label class="form-label">Description</label>
                         <textarea class="form-control" name="description" required></textarea>
