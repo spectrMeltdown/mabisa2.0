@@ -60,6 +60,7 @@ $log = new Audit_log($pdo);
                                 <input type="hidden" name="name">
                                 <input class="bid" type="hidden" name="bid">
                                 <input class="iid" type="hidden" name="iid">
+                                <input class="expand" type="hidden" name="expand">
                                 <div class="form-group">
                                     <textarea class="form-control" id="commentText" name="commentText" rows="2"
                                         placeholder="Write your comment here..." required></textarea>
@@ -75,6 +76,7 @@ $log = new Audit_log($pdo);
                                 <form method="POST" action="admin_actions/change_status.php">
                                     <input class="bid" type="hidden" name="bid">
                                     <input class="iid" type="hidden" name="iid">
+                                    <input class="expand" type="hidden" name="expand">
                                     <input type="hidden" name="file_id" id="approveFileId">
                                     <input type="hidden" name="action" value="approve">
                                     <button type="submit" class="btn btn-success btn-block">Approve</button>
@@ -85,6 +87,7 @@ $log = new Audit_log($pdo);
                                 <form method="POST" action="admin_actions/change_status.php">
                                     <input class="bid" type="hidden" name="bid">
                                     <input class="iid" type="hidden" name="iid">
+                                    <input class="expand" type="hidden" name="expand">
                                     <input type="hidden" name="file_id" id="declineFileId">
                                     <input type="hidden" name="action" value="decline">
                                     <button type="submit" class="btn btn-danger btn-block">Return</button>
@@ -95,6 +98,7 @@ $log = new Audit_log($pdo);
                                 <form method="POST" action="admin_actions/change_status.php">
                                     <input class="bid" type="hidden" name="bid">
                                     <input class="iid" type="hidden" name="iid">
+                                    <input class="expand" type="hidden" name="expand">
                                     <input type="hidden" name="file_id" id="revertFileId">
                                     <input type="hidden" name="action" value="revert">
                                     <button type="submit" class="btn btn-warning btn-block">Revert to Pending</button>

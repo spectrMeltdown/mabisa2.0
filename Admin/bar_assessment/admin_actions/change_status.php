@@ -11,6 +11,7 @@ try {
             $file_id = $_POST['file_id'];
             $bid = $_POST['bid'];
             $iid = $_POST['iid'];
+            $expand = $_POST['expand'];
 
             // get the user data
             $stmt = $pdo->prepare('SELECT u.*, r.name as role_name FROM users u JOIN roles r ON u.role_id = r.id WHERE u.id = :id LIMIT 1');
@@ -38,8 +39,8 @@ try {
                 echo "<script>
                 alert('" . $action . "d successfully');
                 let url = new URL(document.referrer + '#file-" . $file_id . "');
-                url.searchParams.set('expand', '');
-                window.location.href = ;
+                url.searchParams.set('expand', '" . $expand . "' );
+                location.href = url.toString();
                 </script>";
             } else {
                 echo "Failed to perform action '$action'.";
