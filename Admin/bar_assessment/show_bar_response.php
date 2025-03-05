@@ -147,7 +147,7 @@ unset($_SESSION['success']);
     ?>
 
     <script src="../../vendor/jquery/jquery.min.js"></script>
-    <script src="../../js/bar-assessment.js"></script>
+    <script src="../../js/bar-assessment.js" defer></script>
 
     <style>
         table {
