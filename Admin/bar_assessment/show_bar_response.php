@@ -43,14 +43,20 @@ if ($barangay_id) {
     $active_version_keyctr = $version ? $version['keyctr'] : null;
 
     $maintenance_area_description_query = "
-        SELECT
-            maintenance_governance.*,
-            maintenance_category.description AS category,
-            maintenance_area.description AS area_description
-        FROM `maintenance_governance`
-        LEFT JOIN maintenance_category ON maintenance_governance.cat_code = maintenance_category.code
-        LEFT JOIN maintenance_area ON maintenance_governance.area_keyctr = maintenance_area.keyctr;
-    ";
+    SELECT
+        mg.*,
+        mc.description AS category,
+        ma.description AS area_description,
+        mad.description AS description
+    FROM maintenance_governance AS mg
+    LEFT JOIN maintenance_category AS mc 
+        ON mg.cat_code = mc.code
+    LEFT JOIN maintenance_area AS ma 
+        ON mg.area_keyctr = ma.keyctr
+    LEFT JOIN maintenance_area_description AS mad 
+        ON mg.desc_keyctr = mad.keyctr;
+";
+
 
     $stmt = $pdo->prepare($maintenance_area_description_query);
     $stmt->execute();
@@ -128,7 +134,7 @@ if ($barangay_id) {
     $barangay_name = 'Unknown';
 }
 // echo '<pre>';
-// print_r($version);
+// print_r($maintenance_area_description_result);
 // echo'</pre>';
 session_start();
 $successMessage = isset($_SESSION['success']) ? $_SESSION['success'] : '';
