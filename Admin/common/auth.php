@@ -110,7 +110,7 @@ function userHasPerms(string $perms, string $permType, string|null $barID = null
   else throw new Exception('Invalid perm passed.');
 }
 
-function checkPerms(array $grantedPerms, string $permsQuery, string $barID = null, string $indicatorID = null)
+function checkPerms(array $grantedPerms, string $permsQuery, string|null $barID = null, string|null $indicatorID = null)
 {
   // if bar perms
   if (count(array_filter($grantedPerms, 'is_array')) > 0) {

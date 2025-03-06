@@ -1,11 +1,12 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
 
 require_once 'user_actions.php';
 require_once '../../../db/db.php';
 require_once '../../../api/audit_log.php';
+require_once '../../../api/logging.php';
 
 header('Content-Type: application/json');
 
@@ -14,14 +15,14 @@ try {
     $userActions = new User_Actions($pdo);
     $log = new Audit_log($pdo);
 
-    $data = json_decode(file_get_contents('php://input'), true);
+    // $data = json_decode(file_get_contents('php://input'), true);
 
-    if (!$data) {
-        $data = $_POST;
-    }
+    // if (!$data) {
+    //     $data = $_POST;
+    // }
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($data['file_id'])) {
-        $file_id = $data['file_id'];
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['file_id'])) {
+        $file_id = $_POST['file_id'];
 
         try {
             $delete = $userActions->deleteFile($file_id);
@@ -37,9 +38,10 @@ try {
             echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
         }
     } else {
-        echo json_encode(['success' => false, 'message' => 'Invalid request. Missing required parameters.', 'received_data' => $data]);
+        echo json_encode(['success' => false, 'message' => 'Invalid request. Missing required parameters.', 'received_data' => $_POST]);
     }
 } catch (PDOException $e) {
+    writeLog($e);
     echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . $e->getMessage()]);
     exit;
 }
