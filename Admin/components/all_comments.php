@@ -8,8 +8,6 @@
                 </button>
             </div>
             <div class="modal-body">
-            <div >
-          All Comments
         </div>
                 <div class="comments-container border rounded p-3 bg-light" style="height: 500px; overflow-y: auto;">
                   

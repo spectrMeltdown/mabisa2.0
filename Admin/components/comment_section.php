@@ -17,7 +17,7 @@ $log = new Audit_log($pdo);
     }
 
     .comments-container {
-        height: 400px;
+        height: 500px;
         overflow-y: auto;
         display: flex;
         flex-direction: column-reverse;
@@ -65,9 +65,7 @@ $log = new Audit_log($pdo);
                                     <textarea class="form-control" id="commentText" name="commentText" rows="2"
                                         placeholder="Write your comment here..." required></textarea>
                                 </div>
-                                <div class="text-right mb-3">
-                                    <button type="submit" class="btn btn-primary btn-block">Add Comment</button>
-                                </div>
+
                             </form>
                             <div id="statusMessage" class="alert alert-info text-center" style="display: none;"></div>
                         <?php endif; ?>
@@ -111,3 +109,49 @@ $log = new Audit_log($pdo);
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const commentForm = document.querySelector('form[action*="add_comment.php"]');
+        const approveForm = document.querySelector('#approveForm form');
+        const declineForm = document.querySelector('#declineForm form');
+
+        function submitWithComment(statusForm) {
+            if (commentForm) {
+                const commentText = commentForm.querySelector("#commentText").value.trim();
+                if (commentText !== "") {
+                    const formData = new FormData(commentForm);
+
+                    fetch(commentForm.action, {
+                            method: "POST",
+                            body: formData,
+                        })
+                        .then(response => response.text())
+                        .then(data => {
+                            console.log("Comment submitted:", data);
+                            statusForm.submit(); // submit the status after comment
+                        })
+                        .catch(error => console.error("Error submitting comment:", error));
+                } else {
+                    statusForm.submit(); // just change the status even without comment
+                }
+            } else {
+                statusForm.submit();
+            }
+        }
+
+        if (approveForm) {
+            approveForm.addEventListener("submit", function(event) {
+                event.preventDefault();
+                submitWithComment(approveForm);
+            });
+        }
+
+        if (declineForm) {
+            declineForm.addEventListener("submit", function(event) {
+                event.preventDefault();
+                submitWithComment(declineForm);
+            });
+        }
+    });
+</script>

@@ -353,7 +353,7 @@ unset($_SESSION['success']);
                                                                         data-expand="#collapse-<?php echo md5($key); ?>">
                                                                         <i class="fa fa-eye"></i>
                                                                     </button>
-                                                                    <?php if (!str_contains(strtolower($userData['role']), 'admin') && userHasPerms('submissions_delete', 'any', $barangay_id, $row['indicator_keyctr']) && $data['status'] !== 'approved'): ?>
+                                                                    <?php if (!str_contains(strtolower($userData['role']), 'admin') && userHasPerms('submissions_delete', 'any', $barangay_id, $row['indicator_keyctr']) && $data['status'] !== 'approved' && $ready == 0): ?>
                                                                         <button class="btn btn-danger mb-3 delete-btn"
                                                                             data-file-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>"
                                                                             data-bid="<?= htmlspecialchars($barangay_id); ?>"
@@ -564,18 +564,7 @@ unset($_SESSION['success']);
             });
         }
 
-        $(document).ready(function() {
-    $(document).on("click", ".go-to-file", function() {
-        let fileId = $(this).data("fileid");
-
-        $("#allCommentsModal").modal("hide");
-
-        setTimeout(function() {
-            $('button[data-target="#commentModal"][data-fileid="' + fileId + '"]').trigger("click");
-        }, 500);
-    });
-});
-
+      
     </script>
 
 

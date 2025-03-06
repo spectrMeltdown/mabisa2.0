@@ -79,17 +79,18 @@ $pdf->setPrintHeader(false);
 $pdf->AddPage();
 
 $leftLogo = '../img/dilg_logo.jpg'; 
-$rightLogo = '../img/mabisa-logo.jpg'; 
+$rightLogo = '../img/bagong_pilipinas.jpg'; 
 
 $logoWidth = 25;
+$logoSpacing = 5;
 $headerY = 10;
 $pageWidth = 190;
 
-$pdf->Image($leftLogo, 10, $headerY, $logoWidth, $logoWidth);
-// $pdf->Image($rightLogo, 170, $headerY, $logoWidth, $logoWidth);
+$pdf->Image($leftLogo, ($pageWidth / 2) - ($logoWidth + $logoSpacing / 2), $headerY, $logoWidth, $logoWidth);
+$pdf->Image($rightLogo, ($pageWidth / 2) + ($logoSpacing / 2), $headerY, $logoWidth, $logoWidth);
 
 $pdf->SetFont('helvetica', 'B', 12);
-$pdf->SetXY(10, $headerY + 5);
+$pdf->SetXY(10, $headerY + 30);
 $pdf->Cell($pageWidth - 20, 10, 'DEPARTMENT OF INTERIOR AND LOCAL GOVERNMENT', 0, 1, 'C');
 
 $pdf->SetX(10);

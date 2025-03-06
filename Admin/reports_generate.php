@@ -20,14 +20,14 @@ $pdf->setPrintHeader(false);
 $pdf->AddPage();
 
 // logo
-$leftLogo = '../img/dilg_logo.jpg'; 
-$rightLogo = '../img/mabisa-logo.jpg'; 
+$leftLogo = '../img/dilg_logo.jpg';
+$rightLogo = '../img/bagong_pilipinas.jpg';
 
-$logoWidth = 30; 
-$headerY = 10;    
-$pageWidth = ($orientation == 'L') ? 290 : 190; 
+$logoWidth = 30;
+$headerY = 10;
+$pageWidth = ($orientation == 'L') ? 290 : 190;
 
-$pdf->Image($leftLogo, 10, $headerY, $logoWidth, $logoWidth); 
+$pdf->Image($leftLogo, 10, $headerY, $logoWidth, $logoWidth);
 
 $pdf->SetFont('helvetica', 'B', 14);
 $pdf->SetXY(0, $headerY + 5);
@@ -40,35 +40,39 @@ $pdf->SetFont('helvetica', 'B', 12);
 
 
 $pdf->SetX(0);
-$pdf->Cell($pageWidth, 8, 'Municipality of Aloran', 0, 1, 'C'); 
+$pdf->Cell($pageWidth, 8, 'Municipality of Aloran', 0, 1, 'C');
 
 $pdf->SetFont('helvetica', 'I', 10);
 
 
 $pdf->SetX(0);
-$pdf->Cell($pageWidth, 6, 'Report generated on: ' . date('F d, Y'), 0, 1, 'C'); 
+$pdf->Cell($pageWidth, 6, 'Report generated on: ' . date('F d, Y'), 0, 1, 'C');
 
 
 
 
 
-$pdf->Image($rightLogo, $pageWidth - $logoWidth - 10, $headerY, $logoWidth, $logoWidth); 
+$pdf->Image($rightLogo, $pageWidth - $logoWidth - 10, $headerY, $logoWidth, $logoWidth);
 
 $pdf->Ln(10);
 
 
 
-$pageWidth -= 20; 
-$barangayColumnWidth = 55;  
+$pageWidth -= 20;
+$barangayColumnWidth = 55;
 $categoryColumnWidth = ($pageWidth - $barangayColumnWidth) / count($categories);
 
 $pdf->SetFont('helvetica', 'B', 9);
-$pdf->Cell($barangayColumnWidth, 8, 'Barangay', 1, 0, 'C'); 
+$pdf->Cell($barangayColumnWidth, 8, 'Barangay', 1, 0, 'C');
 $pdf->SetFont('helvetica', 'B', 6.5);
 foreach ($categories as $category) {
-    $x = $pdf->GetX(); 
-    $y = $pdf->GetY(); 
-    $pdf->MultiCell($categoryColumnWidth, 8, $category['description'], 1, 'C'); 
+    $x = $pdf->GetX();
+    $y = $pdf->GetY();
+    $desc = $pdo->prepare("SELECT description from maintenance_area_description WHERE keyctr = ?");
+    $desc->execute([$category['desc_keyctr']]);
+    $description = $desc->fetch(PDO::FETCH_ASSOC);
+
+    $pdf->MultiCell($categoryColumnWidth, 8, $description['description'], 1, 'C');
 
     $pdf->SetXY($x + $categoryColumnWidth, $y);
 }
@@ -77,7 +81,7 @@ $pdf->Ln();
 
 $pdf->SetFont('helvetica', '', 9);
 foreach ($barangayList as $barangay) {
-    $pdf->Cell($barangayColumnWidth, 8, $barangay['barangay'], 1, 0, 'L'); 
+    $pdf->Cell($barangayColumnWidth, 8, $barangay['barangay'], 1, 0, 'L');
 
     foreach ($categories as $category) {
         $submittedCount = 0;
