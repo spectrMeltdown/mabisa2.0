@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 $dbHost = 'localhost';
-$db = 'mabisa2.0';
+$db = 'mabisa';
 $dbUser = 'root'; // Change if you have a different username
 $dbPass = ''; // Change if you have a different password
 

@@ -15,8 +15,8 @@ $commentText = $_POST['commentText'] ?? '';
 $bid = $_POST['bid'] ?? '';
 $iid = $_POST['iid'] ?? '';
 $expand = $_POST['expand'];
-writeLog('bid was ' . $bid);
-writeLog('iid was ' . $iid);
+// writeLog('bid was ' . $bid);
+// writeLog('iid was ' . $iid);
 
 if (!empty($file_id) && !empty($name) && !empty($commentText)) {
     $result = $comments->add_comment($file_id, $name, $commentText);
@@ -27,7 +27,7 @@ if (!empty($file_id) && !empty($name) && !empty($commentText)) {
     $userData = $stmt->fetch(PDO::FETCH_ASSOC);
 
     // send notif to all relevant users
-    $notifResult = sendNotifBar($pdo, $userData['id'], ($userData['role_name'] . ' commented on your submission'), 'The ' . $userData['role_name'] . ' ' . $userData['full_name'] . ' commented File ID ' . $file_id . '.', (int)$bid, (int)$iid, ['assessment_comments_read', 'assessment_submissions_read']);
+    $notifResult = sendNotifBar($pdo, $userData['id'], ($userData['role_name'] . ' commented on your submission'), 'The ' . $userData['role_name'] . ' ' . $userData['full_name'] . ' commented File ID ' . $file_id . '.', (int)$bid, (int)$iid, $expand, ['assessment_comments_read', 'assessment_submissions_read']);
     if ($notifResult) {
         writeLog($notifResult);
     }

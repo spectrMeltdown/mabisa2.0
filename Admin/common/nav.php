@@ -7,6 +7,7 @@ if (isset($isInFolder)):
 <?php endif; ?>
 <script src="<?= $doublePathPrepend ?>js/nav.js" defer></script> <!-- for letting js know that this file is nested in folder -->
 <script src="<?= $doublePathPrepend ?>js/read_notif.js" defer></script>
+<script src="<?= $doublePathPrepend ?>js/all_notif.js" defer></script>
 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
   <!-- Sidebar Toggle (Topbar) -->
   <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
@@ -54,7 +55,8 @@ if (isset($isInFolder)):
               data-target="#readNotifModal"
               data-title="<?= $alert['title'] ?>"
               data-message="<?= $alert['message'] ?>"
-              data-id="<?= $alert['id'] ?>">
+              data-id="<?= $alert['id'] ?>"
+              data-file-link="<?= $alert['file_link'] ?>">
               <div class="mr-3">
                 <div class="icon-circle bg-primary">
                   <i class="fas fa-file-alt text-white"></i>
@@ -73,7 +75,10 @@ if (isset($isInFolder)):
         <?php
         endif;
         ?>
-        <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+        <a class="dropdown-item text-center small text-gray-500"
+          title="View"
+          data-toggle="modal"
+          data-target="#allNotifModal">Show All</a>
       </div>
     </li>
 
@@ -111,4 +116,5 @@ if (isset($isInFolder)):
 </nav>
 <?php require_once (isset($isInFolder) ? '../' : '') . 'components/confirmation_dialog.php'; ?>
 <?php require_once (isset($isInFolder) ? '../' : '') . 'components/read_notif.php'; ?>
+<?php require_once (isset($isInFolder) ? '../' : '') . 'components/all_notif_dialog.php'; ?>
 <!-- End of Topbar -->

@@ -55,6 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
 
             if ($userData) {
                 $iid = (int)$_POST['iid'];
+                $expand = $_POST['expand'];
                 $notifResult = sendNotifBar(
                     $pdo,
                     $userData['id'],
@@ -62,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
                     'The ' . $userData['role_name'] . ' ' . $userData['full_name'] . ' uploaded File ID ' . $file_id . '.',
                     $barangay_id,
                     $iid,
+                    $expand,
                     ['assessment_comments_read', 'assessment_submissions_read']
                 );
 

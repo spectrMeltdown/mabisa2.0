@@ -125,13 +125,15 @@ if (indicator && governance) {
   }
 
   $(document).ready(function() {
-    $(document).on("click", ".go-to-file", function() {
-        let fileId = $(this).data("fileid");
+    $(document).on('click', '.go-to-file', function() {
+      let fileId = $(this).data('fileid');
 
-        $("#allCommentsModal").modal("hide");
-        setTimeout(function() {
-            $('button[data-target="#commentModal"][data-fileid="' + fileId + '"]').trigger("click");
-        }, 500);
+      $('#allCommentsModal').modal('hide');
+      setTimeout(function() {
+        $(
+          'button[data-target="#commentModal"][data-fileid="' + fileId + '"]',
+        ).trigger('click');
+      }, 500);
     });
-});
+  });
 }

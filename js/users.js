@@ -10,7 +10,7 @@ if ($('#user_dataTable').find('p').length === 0) {
       { title: 'Full Name' },
       { title: 'Username' },
       { title: 'Role' },
-      { title: 'Barangays' },
+      { title: 'Barangays & Indicators' },
       { title: 'Actions' },
     ],
   });

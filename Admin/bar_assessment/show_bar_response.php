@@ -447,7 +447,11 @@ unset($_SESSION['success']);
                             method: "POST",
                             body: formData
                         })
-                        .then(response => response.json())
+                        .then(async response => {
+                            const text = await response.text();
+                            console.log(text);
+                            return JSON.parse(text);
+                        })
                         .then(data => {
                             if (data.success) {
                                 alert("File uploaded successfully!");
@@ -540,7 +544,11 @@ unset($_SESSION['success']);
                             barangay_id: barangayid
                         })
                     })
-                    .then(response => response.json())
+                    .then(async response => {
+                        const text = await response.text();
+                        console.log(text);
+                        return JSON.parse(text);
+                    })
                     .then(data => {
                         if (data.success) {
                             alert('Submitted for validation successfully.');
