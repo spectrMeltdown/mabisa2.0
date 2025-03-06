@@ -83,9 +83,13 @@ if (!empty($maintenance_area_description_result)) {
             ]);
             $maintenance_criteria_setup_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            if (!empty($maintenance_criteria_setup_result)) {
-              foreach ($maintenance_criteria_setup_result as $maintenance_criteria_setup_row) {
-                $data[$maintenance_area_description_row['category'] . " " .
+            foreach ($maintenance_criteria_setup_result as $maintenance_criteria_setup_row) {
+              $templates = json_decode($maintenance_criteria_setup_row['template'], true);
+              if (!is_array($templates)) {
+                  $templates = []; 
+              }
+          
+              $data[$maintenance_area_description_row['category'] . " " .
                   $maintenance_area_description_row['area_description'] . ": " .
                   $maintenance_area_description_row['desc_keyctr']][] = [
                   'keyctr' => $maintenance_criteria_setup_row['keyctr'],
@@ -96,16 +100,17 @@ if (!empty($maintenance_area_description_result)) {
                   'documentary_requirements' => $maintenance_criteria_setup_row['documentary_requirements'],
                   'description' => $maintenance_criteria_setup_row['description'],
                   'data_source' => $maintenance_criteria_setup_row['data_source'],
-                  'template' => $maintenance_criteria_setup_row['template'],
-                ];
-              }
+                  'template' => $templates, 
+              ];
+          }
+          
             }
           }
         }
       }
     }
   }
-}
+
 
 
 // echo '<pre>';
@@ -302,16 +307,26 @@ if (!empty($maintenance_area_description_result)) {
                           <?php endif; ?>
 
                           <td>
-                            <?php
-                            $link = htmlspecialchars($row['template']);
-                            echo htmlspecialchars($row['documentary_requirements']) . '<br> <br>';
-                            if (!empty($link)) {
-                              echo '<a href="' . $link . '" target="_blank">View Template</a>';
-                            } else {
-                              echo 'No template available';
-                            }
-                            ?>
-                          </td>
+    <?php
+    echo htmlspecialchars($row['documentary_requirements']) . '<br><br>';
+
+    // Ensure template is always an array
+    $templates = is_array($row['template']) ? $row['template'] : json_decode($row['template'], true);
+
+    // Check if it's a valid array before looping
+    if (!empty($templates) && is_array($templates)) {
+        foreach ($templates as $template) {
+            $link = htmlspecialchars($template, ENT_QUOTES, 'UTF-8');
+            echo '<a href="https://' . $link . '" target="_blank">' . $link . '</a><br>';
+        }
+    } else {
+        echo 'No template available';
+    }
+    ?>
+</td>
+
+
+
 
                           <td><?php echo htmlspecialchars($row['data_source']); ?></td>
                           <td>

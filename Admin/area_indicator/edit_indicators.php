@@ -9,8 +9,8 @@ $descriptions = $description_stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_indicator'])) {
-    $indicator_code = $_POST['indicator_code'];
-    $new_indicator_code = $_POST['new_indicator_code']; // New indicator code
+    $keyctr = $_POST['keyctr']; // Use keyctr instead of indicator_code
+    $new_indicator_code = $_POST['new_indicator_code'];
     $area_description = $_POST['area_description'];
     $indicator_description = $_POST['indicator_description'];
     $trail = 'Updated at ' . date('Y-m-d H:i:s');
@@ -32,15 +32,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_indicator'])) {
 
         if ($desc_keyctr && $governance_code) {
             // Check if new indicator code already exists
-            if ($new_indicator_code !== $indicator_code) {
-                $check_stmt = $pdo->prepare("SELECT COUNT(*) FROM maintenance_area_indicators WHERE indicator_code = ?");
-                $check_stmt->execute([$new_indicator_code]);
-                if ($check_stmt->fetchColumn() > 0) {
-                    throw new Exception("Indicator code already exists. Please choose a different code.");
-                }
+            $check_stmt = $pdo->prepare("SELECT COUNT(*) FROM maintenance_area_indicators WHERE indicator_code = ? AND keyctr != ?");
+            $check_stmt->execute([$new_indicator_code, $keyctr]);
+            if ($check_stmt->fetchColumn() > 0) {
+                throw new Exception("Indicator code already exists. Please choose a different code.");
             }
 
-            // Update indicator details
+            // Update indicator details using keyctr
             $stmt = $pdo->prepare("UPDATE maintenance_area_indicators SET 
                 indicator_code = ?, 
                 governance_code = ?, 
@@ -48,11 +46,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_indicator'])) {
                 area_description = ?, 
                 indicator_description = ?, 
                 trail = ? 
-                WHERE indicator_code = ?");
+                WHERE keyctr = ?");
 
-            if ($stmt->execute([$new_indicator_code, $governance_code, $desc_keyctr, $area_description, $indicator_description, $trail, $indicator_code])) {
+            if ($stmt->execute([$new_indicator_code, $governance_code, $desc_keyctr, $area_description, $indicator_description, $trail, $keyctr])) {
                 $pdo->commit();
-                $log->userLog("Updated Indicator: $indicator_code → $new_indicator_code, Governance Code: $governance_code, Area Description: $area_description, Indicator Description: $indicator_description");
+                $log->userLog("Updated Indicator: Keyctr: $keyctr, New Indicator Code: $new_indicator_code, Governance Code: $governance_code, Area Description: $area_description, Indicator Description: $indicator_description");
                 $_SESSION['success'] = "Indicator entry updated successfully!";
                 header("Location: index.php");
                 exit;
@@ -68,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_indicator'])) {
     }
 }
 
-// Fetch existing indicator
+// Fetch existing indicator using keyctr
 if (isset($_GET['keyctr'])) {
     $keyctr = $_GET['keyctr'];
     $stmt = $pdo->prepare("SELECT * FROM maintenance_area_indicators WHERE keyctr = ?");
@@ -77,16 +75,6 @@ if (isset($_GET['keyctr'])) {
 
     if (!$indicator) {
         die("Error: Indicator not found!");
-    }
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['indicator_code']) && !isset($indicator)) {
-    $stmt = $pdo->prepare("SELECT * FROM maintenance_area_indicators WHERE indicator_code = ?");
-    $stmt->execute([$_POST['indicator_code']]);
-    $indicator = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if (!$indicator) {
-        die("Error: Indicator not found during update!");
     }
 }
 ?>
@@ -99,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['indicator_code']) && 
             </div>
             <div class="modal-body">
                 <form method="POST" action="edit_indicators.php">
-                    <input type="hidden" name="indicator_code" value="<?php echo htmlspecialchars($indicator['indicator_code']); ?>">
+                    <input type="hidden" name="keyctr" value="<?php echo htmlspecialchars($indicator['keyctr']); ?>">
 
                     <div class="mb-3">
                         <label class="form-label">New Indicator Code:</label>

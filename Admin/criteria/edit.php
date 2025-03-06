@@ -82,9 +82,18 @@ try {
                     </div>
 
                     <div class="mb-3">
-                            <label class="form-label">Template Link</label>
-                            <input type="text" class="form-control" name="template" value="<?php echo $maintenance_criteria_setup_row['template']; ?>" required/>
-                        </div>
+    <label class="form-label">Template Links</label>
+    <?php 
+        $templateLinks = is_array($maintenance_criteria_setup_row['template']) 
+                        ? $maintenance_criteria_setup_row['template'] 
+                        : json_decode($maintenance_criteria_setup_row['template'], true);
+        
+        $templateLinksString = is_array($templateLinks) ? implode(', ', $templateLinks) : '';
+    ?>
+    <input type="text" class="form-control" name="template" 
+           value="<?php echo htmlspecialchars($templateLinksString); ?>" required/>
+</div>
+
 
                     <div class="mb-3">
                         <label class="form-label">Data Source</label>

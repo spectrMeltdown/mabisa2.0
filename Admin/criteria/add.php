@@ -68,7 +68,7 @@ $maintenance_document_source_result = fetchAllData($pdo, "SELECT * FROM `mainten
 
                         <div class="mb-3">
                             <label class="form-label">Sub Minimum Requirements</label>
-                            <input type="number" class="form-control" name="sub_minimumreqs" required />
+                            <input type="number" class="form-control" name="sub_minimumreqs"  />
                         </div>
 
                         <div class="mb-3">
@@ -78,7 +78,7 @@ $maintenance_document_source_result = fetchAllData($pdo, "SELECT * FROM `mainten
 
                         <div class="mb-3">
                             <label class="form-label">Template Link</label>
-                            <input type="text" class="form-control" name="template" required />
+                            <input type="text" class="form-control" name="template" />
                         </div>
 
                         <div class="mb-3">

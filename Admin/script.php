@@ -7,7 +7,6 @@ $useAsFunction = true;
 require_once(__DIR__ . "/../api/send_notif.php");
 $log = new Audit_log($pdo);
 
-
 if (isset($_POST['add_maintenance_criteria_setup'])) {
     $version_keyctr = $_POST['version_keyctr'] ?? null;
     $indicator_keyctr = $_POST['indicator_keyctr'] ?? null;
@@ -17,17 +16,20 @@ if (isset($_POST['add_maintenance_criteria_setup'])) {
     $data_source = $_POST['data_source'] ?? null;
     $template = $_POST['template'] ?? null;
 
+    // Convert template input into a JSON-encoded string
+    $templateArray = array_map('trim', explode(',', $template));
+    $templateJson = json_encode($templateArray);
+
     try {
         $pdo->beginTransaction();
         $trail = 'Created at ' . date('Y-m-d H:i:s');
         $query = "INSERT INTO `maintenance_criteria_setup` (
             `version_keyctr`, `indicator_keyctr`, `minreqs_keyctr`, 
-            `sub_minimumreqs`, `movdocs_reqs`, `template` , `data_source`, `trail`
+            `sub_minimumreqs`, `movdocs_reqs`, `template`, `data_source`, `trail`
         ) VALUES (
             :version_keyctr, :indicator_keyctr, :minreqs_keyctr, 
-            :sub_minimumreqs, :movdocs_reqs, :template ,:data_source, :trail
+            :sub_minimumreqs, :movdocs_reqs, :template, :data_source, :trail
         )";
-
 
         $stmt = $pdo->prepare($query);
         $stmt->execute([
@@ -35,14 +37,14 @@ if (isset($_POST['add_maintenance_criteria_setup'])) {
             ':indicator_keyctr' => $indicator_keyctr,
             ':minreqs_keyctr' => $minreqs_keyctr,
             ':sub_minimumreqs' => $sub_minimumreqs,
-            ':template' => $template,
+            ':template' => $templateJson,
             ':movdocs_reqs' => $movdocs_reqs,
             ':data_source' => $data_source,
             ':trail' => $trail
         ]);
 
         $pdo->commit();
-        $log->userLog('Created a New Criteria with Version ID: ' . $version_keyctr . ', Indicator ID: ' . $indicator_keyctr . ', Minimum Requirements ID: ' . $minreqs_keyctr . ', Sub Minimum Requirements: ' . $sub_minimumreqs . ', MOV Documents Requirements: ' . $movdocs_reqs . ', and Document Source: ' . $data_source);
+        $log->userLog('Created a New Criteria with Version ID: ' . $version_keyctr . ', Indicator ID: ' . $indicator_keyctr . ', Minimum Requirements ID: ' . $minreqs_keyctr . ', Sub Minimum Requirements: ' . $sub_minimumreqs . ', MOV Documents Requirements: ' . $movdocs_reqs . ', Template Links: ' . $templateJson . ', and Document Source: ' . $data_source);
 
         // get the user data
         $stmt = $pdo->prepare('SELECT u.*, r.name as role_name FROM users u JOIN roles r ON u.role_id = r.id WHERE u.id = :id LIMIT 1');
@@ -62,6 +64,7 @@ if (isset($_POST['add_maintenance_criteria_setup'])) {
     }
 }
 
+
 if (isset($_POST['update_maintenance_criteria_setup'])) {
 
     $keyctr = $_POST['keyctr'];
@@ -71,7 +74,10 @@ if (isset($_POST['update_maintenance_criteria_setup'])) {
     $sub_minimumreqs = $_POST['sub_minimumreqs'];
     $movdocs_reqs = $_POST['movdocs_reqs'];
     $data_source = $_POST['data_source'];
-    $template = $_POST['template'];
+    $templateInput = $_POST['template'];
+
+    $templateArray = array_map('trim', explode(',', $templateInput));
+    $templateJson = json_encode($templateArray); 
 
     try {
         $pdo->beginTransaction();
@@ -82,7 +88,7 @@ if (isset($_POST['update_maintenance_criteria_setup'])) {
                     minreqs_keyctr = :minreqs_keyctr, 
                     sub_minimumreqs = :sub_minimumreqs, 
                     movdocs_reqs = :movdocs_reqs, 
-                    template =  :template,
+                    template =  :template, 
                     data_source = :data_source, 
                     trail = :trail 
                 WHERE keyctr = :keyctr";
@@ -94,20 +100,21 @@ if (isset($_POST['update_maintenance_criteria_setup'])) {
             ':minreqs_keyctr' => $minreqs_keyctr,
             ':sub_minimumreqs' => $sub_minimumreqs,
             ':movdocs_reqs' => $movdocs_reqs,
-            ':template' => $template,
+            ':template' => $templateJson, 
             ':data_source' => $data_source,
             ':trail' => $trail,
             ':keyctr' => $keyctr
         ]);
 
         $pdo->commit();
-        $log->userLog('Edited a Criteria with id: ' . $keyctr . ', to Version ID: ' . $version_keyctr . ', Indicator ID: ' . $indicator_keyctr . ', Minimum Requirements ID: ' . $minreqs_keyctr . ', Sub Minimum Requirements: ' . $sub_minimumreqs . ', MOV Documents Requirements: ' . $movdocs_reqs . ', and Document Source: ' . $data_source);
+        $log->userLog('Edited a Criteria with id: ' . $keyctr . ', with updated Template Links.');
         echo "<script>alert('Record updated successfully'); window.location.href = document.referrer;</script>";
     } catch (PDOException $e) {
         $pdo->rollBack();
         echo "Error: " . htmlspecialchars($e->getMessage());
     }
 }
+
 
 if (isset($_POST['edit_duration'])) {
 

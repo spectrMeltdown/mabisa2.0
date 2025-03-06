@@ -67,7 +67,7 @@ unset($_SESSION['success']);
                   <thead>
                     <tr>
                       <th>Governance Code</th>
-                      <th>Description Key</th>
+                   
                       <th>Area Description</th>
                       <th>Indicator Code</th>
                       <th>Indicator Description</th>
@@ -80,7 +80,6 @@ unset($_SESSION['success']);
                     ?>
                       <tr>
                         <td><?php echo $row['cat_code']; ?></td>
-                        <td><?php echo $row['desc_keyctr']; ?></td>
                         <td><?php echo $row['area_description']; ?></td>
                         <td><?php echo $row['indicator_code']; ?></td>
                         <td><?php echo $row['indicator_description']; ?></td>

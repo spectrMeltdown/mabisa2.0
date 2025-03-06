@@ -73,8 +73,9 @@ unset($_SESSION['success']);
                   <thead>
                     <tr>
                       <th>Indicator Code</th>
-                      <th>Reqs Code</th>
                       <th>Relevance Definition</th>
+                      <th>Reqs Code</th>
+                     
                       <th>Description</th>
                       <th>Sub Minimum Reqs</th>
                       <th>Actions</th>
@@ -91,7 +92,7 @@ unset($_SESSION['success']);
                       <tr>
                 
                         <td><?php echo $indicator_code ? $indicator_code['indicator_code'] : 'N/A'; ?></td>
-                        <td><?php echo $row['reqs_code']; ?></td>
+                      
                         <td><span class="short-text">
                             <?= htmlspecialchars(substr($row['relevance_definition'], 0, 200)) . '...'; ?>
                           </span>
@@ -99,7 +100,7 @@ unset($_SESSION['success']);
                             <?= htmlspecialchars($row['relevance_definition']); ?>
                           </span>
                           <a href="#" class="see-more">See more</a>
-                        </td>
+                        </td>  <td><?php echo $row['reqs_code']; ?></td>
                         <td><span class="short-text">
                             <?= htmlspecialchars(substr($row['description'], 0, 200)) . '...'; ?>
                           </span>
