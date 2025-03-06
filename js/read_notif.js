@@ -22,8 +22,12 @@ $('#readNotifModal').on('show.bs.modal', async e => {
   });
   if (title) $('#notifModalLabel').text(title);
   if (message) {
+    let link = '';
+    if (fileLink) {
+      link = `<a href="${fileLink}" class="card-link">Go to submission</a>`;
+    }
     $('#notifModalMessage').html(
-      `<p class="card-text">${message}</p><br><a href="${fileLink}" class="card-link">Go to submission</a>`,
+      `<p class="card-text">${message}</p><br>${link}`,
     );
   }
 });
