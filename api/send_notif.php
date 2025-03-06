@@ -39,7 +39,7 @@ function sendNotif(\PDO $pdo, string $creatorID, string $title, string $message)
   return null;
 }
 
-function sendNotifBar(\PDO $pdo, string $creatorID, string $title, string $message, int|null $bid = null, int|null $iid = null, ?string $expand = null, array $perms): ?string
+function sendNotifBar(\PDO $pdo, string $creatorID, string $title, string $message, int|null $bid = null, int|null $iid = null, ?string $expand = null, array $perms = []): ?string
 {
   writeLog('IN SEND NOTIF BAR');
   writeLog($bid);
