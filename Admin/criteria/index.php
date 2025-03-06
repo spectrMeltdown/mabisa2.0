@@ -86,30 +86,29 @@ if (!empty($maintenance_area_description_result)) {
             foreach ($maintenance_criteria_setup_result as $maintenance_criteria_setup_row) {
               $templates = json_decode($maintenance_criteria_setup_row['template'], true);
               if (!is_array($templates)) {
-                  $templates = []; 
+                $templates = [];
               }
-          
+
               $data[$maintenance_area_description_row['category'] . " " .
-                  $maintenance_area_description_row['area_description'] . ": " .
-                  $maintenance_area_description_row['desc_keyctr']][] = [
-                  'keyctr' => $maintenance_criteria_setup_row['keyctr'],
-                  'indicator_code' => $maintenance_area_indicators_row['indicator_code'],
-                  'indicator_description' => $maintenance_area_indicators_row['indicator_description'],
-                  'relevance_definition' => $maintenance_criteria_setup_row['relevance_definition'],
-                  'reqs_code' => $maintenance_criteria_setup_row['reqs_code'],
-                  'documentary_requirements' => $maintenance_criteria_setup_row['documentary_requirements'],
-                  'description' => $maintenance_criteria_setup_row['description'],
-                  'data_source' => $maintenance_criteria_setup_row['data_source'],
-                  'template' => $templates, 
+                $maintenance_area_description_row['area_description'] . ": " .
+                $maintenance_area_description_row['desc_keyctr']][] = [
+                'keyctr' => $maintenance_criteria_setup_row['keyctr'],
+                'indicator_code' => $maintenance_area_indicators_row['indicator_code'],
+                'indicator_description' => $maintenance_area_indicators_row['indicator_description'],
+                'relevance_definition' => $maintenance_criteria_setup_row['relevance_definition'],
+                'reqs_code' => $maintenance_criteria_setup_row['reqs_code'],
+                'documentary_requirements' => $maintenance_criteria_setup_row['documentary_requirements'],
+                'description' => $maintenance_criteria_setup_row['description'],
+                'data_source' => $maintenance_criteria_setup_row['data_source'],
+                'template' => $templates,
               ];
-          }
-          
             }
           }
         }
       }
     }
   }
+}
 
 
 
@@ -307,23 +306,21 @@ if (!empty($maintenance_area_description_result)) {
                           <?php endif; ?>
 
                           <td>
-    <?php
-    echo htmlspecialchars($row['documentary_requirements']) . '<br><br>';
+                            <?php
+                            echo htmlspecialchars($row['documentary_requirements']) . '<br><br>';
 
-    // Ensure template is always an array
-    $templates = is_array($row['template']) ? $row['template'] : json_decode($row['template'], true);
+                            $templates = is_array($row['template']) ? $row['template'] : json_decode($row['template'], true);
 
-    // Check if it's a valid array before looping
-    if (!empty($templates) && is_array($templates)) {
-        foreach ($templates as $template) {
-            $link = htmlspecialchars($template, ENT_QUOTES, 'UTF-8');
-            echo '<a href="https://' . $link . '" target="_blank">' . $link . '</a><br>';
-        }
-    } else {
-        echo 'No template available';
-    }
-    ?>
-</td>
+                            if (!empty($templates) && is_array($templates)) {
+                              foreach ($templates as $template) {
+                                $link = htmlspecialchars($template, ENT_QUOTES, 'UTF-8');
+                                echo '<a href="https://' . $link . '" target="_blank">' . $link . '</a><br><br>';
+                              }
+                            } else {
+                              echo 'No template available';
+                            }
+                            ?>
+                          </td>
 
 
 
