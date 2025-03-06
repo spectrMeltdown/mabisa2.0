@@ -4,20 +4,23 @@ include '../../api/audit_log.php';
 $log = new Audit_log($pdo);
 session_start();
 
-$data = $pdo->query("SELECT 
-    mg.*, 
-    ma.keyctr AS area_keyctr, 
-    ma.description AS area_name, 
-    mad.keyctr AS desc_keyctr, 
-    mad.description AS description
-FROM maintenance_governance AS mg
-LEFT JOIN maintenance_area AS ma 
-    ON mg.area_keyctr = ma.keyctr
-LEFT JOIN maintenance_area_description AS mad 
-    ON mg.desc_keyctr = mad.keyctr;")->fetchAll(PDO::FETCH_ASSOC);
+$data = $pdo->query("
+   SELECT 
+            ma.keyctr AS area_keyctr, 
+            ma.description AS area_name, 
+            mad.keyctr AS desc_keyctr, 
+            mad.description AS description
+        FROM maintenance_area AS ma
+        JOIN maintenance_area_description AS mad 
+            ON ma.keyctr = mad.keyctr")->fetchAll(PDO::FETCH_ASSOC);
 
 
 $categories = $pdo->query("SELECT * FROM maintenance_category")->fetchAll(PDO::FETCH_ASSOC);
+
+echo '<pre>';
+print_r($data);
+echo '</pre>';
+
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $cat_code = $_POST['cat_code'];
@@ -58,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="minReqModalLabel">Add Minimum Requirement Sub Entry</h5>
+                <h5 class="modal-title" id="minReqModalLabel">Add Governance Entry</h5>
             </div>
             <div class="modal-body">
                 <form method="POST" action="create_governance.php">
