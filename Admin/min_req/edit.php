@@ -23,6 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $keyctr = $_POST['keyctr'];
     $indicator_keyctr = $_POST['indicator_keyctr'];
     $reqs_code = $_POST['reqs_code'];
+    $relevance = $_POST['relevance'];
     $description = $_POST['description'];
     $sub_mininumreqs = isset($_POST['sub_mininumreqs']) ? 1 : 0;
 
@@ -33,13 +34,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 SET indicator_keyctr = :indicator_keyctr, 
                     reqs_code = :reqs_code, 
                     description = :description, 
-                    sub_mininumreqs = :sub_mininumreqs 
+                    sub_mininumreqs = :sub_mininumreqs,
+                    relevance_definition = :relevance
                 WHERE keyctr = :keyctr";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
             'indicator_keyctr' => $indicator_keyctr,
             'reqs_code' => $reqs_code,
+            'relevance' => $relevance,
             'description' => $description,
             'sub_mininumreqs' => $sub_mininumreqs,
             'keyctr' => $keyctr
@@ -79,6 +82,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 </option>
                             <?php } ?>
                         </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Relevance Definition:</label>
+                        <textarea class="form-control" name="relevance" required><?php echo htmlspecialchars($req['relevance_definition']); ?></textarea>
                     </div>
 
                     <div class="mb-3">
