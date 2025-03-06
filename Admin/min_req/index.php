@@ -16,6 +16,10 @@ $stmt->execute();
 $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
+// echo '<pre>';
+// print_r($data);
+// echo '</pre>';
+
 session_start();
 $successMessage = isset($_SESSION['success']) ? $_SESSION['success'] : '';
 unset($_SESSION['success']);
@@ -38,7 +42,8 @@ unset($_SESSION['success']);
     <!-- Sidebar -->
     <?php
     $isCriteriaPhp = true;
-    require_once '../common/sidebar.php' ?>
+    require_once '../common/sidebar.php'
+     ?>
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
@@ -67,9 +72,9 @@ unset($_SESSION['success']);
                 <table id="maintenanceTable" class="table table-bordered">
                   <thead>
                     <tr>
-                      <th>Keyctr</th>
                       <th>Indicator Code</th>
                       <th>Reqs Code</th>
+                      <th>Relevance Definition</th>
                       <th>Description</th>
                       <th>Sub Minimum Reqs</th>
                       <th>Actions</th>
@@ -84,9 +89,17 @@ unset($_SESSION['success']);
                     ?>
 
                       <tr>
-                        <td><?php echo $row['keyctr']; ?></td>
+                
                         <td><?php echo $indicator_code ? $indicator_code['indicator_code'] : 'N/A'; ?></td>
                         <td><?php echo $row['reqs_code']; ?></td>
+                        <td><span class="short-text">
+                            <?= htmlspecialchars(substr($row['relevance_definition'], 0, 200)) . '...'; ?>
+                          </span>
+                          <span class="full-text" style="display: none;">
+                            <?= htmlspecialchars($row['relevance_definition']); ?>
+                          </span>
+                          <a href="#" class="see-more">See more</a>
+                        </td>
                         <td><span class="short-text">
                             <?= htmlspecialchars(substr($row['description'], 0, 200)) . '...'; ?>
                           </span>

@@ -71,7 +71,6 @@ unset($_SESSION['success']);
                       <th>Area Description</th>
                       <th>Indicator Code</th>
                       <th>Indicator Description</th>
-                      <th>Relevance Definition</th>
                       <th>Trail</th>
                       <th>Actions</th>
                     </tr>
@@ -85,14 +84,7 @@ unset($_SESSION['success']);
                         <td><?php echo $row['area_description']; ?></td>
                         <td><?php echo $row['indicator_code']; ?></td>
                         <td><?php echo $row['indicator_description']; ?></td>
-                        <td> <span class="short-text">
-                            <?= htmlspecialchars(substr($row['relevance_def'], 0, 200)) . '...'; ?>
-                          </span>
-                          <span class="full-text" style="display: none;">
-                            <?= htmlspecialchars($row['relevance_def']); ?>
-                          </span>
-                          <a href="#" class="see-more">See more</a>
-                        </td>
+
                         <td><?php echo $row['trail']; ?></td>
                         <td>
                           <a class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">

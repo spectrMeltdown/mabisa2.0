@@ -12,15 +12,16 @@
     if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['add_minreq'])) {
         $indicator_keyctr = $_POST['indicator_keyctr'];
         $reqs_code = $_POST['reqs_code'];
+        $rel_def = $_POST['relevance'];
         $description = $_POST['description'];
         $sub_mininumreqs = isset($_POST['sub_mininumreqs']) ? 1 : 0; 
 
         try {
             $pdo->beginTransaction();
-            $sql = "INSERT INTO maintenance_area_mininumreqs (indicator_keyctr, reqs_code, description, sub_mininumreqs) VALUES (?, ?, ?, ?)";
+            $sql = "INSERT INTO maintenance_area_mininumreqs (indicator_keyctr, reqs_code, relevance_definition ,description, sub_mininumreqs) VALUES (?, ?, ?, ?, ?)";
             $stmt = $pdo->prepare($sql);
 
-            if ($stmt->execute([$indicator_keyctr, $reqs_code, $description, $sub_mininumreqs])) {
+            if ($stmt->execute([$indicator_keyctr, $reqs_code, $rel_def,$description, $sub_mininumreqs])) {
                 $pdo->commit();
                 $log->userLog('Created a new Minimum Requirement with Indicator ID: '.$indicator_keyctr.', Requirements Code: '.$reqs_code.', Description: '.$description.', and Sub Minimum Requirements: '.$sub_mininumreqs);
                 $_SESSION['success'] = "Minimum Requirement created successfully!";
@@ -61,6 +62,10 @@
                                 <?php } ?>
                             </select>
                         </div>
+                        <div class="mb-3">
+                        <label class="form-label">Relevance Definition</label>
+                        <textarea class="form-control" name="relevance" required></textarea>
+                    </div>
                     <div class="mb-3">
                         <label class="form-label">Requirement Code</label>
                         <input type="text" class="form-control" name="reqs_code" required>

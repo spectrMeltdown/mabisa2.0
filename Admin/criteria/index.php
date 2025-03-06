@@ -63,6 +63,7 @@ if (!empty($maintenance_area_description_result)) {
                     msc.keyctr AS keyctr,
                     mam.description,
                     mam.reqs_code,
+                    mam.relevance_definition,
                     msc.movdocs_reqs AS documentary_requirements,
                     msc.template, 
                     mds.srcdesc AS data_source
@@ -90,7 +91,7 @@ if (!empty($maintenance_area_description_result)) {
                   'keyctr' => $maintenance_criteria_setup_row['keyctr'],
                   'indicator_code' => $maintenance_area_indicators_row['indicator_code'],
                   'indicator_description' => $maintenance_area_indicators_row['indicator_description'],
-                  'relevance_definition' => $maintenance_area_indicators_row['relevance_def'],
+                  'relevance_definition' => $maintenance_criteria_setup_row['relevance_definition'],
                   'reqs_code' => $maintenance_criteria_setup_row['reqs_code'],
                   'documentary_requirements' => $maintenance_criteria_setup_row['documentary_requirements'],
                   'description' => $maintenance_criteria_setup_row['description'],
@@ -105,6 +106,11 @@ if (!empty($maintenance_area_description_result)) {
     }
   }
 }
+
+
+// echo '<pre>';
+// print_r($data);
+// echo '</pre>';
 ?>
 
 <!DOCTYPE html>
