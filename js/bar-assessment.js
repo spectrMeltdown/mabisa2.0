@@ -119,7 +119,6 @@ if (indicator && governance) {
   // focus on the indicator
   let targetElement = document.getElementById(indicator);
   if (targetElement) {
-    targetElement.classList.add('highlight'); // Example: Add a highlight class
     setTimeout(function() {
       targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' }); // Scroll into view
     }, 100);

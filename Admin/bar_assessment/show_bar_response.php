@@ -212,13 +212,19 @@ unset($_SESSION['success']);
                                 View All Comments Summary
                             </button>
 
-                            <?php if ($ready == 1) : ?>
-                                <p class="text-success float-right"><strong>Submitted for Validation</strong></p>
-                            <?php else : ?>
-                                <button class="btn btn-success float-right submit-btn" data-bar-id="<?php echo htmlspecialchars($barangay_id); ?>">
-                                    Submit for Validation
-                                </button>
-                            <?php endif; ?>
+                            <?php
+                            if (userHasPerms('submissions_create', 'any', $barangay_id) && !str_contains(strtolower($userData['role']), 'super admin')):
+                                if ($ready == 1) :
+                            ?>
+                                    <p class="text-success float-right"><strong>Submitted for Validation</strong></p>
+                                <?php else : ?>
+                                    <button class="btn btn-success float-right submit-btn" data-bar-id="<?php echo htmlspecialchars($barangay_id); ?>">
+                                        Submit for Validation
+                                    </button>
+                            <?php
+                                endif;
+                            endif;
+                            ?>
                         </div>
 
 
@@ -409,6 +415,8 @@ unset($_SESSION['success']);
         </div>
     </div>
     </div>
+    <?php require_once '../components/comment_section.php'; ?>
+    <?php require_once '../components/all_comments.php'; ?>
     <script>
         var successMessage = "<?php echo $successMessage; ?>";
         if (successMessage) {
@@ -445,7 +453,10 @@ unset($_SESSION['success']);
                                 alert("File uploaded successfully!");
                                 if (formData.has('barangay_id') && formData.has('iid') && formData.has('expand')) {
                                     console.log('has all three');
-                                    let url = new URL(location.href);
+                                    console.log(formData.get('barangay_id'));
+                                    console.log(formData.get('iid'));
+                                    console.log(formData.get('expand'));
+                                    let url = new URL(location.href.split("#")[0]);
                                     url.searchParams.set('expand', formData.get('expand'));
                                     location.href = (url.toString() + '#' + formData.get('barangay_id') + formData.get('iid'));
                                 } else {
@@ -487,7 +498,10 @@ unset($_SESSION['success']);
                             const expand = e.target.dataset.expand;
                             if (bid && iid && expand) {
                                 console.log('has all three');
-                                let url = new URL(location.href);
+                                console.log(bid);
+                                console.log(iid);
+                                console.log(expand);
+                                let url = new URL(location.href.split("#")[0]);
                                 url.searchParams.set('expand', expand);
                                 location.href = (url.toString() + '#' + bid + iid);
                             } else {
@@ -525,7 +539,21 @@ unset($_SESSION['success']);
                     .then(data => {
                         if (data.success) {
                             alert('Submitted for validation successfully.');
-                            location.reload();
+                            const bid = e.target.dataset.bid;
+                            const iid = e.target.dataset.iid;
+                            const expand = e.target.dataset.expand;
+                            if (bid && iid && expand) {
+                                console.log('has all three');
+                                console.log(bid);
+                                console.log(iid);
+                                console.log(expand);
+                                let url = new URL(location.href.split("#")[0]);
+                                url.searchParams.set('expand', expand);
+                                location.href = (url.toString() + '#' + bid + iid);
+                            } else {
+                                console.log('nope');
+                                location.reload();
+                            }
                         } else {
                             alert('Error: ' + data.message);
                         }
@@ -565,22 +593,17 @@ unset($_SESSION['success']);
         }
 
         $(document).ready(function() {
-    $(document).on("click", ".go-to-file", function() {
-        let fileId = $(this).data("fileid");
+            $(document).on("click", ".go-to-file", function() {
+                let fileId = $(this).data("fileid");
 
-        $("#allCommentsModal").modal("hide");
+                $("#allCommentsModal").modal("hide");
 
-        setTimeout(function() {
-            $('button[data-target="#commentModal"][data-fileid="' + fileId + '"]').trigger("click");
-        }, 500);
-    });
-});
-
+                setTimeout(function() {
+                    $('button[data-target="#commentModal"][data-fileid="' + fileId + '"]').trigger("click");
+                }, 500);
+            });
+        });
     </script>
-
-
-    <?php require_once '../components/comment_section.php'; ?>
-    <?php require_once '../components/all_comments.php'; ?>
 </body>
 
 </html>
