@@ -5,6 +5,7 @@ $('#readNotifModal').on('show.bs.modal', async e => {
   const title = $(e.relatedTarget).data('title');
   const message = $(e.relatedTarget).data('message');
   const id = $(e.relatedTarget).data('id');
+  const fileLink = $(e.relatedTarget).data('file-link');
 
   let isInFolder = $('#isInFolder').length != 0;
   $.ajax({
@@ -20,7 +21,11 @@ $('#readNotifModal').on('show.bs.modal', async e => {
     },
   });
   if (title) $('#notifModalLabel').text(title);
-  if (message) $('#notifModalMessage').text(message);
+  if (message) {
+    $('#notifModalMessage').html(
+      `<p class="card-text">${message}</p><br><a href="${fileLink}" class="card-link">Go to submission</a>`,
+    );
+  }
 });
 
 $('#dismissBtn')
@@ -33,5 +38,5 @@ $('#readNotifModal')
   .off('hidden.bs.modal')
   .on('hidden.bs.modal', () => {
     console.log('cancelled');
-    window.location.href = document.referrer;
+    location.reload();
   });
