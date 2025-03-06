@@ -4,7 +4,7 @@ if (!userHasPerms('assessment', 'any')) {
     header('Location:no_permissions.php');
     exit;
 }
-require_once 'common/head.php';
+
 require_once '../db/db.php';
 require_once 'bar_assessment/responses.php';
 
@@ -24,7 +24,7 @@ $is_accepting = isset($version['is_accepting_response']) ? ($version['is_accepti
 <html lang="en">
 
 <head>
-
+    <?php require_once 'common/head.php'; ?>
     <script src="../vendor/jquery/jquery.min.js"></script>
     <script src="../js/bar-assessment.js"></script>
 </head>
@@ -58,7 +58,7 @@ $is_accepting = isset($version['is_accepting_response']) ? ($version['is_accepti
                             <h3 class="m-0 font-weight-bold text-primary">Barangay Assessment</h3>
                             <div class="text-right">
                                 <p class="mb-1"><strong>Duration:</strong> <?php echo $duration; ?></p>
-                                <p class="mb-0"><strong>Accepting Responses:</strong> <?php echo $is_accepting ? 'Yes':'No'; ?></p>
+                                <p class="mb-0"><strong>Accepting Responses:</strong> <?php echo $is_accepting ? 'Yes' : 'No'; ?></p>
                             </div>
                         </div>
 

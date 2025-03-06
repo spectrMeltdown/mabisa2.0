@@ -1,9 +1,9 @@
-$('.delete-user-btn').on('click', e => {
-  const userID = $(e.target).data('id');
-  const username = $(e.target).data('username');
+// $('.delete-user-btn').on('click', e => {
+//   const userID = $(e.target).data('id');
+//   const username = $(e.target).data('username');
 
-  console.log(`ID: ${userID}, Username: ${username}`);
-});
+//   console.log(`ID: ${userID}, Username: ${username}`);
+// });
 
 $(document).ready(function() {
   $('#commentModal').on('show.bs.modal', function(event) {
@@ -104,12 +104,12 @@ $(document).ready(function() {
   });
 });
 
-const indicator = window.location.hash.substring(1);
-
+const indicator = location.hash.substring(1);
 const params = new URLSearchParams(location.search);
 const governance = params.get('expand');
 
-console.log(indicator + governance);
+console.log('Indicator: ' + indicator);
+console.log('Governance: ' + governance);
 if (indicator && governance) {
   console.log('Yes');
 

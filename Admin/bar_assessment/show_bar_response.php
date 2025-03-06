@@ -29,7 +29,7 @@ if ($barangay_id) {
     $stmt->bindParam(1, $barangay_id, PDO::PARAM_INT);
     $stmt->execute();
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    $ready = $result['is_ready'] ?? 0;
+    $ready = isset($result['is_ready']) ? $result['is_ready'] : 0;
     if ($barangay) {
         $barangay_name = $barangay['brgyname'];
     } else {
@@ -329,7 +329,7 @@ unset($_SESSION['success']);
                                                                         <form action="../bar_assessment/user_actions/upload.php" method="POST"
                                                                             enctype="multipart/form-data" id="uploadForm-<?php echo $row['keyctr']; ?>">
                                                                             <input type="hidden" name="iid" value="<?= $row['indicator_keyctr'] ?>">
-                                                                            <input type="hidden" name="expand" value="#collapse-<?php echo md5($key); ?>">
+                                                                            <input type="hidden" name="expand" value="collapse-<?php echo md5($key); ?>">
                                                                             <input type="hidden" name="barangay_id"
                                                                                 value="<?php echo htmlspecialchars($barangay_id, ENT_QUOTES, 'UTF-8'); ?>">
                                                                             <input type="hidden" name="criteria_keyctr"
@@ -356,7 +356,7 @@ unset($_SESSION['success']);
                                                                         data-status="<?= htmlspecialchars($data['status']); ?>"
                                                                         data-bid="<?= htmlspecialchars($barangay_id); ?>"
                                                                         data-iid="<?= htmlspecialchars($row['indicator_keyctr']); ?>"
-                                                                        data-expand="#collapse-<?php echo md5($key); ?>">
+                                                                        data-expand="collapse-<?php echo md5($key); ?>">
                                                                         <i class="fa fa-eye"></i>
                                                                     </button>
                                                                     <?php if (!str_contains(strtolower($userData['role']), 'admin') && userHasPerms('submissions_delete', 'any', $barangay_id, $row['indicator_keyctr']) && $data['status'] !== 'approved'): ?>
@@ -364,7 +364,7 @@ unset($_SESSION['success']);
                                                                             data-file-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>"
                                                                             data-bid="<?= htmlspecialchars($barangay_id); ?>"
                                                                             data-iid="<?= htmlspecialchars($row['indicator_keyctr']); ?>"
-                                                                            data-expand="#collapse-<?php echo md5($key); ?>">
+                                                                            data-expand="collapse-<?php echo md5($key); ?>">
                                                                             <i class="fa fa-trash"></i>
                                                                         </button>
                                                                     <?php endif; ?>
@@ -456,9 +456,12 @@ unset($_SESSION['success']);
                                     console.log(formData.get('barangay_id'));
                                     console.log(formData.get('iid'));
                                     console.log(formData.get('expand'));
-                                    let url = new URL(location.href.split("#")[0]);
-                                    url.searchParams.set('expand', formData.get('expand'));
+                                    let url = new URL(location.href.split("&")[0]);
+                                    url.searchParams.set('expand', ('#' + formData.get('expand')));
                                     location.href = (url.toString() + '#' + formData.get('barangay_id') + formData.get('iid'));
+                                    setTimeout(() => {
+                                        location.reload();
+                                    }, 500);
                                 } else {
                                     console.log('nope');
                                     location.reload();
@@ -474,23 +477,19 @@ unset($_SESSION['success']);
 
         document.querySelectorAll('.delete-btn').forEach(button => {
             button.addEventListener('click', e => {
-                let fileId = e.target.getAttribute('data-file-id');
+                let fileId = e.target.closest('.delete-btn').getAttribute('data-file-id');
 
                 if (!confirm('Are you sure you want to delete this file?')) {
                     return;
                 }
-
-                fetch('../bar_assessment/user_actions/delete.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            file_id: fileId
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
+                $.ajax({
+                    url: '../bar_assessment/user_actions/delete.php',
+                    method: 'POST',
+                    data: {
+                        file_id: fileId
+                    },
+                    success: data => {
+                        console.log(data);
                         if (data.success) {
                             alert('File deleted successfully.');
                             const bid = e.target.dataset.bid;
@@ -501,9 +500,12 @@ unset($_SESSION['success']);
                                 console.log(bid);
                                 console.log(iid);
                                 console.log(expand);
-                                let url = new URL(location.href.split("#")[0]);
-                                url.searchParams.set('expand', expand);
+                                let url = new URL(location.href.split("&expand")[0]);
+                                url.searchParams.set('expand', ('#' + expand));
                                 location.href = (url.toString() + '#' + bid + iid);
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 500);
                             } else {
                                 console.log('nope');
                                 location.reload();
@@ -511,8 +513,11 @@ unset($_SESSION['success']);
                         } else {
                             alert('Error: ' + data.message);
                         }
-                    })
-                    .catch(error => console.error('Error:', error));
+                    },
+                    error: err => {
+                        console.log(err.responseText());
+                    },
+                });
             });
         });
 
@@ -547,9 +552,12 @@ unset($_SESSION['success']);
                                 console.log(bid);
                                 console.log(iid);
                                 console.log(expand);
-                                let url = new URL(location.href.split("#")[0]);
-                                url.searchParams.set('expand', expand);
+                                let url = new URL(location.href.split("&")[0]);
+                                url.searchParams.set('expand', ('#' + expand));
                                 location.href = (url.toString() + '#' + bid + iid);
+                                // setTimeout(() => {
+                                //     location.reload();
+                                // }, 500);
                             } else {
                                 console.log('nope');
                                 location.reload();
