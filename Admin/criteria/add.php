@@ -66,10 +66,10 @@ $maintenance_document_source_result = fetchAllData($pdo, "SELECT * FROM `mainten
                             </select>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Sub Minimum Requirements</label>
-                            <input type="number" class="form-control" name="sub_minimumreqs"  />
-                        </div>
+                        <!-- <div class="mb-3">
+                            <label class="form-label">Sub Minimum Requirements</label> -->
+                        <input type="hidden" class="form-control" name="sub_minimumreqs" value="" />
+                        <!-- </div> -->
 
                         <div class="mb-3">
                             <label class="form-label">DOCUMENTARY REQUIREMENTS/MOVs</label>
@@ -138,10 +138,9 @@ $maintenance_document_source_result = fetchAllData($pdo, "SELECT * FROM `mainten
             });
 
         });
-        $(document).on('click', '[data-dismiss="modal"]', function () {
-    $('#addMaintenanceCriteriaModal').modal('hide');
-});
-
+        $(document).on('click', '[data-dismiss="modal"]', function() {
+            $('#addMaintenanceCriteriaModal').modal('hide');
+        });
     </script>
 
 

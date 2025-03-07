@@ -16,9 +16,12 @@ if (isset($_POST['add_maintenance_criteria_setup'])) {
     $data_source = $_POST['data_source'] ?? null;
     $template = $_POST['template'] ?? null;
 
-    // Convert template input into a JSON-encoded string
-    $templateArray = array_map('trim', explode(',', $template));
-    $templateJson = json_encode($templateArray);
+    if (!empty(trim($template))) {
+        $templateArray = array_map('trim', explode(',', $template));
+        $templateJson = json_encode($templateArray);
+    } else {
+        $templateJson = '';
+    }
 
     try {
         $pdo->beginTransaction();
@@ -77,7 +80,7 @@ if (isset($_POST['update_maintenance_criteria_setup'])) {
     $templateInput = $_POST['template'];
 
     $templateArray = array_map('trim', explode(',', $templateInput));
-    $templateJson = json_encode($templateArray); 
+    $templateJson = json_encode($templateArray);
 
     try {
         $pdo->beginTransaction();
@@ -100,7 +103,7 @@ if (isset($_POST['update_maintenance_criteria_setup'])) {
             ':minreqs_keyctr' => $minreqs_keyctr,
             ':sub_minimumreqs' => $sub_minimumreqs,
             ':movdocs_reqs' => $movdocs_reqs,
-            ':template' => $templateJson, 
+            ':template' => $templateJson,
             ':data_source' => $data_source,
             ':trail' => $trail,
             ':keyctr' => $keyctr
