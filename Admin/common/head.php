@@ -18,6 +18,26 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 ?>
 
+<!-- Favicon -->
+
+<link rel="apple-touch-icon" sizes="57x57" href="/mabisa/apple-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="60x60" href="/mabisa/apple-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="72x72" href="/mabisa/apple-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/mabisa/apple-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="114x114" href="/mabisa/apple-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/mabisa/apple-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="144x144" href="/mabisa/apple-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/mabisa/apple-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/mabisa/apple-icon-180x180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/mabisa/android-icon-192x192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/mabisa/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/mabisa/favicon-96x96.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/mabisa/favicon-16x16.png">
+<link rel="manifest" href="/mabisa/manifest.json">
+<meta name="msapplication-TileColor" content="#ffffff">
+<meta name="msapplication-TileImage" content="/mabisa/ms-icon-144x144.png">
+<meta name="theme-color" content="#ffffff">
+
 <!-- Font -->
 <link
   href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"

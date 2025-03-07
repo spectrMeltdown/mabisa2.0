@@ -18,7 +18,7 @@ global $userGenPerms;
   <hr class="sidebar-divider my-2" />
 
   <!-- Nav Item - Dashboard -->
-  <li class="nav-item <?= '' ?>">
+  <li class="nav-item">
     <a class="nav-link" href="<?php echo isset($isInFolder) ? '../' : ''; ?>dashboard.php">
       <i class="fas fa-fw fa-tachometer-alt"></i>
       <span>Dashboard</span></a>
@@ -57,14 +57,14 @@ global $userGenPerms;
       <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
           <h6 class="collapse-header">Settings</h6>
-          
+
           <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>version/">Version</a>
           <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>category/">Category</a>
           <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>area/">Area</a>
-          
+
           <a class="collapse-item"
             href="<?php echo isset($isInFolder) ? '../' : ''; ?>governance/">Governance</a>
-           <a class="collapse-item"
+          <a class="collapse-item"
             href="<?php echo isset($isInFolder) ? '../' : ''; ?>area_indicator/">Area Indicators</a>
           <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>min_req/">Minimum
             Requirements</a>
