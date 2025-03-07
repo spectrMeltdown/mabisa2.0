@@ -49,12 +49,12 @@ if (isset($_POST['add_maintenance_criteria_setup'])) {
         $pdo->commit();
         $log->userLog('Created a New Criteria with Version ID: ' . $version_keyctr . ', Indicator ID: ' . $indicator_keyctr . ', Minimum Requirements ID: ' . $minreqs_keyctr . ', Sub Minimum Requirements: ' . $sub_minimumreqs . ', MOV Documents Requirements: ' . $movdocs_reqs . ', Template Links: ' . $templateJson . ', and Document Source: ' . $data_source);
 
-        // get the user data
+        // Get the user data
         $stmt = $pdo->prepare('SELECT u.*, r.name as role_name FROM users u JOIN roles r ON u.role_id = r.id WHERE u.id = :id LIMIT 1');
         $stmt->execute([':id' => $_COOKIE['id']]);
         $userData = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // send notif to all relevant users
+        // Send notification to all relevant users
         $notifResult = sendNotif($pdo, $userData['id'], 'New Criteria Setup!', 'The ' . $userData['role_name'] . ' ' . $userData['full_name'] . ' created new criteria. Please check them in your respective barangays.');
         if ($notifResult) {
             writeLog($notifResult);
@@ -77,7 +77,7 @@ if (isset($_POST['update_maintenance_criteria_setup'])) {
     $sub_minimumreqs = $_POST['sub_minimumreqs'];
     $movdocs_reqs = $_POST['movdocs_reqs'];
     $data_source = $_POST['data_source'];
-    $templateInput = $_POST['template'];
+    $template = $_POST['template'];
 
     $templateArray = array_map('trim', explode(',', $templateInput));
     $templateJson = json_encode($templateArray);

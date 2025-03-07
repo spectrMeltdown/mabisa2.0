@@ -82,17 +82,17 @@ try {
                     </div>
 
                     <div class="mb-3">
-    <label class="form-label">Template Links</label>
-    <?php 
-        $templateLinks = is_array($maintenance_criteria_setup_row['template']) 
-                        ? $maintenance_criteria_setup_row['template'] 
-                        : json_decode($maintenance_criteria_setup_row['template'], true);
-        
-        $templateLinksString = is_array($templateLinks) ? implode(', ', $templateLinks) : '';
-    ?>
-    <input type="text" class="form-control" name="template" 
-           value="<?php echo htmlspecialchars($templateLinksString); ?>" required/>
-</div>
+                        <label class="form-label">Template Links</label>
+                        <?php
+                        $templateLinks = is_array($maintenance_criteria_setup_row['template'])
+                            ? $maintenance_criteria_setup_row['template']
+                            : json_decode($maintenance_criteria_setup_row['template'], true);
+
+                        $templateLinksString = is_array($templateLinks) ? implode(', ', $templateLinks) : '';
+                        ?>
+                        <input type="text" class="form-control" name="template"
+                            value="<?php echo htmlspecialchars($templateLinksString); ?>" />
+                    </div>
 
 
                     <div class="mb-3">
@@ -168,13 +168,11 @@ try {
             loadMinimumRequirements(newIndicatorId, '');
         });
     });
-    $(document).on('click', '[data-dismiss="modal"]', function () {
-    $('#addMaintenanceCriteriaModal').modal('hide');
-});
-$('#addMaintenanceCriteriaModal').on('hidden.bs.modal', function () {
-    $(this).find('input, select, textarea').val(''); 
-    $(this).find('form')[0].reset(); 
-});
-
-
+    $(document).on('click', '[data-dismiss="modal"]', function() {
+        $('#addMaintenanceCriteriaModal').modal('hide');
+    });
+    $('#addMaintenanceCriteriaModal').on('hidden.bs.modal', function() {
+        $(this).find('input, select, textarea').val('');
+        $(this).find('form')[0].reset();
+    });
 </script>
