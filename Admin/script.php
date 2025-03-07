@@ -79,7 +79,7 @@ if (isset($_POST['update_maintenance_criteria_setup'])) {
     $data_source = $_POST['data_source'];
     $template = $_POST['template'];
 
-    $templateArray = array_map('trim', explode(',', $templateInput));
+    $templateArray = array_map('trim', explode(',', $template));
     $templateJson = json_encode($templateArray);
 
     try {

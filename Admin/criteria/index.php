@@ -233,128 +233,140 @@ if (!empty($maintenance_area_description_result)) {
 
 
             <div class="card-body">
-              <?php if ($data): ?>
-                <?php
-                $last_indicator = '';
-                foreach ($data as $key => $rows): ?>
-                  <div class="card-header bg-primary text-center py-3">
-                    <div class="card-body">
-                      <h5 class="text-white"><?php echo htmlspecialchars($key); ?></h5>
-                    </div>
-                  </div>
-                  <?php
-                  $table_started = false;
-                  $req_counts = [];
+  <?php if ($data): ?>
+    <?php
+    $last_indicator = '';
+    foreach ($data as $key => $rows): ?>
+      <div class="card-header bg-primary text-center py-3">
+        <div class="card-body">
+          <h5 class="text-white"><?php echo htmlspecialchars($key); ?></h5>
+        </div>
+      </div>
+      <?php
+      $table_started = false;
+      $req_counts = [];
+      $rel_def_counts = [];
 
-                  foreach ($rows as $row) {
-                    $req_key = $row['relevance_definition'] . " " . $row['reqs_code'] . " " . $row['description'];
-                    if (!isset($req_counts[$req_key])) {
-                      $req_counts[$req_key] = 0;
-                    }
-                    $req_counts[$req_key]++;
-                  }
+      // Count rowspans
+      foreach ($rows as $row) {
+        $req_key = $row['relevance_definition'] . " " . $row['reqs_code'] . " " . $row['description'];
+        if (!isset($req_counts[$req_key])) {
+          $req_counts[$req_key] = 0;
+        }
+        $req_counts[$req_key]++;
 
-                  $printed_reqs = [];
+        $rel_key = $row['relevance_definition'];
+        if (!isset($rel_def_counts[$rel_key])) {
+          $rel_def_counts[$rel_key] = 0;
+        }
+        $rel_def_counts[$rel_key]++;
+      }
 
-                  foreach ($rows as $row):
-                    $current_indicator = $row['indicator_code'] . " " . $row['indicator_description'];
+      $printed_reqs = [];
+      $printed_rels = [];
 
-                    if ($current_indicator !== $last_indicator):
-                      if ($table_started) {
-                        echo "</tbody></table>";
-                      }
-                  ?>
-                      <div class="row bg-info" style="margin: 0; padding: 10px 0;">
-                        <h6 class="col-lg-12 text-center text-white" style="margin: 0;">
-                          <?php echo htmlspecialchars($current_indicator); ?>
-                        </h6>
-                      </div>
+      foreach ($rows as $row):
+        $current_indicator = $row['indicator_code'] . " " . $row['indicator_description'];
 
-                      <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
-                        <thead>
-                          <tr>
-                            <th style="width: 20%; text-align: center;">Relevant/Definition</th>
-                            <th style="width: 20%; text-align: center;">Minimum Requirements</th>
-                            <th style="width: 20%; text-align: center;">Documentary Requirements/MOVs</th>
-                            <th style="width: 10%; text-align: center;">Data Source</th>
-                            <th style="width: 7%; text-align: center;">Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                        <?php
-                        $last_indicator = $current_indicator;
-                        $table_started = true;
-                      endif;
+        if ($current_indicator !== $last_indicator):
+          if ($table_started) {
+            echo "</tbody></table>";
+          }
+      ?>
+          <div class="row bg-info" style="margin: 0; padding: 10px 0;">
+            <h6 class="col-lg-12 text-center text-white" style="margin: 0;">
+              <?php echo htmlspecialchars($current_indicator); ?>
+            </h6>
+          </div>
 
-                      $req_key = $row['relevance_definition'] . " " . $row['reqs_code'] . " " . $row['description'];
-                        ?>
-                        <tr>
-                          <?php if (!isset($printed_reqs[$req_key])): ?>
-                            <td rowspan="<?= $req_counts[$req_key]; ?>">
-                              <span class="short-text">
-                                <?= htmlspecialchars(substr($row['relevance_definition'], 0, 300)) . '...'; ?>
-                              </span>
-                              <span class="full-text" style="display: none;">
-                                <?= htmlspecialchars($row['relevance_definition']); ?>
-                              </span>
-                              <a href="#" class="see-more">See more</a>
-                            </td>
-                            <td rowspan="<?= $req_counts[$req_key]; ?>">
-                              <span class="short-text">
-                                <?= htmlspecialchars(substr($row['reqs_code'] . " " . $row['description'], 0, 300)) . '...'; ?>
-                              </span>
-                              <span class="full-text" style="display: none;">
-                                <?= htmlspecialchars($row['reqs_code'] . " " . $row['description']); ?>
-                              </span>
-                              <a href="#" class="see-more">See more</a>
-                            </td>
-                            <?php $printed_reqs[$req_key] = true; ?>
-                          <?php endif; ?>
+          <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
+            <thead>
+              <tr>
+                <th style="width: 20%; text-align: center;">Relevance Definition</th>
+                <th style="width: 20%; text-align: center;">Minimum Requirements</th>
+                <th style="width: 20%; text-align: center;">Documentary Requirements/MOVs</th>
+                <th style="width: 10%; text-align: center;">Data Source</th>
+                <th style="width: 7%; text-align: center;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+            <?php
+            $last_indicator = $current_indicator;
+            $table_started = true;
+          endif;
 
-                          <td>
-                            <?php
-                            echo htmlspecialchars($row['documentary_requirements']) . '<br><br>';
+          $req_key = $row['relevance_definition'] . " " . $row['reqs_code'] . " " . $row['description'];
+          $rel_key = $row['relevance_definition'];
+          ?>
+          <tr>
+            <?php if (!isset($printed_rels[$rel_key])): ?>
+              <td rowspan="<?= $rel_def_counts[$rel_key]; ?>">
+                <span class="short-text">
+                  <?= htmlspecialchars(substr($row['relevance_definition'], 0, 300)) . '...'; ?>
+                </span>
+                <span class="full-text" style="display: none;">
+                  <?= htmlspecialchars($row['relevance_definition']); ?>
+                </span>
+                <a href="#" class="see-more">See more</a>
+              </td>
+              <?php $printed_rels[$rel_key] = true; ?>
+            <?php endif; ?>
 
-                            $templates = is_array($row['template']) ? $row['template'] : json_decode($row['template'], true);
+            <?php if (!isset($printed_reqs[$req_key])): ?>
+              <td rowspan="<?= $req_counts[$req_key]; ?>">
+                <span class="short-text">
+                  <?= htmlspecialchars(substr($row['reqs_code'] . " " . $row['description'], 0, 300)) . '...'; ?>
+                </span>
+                <span class="full-text" style="display: none;">
+                  <?= htmlspecialchars($row['reqs_code'] . " " . $row['description']); ?>
+                </span>
+                <a href="#" class="see-more">See more</a>
+              </td>
+              <?php $printed_reqs[$req_key] = true; ?>
+            <?php endif; ?>
 
-                            if (!empty($templates) && is_array($templates)) {
-                              foreach ($templates as $template) {
-                                $link = htmlspecialchars($template, ENT_QUOTES, 'UTF-8');
-                                echo '<a href="https://' . $link . '" target="_blank">' . $link . '</a><br><br>';
-                              }
-                            } else {
-                              echo 'No template available';
-                            }
-                            ?>
-                          </td>
+            <td>
+              <?php
+              echo htmlspecialchars($row['documentary_requirements']) . '<br><br>';
 
+              $templates = is_array($row['template']) ? $row['template'] : json_decode($row['template'], true);
 
+              if (!empty($templates) && is_array($templates)) {
+                foreach ($templates as $template) {
+                  $link = htmlspecialchars($template, ENT_QUOTES, 'UTF-8');
+                  echo '<a href="' . $link . '" target="_blank">' . $link . '</a><br><br>';
+                }
+              } else {
+                echo 'No template available';
+              }
+              ?>
+            </td>
 
+            <td><?php echo htmlspecialchars($row['data_source']); ?></td>
+            <td>
+              <button class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
+                Edit
+              </button>
+              <a href="../script.php?delete_id=<?php echo $row['keyctr'] ?>" class="btn btn-danger delete-btn">Delete</a>
+            </td>
+          </tr>
+        <?php endforeach; ?>
 
-                          <td><?php echo htmlspecialchars($row['data_source']); ?></td>
-                          <td>
-                            <button class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
-                              Edit
-                            </button>
-                            <a href="../script.php?delete_id=<?php echo $row['keyctr'] ?>" class="btn btn-danger delete-btn">Delete</a>
-                          </td>
-                        </tr>
-                      <?php endforeach; ?>
+        <?php
+        if ($table_started) {
+          echo "</tbody></table>";
+        }
+        ?>
+      <?php endforeach; ?>
 
-                      <?php
-                      if ($table_started) {
-                        echo "</tbody></table>";
-                      }
-                      ?>
-                    <?php endforeach; ?>
+    <?php else: ?>
 
-                  <?php else: ?>
+      <div style="display: flex; justify-content: center;">
+        No Requirements Yet
+      </div>
+    <?php endif; ?>
+</div>
 
-                    <div style="display: flex; justify-content: center;">
-                      No Requirements Yet
-                    </div>
-                  <?php endif; ?>
-            </div>
           </div>
           <a class="scroll-to-top rounded" href="#page-top">
             <i class="fas fa-angle-up"></i>
