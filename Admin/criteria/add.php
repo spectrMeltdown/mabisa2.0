@@ -10,11 +10,16 @@ function fetchAllData($pdo, $query)
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-$maintenance_criteria_version_result = fetchAllData($pdo, "SELECT * FROM `maintenance_criteria_version`");
-$maintenance_area_indicators_result = fetchAllData($pdo, "SELECT * FROM `maintenance_area_indicators`");
-$maintenance_area_mininumreqs_result = fetchAllData($pdo, "SELECT * FROM `maintenance_area_mininumreqs`");
+$maintenance_criteria_version_result = $pdo->query("SELECT keyctr FROM `maintenance_criteria_version` WHERE active_ = 1")->fetchColumn();
+$maintenance_area_indicators_result = fetchAllData($pdo, "SELECT * FROM `maintenance_area_indicators` ORDER BY indicator_code");
+$maintenance_area_mininumreqs_result = fetchAllData($pdo, "SELECT * FROM `maintenance_area_mininumreqs` ORDER BY reqs_code");
 $maintenance_document_source_result = fetchAllData($pdo, "SELECT * FROM `maintenance_document_source`");
 
+
+
+echo '<pre>';
+print_r($maintenance_criteria_version_result);
+echo'</pre>';
 ?>
 
 <!DOCTYPE html>
@@ -34,17 +39,7 @@ $maintenance_document_source_result = fetchAllData($pdo, "SELECT * FROM `mainten
                 </div>
                 <div class="modal-body">
                     <form action="../script.php" method="post">
-                        <div class="mb-3">
-                            <label class="form-label">Version</label>
-                            <select class="form-control" name="version_keyctr" required>
-                                <option value="">Select</option>
-                                <?php foreach ($maintenance_criteria_version_result as $row) { ?>
-                                    <option value="<?= htmlspecialchars($row['keyctr']) ?>">
-                                        <?= htmlspecialchars($row['short_def']) ?>
-                                    </option>
-                                <?php } ?>
-                            </select>
-                        </div>
+                    <input type="hidden" class="form-control" name="version_keyctr" value="<?= $maintenance_criteria_version_result ?>" />
 
                         <div class="mb-3">
                             <label class="form-label">Indicator</label>

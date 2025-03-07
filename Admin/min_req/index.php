@@ -77,7 +77,7 @@ unset($_SESSION['success']);
                       <th>Reqs Code</th>
                      
                       <th>Description</th>
-                      <th>Sub Minimum Reqs</th>
+                      <!-- <th>Sub Minimum Reqs</th> -->
                       <th>Actions</th>
                     </tr>
                   </thead>
@@ -109,7 +109,7 @@ unset($_SESSION['success']);
                           </span>
                           <a href="#" class="see-more">See more</a>
                         </td>
-                        <td><?php echo $row['sub_mininumreqs']; ?></td>
+                        <!-- <td><?php echo $row['sub_mininumreqs']; ?></td> -->
                         <td>
                           <a class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
                             Edit

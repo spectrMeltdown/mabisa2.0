@@ -184,7 +184,7 @@ unset($_SESSION['success']);
 
         <!--sidebar start  -->
         <?php
-        // include_once '../common/sidebar.php';
+        include_once '../common/sidebar.php';
         ?>
         <!-- sidebar end -->
 

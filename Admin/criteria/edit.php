@@ -12,7 +12,7 @@ try {
     $stmt->execute();
     $maintenance_criteria_setup_row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $maintenance_criteria_version_result = $pdo->query("SELECT * FROM `maintenance_criteria_version`")->fetchAll(PDO::FETCH_ASSOC);
+    $maintenance_criteria_version_result = $pdo->query("SELECT keyctr FROM `maintenance_criteria_version` WHERE active_ = 1")->fetchColumn();
     $maintenance_area_indicators_result = $pdo->query("SELECT * FROM `maintenance_area_indicators`")->fetchAll(PDO::FETCH_ASSOC);
     $maintenance_area_mininumreqs_result = $pdo->query("SELECT * FROM `maintenance_area_mininumreqs`")->fetchAll(PDO::FETCH_ASSOC);
     $maintenance_document_source_result = $pdo->query("SELECT * FROM `maintenance_document_source`")->fetchAll(PDO::FETCH_ASSOC);
@@ -35,18 +35,8 @@ try {
                     <input type="hidden" id="modalEditId" name="edit_id">
 
                     <input type="hidden" name="keyctr" value="<?php echo $maintenance_criteria_setup_row['keyctr']; ?>" />
+                    <input type="hidden" class="form-control" name="version_keyctr" value="<?= $maintenance_criteria_version_result ?>" />
 
-                    <div class="mb-3">
-                        <label class="form-label">Version</label>
-                        <select class="form-control" name="version_keyctr">
-                            <option value="">Select</option>
-                            <?php foreach ($maintenance_criteria_version_result as $row) { ?>
-                                <option <?php echo $maintenance_criteria_setup_row['version_keyctr'] == $row['keyctr'] ? "selected" : "" ?> value="<?php echo $row['keyctr']; ?>">
-                                    <?php echo $row['short_def']; ?>
-                                </option>
-                            <?php } ?>
-                        </select>
-                    </div>
 
                     <div class="mb-3">
                         <label class="form-label">Indicator</label>

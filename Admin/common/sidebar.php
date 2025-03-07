@@ -68,8 +68,8 @@ global $userGenPerms;
             href="<?php echo isset($isInFolder) ? '../' : ''; ?>area_indicator/">Area Indicators</a>
           <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>min_req/">Minimum
             Requirements</a>
-          <a class="collapse-item"
-            href="<?php echo isset($isInFolder) ? '../' : ''; ?>sub_req/">Sub-Requirements</a>
+          <!-- <a class="collapse-item"
+            href="<?php echo isset($isInFolder) ? '../' : ''; ?>sub_req/">Sub-Requirements</a> -->
           <a class="collapse-item" href="<?php echo isset($isInFolder) ? '../' : ''; ?>docu_source/">Document
             Source</a>
         </div>
