@@ -14,8 +14,7 @@ if (isset($isInFolder)):
     <i class="fa fa-bars"></i>
   </button>
 
-  <div class="header-title">
-    MABILISANG AKSYON BARANGAY INFORMATION SYSTEM OF ALORAN
+  <div class="header-title" id="mabisa-title">
   </div>
 
   <!-- Topbar Navbar -->

@@ -91,6 +91,8 @@ header("Pragma: no-cache");
     /* Enable scrolling if needed */
   }
 
+  .header-title {}
+
   /* Hide number input controls */
   .no-spinner::-webkit-inner-spin-button,
   .no-spinner::-webkit-outer-spin-button {

@@ -1,3 +1,15 @@
+function updateNavTitle() {
+  const element = document.getElementById('mabisa-title');
+  if (window.innerWidth <= 500) {
+    element.textContent = 'MABISA';
+  } else {
+    element.textContent = 'MABILISANG AKSYON BARANGAY INFORMATION SYSTEM OF ALORAN';
+  }
+}
+
+window.addEventListener('resize', updateNavTitle);
+window.addEventListener('load', updateNavTitle);
+
 document.getElementById('logoutBtn').addEventListener('click', async () => {
   if (loading) return;
   loading = true;
