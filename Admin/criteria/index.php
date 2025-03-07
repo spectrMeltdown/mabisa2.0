@@ -245,16 +245,25 @@ if (!empty($maintenance_area_description_result)) {
                   <?php
                   $table_started = false;
                   $req_counts = [];
+                  $rel_def_counts = [];
 
+                  // Count rowspans
                   foreach ($rows as $row) {
                     $req_key = $row['relevance_definition'] . " " . $row['reqs_code'] . " " . $row['description'];
                     if (!isset($req_counts[$req_key])) {
                       $req_counts[$req_key] = 0;
                     }
                     $req_counts[$req_key]++;
+
+                    $rel_key = $row['relevance_definition'];
+                    if (!isset($rel_def_counts[$rel_key])) {
+                      $rel_def_counts[$rel_key] = 0;
+                    }
+                    $rel_def_counts[$rel_key]++;
                   }
 
                   $printed_reqs = [];
+                  $printed_rels = [];
 
                   foreach ($rows as $row):
                     $current_indicator = $row['indicator_code'] . " " . $row['indicator_description'];
@@ -273,7 +282,7 @@ if (!empty($maintenance_area_description_result)) {
                       <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
                         <thead>
                           <tr>
-                            <th style="width: 20%; text-align: center;">Relevant/Definition</th>
+                            <th style="width: 20%; text-align: center;">Relevance Definition</th>
                             <th style="width: 20%; text-align: center;">Minimum Requirements</th>
                             <th style="width: 20%; text-align: center;">Documentary Requirements/MOVs</th>
                             <th style="width: 10%; text-align: center;">Data Source</th>
@@ -287,10 +296,11 @@ if (!empty($maintenance_area_description_result)) {
                       endif;
 
                       $req_key = $row['relevance_definition'] . " " . $row['reqs_code'] . " " . $row['description'];
+                      $rel_key = $row['relevance_definition'];
                         ?>
                         <tr>
-                          <?php if (!isset($printed_reqs[$req_key])): ?>
-                            <td rowspan="<?= $req_counts[$req_key]; ?>">
+                          <?php if (!isset($printed_rels[$rel_key])): ?>
+                            <td rowspan="<?= $rel_def_counts[$rel_key]; ?>">
                               <span class="short-text">
                                 <?= htmlspecialchars(substr($row['relevance_definition'], 0, 300)) . '...'; ?>
                               </span>
@@ -299,6 +309,10 @@ if (!empty($maintenance_area_description_result)) {
                               </span>
                               <a href="#" class="see-more">See more</a>
                             </td>
+                            <?php $printed_rels[$rel_key] = true; ?>
+                          <?php endif; ?>
+
+                          <?php if (!isset($printed_reqs[$req_key])): ?>
                             <td rowspan="<?= $req_counts[$req_key]; ?>">
                               <span class="short-text">
                                 <?= htmlspecialchars(substr($row['reqs_code'] . " " . $row['description'], 0, 300)) . '...'; ?>
@@ -328,9 +342,6 @@ if (!empty($maintenance_area_description_result)) {
                             ?>
                           </td>
 
-
-
-
                           <td><?php echo htmlspecialchars($row['data_source']); ?></td>
                           <td>
                             <button class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
@@ -355,6 +366,7 @@ if (!empty($maintenance_area_description_result)) {
                     </div>
                   <?php endif; ?>
             </div>
+
           </div>
           <a class="scroll-to-top rounded" href="#page-top">
             <i class="fas fa-angle-up"></i>
