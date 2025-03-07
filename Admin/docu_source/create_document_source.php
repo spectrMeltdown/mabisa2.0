@@ -1,11 +1,11 @@
 <?php
 require_once '../../db/db.php';
-include '../../api/audit_log.php';
+include_once '../../api/audit_log.php';
 $log = new Audit_log($pdo);
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
+
     $srccode = $_POST['srccode'];
     $srcdesc = $_POST['srcdesc'];
     $trail = 'Created at ' . date('Y-m-d H:i:s');

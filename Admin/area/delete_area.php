@@ -1,6 +1,6 @@
 <?php
-include '../../db/db.php';
-include '../../api/audit_log.php';
+include_once '../../db/db.php';
+include_once '../../api/audit_log.php';
 session_start();
 
 $log = new Audit_log($pdo);
@@ -31,4 +31,3 @@ if (isset($_GET['keyctr'])) {
 
 header('Location: index.php');
 exit();
-?>

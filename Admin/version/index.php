@@ -147,14 +147,15 @@ unset($_SESSION['success']);
           $('#editCategoryModalContainer').html(response);
           $('#editCategoryModal').modal('show');
         },
-        error: function() {
-          alert('Error retrieving category data.');
+        error: err => {
+          console.error(err);
+          alert('Error retrieving data.');
         }
       });
     });
   </script>
 
-  <?php include 'create_criteria_version.php' ?>
+  <?php include_once 'create_criteria_version.php' ?>
 </body>
 
 

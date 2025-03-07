@@ -59,7 +59,7 @@ function validateNewPass() {
           res(true);
         },
         error: err => {
-          console.log(err);
+          console.error(err);
           res(false);
         },
       });

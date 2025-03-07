@@ -25,7 +25,7 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
           loading = false;
         },
         error: err => {
-          console.log(err.responseText);
+          console.error(err.responseText);
           loading = false;
         },
       });

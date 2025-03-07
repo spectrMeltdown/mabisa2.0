@@ -93,7 +93,7 @@ if (id) {
         }
       },
       error: res => {
-        console.log(res);
+        console.error(res);
       },
     });
   })();
@@ -310,7 +310,7 @@ $('#save-role-btn').on('click', async () => {
       }
     },
     error: e => {
-      console.log(e.responseText);
+      console.error(e.responseText);
     },
   });
   toggleLoading();

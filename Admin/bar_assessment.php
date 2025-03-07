@@ -47,7 +47,7 @@ $is_accepting = isset($version['is_accepting_response']) ? ($version['is_accepti
             <div id="content">
 
                 <!-- Topbar -->
-                <?php include 'common/nav.php' ?>
+                <?php include_once 'common/nav.php' ?>
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->

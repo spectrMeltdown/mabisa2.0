@@ -40,7 +40,7 @@ if ($barangay_id) {
     $stmt->bindParam(1, $barangay_id, PDO::PARAM_INT);
     $stmt->execute();
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    include '../script.php';
+    include_once '../script.php';
     $data = [];
 
     $stmt = $pdo->prepare("SELECT * FROM maintenance_criteria_version WHERE active_ = 1 LIMIT 1");
@@ -226,6 +226,19 @@ unset($_SESSION['success']);
                                 endif;
                             endif;
                             ?>
+                            <?php
+                            if (userHasPerms('approve', 'any', $barangay_id) && !str_contains(strtolower($userData['role']), 'super admin')):
+                                if ($ready == 0) :
+                            ?>
+                                    <p class="text-secondary float-right"><strong>Not yet ready for validation</strong></p>
+                                <?php else : ?>
+                                    <button class="btn btn-success float-right submit-btn" data-bar-id="<?php echo htmlspecialchars($barangay_id); ?>">
+                                        Mark as Validated
+                                    </button>
+                            <?php
+                                endif;
+                            endif;
+                            ?>
                         </div>
 
 
@@ -326,7 +339,7 @@ unset($_SESSION['success']);
                                                             <td class="data-cell-upload-view" style="text-align: center; vertical-align: middle;" id="<?php echo htmlspecialchars($barangay_id . $row['indicator_keyctr']) ?>">
                                                                 <?php if (!$data): ?>
                                                                     <?php
-                                                                    if (!str_contains(strtolower($userData['role']), 'admin') && userHasPerms('submissions_create', 'any', $barangay_id, $row['indicator_keyctr']) && $version['is_accepting_response'] == '0') : ?>
+                                                                    if (!str_contains(strtolower($userData['role']), 'admin') && userHasPerms('submissions_create', 'any', $barangay_id, $row['indicator_keyctr']) && $version['is_accepting_response'] == '0' && $ready == 0) : ?>
                                                                         <form action="../bar_assessment/user_actions/upload.php" method="POST"
                                                                             enctype="multipart/form-data" id="uploadForm-<?php echo $row['keyctr']; ?>">
                                                                             <input type="hidden" name="iid" value="<?= $row['indicator_keyctr'] ?>">
@@ -350,6 +363,7 @@ unset($_SESSION['success']);
                                                                         <?php endif; ?>
                                                                     <?php endif; ?>
                                                                 <?php else: ?>
+
                                                                     <button type="button" class="btn btn-success mb-3" title="View"
                                                                         data-toggle="modal" data-target="#commentModal"
                                                                         data-fileid="<?= htmlspecialchars($data['file_id']); ?>"
@@ -360,6 +374,7 @@ unset($_SESSION['success']);
                                                                         data-expand="collapse-<?php echo md5($key); ?>">
                                                                         <i class="fa fa-eye"></i>
                                                                     </button>
+
                                                                     <?php if (!str_contains(strtolower($userData['role']), 'admin') && userHasPerms('submissions_delete', 'any', $barangay_id, $row['indicator_keyctr']) && $data['status'] !== 'approved' && $ready == 0): ?>
                                                                         <button class="btn btn-danger mb-3 delete-btn"
                                                                             data-file-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>"
@@ -520,7 +535,7 @@ unset($_SESSION['success']);
                         }
                     },
                     error: err => {
-                        console.log(err.responseText());
+                        console.error(err.responseText());
                     },
                 });
             });

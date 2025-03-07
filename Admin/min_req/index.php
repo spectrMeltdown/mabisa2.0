@@ -43,7 +43,7 @@ unset($_SESSION['success']);
     <?php
     $isCriteriaPhp = true;
     require_once '../common/sidebar.php'
-     ?>
+    ?>
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
@@ -75,7 +75,7 @@ unset($_SESSION['success']);
                       <th>Indicator Code</th>
                       <th>Relevance Definition</th>
                       <th>Reqs Code</th>
-                     
+
                       <th>Description</th>
                       <!-- <th>Sub Minimum Reqs</th> -->
                       <th>Actions</th>
@@ -90,9 +90,9 @@ unset($_SESSION['success']);
                     ?>
 
                       <tr>
-                
+
                         <td><?php echo $indicator_code ? $indicator_code['indicator_code'] : 'N/A'; ?></td>
-                      
+
                         <td><span class="short-text">
                             <?= htmlspecialchars(substr($row['relevance_definition'], 0, 200)) . '...'; ?>
                           </span>
@@ -100,7 +100,8 @@ unset($_SESSION['success']);
                             <?= htmlspecialchars($row['relevance_definition']); ?>
                           </span>
                           <a href="#" class="see-more">See more</a>
-                        </td>  <td><?php echo $row['reqs_code']; ?></td>
+                        </td>
+                        <td><?php echo $row['reqs_code']; ?></td>
                         <td><span class="short-text">
                             <?= htmlspecialchars(substr($row['description'], 0, 200)) . '...'; ?>
                           </span>
@@ -168,7 +169,8 @@ unset($_SESSION['success']);
           $('body').append(response);
           $('#editMinimumReqModal').modal('show');
         },
-        error: function() {
+        error: err => {
+          console.error(err);
           alert('Error retrieving data.');
         }
       });

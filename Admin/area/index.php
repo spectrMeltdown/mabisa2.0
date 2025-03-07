@@ -24,7 +24,7 @@ JOIN maintenance_area_description AS mai
     ON ma.keyctr = mai.keyctr;
 
 ");
-$stmt->execute(); 
+$stmt->execute();
 $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // echo '<pre>';
@@ -78,8 +78,8 @@ unset($_SESSION['success']);
                   <tbody>
                     <?php foreach ($data as $row): ?>
                       <tr>
-                        
-                      <td style="font-size: 20px;"><?php echo $row['area_description']; ?></td>
+
+                        <td style="font-size: 20px;"><?php echo $row['area_description']; ?></td>
                         <td style="font-size: 20px;"><?php echo $row['indicator_description']; ?></td>
                         <td style="font-size: 20px;"><?php echo $row['trail']; ?></td>
                         <td>
@@ -143,13 +143,14 @@ unset($_SESSION['success']);
           $('#editModalContainer').html(response);
           $('#editAreaModal').modal('show');
         },
-        error: function() {
+        error: err => {
+          console.error(err);
           alert('Error retrieving data.');
         }
       });
     });
   </script>
-  <?php include 'create_area.php'; ?>
+  <?php include_once 'create_area.php'; ?>
 
 </body>
 

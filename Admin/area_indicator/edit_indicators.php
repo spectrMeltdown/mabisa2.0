@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once '../../db/db.php';
-include '../../api/audit_log.php';
+include_once '../../api/audit_log.php';
 $log = new Audit_log($pdo);
 
 $description_stmt = $pdo->query("SELECT DISTINCT keyctr, description FROM maintenance_area_description");

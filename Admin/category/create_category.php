@@ -1,7 +1,6 @@
-
 <?php
-include '../../db/db.php';
-include '../../api/audit_log.php';
+include_once '../../db/db.php';
+include_once '../../api/audit_log.php';
 $log = new Audit_log($pdo);
 session_start();
 
@@ -18,14 +17,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 VALUES (:code, :short_def, :description, :trail)";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            'code' => $code, 
-            'short_def' => $short_def, 
-            'description' => $description, 
+            'code' => $code,
+            'short_def' => $short_def,
+            'description' => $description,
             'trail' => $trail
         ]);
 
         $pdo->commit();
-        $log->userLog('Created a new Category: '.$description);
+        $log->userLog('Created a new Category: ' . $description);
 
         $_SESSION['success'] = "Category created successfully!";
     } catch (Exception $e) {
@@ -61,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <textarea class="form-control" name="description" required></textarea>
                     </div>
                     <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 
                         <button type="submit" class="btn btn-primary" name="add_area">Add Category</button>
                     </div>

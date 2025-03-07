@@ -1,12 +1,12 @@
 <?php
-include '../../db/db.php';
-include '../../api/audit_log.php';
+include_once '../../db/db.php';
+include_once '../../api/audit_log.php';
 $log = new Audit_log($pdo);
 session_start();
 
 if (isset($_GET['code'])) {
     $code = $_GET['code'];
-    
+
     $stmt = $pdo->prepare("SELECT * FROM maintenance_category WHERE code = :code");
     $stmt->execute(['code' => $code]);
     $category = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -20,28 +20,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     try {
         $pdo->beginTransaction();
-        
+
         $sql = "UPDATE maintenance_category 
                 SET code = :new_code, short_def = :short_def, description = :description, trail = :trail 
                 WHERE code = :code";
-        
+
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            'new_code' => $code, 
-            'short_def' => $short_def, 
-            'description' => $description, 
-            'trail' => $trail, 
+            'new_code' => $code,
+            'short_def' => $short_def,
+            'description' => $description,
+            'trail' => $trail,
             'code' => $_POST['original_code']
         ]);
 
-        $pdo->commit(); 
-        $log->userLog('Edited a Category to Code: '.$code.', Short Definiton: '.$short_def.', and Description: '.$description);
+        $pdo->commit();
+        $log->userLog('Edited a Category to Code: ' . $code . ', Short Definiton: ' . $short_def . ', and Description: ' . $description);
         $_SESSION['success'] = "Category updated successfully!";
     } catch (Exception $e) {
         $pdo->rollBack();
         $_SESSION['error'] = "Failed to update category: " . $e->getMessage();
     }
-    
+
     header('Location: index.php');
     exit();
 }
@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <label class="form-label">Code</label>
                         <input type="text" class="form-control" name="code" value="<?php echo htmlspecialchars($category['code']); ?>" required>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="form-label">Short Definition</label>
                         <input type="text" class="form-control" name="short_def" value="<?php echo htmlspecialchars($category['short_def']); ?>" required>

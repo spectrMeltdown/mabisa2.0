@@ -47,10 +47,11 @@ try {
   writeLog($allPermissions);
 
   // Fetch all indicators from the current active version 
-  $sql = "SELECT i.keyctr AS id, i.indicator_code AS code, i.relevance_def AS description
+  $sql = "SELECT i.keyctr AS id, i.indicator_code AS code, mr.relevance_definition AS description
   FROM maintenance_area_indicators i 
   JOIN maintenance_criteria_setup cs ON cs.indicator_keyctr = i.keyctr 
   JOIN maintenance_criteria_version v ON v.keyctr = cs.version_keyctr
+  JOIN maintenance_area_mininumreqs mr ON mr.keyctr = cs.minreqs_keyctr
   WHERE v.active_ = 1";
   $stmt = $pdo->prepare($sql);
   $stmt->execute();
@@ -66,7 +67,7 @@ try {
 
   /* 
   Fetch taken permissions by other users in user_roles_barangay (assessment)
-  include only the following:
+  include_once only the following:
   - permissions that match the same role
   - permissions that match the barangay & indicator
   */

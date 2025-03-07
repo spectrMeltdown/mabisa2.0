@@ -1,6 +1,6 @@
 <?php
-include '../../db/db.php';
-include '../../api/audit_log.php';
+include_once '../../db/db.php';
+include_once '../../api/audit_log.php';
 session_start();
 
 $log = new Audit_log($pdo);
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_area'])) {
                         <textarea class="form-control" name="description" required></textarea>
                     </div>
                     <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 
                         <button type="submit" class="btn btn-primary" name="add_area">Add Area</button>
                     </div>

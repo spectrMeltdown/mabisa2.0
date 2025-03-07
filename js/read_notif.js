@@ -17,7 +17,7 @@ $('#readNotifModal').on('show.bs.modal', async e => {
       console.log(data);
     },
     error: err => {
-      console.log(err.responseText);
+      console.error(err.responseText);
     },
   });
   if (title) $('#notifModalLabel').text(title);

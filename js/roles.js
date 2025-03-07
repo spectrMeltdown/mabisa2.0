@@ -42,7 +42,7 @@ $('.delete-role-btn').on('click', async e => {
       location.reload();
     },
     error: e => {
-      console.log(e.responseText);
+      console.error(e.responseText);
     },
   });
 });

@@ -1,6 +1,6 @@
 <?php
-include '../../db/db.php';
-include '../../api/audit_log.php';
+include_once '../../db/db.php';
+include_once '../../api/audit_log.php';
 $log = new Audit_log($pdo);
 session_start();
 
@@ -49,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ]);
 
         $pdo->commit();
-        $log->userLog('Updated Minimum Requirement with ID: '.$keyctr.', to Indicator ID: '.$indicator_keyctr.', Requirements Code: '.$reqs_code.', Description: '.$description.', and Sub Minimum Requirements: '.$sub_mininumreqs);
+        $log->userLog('Updated Minimum Requirement with ID: ' . $keyctr . ', to Indicator ID: ' . $indicator_keyctr . ', Requirements Code: ' . $reqs_code . ', Description: ' . $description . ', and Sub Minimum Requirements: ' . $sub_mininumreqs);
         $_SESSION['success'] = "Minimum requirement updated successfully!";
     } catch (Exception $e) {
         $pdo->rollBack();
@@ -76,7 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <select class="form-control" name="indicator_keyctr" required>
                             <option value="">Select</option>
                             <?php foreach ($indicators as $row) { ?>
-                                <option value="<?= htmlspecialchars($row['keyctr']) ?>" 
+                                <option value="<?= htmlspecialchars($row['keyctr']) ?>"
                                     <?= $row['keyctr'] == $req['indicator_keyctr'] ? 'selected' : '' ?>>
                                     <?= htmlspecialchars($row['indicator_code'] . " - " . $row['indicator_description']) ?>
                                 </option>

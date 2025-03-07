@@ -1,6 +1,6 @@
 <?php
-include '../../db/db.php';
-include '../../api/audit_log.php';
+include_once '../../db/db.php';
+include_once '../../api/audit_log.php';
 $log = new Audit_log($pdo);
 session_start();
 
@@ -11,10 +11,10 @@ if (isset($_GET['keyctr'])) {
         $pdo->beginTransaction();
 
         $stmt = $pdo->prepare("DELETE FROM maintenance_criteria_version WHERE keyctr = ?");
-        
+
         if ($stmt->execute([$keyctr])) {
             $pdo->commit();
-            $log->userLog('Deleted a Version with ID: '.$keyctr);
+            $log->userLog('Deleted a Version with ID: ' . $keyctr);
             $_SESSION['success'] = "Criteria version deleted successfully!";
         } else {
             $pdo->rollBack();
@@ -32,4 +32,3 @@ if (isset($_GET['keyctr'])) {
     header('Location: index.php');
     exit();
 }
-?>

@@ -89,7 +89,7 @@ try {
                 </div>
 
                 <!-- End of Main Content -->
-                <?php include 'common/footer.php' ?>
+                <?php include_once 'common/footer.php' ?>
             </div>
             <!-- End of Content Wrapper -->
         </div>

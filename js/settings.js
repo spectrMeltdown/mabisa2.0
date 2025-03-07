@@ -296,7 +296,7 @@ function updateAccData(/** @type {FormData} */ formData) {
         location.reload();
       },
       error: err => {
-        console.log(err);
+        console.error(err);
       },
     });
   } catch (error) {

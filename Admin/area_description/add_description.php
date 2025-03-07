@@ -1,6 +1,6 @@
 <?php
-include '../../db/db.php';
-include '../../api/audit_log.php';
+include_once '../../db/db.php';
+include_once '../../api/audit_log.php';
 $log = new Audit_log($pdo);
 session_start();
 
@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $pdo->commit();
 
-        $log->userLog('Created a new Area Description: '.$description );
+        $log->userLog('Created a new Area Description: ' . $description);
         $_SESSION['success'] = "Description created successfully!";
     } catch (Exception $e) {
         $pdo->rollBack();
@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <textarea class="form-control" name="description" required></textarea>
                     </div>
                     <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 
                         <button type="submit" class="btn btn-primary" name="add_area">Add Description</button>
                     </div>

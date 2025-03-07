@@ -9,7 +9,7 @@ if (!userHasPerms('criteria_read', 'gen')) {
   exit;
 }
 
-include '../script.php';
+include_once '../script.php';
 
 // Set pathprepend again for the requires/import below
 $pathPrepend = isset($isInFolder) ? '../../' : '../';
@@ -150,7 +150,7 @@ if (!empty($maintenance_area_description_result)) {
   <div id="wrapper">
     <!-- Sidebar -->
     <?php
-    include '../common/sidebar.php'
+    include_once '../common/sidebar.php'
 
     ?>
     <!-- End of Sidebar -->
@@ -227,11 +227,8 @@ if (!empty($maintenance_area_description_result)) {
                   <a class="btn btn-primary" id="open-duration-modal" style="margin-right: 10px;">Edit Duration</a>
                   <a class="btn btn-primary" id="open-add-modal">Add Maintenance Criteria</a>
                 </div>
-
               </div>
             </div>
-
-
             <div class="card-body">
               <?php if ($data): ?>
                 <?php
@@ -392,7 +389,7 @@ if (!empty($maintenance_area_description_result)) {
           }, 200);
         },
         error: function(xhr, status, error) {
-          console.log("Error: " + error);
+          console.error("Error: " + error);
         }
       });
     });
@@ -409,7 +406,7 @@ if (!empty($maintenance_area_description_result)) {
           }, 200);
         },
         error: function(xhr, status, error) {
-          console.log("Error: " + error);
+          console.error("Error: " + error);
         }
       });
     });
@@ -439,7 +436,7 @@ if (!empty($maintenance_area_description_result)) {
           }, 200);
         },
         error: function(xhr, status, error) {
-          console.log("Error: " + error);
+          console.error("Error: " + error);
         }
       });
     });
@@ -461,8 +458,8 @@ if (!empty($maintenance_area_description_result)) {
 
 
 
-  <?php include 'add.php' ?>
-  <?php include 'edit.php' ?>
+  <?php include_once 'add.php' ?>
+  <?php include_once 'edit.php' ?>
 </body>
 
 

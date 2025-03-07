@@ -147,13 +147,14 @@ unset($_SESSION['success']);
           $('body').append(response);
           $('#editMinReqSubModal').modal('show');
         },
-        error: function() {
+        error: err => {
+          console.error(err);
           alert('Error retrieving data.');
         }
       });
     });
   </script>
-  <?php include 'add_minreqsub.php' ?>
+  <?php include_once 'add_minreqsub.php' ?>
 </body>
 
 

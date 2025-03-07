@@ -15,7 +15,7 @@ if (isset($isInFolder)):
   </button>
 
   <div class="header-title">
-    MABILISANG AKSYON INFORMATION SYSTEM OF ALORAN
+    MABILISANG AKSYON BARANGAY INFORMATION SYSTEM OF ALORAN
   </div>
 
   <!-- Topbar Navbar -->

@@ -36,7 +36,7 @@ $('.delete-user-btn').on('click', async e => {
       data: {
         id: userID,
       },
-      success: function (result) {
+      success: function(result) {
         if (!result) {
           $('#crud-user').modal('hide');
           location.reload();
@@ -48,7 +48,7 @@ $('.delete-user-btn').on('click', async e => {
         }
       },
       error: err => {
-        console.log(err.responseText);
+        console.error(err.responseText);
       },
     });
   }

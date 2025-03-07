@@ -1,6 +1,6 @@
 <?php
-include '../../db/db.php';
-include '../../api/audit_log.php';
+include_once '../../db/db.php';
+include_once '../../api/audit_log.php';
 $log = new Audit_log($pdo);
 session_start();
 
@@ -11,11 +11,11 @@ if (isset($_GET['code'])) {
         $pdo->beginTransaction();
 
         $stmt = $pdo->prepare("DELETE FROM maintenance_category WHERE code = ?");
-    
+
         if ($stmt->execute([$code])) {
-      
+
             $pdo->commit();
-            $log->userLog('Deleted a Category with Code: '.$code);
+            $log->userLog('Deleted a Category with Code: ' . $code);
             $_SESSION['success'] = "Category deleted successfully!";
         } else {
             $pdo->rollBack();
@@ -26,7 +26,7 @@ if (isset($_GET['code'])) {
         $_SESSION['error'] = "An error occurred: " . $e->getMessage();
     }
 
-    
+
     header("Location: index.php");
     exit;
 } else {
@@ -34,4 +34,3 @@ if (isset($_GET['code'])) {
     header("Location: index.php");
     exit;
 }
-?>

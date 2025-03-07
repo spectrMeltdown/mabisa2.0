@@ -1,6 +1,6 @@
 <?php
 $isInFolder = true;
-include '../script.php';
+include_once '../script.php';
 require_once '../../db/db.php';
 
 function fetchAllData($pdo, $query)
@@ -19,7 +19,7 @@ $maintenance_document_source_result = fetchAllData($pdo, "SELECT * FROM `mainten
 
 echo '<pre>';
 print_r($maintenance_criteria_version_result);
-echo'</pre>';
+echo '</pre>';
 ?>
 
 <!DOCTYPE html>
@@ -39,7 +39,7 @@ echo'</pre>';
                 </div>
                 <div class="modal-body">
                     <form action="../script.php" method="post">
-                    <input type="hidden" class="form-control" name="version_keyctr" value="<?= $maintenance_criteria_version_result ?>" />
+                        <input type="hidden" class="form-control" name="version_keyctr" value="<?= $maintenance_criteria_version_result ?>" />
 
                         <div class="mb-3">
                             <label class="form-label">Indicator</label>

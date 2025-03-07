@@ -1,6 +1,6 @@
 <?php
-include '../../db/db.php';
-include '../../api/audit_log.php';
+include_once '../../db/db.php';
+include_once '../../api/audit_log.php';
 $log = new Audit_log($pdo);
 session_start();
 
@@ -15,7 +15,7 @@ if (isset($_GET['keyctr'])) {
 
         $pdo->commit();
 
-        $log->userLog('Deleted an Area Description with id:'.$keyctr);
+        $log->userLog('Deleted an Area Description with id:' . $keyctr);
         $_SESSION['success'] = "Description deleted successfully!";
     } catch (Exception $e) {
         $pdo->rollBack();
@@ -27,4 +27,3 @@ if (isset($_GET['keyctr'])) {
 } else {
     echo "Invalid request!";
 }
-?>

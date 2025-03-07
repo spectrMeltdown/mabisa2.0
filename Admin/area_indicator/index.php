@@ -67,7 +67,7 @@ unset($_SESSION['success']);
                   <thead>
                     <tr>
                       <th>Governance Code</th>
-                   
+
                       <th>Area Description</th>
                       <th>Indicator Code</th>
                       <th>Indicator Description</th>
@@ -138,7 +138,8 @@ unset($_SESSION['success']);
           $('#editModalContainer').html(response);
           $('#editIndicatorModal').modal('show');
         },
-        error: function() {
+        error: err => {
+          console.error(err);
           alert('Error retrieving data.');
         }
       });
@@ -157,7 +158,7 @@ unset($_SESSION['success']);
     });
   </script>
 
-  <?php include 'create_indicators.php' ?>
+  <?php include_once 'create_indicators.php' ?>
 </body>
 
 </html>

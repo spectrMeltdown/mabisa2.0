@@ -140,7 +140,7 @@ $('#roleSelect').on('change', async e => {
           res();
         },
         error: res => {
-          console.log('Error: ' + JSON.stringify(res));
+          console.error('Error: ' + JSON.stringify(res));
           rej();
         },
       }).then(() => {
@@ -336,7 +336,7 @@ $('#roleSelect').on('change', async e => {
           resolve();
         },
         error: res => {
-          console.log('Error: ' + JSON.stringify(res));
+          console.error('Error: ' + JSON.stringify(res));
           rej();
         },
       }).then(() => {
@@ -651,7 +651,7 @@ $('#save-user-btn').on('click', async () => {
         }
       },
       error: err => {
-        console.log('error!: ' + err.responseText);
+        console.error('error!: ' + err.responseText);
       },
     });
   } else {
@@ -674,7 +674,7 @@ $('#save-user-btn').on('click', async () => {
         }
       },
       error: err => {
-        console.log('error!: ' + err.responseText);
+        console.error('error!: ' + err.responseText);
       },
     });
   }

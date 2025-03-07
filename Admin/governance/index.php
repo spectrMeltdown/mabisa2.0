@@ -91,7 +91,7 @@ unset($_SESSION['success']);
                 <tbody>
                   <?php foreach ($data as $row):
                   ?>
-                    <tr>                   
+                    <tr>
                       <td><?php echo $row['cat_code']; ?></td>
                       <td><?php echo $row['area_name']; ?></td>
                       <td><?php echo $row['area_description']; ?></td>
@@ -155,13 +155,14 @@ unset($_SESSION['success']);
           $('#editGovernanceContainer').html(response);
           $('#editGovernance').modal('show');
         },
-        error: function() {
+        error: err => {
+          console.error(err);
           alert('Error retrieving data.');
         }
       });
     });
   </script>
-  <?php include 'create_governance.php' ?>
+  <?php include_once 'create_governance.php' ?>
 </body>
 
 

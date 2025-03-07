@@ -1,6 +1,6 @@
 <?php
-include '../../db/db.php';
-include '../../api/audit_log.php';
+include_once '../../db/db.php';
+include_once '../../api/audit_log.php';
 $log = new Audit_log($pdo);
 session_start();
 
@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $pdo->commit();
 
-        $log->userLog('Edited an Area Description with id: '.$keyctr.' to: '.$description);
+        $log->userLog('Edited an Area Description with id: ' . $keyctr . ' to: ' . $description);
         $_SESSION['success'] = "Description updated successfully!";
     } catch (Exception $e) {
         $pdo->rollBack();
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editModalLabel">Edit Description</h5>
-               
+
             </div>
             <div class="modal-body">
                 <form method="POST" action="edit_description.php">
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <div class="mb-3">
                         <label class="form-label">Description</label>
                         <textarea class="form-control" name="description"
-                            required><?php echo htmlspecialchars( $description['description']); ?></textarea>
+                            required><?php echo htmlspecialchars($description['description']); ?></textarea>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

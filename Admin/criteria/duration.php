@@ -1,6 +1,6 @@
 <?php
 $isInFolder = true;
-include '../script.php';
+include_once '../script.php';
 require_once '../../db/db.php';
 
 function fetchAllData($pdo, $query)

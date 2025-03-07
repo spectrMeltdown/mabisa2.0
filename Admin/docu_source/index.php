@@ -145,8 +145,9 @@ unset($_SESSION['success']);
           $('#editDocuSourceModal').modal('show');
 
         },
-        error: function() {
-          alert('Error retrieving category data.');
+        error: err => {
+          console.error(err);
+          alert('Error retrieving data.');
         }
       });
     });

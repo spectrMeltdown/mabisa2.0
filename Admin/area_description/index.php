@@ -145,14 +145,15 @@ unset($_SESSION['success']);
           $('#editDescriptionModalContainer').html(response);
           $('#editAreaDescriptionModal').modal('show');
         },
-        error: function() {
+        error: err => {
+          console.error(err);
           alert('Error retrieving data.');
         }
       });
     });
   </script>
 
-  <?php include 'add_description.php' ?>
+  <?php include_once 'add_description.php' ?>
 </body>
 
 

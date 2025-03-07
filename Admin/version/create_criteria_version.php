@@ -1,6 +1,6 @@
 <?php
-include '../../db/db.php';
-include '../../api/audit_log.php';
+include_once '../../db/db.php';
+include_once '../../api/audit_log.php';
 $log = new Audit_log($pdo);
 session_start();
 
@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         ]);
 
         $pdo->commit();
-        $log->userLog('Created a New Version with Short Definition: '.$short_def.', Description: '.$description.', Active Year: '.$active_yr.', and is Active: '.$active_);
+        $log->userLog('Created a New Version with Short Definition: ' . $short_def . ', Description: ' . $description . ', Active Year: ' . $active_yr . ', and is Active: ' . $active_);
         $_SESSION['success'] = "Criteria version created successfully!";
     } catch (Exception $e) {
         $pdo->rollBack();

@@ -126,7 +126,8 @@ unset($_SESSION['success']);
             $('#editCategoryModalContainer').html(response);
             $('#editCategoryModal').modal('show');
           },
-          error: function() {
+          error: err => {
+            console.error(err);
             alert('Error retrieving category data.');
           }
         });
@@ -134,7 +135,7 @@ unset($_SESSION['success']);
     });
   </script>
 
-  <?php include 'create_category.php' ?>
+  <?php include_once 'create_category.php' ?>
 </body>
 
 

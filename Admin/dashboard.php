@@ -15,13 +15,13 @@ $labels = [];
 $data = [];
 
 foreach ($barangayData as $barangay) {
-    $responseCount = $responses->getResponseCount($barangay['brgyid']);
-    
-    // Extract the first number from "X/Y"
-    $submitted = explode('/', $responseCount)[0];
+  $responseCount = $responses->getResponseCount($barangay['brgyid']);
 
-    $labels[] = $barangay['brgyname'];
-    $data[] = (int)$submitted;
+  // Extract the first number from "X/Y"
+  $submitted = explode('/', $responseCount)[0];
+
+  $labels[] = $barangay['brgyname'];
+  $data[] = (int)$submitted;
 }
 
 ?>
@@ -171,11 +171,11 @@ foreach ($barangayData as $barangay) {
               </h4>
             </div>
             <div class="card-body">
-            <div style="overflow-x: auto; width: 100%;">
-  <div style="width: 1500px;">
-    <canvas id="myBarChart"></canvas>
-  </div>
-</div>
+              <div style="overflow-x: auto; width: 100%;">
+                <div style="width: 1500px;">
+                  <canvas id="myBarChart"></canvas>
+                </div>
+              </div>
 
             </div>
           </div>
@@ -197,133 +197,139 @@ foreach ($barangayData as $barangay) {
           echo "<p class='text-danger'>Error fetching logs: " . $e->getMessage() . "</p>";
           $logs = [];
         }
-        
+
         ?>
         <div class="container-fluid">
           <div class="card shadow mb-4">
             <div class="card-header py-3">
-            <div class="card-header py-3 d-flex justify-content-between align-items-center">
-              <h3 class="m-0 font-weight-bold text-primary">Activity Logs Today</h3>
-              <a href="user_log.php" class="btn btn-danger">Show All Logs</a>
-            </div>
-            <div class="card-body">
-              <div class="table table-responsive"></div>
-              <table id="maintenanceTable" class="table table-bordered">
-                <thead>
-                  <tr>
-                    <th>User Id</th>
-                    <th>Username</th>
-                    <th>Action</th>
-                    <th>Time and Date</th>
-
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php foreach ($logs as $log):
-                  ?>
+              <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h3 class="m-0 font-weight-bold text-primary">Activity Logs Today</h3>
+                <a href="user_log.php" class="btn btn-danger">Show All Logs</a>
+              </div>
+              <div class="card-body">
+                <div class="table table-responsive"></div>
+                <table id="maintenanceTable" class="table table-bordered">
+                  <thead>
                     <tr>
-                      <td><?php echo $log['user_id']; ?></td>
-                      <td><?php echo $log['username']; ?></td>
-                      <td><?php echo $log['action']; ?></td>
-                      <td><?php echo $log['time_and_date']; ?></td>
+                      <th>User Id</th>
+                      <th>Username</th>
+                      <th>Action</th>
+                      <th>Time and Date</th>
 
                     </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($logs as $log):
+                    ?>
+                      <tr>
+                        <td><?php echo $log['user_id']; ?></td>
+                        <td><?php echo $log['username']; ?></td>
+                        <td><?php echo $log['action']; ?></td>
+                        <td><?php echo $log['time_and_date']; ?></td>
 
-                  <?php endforeach ?>
-                </tbody>
-              </table>
-              <!--End Page Content-->
+                      </tr>
+
+                    <?php endforeach ?>
+                  </tbody>
+                </table>
+                <!--End Page Content-->
+              </div>
             </div>
           </div>
+
+          <!-- End of Main Content -->
+          <?php include_once 'common/footer.php' ?>
         </div>
-
-        <!-- End of Main Content -->
-        <?php include 'common/footer.php' ?>
+        <!-- End of Content Wrapper -->
       </div>
-      <!-- End of Content Wrapper -->
+      <!-- End of Page Wrapper -->
+
+      <!-- Scroll to Top Button-->
+      <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+      </a>
     </div>
-    <!-- End of Page Wrapper -->
+    <script>
+      $(document).ready(function() {
+        $.ajax({
+          url: "chart_data.php",
+          method: "GET",
+          dataType: "json",
+          success: function(response) {
+            if (!response || response.labels.length === 0) {
+              console.error("No data returned for chart.");
+              return;
+            }
 
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-      <i class="fas fa-angle-up"></i>
-    </a>
-  </div>
-  <script>
-$(document).ready(function () {
-  $.ajax({
-    url: "chart_data.php", 
-    method: "GET",
-    dataType: "json",
-    success: function (response) {
-      if (!response || response.labels.length === 0) {
-        console.error("No data returned for chart.");
-        return;
-      }
+            var ctx = document.getElementById("myBarChart").getContext("2d");
 
-      var ctx = document.getElementById("myBarChart").getContext("2d");
-
-      new Chart(ctx, {
-        type: "bar",
-        data: {
-          labels: response.labels,
-          datasets: [
-            {
-              label: "Submissions",
-              backgroundColor: "#4e73df",
-              hoverBackgroundColor: "#2e59d9",
-              borderColor: "#4e73df",
-              data: response.data,
-            },
-          ],
-        },
-        options: {
-          maintainAspectRatio: false,
-          layout: {
-            padding: { left: 10, right: 25, top: 25, bottom: 10 },
-          },
-          scales: {
-            xAxes: [{
-              categoryPercentage: 0.6, // Increase spacing between bars
-              barPercentage: 0.5, // Adjust bar width
-              gridLines: { display: false },
-              ticks: { 
-                autoSkip: false,
-                padding: 15, // space between label and bar
-                fontSize: 14, // label size
-                 maxRotation: 45, //label angle
-                minRotation: 45 
-              }
-            }],
-            yAxes: [{
-              ticks: { 
-                beginAtZero: true, 
-                stepSize: 5, //increments per label
-                fontSize: 14 //y axes label size
+            new Chart(ctx, {
+              type: "bar",
+              data: {
+                labels: response.labels,
+                datasets: [{
+                  label: "Submissions",
+                  backgroundColor: "#4e73df",
+                  hoverBackgroundColor: "#2e59d9",
+                  borderColor: "#4e73df",
+                  data: response.data,
+                }, ],
               },
-              gridLines: {
-                color: "rgb(234, 236, 244)",
-                zeroLineColor: "rgb(234, 236, 244)",
-                drawBorder: false,
-                borderDash: [2],
-                zeroLineBorderDash: [2],
+              options: {
+                maintainAspectRatio: false,
+                layout: {
+                  padding: {
+                    left: 10,
+                    right: 25,
+                    top: 25,
+                    bottom: 10
+                  },
+                },
+                scales: {
+                  xAxes: [{
+                    categoryPercentage: 0.6, // Increase spacing between bars
+                    barPercentage: 0.5, // Adjust bar width
+                    gridLines: {
+                      display: false
+                    },
+                    ticks: {
+                      autoSkip: false,
+                      padding: 15, // space between label and bar
+                      fontSize: 14, // label size
+                      maxRotation: 45, //label angle
+                      minRotation: 45
+                    }
+                  }],
+                  yAxes: [{
+                    ticks: {
+                      beginAtZero: true,
+                      stepSize: 5, //increments per label
+                      fontSize: 14 //y axes label size
+                    },
+                    gridLines: {
+                      color: "rgb(234, 236, 244)",
+                      zeroLineColor: "rgb(234, 236, 244)",
+                      drawBorder: false,
+                      borderDash: [2],
+                      zeroLineBorderDash: [2],
+                    },
+                  }],
+                },
+                legend: {
+                  display: false
+                },
               },
-            }],
+            });
           },
-          legend: { display: false },
-        },
+          error: function(xhr, status, error) {
+            console.error("Error loading chart data:", error);
+          },
+        });
       });
-    },
-    error: function (xhr, status, error) {
-      console.error("Error loading chart data:", error);
-    },
-  });
-});
 
-// Make the chart container taller
-document.getElementById("myBarChart").parentNode.style.height = "300px";
-
-  </script>
+      // Make the chart container taller
+      document.getElementById("myBarChart").parentNode.style.height = "300px";
+    </script>
 </body>
 
 </html>
