@@ -79,8 +79,12 @@ if (isset($_POST['update_maintenance_criteria_setup'])) {
     $data_source = $_POST['data_source'];
     $template = $_POST['template'];
 
-    $templateArray = array_map('trim', explode(',', $templateInput));
-    $templateJson = json_encode($templateArray);
+    if (!empty(trim($template))) {
+        $templateArray = array_map('trim', explode(',', $template));
+        $templateJson = json_encode($templateArray);
+    } else {
+        $templateJson = '';
+    }
 
     try {
         $pdo->beginTransaction();

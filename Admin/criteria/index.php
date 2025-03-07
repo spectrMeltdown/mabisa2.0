@@ -20,10 +20,10 @@ $data = [];
 $stmt = $pdo->prepare("SELECT keyctr FROM maintenance_criteria_version WHERE active_ = 1 LIMIT 1");
 $stmt->execute();
 $version = $stmt->fetch(PDO::FETCH_ASSOC);
-$active_version_keyctr = $version ? $version['keyctr'] : null; 
+$active_version_keyctr = $version ? $version['keyctr'] : null;
 
 if (!$active_version_keyctr) {
-    die("No active version found.");
+  die("No active version found.");
 }
 
 // Fetch Governance Data
@@ -46,26 +46,26 @@ $stmt->execute();
 $maintenance_area_description_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 if (!empty($maintenance_area_description_result)) {
-    foreach ($maintenance_area_description_result as $maintenance_area_description_row) {
-        
-        // Fetch governance using the correct key
-        $maintenance_governance_query = "SELECT * FROM maintenance_governance WHERE area_keyctr = :area_keyctr";
-        $stmt = $pdo->prepare($maintenance_governance_query);
-        $stmt->execute(['area_keyctr' => $maintenance_area_description_row['area_keyctr']]);
-        $maintenance_governance_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  foreach ($maintenance_area_description_result as $maintenance_area_description_row) {
 
-        foreach ($maintenance_governance_result as $maintenance_governance_row) {
+    // Fetch governance using the correct key
+    $maintenance_governance_query = "SELECT * FROM maintenance_governance WHERE area_keyctr = :area_keyctr";
+    $stmt = $pdo->prepare($maintenance_governance_query);
+    $stmt->execute(['area_keyctr' => $maintenance_area_description_row['area_keyctr']]);
+    $maintenance_governance_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            // Fetch indicators
-            $maintenance_area_indicators_query = "SELECT * FROM maintenance_area_indicators WHERE governance_code = :governance_code";
-            $stmt = $pdo->prepare($maintenance_area_indicators_query);
-            $stmt->execute(['governance_code' => $maintenance_governance_row['keyctr']]);
-            $maintenance_area_indicators_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($maintenance_governance_result as $maintenance_governance_row) {
 
-            foreach ($maintenance_area_indicators_result as $maintenance_area_indicators_row) {
+      // Fetch indicators
+      $maintenance_area_indicators_query = "SELECT * FROM maintenance_area_indicators WHERE governance_code = :governance_code";
+      $stmt = $pdo->prepare($maintenance_area_indicators_query);
+      $stmt->execute(['governance_code' => $maintenance_governance_row['keyctr']]);
+      $maintenance_area_indicators_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-                // Fetch criteria setup with active version filtering
-                $maintenance_criteria_setup_query = "
+      foreach ($maintenance_area_indicators_result as $maintenance_area_indicators_row) {
+
+        // Fetch criteria setup with active version filtering
+        $maintenance_criteria_setup_query = "
                     SELECT 
                         msc.keyctr AS keyctr,
                         mam.description,
@@ -83,36 +83,36 @@ if (!empty($maintenance_area_description_result)) {
                     ORDER BY mam.reqs_code ASC
                 ";
 
-                $stmt = $pdo->prepare($maintenance_criteria_setup_query);
-                $stmt->execute([
-                    'indicator_keyctr' => $maintenance_area_indicators_row['keyctr'],
-                    'active_version_keyctr' => $active_version_keyctr
-                ]);
-                $maintenance_criteria_setup_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $pdo->prepare($maintenance_criteria_setup_query);
+        $stmt->execute([
+          'indicator_keyctr' => $maintenance_area_indicators_row['keyctr'],
+          'active_version_keyctr' => $active_version_keyctr
+        ]);
+        $maintenance_criteria_setup_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-                foreach ($maintenance_criteria_setup_result as $maintenance_criteria_setup_row) {
-                    $templates = json_decode($maintenance_criteria_setup_row['template'], true);
-                    if (!is_array($templates)) {
-                        $templates = [];
-                    }
+        foreach ($maintenance_criteria_setup_result as $maintenance_criteria_setup_row) {
+          $templates = json_decode($maintenance_criteria_setup_row['template'], true);
+          if (!is_array($templates)) {
+            $templates = [];
+          }
 
-                    $data[$maintenance_area_description_row['category'] . " " .
-                        $maintenance_area_description_row['area_code'] . ": " .
-                        $maintenance_area_description_row['area_description']][] = [
-                        'keyctr' => $maintenance_criteria_setup_row['keyctr'],
-                        'indicator_code' => $maintenance_area_indicators_row['indicator_code'],
-                        'indicator_description' => $maintenance_area_indicators_row['indicator_description'],
-                        'relevance_definition' => $maintenance_criteria_setup_row['relevance_definition'],
-                        'reqs_code' => $maintenance_criteria_setup_row['reqs_code'],
-                        'documentary_requirements' => $maintenance_criteria_setup_row['documentary_requirements'],
-                        'description' => $maintenance_criteria_setup_row['description'],
-                        'data_source' => $maintenance_criteria_setup_row['data_source'],
-                        'template' => $templates,
-                    ];
-                }
-            }
+          $data[$maintenance_area_description_row['category'] . " " .
+            $maintenance_area_description_row['area_code'] . ": " .
+            $maintenance_area_description_row['area_description']][] = [
+            'keyctr' => $maintenance_criteria_setup_row['keyctr'],
+            'indicator_code' => $maintenance_area_indicators_row['indicator_code'],
+            'indicator_description' => $maintenance_area_indicators_row['indicator_description'],
+            'relevance_definition' => $maintenance_criteria_setup_row['relevance_definition'],
+            'reqs_code' => $maintenance_criteria_setup_row['reqs_code'],
+            'documentary_requirements' => $maintenance_criteria_setup_row['documentary_requirements'],
+            'description' => $maintenance_criteria_setup_row['description'],
+            'data_source' => $maintenance_criteria_setup_row['data_source'],
+            'template' => $templates,
+          ];
         }
+      }
     }
+  }
 }
 
 
@@ -320,7 +320,7 @@ if (!empty($maintenance_area_description_result)) {
                             if (!empty($templates) && is_array($templates)) {
                               foreach ($templates as $template) {
                                 $link = htmlspecialchars($template, ENT_QUOTES, 'UTF-8');
-                                echo '<a href="https://' . $link . '" target="_blank">' . $link . '</a><br><br>';
+                                echo '<a href="' . $link . '" target="_blank">' . $link . '</a><br><br>';
                               }
                             } else {
                               echo 'No template available';
