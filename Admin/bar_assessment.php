@@ -1,7 +1,7 @@
 <?php
 require_once 'common/auth.php';
 if (!userHasPerms('assessment', 'any')) {
-    header('Location:no_permissions.php');
+    header('Location:/mabisa/Admin/no_permissions.php');
     exit;
 }
 
