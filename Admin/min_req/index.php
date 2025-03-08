@@ -112,7 +112,7 @@ unset($_SESSION['success']);
                         </td>
                         <!-- <td><?php echo $row['sub_mininumreqs']; ?></td> -->
                         <td>
-                          <a class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
+                          <a class="btn btn-primary open-modal mb-2" data-id="<?php echo $row['keyctr']; ?>">
                             Edit
                           </a>
                           <a href="delete.php?keyctr=<?php echo $row['keyctr']; ?>" class="btn btn-danger delete-btn"

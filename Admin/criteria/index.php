@@ -341,7 +341,7 @@ if (!empty($maintenance_area_description_result)) {
 
                           <td><?php echo htmlspecialchars($row['data_source']); ?></td>
                           <td>
-                            <button class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
+                            <button type="button" class="btn btn-primary open-modal mb-2" data-id="<?php echo $row['keyctr']; ?>">
                               Edit
                             </button>
                             <a href="../script.php?delete_id=<?php echo $row['keyctr'] ?>" class="btn btn-danger delete-btn">Delete</a>

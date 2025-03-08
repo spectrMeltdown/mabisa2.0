@@ -1,6 +1,7 @@
 <?php
 
 $pathPrepend = isset($isInFolder) ? '../' : '';
+$pathPrepend = isset($isInFolder) ? '../' : '';
 require_once $pathPrepend . '../db/db.php';
 require_once(__DIR__ . "/../api/audit_log.php");
 $useAsFunction = true;

@@ -102,29 +102,6 @@ require_once '../db/db.php';
               </div>
             </div>
           </div>
-
-          <!-- Edit Modal -->
-          <!-- <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="editModalLabel">Edit <span id="fieldLabel"></span></h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true" class="text-white">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  <form id="editForm">
-                    <div class="form-group">
-                      <label for="newValue">New <span id="fieldLabelInput"></span>:</label>
-                      <input type="text" class="form-control" id="newValue" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div> -->
           <!-- End of Main Content -->
         </div>
         <!-- End of Content Wrapper -->

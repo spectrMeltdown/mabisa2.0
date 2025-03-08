@@ -86,7 +86,7 @@ unset($_SESSION['success']);
 
                         <td><?php echo $row['trail']; ?></td>
                         <td>
-                          <a class="btn btn-primary open-modal" data-id="<?php echo $row['keyctr']; ?>">
+                          <a class="btn btn-primary open-modal mb-2" data-id="<?php echo $row['keyctr']; ?>">
                             Edit
                           </a>
                           <a href="delete_indicators.php?keyctr=<?php echo $row['keyctr']; ?>" class="btn btn-danger delete-btn"

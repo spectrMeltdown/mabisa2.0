@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <div class="modal fade" id="addGovernance" tabindex="-1" aria-labelledby="minReqModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title" id="minReqModalLabel">Add Governance Entry</h5>
             </div>
             <div class="modal-body">

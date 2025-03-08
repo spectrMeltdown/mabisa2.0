@@ -26,8 +26,8 @@ try {
 <div class="modal fade" id="displayIdModal" tabindex="-1" aria-labelledby="displayIdModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="displayIdModalLabel">Display ID</h5>
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="displayIdModalLabel">Edit Criteria Entry</h5>
                 <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">&times;</button> -->
             </div>
             <div class="modal-body">
