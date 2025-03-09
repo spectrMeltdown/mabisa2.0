@@ -250,86 +250,93 @@ foreach ($barangayData as $barangay) {
       </a>
     </div>
     <script>
-      $(document).ready(function() {
-        $.ajax({
-          url: "chart_data.php",
-          method: "GET",
-          dataType: "json",
-          success: function(response) {
-            if (!response || response.labels.length === 0) {
-              console.error("No data returned for chart.");
-              return;
+ $(document).ready(function() {
+  $.ajax({
+    url: "chart_data.php",
+    method: "GET",
+    dataType: "json",
+    success: function(response) {
+      if (!response || response.labels.length === 0) {
+        console.error("No data returned for chart.");
+        return;
+      }
+
+      var maxY = response.maxY || 10;
+
+      var ctx = document.getElementById("myBarChart").getContext("2d");
+
+      new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: response.labels,
+          datasets: [
+            {
+              label: "Approved Submissions",
+              backgroundColor: "#28a745", 
+              borderColor: "#28a745",
+              borderWidth: 1,
+              data: response.approved,
+              stack: 'Stack 0' 
+            },
+            {
+              label: "Submissions Waiting for Approval",
+              backgroundColor: "#d3d3d3",
+              borderColor: "#d3d3d3",
+              borderWidth: 1,
+              data: response.total,
+              stack: 'Stack 0'
             }
-
-            var ctx = document.getElementById("myBarChart").getContext("2d");
-
-            new Chart(ctx, {
-              type: "bar",
-              data: {
-                labels: response.labels,
-                datasets: [{
-                  label: "Submissions",
-                  backgroundColor: "#4e73df",
-                  hoverBackgroundColor: "#2e59d9",
-                  borderColor: "#4e73df",
-                  data: response.data,
-                }, ],
+          ]
+        },
+        options: {
+          maintainAspectRatio: false,
+          scales: {
+            xAxes: [{
+              stacked: true, 
+              categoryPercentage: 0.6,
+              barPercentage: 0.5,
+              gridLines: { display: false },
+              ticks: {
+                autoSkip: false,
+                padding: 15,
+                fontSize: 14,
+                maxRotation: 45,
+                minRotation: 45
+              }
+            }],
+            yAxes: [{
+              stacked: true,
+              ticks: {
+                beginAtZero: true,
+                stepSize: Math.ceil(maxY / 5), 
+                max: maxY, 
+                fontSize: 14
               },
-              options: {
-                maintainAspectRatio: false,
-                layout: {
-                  padding: {
-                    left: 10,
-                    right: 25,
-                    top: 25,
-                    bottom: 10
-                  },
-                },
-                scales: {
-                  xAxes: [{
-                    categoryPercentage: 0.6, // Increase spacing between bars
-                    barPercentage: 0.5, // Adjust bar width
-                    gridLines: {
-                      display: false
-                    },
-                    ticks: {
-                      autoSkip: false,
-                      padding: 15, // space between label and bar
-                      fontSize: 14, // label size
-                      maxRotation: 45, //label angle
-                      minRotation: 45
-                    }
-                  }],
-                  yAxes: [{
-                    ticks: {
-                      beginAtZero: true,
-                      stepSize: 5, //increments per label
-                      fontSize: 14 //y axes label size
-                    },
-                    gridLines: {
-                      color: "rgb(234, 236, 244)",
-                      zeroLineColor: "rgb(234, 236, 244)",
-                      drawBorder: false,
-                      borderDash: [2],
-                      zeroLineBorderDash: [2],
-                    },
-                  }],
-                },
-                legend: {
-                  display: false
-                },
-              },
-            });
+              gridLines: {
+                color: "rgb(234, 236, 244)",
+                zeroLineColor: "rgb(234, 236, 244)",
+                drawBorder: false,
+                borderDash: [2],
+                zeroLineBorderDash: [2]
+              }
+            }]
           },
-          error: function(xhr, status, error) {
-            console.error("Error loading chart data:", error);
-          },
-        });
+          legend: { display: true }
+        }
       });
+    },
+    error: function(xhr, status, error) {
+      console.error("Error loading chart data:", error);
+    }
+  });
+});
 
-      // Make the chart container taller
-      document.getElementById("myBarChart").parentNode.style.height = "300px";
-    </script>
+document.getElementById("myBarChart").parentNode.style.height = "300px";
+
+</script>
+
+
+
 </body>
 
 </html>
