@@ -23,125 +23,88 @@ if ($barangay_id) {
     $stmt->bindParam(1, $barangay_id, PDO::PARAM_INT);
     $stmt->execute();
     $barangay = $stmt->fetch(PDO::FETCH_ASSOC);
-
-
-    $stmt = $pdo->prepare("SELECT is_ready FROM barangay_assessment WHERE barangay_id = ?");
-    $stmt->bindParam(1, $barangay_id, PDO::PARAM_INT);
-    $stmt->execute();
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $barangay_name = $barangay ? $barangay['brgyname'] : 'Unknown';
     $ready = isset($result['is_ready']) ? $result['is_ready'] : 0;
     if ($barangay) {
         $barangay_name = $barangay['brgyname'];
     } else {
         $barangay_name = 'Unknown';
     }
-
-    $stmt = $pdo->prepare("SELECT * FROM barangay_assessment_files WHERE barangay_id = ?");
-    $stmt->bindParam(1, $barangay_id, PDO::PARAM_INT);
-    $stmt->execute();
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    include_once '../script.php';
-    $data = [];
-
+    // Fetch active version
     $stmt = $pdo->prepare("SELECT * FROM maintenance_criteria_version WHERE active_ = 1 LIMIT 1");
     $stmt->execute();
     $version = $stmt->fetch(PDO::FETCH_ASSOC);
     $active_version_keyctr = $version ? $version['keyctr'] : null;
 
-    $maintenance_area_description_query = "
-    SELECT
-        mg.*,
-        mc.description AS category,
-        ma.description AS area_description,
-        mad.description AS description
-    FROM maintenance_governance AS mg
-    LEFT JOIN maintenance_category AS mc 
-        ON mg.cat_code = mc.code
-    LEFT JOIN maintenance_area AS ma 
-        ON mg.area_keyctr = ma.keyctr
-    LEFT JOIN maintenance_area_description AS mad 
-        ON mg.desc_keyctr = mad.keyctr;
-";
-
-
-    $stmt = $pdo->prepare($maintenance_area_description_query);
+    // Fetch all areas and categories
+    $stmt = $pdo->prepare("
+        SELECT 
+            mg.keyctr AS governance_keyctr,
+            mc.description AS category,
+            ma.description AS area_description,
+            mad.description AS description,
+            mad.keyctr AS desc_keyctr
+        FROM maintenance_governance AS mg
+        LEFT JOIN maintenance_category AS mc ON mg.cat_code = mc.code
+        LEFT JOIN maintenance_area AS ma ON mg.area_keyctr = ma.keyctr
+        LEFT JOIN maintenance_area_description AS mad ON mg.desc_keyctr = mad.keyctr
+        ORDER BY mc.description, ma.description, mad.description
+    ");
     $stmt->execute();
-    $maintenance_area_description_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $areas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    if (!empty($maintenance_area_description_result)) {
-        foreach ($maintenance_area_description_result as $maintenance_area_description_row) {
+    $data = [];
 
-            $maintenance_governance_query = "SELECT * FROM `maintenance_governance` WHERE desc_keyctr = :desc_keyctr";
-            $stmt = $pdo->prepare($maintenance_governance_query);
-            $stmt->execute(['desc_keyctr' => $maintenance_area_description_row['keyctr']]);
-            $maintenance_governance_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($areas as $area) {
+        // Fetch indicators for each governance area
+        $stmt = $pdo->prepare("SELECT * FROM maintenance_area_indicators WHERE governance_code = ?");
+        $stmt->execute([$area['governance_keyctr']]);
+        $indicators = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            if (!empty($maintenance_governance_result)) {
-                foreach ($maintenance_governance_result as $maintenance_governance_row) {
+        foreach ($indicators as $indicator) {
+            // Fetch criteria setup for each indicator
+            $stmt = $pdo->prepare("
+                SELECT 
+                    msc.keyctr AS keyctr,
+                    mam.description,
+                    mam.reqs_code,
+                    mam.relevance_definition,
+                    msc.movdocs_reqs AS documentary_requirements,
+                    msc.template,
+                    mds.srcdesc AS data_source
+                FROM maintenance_criteria_setup msc
+                LEFT JOIN maintenance_criteria_version AS mcv ON msc.version_keyctr = mcv.keyctr
+                LEFT JOIN maintenance_area_mininumreqs AS mam ON msc.minreqs_keyctr = mam.keyctr
+                LEFT JOIN maintenance_document_source AS mds ON msc.data_source = mds.keyctr
+                WHERE msc.indicator_keyctr = ? AND msc.version_keyctr = ?
+                ORDER BY mam.reqs_code ASC
+            ");
+            $stmt->execute([$indicator['keyctr'], $active_version_keyctr]);
+            $criteria = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-                    $maintenance_area_indicators_query = "SELECT * FROM `maintenance_area_indicators` WHERE governance_code = :governance_code";
-                    $stmt = $pdo->prepare($maintenance_area_indicators_query);
-                    $stmt->execute(['governance_code' => $maintenance_governance_row['keyctr']]);
-                    $maintenance_area_indicators_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                    if (!empty($maintenance_area_indicators_result)) {
-                        foreach ($maintenance_area_indicators_result as $maintenance_area_indicators_row) {
-
-                            $maintenance_criteria_setup_query = "
-                                SELECT 
-                                    msc.keyctr AS keyctr,
-                                    mam.description,
-                                    mam.reqs_code,
-                                     mam.relevance_definition,
-                                    msc.movdocs_reqs AS documentary_requirements,
-                                    msc.template,
-                                    mds.srcdesc AS data_source
-                                FROM `maintenance_criteria_setup` msc 
-                                LEFT JOIN maintenance_criteria_version AS mcv ON msc.version_keyctr = mcv.keyctr
-                                LEFT JOIN maintenance_area_mininumreqs AS mam ON msc.minreqs_keyctr = mam.keyctr
-                                LEFT JOIN maintenance_document_source AS mds ON msc.data_source = mds.keyctr 
-                                WHERE msc.indicator_keyctr = :indicator_keyctr
-                                AND msc.version_keyctr = :active_version_keyctr
-                                ORDER BY mam.reqs_code ASC
-                            ";
-
-                            $stmt = $pdo->prepare($maintenance_criteria_setup_query);
-                            $stmt->execute([
-                                'indicator_keyctr' => $maintenance_area_indicators_row['keyctr'],
-                                'active_version_keyctr' => $active_version_keyctr
-                            ]);
-                            $maintenance_criteria_setup_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                            if (!empty($maintenance_criteria_setup_result)) {
-                                foreach ($maintenance_criteria_setup_result as $maintenance_criteria_setup_row) {
-                                    $data[$maintenance_area_description_row['category'] . " " .
-                                        $maintenance_area_description_row['area_description'] . ": " .
-                                        $maintenance_area_description_row['description']][] = [
-                                        'keyctr' => $maintenance_criteria_setup_row['keyctr'],
-                                        'indicator_keyctr' => $maintenance_area_indicators_row['keyctr'],
-                                        'indicator_code' => $maintenance_area_indicators_row['indicator_code'],
-                                        'indicator_description' => $maintenance_area_indicators_row['indicator_description'],
-                                        'relevance_definition' => $maintenance_criteria_setup_row['relevance_definition'],
-                                        'reqs_code' => $maintenance_criteria_setup_row['reqs_code'],
-                                        'documentary_requirements' => $maintenance_criteria_setup_row['documentary_requirements'],
-                                        'description' => $maintenance_criteria_setup_row['description'],
-                                        'data_source' => $maintenance_criteria_setup_row['data_source'],
-                                        'template' => $maintenance_criteria_setup_row['template'],
-                                    ];
-                                }
-                            }
-                        }
-                    }
-                }
+            foreach ($criteria as $criterion) {
+                $data[$area['category'] . " " . $area['area_description'] . ": " . $area['description']][] = [
+                    'keyctr' => $criterion['keyctr'],
+                    'indicator_keyctr' => $indicator['keyctr'],
+                    'indicator_code' => $indicator['indicator_code'],
+                    'indicator_description' => $indicator['indicator_description'],
+                    'relevance_definition' => $criterion['relevance_definition'],
+                    'reqs_code' => $criterion['reqs_code'],
+                    'documentary_requirements' => $criterion['documentary_requirements'],
+                    'description' => $criterion['description'],
+                    'data_source' => $criterion['data_source'],
+                    'template' => $criterion['template'],
+                ];
             }
         }
     }
-} else {
+}
+ else {
     $data = [];
     $barangay_name = 'Unknown';
 }
 // echo '<pre>';
-// print_r($data);
+// print_r($version);
 // echo'</pre>';
 session_start();
 $successMessage = isset($_SESSION['success']) ? $_SESSION['success'] : '';

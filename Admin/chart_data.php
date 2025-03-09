@@ -6,28 +6,36 @@ header('Content-Type: application/json');
 
 $responses = new Responses($pdo);
 
-// Fetch all barangays
-$barangayData = $pdo->query('SELECT brgyid, brgyname FROM refbarangay')->fetchAll(PDO::FETCH_ASSOC);
 
 $labels = [];
-$data = [];
+$totalSubmissions = [];
+$approvedSubmissions = [];
+
+
+$barangayData = $pdo->query('SELECT brgyid, brgyname FROM refbarangay')->fetchAll(PDO::FETCH_ASSOC);
+$overallTotalSubmissions = $pdo->query('SELECT COUNT(*) FROM maintenance_criteria_setup')->fetchColumn();
+
+$total = ($overallTotalSubmissions === null || $overallTotalSubmissions === '') ? 0 : $overallTotalSubmissions;
+
 
 foreach ($barangayData as $barangay) {
     $responseCount = $responses->getResponseCount($barangay['brgyid']);
+    $approvedCount = $responses->getApprovedCount($barangay['brgyid']);
 
-    // Ensure that empty or missing values default to 0
-    if ($responseCount === null || $responseCount === '') {
-        $submitted = 0;
-    } else {
-        // Extract the first number from "X/Y" format
-        $submitted = explode('/', $responseCount)[0];
-    }
+
+    $submitted = ($responseCount === null || $responseCount === '') ? 0 : explode('/', $responseCount)[0];
+    $approved = ($approvedCount === null || $approvedCount === '') ? 0 : $approvedCount;
 
     $labels[] = $barangay['brgyname'];
-    $data[] = (int)$submitted;
+    $totalSubmissions[] = (int)$submitted - (int)$approved;
+    $approvedSubmissions[] = (int)$approved;
 }
 
-// Output JSON
-echo json_encode(['labels' => $labels, 'data' => $data]);
+echo json_encode([
+    'labels' => $labels,
+    'total' => $totalSubmissions,
+    'approved' => $approvedSubmissions,
+    'maxY' => $total 
+]);
 exit;
-?>
+
