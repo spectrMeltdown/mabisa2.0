@@ -232,8 +232,8 @@ unset($_SESSION['success']);
                             ?>
                                     <p class="text-secondary float-right"><strong>Not yet ready for validation</strong></p>
                                 <?php else : ?>
-                                    <button class="btn btn-success float-right submit-btn" data-bar-id="<?php echo htmlspecialchars($barangay_id); ?>">
-                                        Mark as Validated
+                                    <button class="btn btn-success float-right submit-btn" data-reverse="true" data-bar-id="<?php echo htmlspecialchars($barangay_id); ?>">
+                                        Done validating
                                     </button>
                             <?php
                                 endif;
@@ -243,6 +243,8 @@ unset($_SESSION['success']);
 
 
                     </div>
+                    <!-- hide all submissions until ready for validation -->
+
                     <div class="card shadow mb-4">
                         <div class="card-body">
                             <?php if ($data) { ?>
@@ -364,18 +366,30 @@ unset($_SESSION['success']);
                                                                     <?php endif; ?>
                                                                 <?php else: ?>
 
-                                                                    <button type="button" class="btn btn-success mb-3" title="View"
-                                                                        data-toggle="modal" data-target="#commentModal"
-                                                                        data-fileid="<?= htmlspecialchars($data['file_id']); ?>"
-                                                                        data-name="<?= htmlspecialchars($name); ?>"
-                                                                        data-status="<?= htmlspecialchars($data['status']); ?>"
-                                                                        data-bid="<?= htmlspecialchars($barangay_id); ?>"
-                                                                        data-iid="<?= htmlspecialchars($row['indicator_keyctr']); ?>"
-                                                                        data-expand="collapse-<?php echo md5($key); ?>">
-                                                                        <i class="fa fa-eye"></i>
-                                                                    </button>
 
-                                                                    <?php if (!str_contains(strtolower($userData['role']), 'admin') && userHasPerms('submissions_delete', 'any', $barangay_id, $row['indicator_keyctr']) && $data['status'] !== 'approved' && $ready == 0): ?>
+                                                                    <?php if (
+                                                                        (userHasPerms('approve', 'any', $barangay_id, $row['indicator_keyctr'])
+                                                                            && $ready == 1) ||
+                                                                        (userHasPerms('create', 'any', $barangay_id, $row['indicator_keyctr']))
+                                                                    ): ?>
+                                                                        <button type="button" class="btn btn-success mb-3" title="View"
+                                                                            data-toggle="modal" data-target="#commentModal"
+                                                                            data-fileid="<?= htmlspecialchars($data['file_id']); ?>"
+                                                                            data-name="<?= htmlspecialchars($name); ?>"
+                                                                            data-status="<?= htmlspecialchars($data['status']); ?>"
+                                                                            data-bid="<?= htmlspecialchars($barangay_id); ?>"
+                                                                            data-iid="<?= htmlspecialchars($row['indicator_keyctr']); ?>"
+                                                                            data-expand="collapse-<?php echo md5($key); ?>">
+                                                                            <i class="fa fa-eye"></i>
+                                                                        </button>
+                                                                    <?php endif; ?>
+
+                                                                    <?php if (
+                                                                        !str_contains(strtolower($userData['role']), 'admin')
+                                                                        && userHasPerms('submissions_delete', 'any', $barangay_id, $row['indicator_keyctr'])
+                                                                        && $data['status'] !== 'approved'
+                                                                        && $ready == 0
+                                                                    ): ?>
                                                                         <button class="btn btn-danger mb-3 delete-btn"
                                                                             data-file-id="<?php echo htmlspecialchars($data['file_id'], ENT_QUOTES, 'UTF-8'); ?>"
                                                                             data-bid="<?= htmlspecialchars($barangay_id); ?>"
@@ -398,7 +412,7 @@ unset($_SESSION['success']);
                                                                         </div>
                                                                     <?php else: ?>
                                                                         <div class="rounded bg-secondary text-white">
-                                                                            <p>Waiting for Approval</p>
+                                                                            <p>Awaiting validation</p>
                                                                         </div>
                                                                     <?php endif; ?>
                                                                 <?php else: ?>
@@ -424,7 +438,6 @@ unset($_SESSION['success']);
                             <?php } ?>
                         </div>
                     </div>
-
                 </div>
             </div>
             <!-- End of Main Content -->
@@ -543,21 +556,29 @@ unset($_SESSION['success']);
 
         document.querySelectorAll('.submit-btn').forEach(button => {
             button.addEventListener('click', e => {
-                let barangayid = e.target.getAttribute('data-bar-id');
-
-                if (!confirm('Are you sure you want to submit for validation? This process cannot be undone')) {
-                    return;
-                }
-
+                let barangayid = e.target.closest('.submit-btn').getAttribute('data-bar-id');
+                let isReverse = e.target.closest('.submit-btn').getAttribute('data-reverse') ?? '';
+                console.log('in submit btn');
                 console.log(barangayid);
+                console.log(isReverse);
 
+                if (isReverse == 'true') {
+                    if (!confirm('Are you sure you are done validating?')) {
+                        return;
+                    }
+                } else {
+                    if (!confirm('Are you sure you want to submit for validation?')) {
+                        return;
+                    }
+                }
                 fetch('../bar_assessment/user_actions/validate.php', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            barangay_id: barangayid
+                            barangay_id: barangayid,
+                            isReverse: isReverse
                         })
                     })
                     .then(async response => {
@@ -567,7 +588,11 @@ unset($_SESSION['success']);
                     })
                     .then(data => {
                         if (data.success) {
-                            alert('Submitted for validation successfully.');
+                            if (data.isReverse) {
+                                alert('Validation status updated successfully.');
+                            } else {
+                                alert('Submitted for validation successfully.');
+                            }
                             const bid = e.target.dataset.bid;
                             const iid = e.target.dataset.iid;
                             const expand = e.target.dataset.expand;
