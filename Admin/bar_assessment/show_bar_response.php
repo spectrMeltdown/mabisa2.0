@@ -24,7 +24,12 @@ if ($barangay_id) {
     $stmt->execute();
     $barangay = $stmt->fetch(PDO::FETCH_ASSOC);
     $barangay_name = $barangay ? $barangay['brgyname'] : 'Unknown';
-    $ready = isset($result['is_ready']) ? $result['is_ready'] : 0;
+
+
+    $stmt = $pdo->prepare("SELECT is_ready FROM barangay_assessment WHERE barangay_id =?");
+    $stmt-> execute([$barangay_id]);
+    $result = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    $ready = $result ? 1 : 0;
     if ($barangay) {
         $barangay_name = $barangay['brgyname'];
     } else {
@@ -104,7 +109,7 @@ if ($barangay_id) {
     $barangay_name = 'Unknown';
 }
 // echo '<pre>';
-// print_r($version);
+// print_r($ready);
 // echo'</pre>';
 session_start();
 $successMessage = isset($_SESSION['success']) ? $_SESSION['success'] : '';
