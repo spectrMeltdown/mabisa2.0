@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 // ini_set('display_errors', 0); // Disable error display
+// $disableLogging = true; // comment out to disable
 require_once 'logging.php';
 require_once '../db/db.php';
 require_once '../api/audit_log.php';
@@ -175,9 +176,10 @@ JOIN permissions p ON urb.permission_id = p.id
 
 function updateMultiBarPerms(\PDO $pdo, array $urbPerms, array $newPerms, array $oldPerms, array $allPerms, int $userID)
 {
-  writeLog('update bar perms');
+  writeLog('IN updateMultiBarPerms');
   // create new array that is the difference from old perms and new perms
   $permsToRemove = [];
+  writeLog('new perms:');
   writeLog($newPerms);
   // array of only perm ids from new perms
   $newPermsIDs = array_column($newPerms, 'permid');

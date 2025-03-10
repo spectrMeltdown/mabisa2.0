@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   console.log('Profile pic exists:' + profilePicExists);
   $('#profilePic').attr(
     'src',
-    profilePicExists ? user['profile_pic'] : '../img/undraw_profile_2.svg',
+    profilePicExists ? user['profile_pic'] : '../img/default_profile.svg',
   );
 
   // register delete button event handler

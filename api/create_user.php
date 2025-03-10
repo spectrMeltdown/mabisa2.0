@@ -3,8 +3,9 @@
 declare(strict_types=1);
 // ini_set('display_errors', 0); // Disable error display
 // header('Content-Type: application/json');
-require_once '../db/db.php';
+// $disableLogging = true; // comment out to disable
 require_once 'logging.php';
+require_once '../db/db.php';
 require_once '../api/audit_log.php';
 $log = new Audit_log($pdo);
 
@@ -65,8 +66,8 @@ try {
 
   // update perms to set user_roles_barangay_id
   $newUserRolesBarangayPerms = null;
-  if (isset($barPerms) && $barPerms != null) {
-    writeLog('inserting bar perms');
+  if (!empty($barPerms)) {
+    writeLog('updating barangay perms');
     // create a new array where permissions are groups per indicator, and indicators are grouped per barangay
     /** @var array */
     $compiledPerms = [];
@@ -76,17 +77,12 @@ try {
       $barangayID = $entry[0];
       $indicatorID = $entry[1];
       $permissionCol = $entry[2];
-
-
       if (!isset($compiledPerms[$barangayID][$indicatorID])) {
         $compiledPerms[$barangayID][$indicatorID] = [];
       }
-
-      // add permission column
       $compiledPerms[$barangayID][$indicatorID][] = $permissionCol;
     }
     // writeLog($compiledPerms);
-    // exit;
     foreach ($compiledPerms as $barangayID => $indicators) {
       foreach ($indicators as $indicatorID => $permissions) {
         $newPermissionID = insertPermissions($pdo, $permissions, true);
@@ -104,7 +100,7 @@ try {
   }
 
   // update user_roles
-  if (isset($genPerms) && $genPerms != null) {
+  if (!empty($genPerms)) {
     writeLog('inserting gen perms');
     // insert permissions
     $newPermissionID = insertPermissions($pdo, $genPerms);
@@ -148,6 +144,7 @@ try {
 // returns the id of the new permission row
 function insertPermissions($pdo, $permissions, $appendAssessment = false): int
 {
+  writeLog('Inserting permissions');
   global $pdo;
   $sql = 'insert into permissions(';
   foreach ($permissions as $permission) {

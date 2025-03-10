@@ -19,14 +19,14 @@ $responses = new Responses($pdo);
 $logging = new Audit_log($pdo);
 
 if ($barangay_id) {
-    $stmt = $pdo->prepare("SELECT brgyname FROM refbarangay WHERE brgyid = ?");
+    $stmt = $pdo->prepare("SELECT brgyname FROM refbarangay rb WHERE brgyid = ?");
     $stmt->bindParam(1, $barangay_id, PDO::PARAM_INT);
     $stmt->execute();
     $barangay = $stmt->fetch(PDO::FETCH_ASSOC);
     $barangay_name = $barangay ? $barangay['brgyname'] : 'Unknown';
 
 
-    
+
     if ($barangay) {
         $barangay_name = $barangay['brgyname'];
     } else {
@@ -34,7 +34,7 @@ if ($barangay_id) {
     }
 
     $stmt = $pdo->prepare("SELECT *  FROM barangay_assessment WHERE barangay_id =?");
-    $stmt-> execute([$barangay_id]);
+    $stmt->execute([$barangay_id]);
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $ready = !empty($result) ? $result[0]['is_ready'] : 0;
     // Fetch active version
@@ -105,8 +105,7 @@ if ($barangay_id) {
             }
         }
     }
-}
- else {
+} else {
     $data = [];
     $barangay_name = 'Unknown';
 }
@@ -161,7 +160,7 @@ unset($_SESSION['success']);
         <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
 
-            <!-- Main Content -->
+
             <div id="content">
 
                 <!-- Topbar -->
@@ -353,7 +352,7 @@ unset($_SESSION['success']);
                                                                             data-name="<?= htmlspecialchars($name); ?>"
                                                                             data-status="<?= htmlspecialchars($data['status']); ?>"
                                                                             data-bid="<?= htmlspecialchars($barangay_id); ?>"
-                                                                             data-ready="<?= htmlspecialchars($ready); ?>"
+                                                                            data-ready="<?= htmlspecialchars($ready); ?>"
                                                                             data-iid="<?= htmlspecialchars($row['indicator_keyctr']); ?>"
                                                                             data-expand="collapse-<?php echo md5($key); ?>">
                                                                             <i class="fa fa-eye"></i>
@@ -418,6 +417,9 @@ unset($_SESSION['success']);
             </div>
             <!-- End of Main Content -->
         </div>
+        <a class="scroll-to-top rounded" href="#page-top">
+            <i class="fas fa-angle-up"></i> Scroll to Top
+        </a>
     </div>
     </div>
     <?php require_once '../components/comment_section.php'; ?>

@@ -50,7 +50,7 @@ if (!(userHasPerms('users_create', 'gen') || userHasPerms('users_update', 'gen')
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
 
-      <!-- Main Content -->
+
       <div id="content">
 
         <!-- Topbar -->
