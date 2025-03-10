@@ -202,7 +202,7 @@ unset($_SESSION['success']);
                                     <p class="text-secondary float-right"><strong>Not yet ready for validation</strong></p>
                                 <?php else : ?>
                                     <button class="btn btn-success float-right submit-btn" data-reverse="true" data-bar-id="<?php echo htmlspecialchars($barangay_id); ?>">
-                                        Done validating
+                                        Validate
                                     </button>
                             <?php
                                 endif;
