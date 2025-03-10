@@ -43,7 +43,7 @@ $is_accepting = isset($version['is_accepting_response']) ? ($version['is_accepti
         <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
 
-            <!-- Main Content -->
+
             <div id="content">
 
                 <!-- Topbar -->

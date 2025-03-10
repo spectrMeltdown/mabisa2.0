@@ -16,7 +16,7 @@ let editMode = currentUserID ? true : false;
 /** @var {array} */
 let itemsCheckViaJS = [];
 /** @var {array} */
-let registeredIDs = [];
+// let registeredIDs = [];
 addPhonePrepend();
 
 //cancel button confirmation
@@ -234,6 +234,7 @@ $('#roleSelect').on('change', async e => {
                 data: 'available_perms',
                 title: 'Permissions',
                 render: function(data, type, row) {
+                  console.log('render function ran');
                   if (Array.isArray(data)) {
                     // console.log('data was array!');
                     let uniqueID = `${row['barangay']['id']}--${row['indicators']['id']}`;
@@ -340,6 +341,19 @@ $('#roleSelect').on('change', async e => {
           rej();
         },
       }).then(() => {
+        $(document).on('change', '[id^="selectAllBarBtn-"]', e => {
+          console.log(e.target);
+          let uniqueID = $(e.target)
+            .attr('id')
+            .replace('selectAllBarBtn-', '');
+          let isChecked = $(e.target).prop('checked');
+
+          // Select/deselect all checkboxes in the current group
+          $(`.${uniqueID}-container input[type="checkbox"]`).prop(
+            'checked',
+            isChecked,
+          );
+        });
         // after all the js is done, then check the boxes with ids defined in itemsCheckViaJS
         for (const item of itemsCheckViaJS) {
           // console.log(item + ' checked!');
@@ -828,25 +842,25 @@ $('#selectAllGenBtn').on('change', function() {
 // for creating select all btns in barangay scope permissions
 function createBarSelectAllBtn(uniqueID) {
   // select all buttion
-  $(`#selectAllBarBtn-${uniqueID}`)
-    .off()
-    .on('change', e => {
-      console.log($(e.target).prop('checked'));
-      if ($(e.target).prop('checked')) {
-        // console.log('uncheck');
-        $(`.${uniqueID}-container input[type="checkbox"]`).prop(
-          'checked',
-          true,
-        );
-      } else {
-        // console.log('check');
-        // console.log($(`.${uniqueID}-container input[type="checkbox"]`));
-        $(`.${uniqueID}-container input[type="checkbox"]`).prop(
-          'checked',
-          false,
-        );
-      }
-    });
+  // $(`#selectAllBarBtn-${uniqueID}`)
+  //   .off()
+  //   .on('change', e => {
+  //     console.log($(e.target).prop('checked'));
+  //     if ($(e.target).prop('checked')) {
+  //       // console.log('uncheck');
+  //       $(`.${uniqueID}-container input[type="checkbox"]`).prop(
+  //         'checked',
+  //         true,
+  //       );
+  //     } else {
+  //       // console.log('check');
+  //       // console.log($(`.${uniqueID}-container input[type="checkbox"]`));
+  //       $(`.${uniqueID}-container input[type="checkbox"]`).prop(
+  //         'checked',
+  //         false,
+  //       );
+  //     }
+  //   });
 
   // html
   return `<input class="mr-1" type="checkbox" name="selectAll-${uniqueID}" id="selectAllBarBtn-${uniqueID}">

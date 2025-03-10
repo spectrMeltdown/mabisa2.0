@@ -12,7 +12,9 @@ if (!userHasPerms('users_read', 'gen')) {
 <html lang="en">
 
 <head>
-  <?php require_once 'common/head.php';
+  <?php
+  require_once 'common/head.php';
+  $disableLogging = true; // comment to enable logging
   require_once '../api/logging.php';
   require_once '../db/db.php';
   ?>
@@ -36,8 +38,6 @@ if (!userHasPerms('users_read', 'gen')) {
 
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
-
-      <!-- Main Content -->
       <div id="content">
 
         <!-- Topbar -->
@@ -94,7 +94,7 @@ if (!userHasPerms('users_read', 'gen')) {
                       <?php
                       require_once '../api/get_role_name.php';
                       $query = $pdo->prepare("select id, full_name, username, role_id from users where id != :id");
-                      // writeLog($userData);
+                      writeLog($userData);
                       $query->execute([':id' => $userData['id']]);
                       $allUsers = $query->fetchAll(PDO::FETCH_ASSOC);
                       foreach ($allUsers as $row) {

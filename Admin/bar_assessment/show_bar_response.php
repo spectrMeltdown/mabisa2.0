@@ -19,12 +19,14 @@ $responses = new Responses($pdo);
 $logging = new Audit_log($pdo);
 
 if ($barangay_id) {
-    $stmt = $pdo->prepare("SELECT brgyname FROM refbarangay WHERE brgyid = ?");
+    $stmt = $pdo->prepare("SELECT brgyname FROM refbarangay rb WHERE brgyid = ?");
     $stmt->bindParam(1, $barangay_id, PDO::PARAM_INT);
     $stmt->execute();
     $barangay = $stmt->fetch(PDO::FETCH_ASSOC);
     $barangay_name = $barangay ? $barangay['brgyname'] : 'Unknown';
+
     $ready = isset($result['is_ready']) ? $result['is_ready'] : 0;
+    echo '<script>console.log("ready is " + ' . $ready . ')</script>';
     if ($barangay) {
         $barangay_name = $barangay['brgyname'];
     } else {
@@ -98,8 +100,7 @@ if ($barangay_id) {
             }
         }
     }
-}
- else {
+} else {
     $data = [];
     $barangay_name = 'Unknown';
 }
@@ -154,7 +155,7 @@ unset($_SESSION['success']);
         <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
 
-            <!-- Main Content -->
+
             <div id="content">
 
                 <!-- Topbar -->
@@ -405,6 +406,9 @@ unset($_SESSION['success']);
             </div>
             <!-- End of Main Content -->
         </div>
+        <a class="scroll-to-top rounded" href="#page-top">
+            <i class="fas fa-angle-up"></i> Scroll to Top
+        </a>
     </div>
     </div>
     <?php require_once '../components/comment_section.php'; ?>

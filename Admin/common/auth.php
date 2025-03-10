@@ -1,7 +1,7 @@
 <?php
 // redirect if logged out, except on login page
 if (empty($_COOKIE['id']) && !isset($isLoginPage)) {
-  header('location:/mabisa2.0/Admin/logged_out.php');
+  header('location:/mabisa/Admin/logged_out.php');
   exit;
 }
 
@@ -16,7 +16,7 @@ unset($customUserID);
 global $userData;
 if (isset($userData['error'])) {
   setcookie('id', '', time() - 3600, '/');
-  header('Location:/mabisa2.0/Admin/account_error.php');
+  header('Location:/mabisa/Admin/account_error.php');
   exit;
 }
 
