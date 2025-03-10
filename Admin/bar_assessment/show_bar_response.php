@@ -25,13 +25,18 @@ if ($barangay_id) {
     $barangay = $stmt->fetch(PDO::FETCH_ASSOC);
     $barangay_name = $barangay ? $barangay['brgyname'] : 'Unknown';
 
-    $ready = isset($result['is_ready']) ? $result['is_ready'] : 0;
-    echo '<script>console.log("ready is " + ' . $ready . ')</script>';
+
+
     if ($barangay) {
         $barangay_name = $barangay['brgyname'];
     } else {
         $barangay_name = 'Unknown';
     }
+
+    $stmt = $pdo->prepare("SELECT *  FROM barangay_assessment WHERE barangay_id =?");
+    $stmt->execute([$barangay_id]);
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $ready = !empty($result) ? $result[0]['is_ready'] : 0;
     // Fetch active version
     $stmt = $pdo->prepare("SELECT * FROM maintenance_criteria_version WHERE active_ = 1 LIMIT 1");
     $stmt->execute();
@@ -105,7 +110,7 @@ if ($barangay_id) {
     $barangay_name = 'Unknown';
 }
 // echo '<pre>';
-// print_r($version);
+// print_r($ready);
 // echo'</pre>';
 session_start();
 $successMessage = isset($_SESSION['success']) ? $_SESSION['success'] : '';
@@ -342,6 +347,7 @@ unset($_SESSION['success']);
                                                                             data-name="<?= htmlspecialchars($name); ?>"
                                                                             data-status="<?= htmlspecialchars($data['status']); ?>"
                                                                             data-bid="<?= htmlspecialchars($barangay_id); ?>"
+                                                                            data-ready="<?= htmlspecialchars($ready); ?>"
                                                                             data-iid="<?= htmlspecialchars($row['indicator_keyctr']); ?>"
                                                                             data-expand="collapse-<?php echo md5($key); ?>">
                                                                             <i class="fa fa-eye"></i>
