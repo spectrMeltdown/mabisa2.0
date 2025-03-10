@@ -26,15 +26,17 @@ if ($barangay_id) {
     $barangay_name = $barangay ? $barangay['brgyname'] : 'Unknown';
 
 
-    $stmt = $pdo->prepare("SELECT is_ready FROM barangay_assessment WHERE barangay_id =?");
-    $stmt-> execute([$barangay_id]);
-    $result = $stmt->fetchAll(PDO::FETCH_COLUMN);
-    $ready = $result ? 1 : 0;
+    
     if ($barangay) {
         $barangay_name = $barangay['brgyname'];
     } else {
         $barangay_name = 'Unknown';
     }
+
+    $stmt = $pdo->prepare("SELECT *  FROM barangay_assessment WHERE barangay_id =?");
+    $stmt-> execute([$barangay_id]);
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $ready = !empty($result) ? $result[0]['is_ready'] : 0;
     // Fetch active version
     $stmt = $pdo->prepare("SELECT * FROM maintenance_criteria_version WHERE active_ = 1 LIMIT 1");
     $stmt->execute();
@@ -346,6 +348,7 @@ unset($_SESSION['success']);
                                                                             data-name="<?= htmlspecialchars($name); ?>"
                                                                             data-status="<?= htmlspecialchars($data['status']); ?>"
                                                                             data-bid="<?= htmlspecialchars($barangay_id); ?>"
+                                                                             data-ready="<?= htmlspecialchars($ready); ?>"
                                                                             data-iid="<?= htmlspecialchars($row['indicator_keyctr']); ?>"
                                                                             data-expand="collapse-<?php echo md5($key); ?>">
                                                                             <i class="fa fa-eye"></i>

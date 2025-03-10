@@ -13,6 +13,7 @@ $(document).ready(function() {
     let status = button.data('status');
     let bid = button.data('bid');
     let iid = button.data('iid');
+    let ready = button.data('ready');
     let expand = button.data('expand');
     let modal = $(this);
 
@@ -23,6 +24,7 @@ $(document).ready(function() {
     console.log('brgy id:', bid);
     console.log('indicator :', iid);
     console.log('expand :', expand);
+    console.log('ready :',ready);
 
     modal
       .find('#commentModalLabel')
@@ -47,7 +49,14 @@ $(document).ready(function() {
 
     var statusMessage = modal.find('#statusMessage');
 
-    if (status === 'pending') {
+    
+     if (ready === 0){
+      statusMessage.hide();
+      modal.find('#approveForm').hide();
+      modal.find('#declineForm').hide();
+      modal.find('#revertForm').hide();
+    }
+    else if (status === 'pending') {
       statusMessage.hide();
       modal.find('#approveForm').show();
       modal.find('#declineForm').show();
