@@ -294,16 +294,21 @@ unset($_SESSION['success']);
                                                             <?php endif; ?>
 
                                                             <td>
-                                                                <?php
-                                                                $link = htmlspecialchars($row['template']);
-                                                                echo htmlspecialchars($row['documentary_requirements']) . '<br> <br>';
-                                                                if (!empty($link)) {
-                                                                    echo '<a href="' . $link . '" target="_blank">View Template</a>';
-                                                                } else {
-                                                                    echo 'No template available';
-                                                                }
-                                                                ?>
-                                                            </td>
+                            <?php
+                            echo htmlspecialchars($row['documentary_requirements']) . '<br><br>';
+
+                            $templates = is_array($row['template']) ? $row['template'] : json_decode($row['template'], true);
+
+                            if (!empty($templates) && is_array($templates)) {
+                              foreach ($templates as $template) {
+                                $link = htmlspecialchars($template, ENT_QUOTES, 'UTF-8');
+                                echo '<a href="' . $link . '" target="_blank">' . $link . '</a><br><br>';
+                              }
+                            } else {
+                              echo 'No template available';
+                            }
+                            ?>
+                          </td>
                                                             <?php
                                                             $data = $responses->getData($barangay_id, $row['keyctr']);
                                                             ?>
