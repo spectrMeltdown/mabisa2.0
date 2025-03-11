@@ -37,6 +37,10 @@ if ($barangay_id) {
     $stmt->execute([$barangay_id]);
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $ready = !empty($result) ? $result[0]['is_ready'] : 0;
+    $responseCount = $responses->getResponseCount($barangay_id);
+    $submitted = ($responseCount === null || $responseCount === '') ? 0 : explode('/', $responseCount)[0];
+    $total = ($responseCount === null || $responseCount === '') ? 0 : explode('/', $responseCount)[1];
+    $complete = ($total === $submitted) ? 1 : 0;
     // Fetch active version
     $stmt = $pdo->prepare("SELECT * FROM maintenance_criteria_version WHERE active_ = 1 LIMIT 1");
     $stmt->execute();
@@ -110,8 +114,8 @@ if ($barangay_id) {
     $barangay_name = 'Unknown';
 }
 // echo '<pre>';
-// print_r($ready);
-// echo'</pre>';
+// print_r($complete);
+// echo '</pre>';
 session_start();
 $successMessage = isset($_SESSION['success']) ? $_SESSION['success'] : '';
 unset($_SESSION['success']);
@@ -201,7 +205,7 @@ unset($_SESSION['success']);
                             ?>
                                     <p class="text-secondary float-right"><strong>Not yet ready for validation</strong></p>
                                 <?php else : ?>
-                                    <button class="btn btn-success float-right submit-btn" data-reverse="true" data-bar-id="<?php echo htmlspecialchars($barangay_id); ?>">
+                                    <button class="btn btn-success float-right submit-btn" data-reverse="true" data-complete="<?php echo htmlspecialchars($complete); ?>" data-bar-id="<?php echo htmlspecialchars($barangay_id); ?>">
                                         Validate
                                     </button>
                             <?php
@@ -294,26 +298,27 @@ unset($_SESSION['success']);
                                                             <?php endif; ?>
 
                                                             <td>
-                            <?php
-                            echo htmlspecialchars($row['documentary_requirements']) . '<br><br>';
+                                                                <?php
+                                                                echo htmlspecialchars($row['documentary_requirements']) . '<br><br>';
 
-                            $templates = is_array($row['template']) ? $row['template'] : json_decode($row['template'], true);
+                                                                $templates = is_array($row['template']) ? $row['template'] : json_decode($row['template'], true);
 
-                            if (!empty($templates) && is_array($templates)) {
-                              foreach ($templates as $template) {
-                                $link = htmlspecialchars($template, ENT_QUOTES, 'UTF-8');
-                                echo '<a href="' . $link . '" target="_blank">' . $link . '</a><br><br>';
-                              }
-                            } else {
-                              echo 'No template available';
-                            }
-                            ?>
-                          </td>
+                                                                if (!empty($templates) && is_array($templates)) {
+                                                                    foreach ($templates as $template) {
+                                                                        $link = htmlspecialchars($template, ENT_QUOTES, 'UTF-8');
+                                                                        echo '<a href="' . $link . '" target="_blank">' . $link . '</a><br><br>';
+                                                                    }
+                                                                } else {
+                                                                    echo 'No template available';
+                                                                }
+                                                                ?>
+                                                            </td>
                                                             <?php
                                                             $data = $responses->getData($barangay_id, $row['keyctr']);
                                                             ?>
                                                             <td class="data-cell-upload-view" style="text-align: center; vertical-align: middle;" id="<?php echo htmlspecialchars($barangay_id . $row['indicator_keyctr']) ?>">
                                                                 <?php if (!$data): ?>
+                                                                    <!-- Attachment -->
                                                                     <?php
                                                                     if (!str_contains(strtolower($userData['role']), 'admin') && userHasPerms('submissions_create', 'any', $barangay_id, $row['indicator_keyctr']) && $version['is_accepting_response'] == '0' && $ready == 0) : ?>
                                                                         <form action="../bar_assessment/user_actions/upload.php" method="POST"
@@ -339,12 +344,11 @@ unset($_SESSION['success']);
                                                                         <?php endif; ?>
                                                                     <?php endif; ?>
                                                                 <?php else: ?>
-
-
+                                                                    <!-- preview file -->
                                                                     <?php if (
                                                                         (userHasPerms('approve', 'any', $barangay_id, $row['indicator_keyctr'])
                                                                             && $ready == 1) ||
-                                                                        (userHasPerms('create', 'any', $barangay_id, $row['indicator_keyctr']))
+                                                                        (userHasPerms('create', 'any'))
                                                                     ): ?>
                                                                         <button type="button" class="btn btn-success mb-3" title="View"
                                                                             data-toggle="modal" data-target="#commentModal"
@@ -536,19 +540,28 @@ unset($_SESSION['success']);
             button.addEventListener('click', e => {
                 let barangayid = e.target.closest('.submit-btn').getAttribute('data-bar-id');
                 let isReverse = e.target.closest('.submit-btn').getAttribute('data-reverse') ?? '';
+                let complete = e.target.closest('.submit-btn').getAttribute('data-complete') ? 1 : 0;
                 console.log('in submit btn');
                 console.log(barangayid);
                 console.log(isReverse);
+                console.log(complete);
 
                 if (isReverse == 'true') {
                     if (!confirm('Are you sure you are done validating?')) {
                         return;
                     }
-                } else {
-                    if (!confirm('Are you sure you want to submit for validation?')) {
+                } else if (complete === 0) {
+                    if (!confirm("You haven't submitted all requirements yet. Are you sure you want to submit?")) {
                         return;
                     }
+                } else {
+                    {
+                        if (!confirm('Are you sure you want to submit for validation?')) {
+                            return;
+                        }
+                    }
                 }
+
                 fetch('../bar_assessment/user_actions/validate.php', {
                         method: 'POST',
                         headers: {
