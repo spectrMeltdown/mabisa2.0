@@ -14,7 +14,7 @@ if (isset($isInFolder)):
     <i class="fa fa-bars"></i>
   </button>
 
-  <div class="header-title" id="mabisa-title">
+  <div class="header-title" id="mabisa2.0-title">
   </div>
 
   <!-- Topbar Navbar -->

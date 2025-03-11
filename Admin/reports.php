@@ -7,7 +7,7 @@ require_once '../db/db.php';
 require_once '../Admin/bar_assessment/responses.php';
 
 if (!userHasPerms('reports_read', 'gen')) {
-  header('Location:/mabisa/Admin/no_permissions.php');
+  header('Location:/mabisa2.0/Admin/no_permissions.php');
   exit;
 }
 

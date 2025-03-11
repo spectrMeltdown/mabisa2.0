@@ -11,7 +11,7 @@ global $userGenPerms;
     <div class="sidebar-brand-icon">
       <i><img src="<?= $pathPrepend ?>img/logo.png" height="60px" /></i>
     </div>
-    <div class="sidebar-brand-text mx-3">MABISA</div>
+    <div class="sidebar-brand-text mx-3">mabisa2.0</div>
   </a>
 
   <!-- Divider -->
@@ -158,7 +158,7 @@ global $userGenPerms;
     <div class="sidebar-brand-icon">
       <i><img src="<?= $pathPrepend ?>img/logo.png" height="60px" /></i>
     </div>
-    <div class="sidebar-brand-text mx-3">MABISA</div>
+    <div class="sidebar-brand-text mx-3">mabisa2.0</div>
   </a>
   <!-- Sidebar Toggler (Sidebar) -->
   <div class="text-center d-none d-md-inline">

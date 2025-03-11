@@ -118,7 +118,7 @@ function sendNotifBar(\PDO $pdo, string $creatorID, string $title, string $messa
       writeLog($expand);
       if (!empty($bid) &&  !empty($iid) && !empty($expand)) {
         $sql = 'INSERT INTO notifications (user_id, title, message, file_link) VALUES (:user_id, :title, :message, :file_link)';
-        $params[':file_link'] = 'http://localhost/mabisa/Admin/bar_assessment/show_bar_response.php?' . http_build_query([
+        $params[':file_link'] = 'http://localhost/mabisa2.0/Admin/bar_assessment/show_bar_response.php?' . http_build_query([
           'barangay_id' => $bid,
           'expand' => '#' . $expand
         ]) . '#' . urlencode($bid . $iid);
