@@ -15,8 +15,10 @@ let currentUserID = Number(params.get('id'));
 let editMode = currentUserID ? true : false;
 /** @var {array} */
 let itemsCheckViaJS = [];
-/** @var {array} */
+// /** @var {object} */
+// let checkedItems = [];
 // let registeredIDs = [];
+const barPermsForm = new FormData();
 addPhonePrepend();
 
 //cancel button confirmation
@@ -175,12 +177,13 @@ $('#roleSelect').on('change', async e => {
           }
           const barTableData = JSON.parse(res);
           $('#barPermTable').DataTable({
+            stateSave: true,
             data: barTableData,
-            createdRow: function(row /*, data, dataIndex */) {
-              $('td', row).each(function() {
-                $(this).html($(this).html()); // Force HTML rendering
-              });
-            },
+            // createdRow: function(row /*, data, dataIndex */) {
+            //   $('td', row).each(function() {
+            //     $('#barPermTable').html($('#barPermTable').html()); // Force HTML rendering
+            //   });
+            // },
             columns: [
               {
                 data: 'barangay',
@@ -209,7 +212,7 @@ $('#roleSelect').on('change', async e => {
                   if (Array.isArray(data)) {
                     // console.log('ARRAY!');
                     return data
-                      .map((ind, index) => {
+                      .map(ind => {
                         const uniqueID = `${row['barangay']['id']}--${row['indicators']['id']}--${ind}`;
                         generateCollapsibleText(
                           ind.code,
@@ -283,7 +286,7 @@ $('#roleSelect').on('change', async e => {
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <div class="input-group-text">
-                      <input type="checkbox" name="${uniqueIDVal}" id="${uniqueIDVal}" value="true" ${
+                      <input type="checkbox" class="perm-checkbox" name="${uniqueIDVal}" id="${uniqueIDVal}" value="true" ${
                             anotherTaken ? '' : ''
                           }>
                     </div>
@@ -310,20 +313,20 @@ $('#roleSelect').on('change', async e => {
             //   0, // Merge identical "Barangay" cells
             // ],
             drawCallback: function(/*settings */) {
-              let api = this.api();
+              let api = $('#barPermTable').DataTable();
               let prev = null;
 
               api
                 .rows({ page: 'current' })
                 .every(function(/*rowIdx, tableLoop, rowLoop */) {
-                  let data = this.data();
+                  let data = $('#barPermTable').DataTable();
 
                   // Ensure the data object contains 'barangay'
                   if (!data || typeof data.barangay === 'undefined') {
                     return;
                   }
 
-                  let cell = $(this.node()).find('td:first'); // Target the first column
+                  let cell = $($('#barPermTable').node()).find('td:first'); // Target the first column
 
                   if (prev && prev.barangay === data.barangay) {
                     cell.empty(); // Use empty() instead of html('') for better performance
@@ -341,7 +344,27 @@ $('#roleSelect').on('change', async e => {
           rej();
         },
       }).then(() => {
+        // save the check state
+        $(document).on('change', 'input[type="checkbox"].perm-checkbox', e => {
+          console.log('checkbox event fired');
+          let checkboxID = $(e.target).attr('id');
+          console.log('id is: ' + checkboxID);
+          let checked = $(e.target).prop('checked');
+          console.log('checked is: ' + checked);
+          if (checkboxID) {
+            if (checked == true) {
+              console.log('adding checkboxID: ' + checkboxID);
+              barPermsForm.set(checkboxID, true);
+            } else {
+              console.log('removing checkboxID: ' + checkboxID);
+              barPermsForm.delete(checkboxID);
+            }
+          }
+        });
+
+        // for select all checkboxes
         $(document).on('change', '[id^="selectAllBarBtn-"]', e => {
+          console.log('select all checkbox event fired');
           console.log(e.target);
           let uniqueID = $(e.target)
             .attr('id')
@@ -349,11 +372,19 @@ $('#roleSelect').on('change', async e => {
           let isChecked = $(e.target).prop('checked');
 
           // Select/deselect all checkboxes in the current group
-          $(`.${uniqueID}-container input[type="checkbox"]`).prop(
-            'checked',
-            isChecked,
-          );
+          // $(`.${uniqueID}-container input[type="checkbox"]`).prop(
+          //   'checked',
+          //   isChecked,
+          // );
+
+          // Select/deselect all checkboxes in the current group
+          $(
+            `.${uniqueID}-container input[type="checkbox"]:not([id^="selectAllBarBtn-"])`,
+          )
+            .prop('checked', isChecked)
+            .trigger('change'); // ✅ Manually trigger change event
         });
+
         // after all the js is done, then check the boxes with ids defined in itemsCheckViaJS
         for (const item of itemsCheckViaJS) {
           // console.log(item + ' checked!');
@@ -593,8 +624,8 @@ $('#save-user-btn').on('click', async () => {
   }
 
   // BAR PERMISSIONS
-  const barPermsForm = new FormData($('#user-bar-permissions-form').get(0));
-  barPermsForm.delete('barPermTable_length'); // from datatables
+  // const barPermsForm = new FormData($('#user-bar-permissions-form').get(0));
+  // barPermsForm.delete('barPermTable_length'); // from datatables pagination, gets included in the form
   // display error if no permissions selected, and if barangay permissions available
   if (
     barPermsForm.entries().next().done &&
@@ -835,8 +866,8 @@ function resetFieldStates() {
 }
 
 // select all buttion
-$('#selectAllGenBtn').on('change', function() {
-  $('#genPermList input[type="checkbox"]').prop('checked', this.checked);
+$('#selectAllGenBtn').on('change', e => {
+  $('#genPermList input[type="checkbox"]').prop('checked', $(e.target).checked);
 });
 
 // for creating select all btns in barangay scope permissions

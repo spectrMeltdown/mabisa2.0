@@ -3,7 +3,7 @@
 declare(strict_types=1);
 $useAsImport; // for get_permissions.php
 $permsOnly = false;
-$disableLogging = true; // set to true to disable for this file
+// $disableLogging = true; // set to true to disable for this file
 require_once 'logging.php';
 require_once '../db/db.php';
 require_once 'get_all_perm_cols.php';
@@ -159,12 +159,13 @@ WHERE urb.user_id = :uid AND r.id = :roleID
     foreach ($activeIndicators as $indicator) {
       // Get available assessment permissions (exclude taken ones)
       // $takenPermissions = array_filter($allPermissions, $takenAssessment[$bid]);
-      $takenPermissions = $takenAssessment[$barangay['brgyid']][$indicator['id']] ?? [];
+      // $takenPermissions = $takenAssessment[$barangay['brgyid']][$indicator['id']] ?? [];
+      $takenPermissions = [];
       $curUserPerms = $userAssessmentPerms[$barangay['brgyid']][$indicator['id']] ?? [];
       // writeLog('Taken permissions after: ');
       // writeLog($takenPermissions);
 
-      writeLog('ROW RESULT: ');
+      writeLog('ROW RESULT:');
       writeLog($barangay);
       writeLog('taken perms: ');
       writeLog($takenPermissions);
