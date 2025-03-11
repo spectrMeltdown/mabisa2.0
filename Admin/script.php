@@ -126,7 +126,7 @@ if (isset($_POST['update_maintenance_criteria_setup'])) {
 
 if (isset($_POST['edit_duration'])) {
 
-    $duration = $_POST['duration'];
+    $duration = $_POST['duration'] ?? '';
     $is_accepting_response = $_POST['is_accepting_response'] ?? 0;
 
     try {

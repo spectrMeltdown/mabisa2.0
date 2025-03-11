@@ -35,7 +35,7 @@ try {
                     $log->userLog("Barangay ID $barangay_id has finished validation");
                     echo json_encode(['success' => true, 'message' => 'Finished validation.', 'isReverse' => 'yes']);
                 } else {
-                    $log->userLog("Barangay ID $barangay_id has been submitted for validation");
+                    $log->userLog("Barangay ID $barangay_id have submitted for validation");
                     echo json_encode(['success' => true, 'message' => 'Submitted for validation.']);
                 }
             } else {

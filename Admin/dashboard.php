@@ -279,7 +279,7 @@ foreach ($barangayData as $barangay) {
                   },
                   {
                     label: "Submissions Waiting for Approval",
-                    backgroundColor: "#d3d3d3",
+                    backgroundColor: "#FFFF00",
                     borderColor: "#d3d3d3",
                     borderWidth: 1,
                     data: response.total,

@@ -42,7 +42,7 @@ echo '</pre>';
                     <form action="../script.php" method="post">
                         <div class="mb-3">
                             <label class="form-label">Assessment Duration</label>
-                            <input type="text" class="form-control" name="duration" value="<?php echo $active_version['duration']; ?>" required />
+                            <input type="text" class="form-control" name="duration" value="<?php echo $active_version['duration']; ?>" />
 
                         </div>
                         <div class="form-check mb-3">

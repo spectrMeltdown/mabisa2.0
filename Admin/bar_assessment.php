@@ -15,7 +15,7 @@ $stmt = $pdo->prepare("SELECT * FROM maintenance_criteria_version WHERE active_ 
 $stmt->execute();
 $version = $stmt->fetch(PDO::FETCH_ASSOC);
 $duration = $version ? $version['duration'] : null;
-$is_accepting = isset($version['is_accepting_response']) ? ($version['is_accepting_response'] ? 'Yes' : 'No') : null;
+$is_accepting = isset($version['is_accepting_response']) ? ($version['is_accepting_response'] ? 'No' : 'Yes') : null;
 
 
 ?>
@@ -58,7 +58,7 @@ $is_accepting = isset($version['is_accepting_response']) ? ($version['is_accepti
                             <h3 class="m-0 font-weight-bold text-primary">Barangay Assessment</h3>
                             <div class="text-right">
                                 <p class="mb-1"><strong>Duration:</strong> <?php echo $duration; ?></p>
-                                <p class="mb-0"><strong>Accepting Responses:</strong> <?php echo $is_accepting ? 'Yes' : 'No'; ?></p>
+                                <p class="mb-0"><strong>Accepting Responses:</strong> <?php echo $is_accepting ?></p>
                             </div>
                         </div>
 
@@ -84,7 +84,7 @@ $is_accepting = isset($version['is_accepting_response']) ? ($version['is_accepti
                                                 echo "<td>";
                                                 echo "<a href='bar_assessment/show_bar_response.php?barangay_id=" . htmlspecialchars($row['barangay_id']) . "' class='btn btn-primary btn-sm'>View</a>";
                                                 echo "</td>";
-                                                if ($isPassed >= 40) {
+                                                if ($isPassed >= 100) {
                                                     echo "<td> Passed </td>";
                                                 } else {
                                                     echo "<td> Failed </td>";

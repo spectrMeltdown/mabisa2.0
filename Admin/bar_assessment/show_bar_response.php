@@ -46,6 +46,7 @@ if ($barangay_id) {
     $stmt->execute();
     $version = $stmt->fetch(PDO::FETCH_ASSOC);
     $active_version_keyctr = $version ? $version['keyctr'] : null;
+    $passed = $responses->passedOrFail($barangay_id);
 
     // Fetch all areas and categories
     $stmt = $pdo->prepare("
@@ -177,42 +178,49 @@ unset($_SESSION['success']);
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
                     <div class="card shadow mb-4">
-                        <div class="card-body">
-                            <h4>Barangay Details</h4>
-                            <p><strong>Barangay ID:</strong> <?php echo htmlspecialchars($barangay_id); ?></p>
-                            <p><strong>Barangay Name:</strong> <?php echo htmlspecialchars($barangay_name); ?></p>
-                            <a href="../bar_assessment.php" class="btn btn-secondary">Back</a>
-                            <button class="btn btn-info" onclick="fetchAllComments(<?php echo $barangay_id; ?>)" data-toggle="modal" data-target="#allCommentsModal">
-                                View All Comments Summary
-                            </button>
+                    <div class="card-body">
+    <h4>Barangay Details</h4>
+    <p><strong>Barangay ID:</strong> <?php echo htmlspecialchars($barangay_id); ?></p>
+    <p><strong>Barangay Name:</strong> <?php echo htmlspecialchars($barangay_name); ?></p>
+    <a href="../bar_assessment.php" class="btn btn-secondary">Back</a>
+    <button class="btn btn-info" onclick="fetchAllComments(<?php echo $barangay_id; ?>)" data-toggle="modal" data-target="#allCommentsModal">
+        View All Comments Summary
+    </button>
 
-                            <?php
-                            if (userHasPerms('submissions_create', 'any', $barangay_id) && !str_contains(strtolower($userData['role']), 'super admin')):
-                                if ($ready == 1) :
-                            ?>
-                                    <p class="text-success float-right"><strong>Submitted for Validation</strong></p>
-                                <?php else : ?>
-                                    <button class="btn btn-success float-right submit-btn" data-bar-id="<?php echo htmlspecialchars($barangay_id); ?>">
-                                        Submit for Validation
-                                    </button>
-                            <?php
-                                endif;
-                            endif;
-                            ?>
-                            <?php
-                            if (userHasPerms('approve', 'any', $barangay_id) && !str_contains(strtolower($userData['role']), 'super admin')):
-                                if ($ready == 0) :
-                            ?>
-                                    <p class="text-secondary float-right"><strong>Not yet ready for validation</strong></p>
-                                <?php else : ?>
-                                    <button class="btn btn-success float-right submit-btn" data-reverse="true" data-complete="<?php echo htmlspecialchars($complete); ?>" data-bar-id="<?php echo htmlspecialchars($barangay_id); ?>">
-                                        Validate
-                                    </button>
-                            <?php
-                                endif;
-                            endif;
-                            ?>
-                        </div>
+    <?php
+    if (userHasPerms('submissions_create', 'any', $barangay_id) && !str_contains(strtolower($userData['role']), 'super admin')) :
+        if ($ready == 1) :
+    ?>
+            <p class="text-success float-right"><strong>Submitted for Validation</strong></p>
+    <?php elseif ($passed < 100) : ?>
+            <button class="btn btn-success float-right submit-btn" data-bar-id="<?php echo htmlspecialchars($barangay_id); ?>">
+                Submit for Validation
+            </button>
+    <?php else : ?>
+            <!-- Approved Status -->
+            <div class="text-right mt-3">
+                <span class="badge badge-success p-2" style="font-size: 16px; width: auto;">✅ Passed</span>
+            </div>
+    <?php
+        endif;
+    endif;
+    ?>
+
+    <?php
+    if (userHasPerms('approve', 'any', $barangay_id) && !str_contains(strtolower($userData['role']), 'super admin')) :
+        if ($ready == 0) :
+            // Not ready for validation (no message shown)
+        else :
+    ?>
+            <button class="btn btn-success float-right submit-btn" data-reverse="true" data-complete="<?php echo htmlspecialchars($complete); ?>" data-bar-id="<?php echo htmlspecialchars($barangay_id); ?>">
+                Validate
+            </button>
+    <?php
+        endif;
+    endif;
+    ?>
+</div>
+
 
 
                     </div>
