@@ -52,7 +52,7 @@
 
             foreach ($barangays as $bar) {
                 $pass = '@' . $bar;
-                $exec = [('Brgy. ' . $bar), (strtolower($bar) . '@gmail.com'), ($startNum++), strtolower($bar), password_hash($pass, PASSWORD_BCRYPT), 24];
+                $exec = [('Brgy. ' . $bar), (strtolower($bar) . '@gmail.com'), ($startNum++), strtolower($bar), password_hash($pass, PASSWORD_BCRYPT), 27];
                 // echo var_dump($exec);
 
                 // create user
@@ -80,25 +80,24 @@
             // permission insert statement
             $permStmt = 'INSERT INTO permissions (assessment_submissions_create, assessment_submissions_read, assessment_submissions_update, assessment_submissions_delete, assessment_comments_read) VALUES (?, ?, ? , ? , ?)';
 
-            foreach ($userIDs as $uid) {
-                echo $uid;
-                echo '<br>';
-                foreach ($bids as $bid) {
-                    echo $bid['bid'];
+            for ($i = 0; $i < count($userIDs); $i++) {
+                $uid = $userIDs[$i];
+                $bid = $bids[$i]['bid'];
+                // echo '<br>';
+                // echo $bids[0]['bid'];
+                // echo '<br>';
+                foreach ($inds as $iid) {
+                    echo $iid['iid'];
                     echo '<br>';
-                    foreach ($inds as $iid) {
-                        echo $iid['iid'];
-                        echo '<br>';
-                        // create and get perm id
-                        $permExec = $pdo->prepare($permStmt);
-                        $permExec->execute(array_fill(0, 5, 1));
-                        $permId = $pdo->lastInsertId();
+                    // create and get perm id
+                    $permExec = $pdo->prepare($permStmt);
+                    $permExec->execute(array_fill(0, 5, 1));
+                    $permId = $pdo->lastInsertId();
 
-                        // insert the user roles barangay perms
-                        $urbStmt = 'INSERT INTO user_roles_barangay (user_id, barangay_id, indicator_id, permission_id) VALUES (?, ?, ? , ? )';
-                        $urb = $pdo->prepare($urbStmt);
-                        $urb->execute([$uid, $bid['bid'], $iid['iid'], $permId]);
-                    }
+                    // insert the user roles barangay perms
+                    $urbStmt = 'INSERT INTO user_roles_barangay (user_id, barangay_id, indicator_id, permission_id) VALUES (?, ?, ? , ? )';
+                    $urb = $pdo->prepare($urbStmt);
+                    $urb->execute([$uid, $bid, $iid['iid'], $permId]);
                 }
             }
 
@@ -130,4 +129,4 @@
 //         ':date' => $trail
 //     ]);
 
-// }
+// } -->
