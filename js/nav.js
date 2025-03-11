@@ -1,7 +1,7 @@
 function updateNavTitle() {
-  const element = document.getElementById('mabisa-title');
+  const element = document.getElementById('mabisa2.0-title');
   if (window.innerWidth <= 500) {
-    element.textContent = 'MABISA';
+    element.textContent = 'mabisa2.0';
   } else {
     element.textContent = 'MABILISANG AKSYON BARANGAY INFORMATION SYSTEM OF ALORAN';
   }

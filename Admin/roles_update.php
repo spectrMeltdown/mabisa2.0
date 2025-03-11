@@ -4,7 +4,7 @@ date_default_timezone_set('Asia/Manila');
 
 require_once 'common/auth.php';
 if (!(userHasPerms('roles_create', 'gen') || userHasPerms('roles_update', 'gen'))) {
-  header('Location:/mabisa/Admin/no_permissions.php');
+  header('Location:/mabisa2.0/Admin/no_permissions.php');
   exit;
 }
 

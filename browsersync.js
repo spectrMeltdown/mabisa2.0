@@ -1,7 +1,7 @@
 const browserSync = require('browser-sync').create();
 
 browserSync.init({
-  proxy: "localhost/mabisa", // Replace with your XAMPP project URL
+  proxy: "localhost/mabisa2.0", // Replace with your XAMPP project URL
   files: [
     "js/**/*.js", // Watch JS files
     "css/**/*.css", // Watch CSS files
