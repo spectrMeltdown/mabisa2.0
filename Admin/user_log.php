@@ -11,9 +11,15 @@ $responses = new Responses($pdo);
 require_once '../db/db.php';
 
 try {
-    $sql = "SELECT * FROM audit_log ORDER BY time_and_date DESC";
+    $sql = "SELECT * FROM audit_log ";
+    $exec = [];
+    if (!userHasPerms('super_admin_read', 'any')) {
+        $sql .= 'WHERE user_id = ? ';
+        $exec = [$_COOKIE['id']];
+    }
+    $sql .= "ORDER BY time_and_date DESC";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute();
+    $stmt->execute($exec);
     $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     echo "<p class='text-danger'>Error fetching logs: " . $e->getMessage() . "</p>";
@@ -38,10 +44,8 @@ try {
         <!-- Sidebar -->
         <?php require_once 'common/sidebar.php' ?>
         <!-- End of Sidebar -->
-
         <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
-
             <div id="content">
                 <!-- Topbar -->
                 <?php require_once 'common/nav.php' ?>
@@ -50,13 +54,20 @@ try {
                 <div class="container-fluid">
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Activity Logs</h1>
+                        <h1 class="h3 mb-0 text-gray-800">
+                            <?php
+                            if (userHasPerms('super_admin_read', 'any')) {
+                                echo 'Activity Logs';
+                            } else {
+                                echo 'User Logs';
+                            }
+                            ?>
+                        </h1>
                         <a href="dashboard.php" class="btn btn-secondary">Back</a>
                     </div>
                 </div>
                 <div class="container-fluid">
                     <div class="card shadow mb-4">
-
                         <div class="card-body">
                             <div class="table table-responsive"></div>
                             <table id="maintenanceTable" class="table table-bordered">
@@ -77,9 +88,7 @@ try {
                                             <td><?php echo $log['username']; ?></td>
                                             <td><?php echo $log['action']; ?></td>
                                             <td><?php echo $log['time_and_date']; ?></td>
-
                                         </tr>
-
                                     <?php endforeach ?>
                                 </tbody>
                             </table>
@@ -87,15 +96,11 @@ try {
                         </div>
                     </div>
                 </div>
-
                 <!-- End of Main Content -->
                 <?php include_once 'common/footer.php' ?>
             </div>
             <!-- End of Content Wrapper -->
         </div>
-        <!-- End of Page Wrapper -->
-
-        <!-- Scroll to Top Button-->
         <a class="scroll-to-top rounded" href="#page-top">
             <i class="fas fa-angle-up"></i>
         </a>
