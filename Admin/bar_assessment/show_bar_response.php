@@ -178,48 +178,48 @@ unset($_SESSION['success']);
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
                     <div class="card shadow mb-4">
-                    <div class="card-body">
-    <h4>Barangay Details</h4>
-    <p><strong>Barangay ID:</strong> <?php echo htmlspecialchars($barangay_id); ?></p>
-    <p><strong>Barangay Name:</strong> <?php echo htmlspecialchars($barangay_name); ?></p>
-    <a href="../bar_assessment.php" class="btn btn-secondary">Back</a>
-    <button class="btn btn-info" onclick="fetchAllComments(<?php echo $barangay_id; ?>)" data-toggle="modal" data-target="#allCommentsModal">
-        View All Comments Summary
-    </button>
+                        <div class="card-body">
+                            <h4>Barangay Details</h4>
+                            <p><strong>Barangay ID:</strong> <?php echo htmlspecialchars($barangay_id); ?></p>
+                            <p><strong>Barangay Name:</strong> <?php echo htmlspecialchars($barangay_name); ?></p>
+                            <a href="../bar_assessment.php" class="btn btn-secondary">Back</a>
+                            <button class="btn btn-info" onclick="fetchAllComments(<?php echo $barangay_id; ?>)" data-toggle="modal" data-target="#allCommentsModal">
+                                View All Comments Summary
+                            </button>
 
-    <?php
-    if (userHasPerms('submissions_create', 'any', $barangay_id) && !str_contains(strtolower($userData['role']), 'super admin')) :
-        if ($ready == 1) :
-    ?>
-            <p class="text-success float-right"><strong>Submitted for Validation</strong></p>
-    <?php elseif ($passed < 100) : ?>
-            <button class="btn btn-success float-right submit-btn" data-bar-id="<?php echo htmlspecialchars($barangay_id); ?>">
-                Submit for Validation
-            </button>
-    <?php else : ?>
-            <!-- Approved Status -->
-            <div class="text-right mt-3">
-                <span class="badge badge-success p-2" style="font-size: 16px; width: auto;">✅ Passed</span>
-            </div>
-    <?php
-        endif;
-    endif;
-    ?>
+                            <?php
+                            if (userHasPerms('submissions_create', 'any', $barangay_id) && !str_contains(strtolower($userData['role']), 'super admin')) :
+                                if ($ready == 1) :
+                            ?>
+                                    <p class="text-success float-right"><strong>Submitted for Validation</strong></p>
+                                <?php elseif ($passed < 100) : ?>
+                                    <button class="btn btn-success float-right submit-btn" data-complete="<?php echo htmlspecialchars($complete); ?>" data-bar-id="<?php echo htmlspecialchars($barangay_id); ?>">
+                                        Submit for Validation
+                                    </button>
+                                <?php else : ?>
+                                    <!-- Approved Status -->
+                                    <div class="text-right mt-3">
+                                        <span class="badge badge-success p-2" style="font-size: 16px; width: auto;">✅ Passed</span>
+                                    </div>
+                            <?php
+                                endif;
+                            endif;
+                            ?>
 
-    <?php
-    if (userHasPerms('approve', 'any', $barangay_id) && !str_contains(strtolower($userData['role']), 'super admin')) :
-        if ($ready == 0) :
-            // Not ready for validation (no message shown)
-        else :
-    ?>
-            <button class="btn btn-success float-right submit-btn" data-reverse="true" data-complete="<?php echo htmlspecialchars($complete); ?>" data-bar-id="<?php echo htmlspecialchars($barangay_id); ?>">
-                Validate
-            </button>
-    <?php
-        endif;
-    endif;
-    ?>
-</div>
+                            <?php
+                            if (userHasPerms('approve', 'any', $barangay_id) && !str_contains(strtolower($userData['role']), 'super admin')) :
+                                if ($ready == 0) :
+                                // Not ready for validation (no message shown)
+                                else :
+                            ?>
+                                    <button class="btn btn-success float-right submit-btn" data-reverse="true" data-bar-id="<?php echo htmlspecialchars($barangay_id); ?>">
+                                        Validate
+                                    </button>
+                            <?php
+                                endif;
+                            endif;
+                            ?>
+                        </div>
 
 
 
@@ -548,27 +548,28 @@ unset($_SESSION['success']);
             button.addEventListener('click', e => {
                 let barangayid = e.target.closest('.submit-btn').getAttribute('data-bar-id');
                 let isReverse = e.target.closest('.submit-btn').getAttribute('data-reverse') ?? '';
-                let complete = e.target.closest('.submit-btn').getAttribute('data-complete') ? 1 : 0;
+                let complete = e.target.closest('.submit-btn').getAttribute('data-complete');
+
                 console.log('in submit btn');
                 console.log(barangayid);
                 console.log(isReverse);
+                console.log('Complete?');
                 console.log(complete);
 
-                if (isReverse == 'true') {
-                    if (!confirm('Are you sure you are done validating?')) {
-                        return;
-                    }
-                } else if (complete === 0) {
-                    if (!confirm("You haven't submitted all requirements yet. Are you sure you want to submit?")) {
-                        return;
-                    }
+                let message = '';
+
+                if (isReverse === 'true') {
+                    message = 'Are you sure you are done validating?';
+                } else if (complete === '0') {
+                    message = "You haven't submitted all requirements yet. Are you sure you want to submit?";
                 } else {
-                    {
-                        if (!confirm('Are you sure you want to submit for validation?')) {
-                            return;
-                        }
-                    }
+                    message = 'Are you sure you want to submit for validation?';
                 }
+
+                if (!confirm(message)) {
+                    return;
+                }
+
 
                 fetch('../bar_assessment/user_actions/validate.php', {
                         method: 'POST',
@@ -647,6 +648,25 @@ unset($_SESSION['success']);
                 }
             });
         }
+
+        document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    if (urlParams.has("file-id")) {
+        const fileId = urlParams.get("file-id");
+
+        console.log("Detected file-id:", fileId);
+
+        $(document).ready(function () {
+            console.log("Triggering click for file-id:", fileId);
+
+            setTimeout(function () {
+                $('button[data-target="#commentModal"][data-fileid="' + fileId + '"]').trigger("click");
+            }, 500);
+        });
+    }
+});
+
 
         $(document).ready(function() {
             $(document).on("click", ".go-to-file", function() {
