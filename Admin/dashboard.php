@@ -186,24 +186,34 @@ foreach ($barangayData as $barangay) {
         </div>
 
         <?php
-        require_once '../db/db.php';
-
         try {
-          $sql = "SELECT * FROM audit_log WHERE DATE(time_and_date) = CURDATE() ORDER BY time_and_date DESC";
+          $sql = "SELECT * FROM audit_log WHERE ";
+          $exec = [];
+          if (!userHasPerms('super_admin_read', 'any')) {
+            $sql .= 'user_id = ? AND ';
+            $exec = [$_COOKIE['id']];
+          }
+          $sql .= "DATE(time_and_date) = CURDATE() ORDER BY time_and_date DESC";
           $stmt = $pdo->prepare($sql);
-          $stmt->execute();
-          $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+          $stmt->execute($exec);
+          $logs = $stmt->fetchAll();
         } catch (PDOException $e) {
           echo "<p class='text-danger'>Error fetching logs: " . $e->getMessage() . "</p>";
           $logs = [];
         }
-
         ?>
         <div class="container-fluid">
           <div class="card shadow mb-4">
             <div class="card-header py-3">
               <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                <h3 class="m-0 font-weight-bold text-primary">Activity Logs Today</h3>
+                <h3 class="m-0 font-weight-bold text-primary">
+                  <?php
+                  if (userHasPerms('super_admin_read', 'any')) {
+                    echo 'Activity Logs';
+                  } else {
+                    echo 'User Logs';
+                  } ?>
+                  Today</h3>
                 <a href="user_log.php" class="btn btn-danger">Show All Logs</a>
               </div>
               <div class="card-body">
@@ -226,9 +236,7 @@ foreach ($barangayData as $barangay) {
                         <td><?php echo $log['username']; ?></td>
                         <td><?php echo $log['action']; ?></td>
                         <td><?php echo $log['time_and_date']; ?></td>
-
                       </tr>
-
                     <?php endforeach ?>
                   </tbody>
                 </table>
@@ -336,9 +344,6 @@ foreach ($barangayData as $barangay) {
 
       document.getElementById("myBarChart").parentNode.style.height = "300px";
     </script>
-
-
-
 </body>
 
 </html>
