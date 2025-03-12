@@ -1,5 +1,6 @@
 <?php
 // redirect if logged out, except on login page
+// echo $_COOKIE['id'];
 if (empty($_COOKIE['id']) && !isset($isLoginPage)) {
   header('location:/mabisa2.0/Admin/logged_out.php');
   exit;

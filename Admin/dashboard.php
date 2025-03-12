@@ -225,7 +225,6 @@ foreach ($barangayData as $barangay) {
                       <th>Username</th>
                       <th>Action</th>
                       <th>Time and Date</th>
-
                     </tr>
                   </thead>
                   <tbody>
