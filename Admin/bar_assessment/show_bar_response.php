@@ -237,7 +237,7 @@ unset($_SESSION['success']);
                                         data-target="#collapse-<?php echo md5($key); ?>"
                                         aria-expanded="false"
                                         style="cursor: pointer;">
-                                        <h5 class="text-white mb-0">
+                                        <h5 class="text-white mb-0 unselectable">
                                             <?php echo htmlspecialchars($key); ?>
                                         </h5>
                                     </div>

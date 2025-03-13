@@ -78,6 +78,17 @@ header("Pragma: no-cache");
 <?= isset($customTitle) ? '' : '<title>mabisa2.0</title>' ?>
 
 <style>
+  .unselectable {
+    user-select: none;
+    /* Standard */
+    -webkit-user-select: none;
+    /* Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE/Edge */
+  }
+
   #accordionSidebar {
     position: fixed;
     top: 0;
