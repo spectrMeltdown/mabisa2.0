@@ -24,7 +24,7 @@ $(document).ready(function() {
     console.log('brgy id:', bid);
     console.log('indicator :', iid);
     console.log('expand :', expand);
-    console.log('ready :',ready);
+    console.log('ready :', ready);
 
     modal
       .find('#commentModalLabel')
@@ -49,14 +49,12 @@ $(document).ready(function() {
 
     var statusMessage = modal.find('#statusMessage');
 
-    
-     if (ready === 0){
+    if (ready === 0) {
       statusMessage.hide();
       modal.find('#approveForm').hide();
       modal.find('#declineForm').hide();
       modal.find('#revertForm').hide();
-    }
-    else if (status === 'pending') {
+    } else if (status === 'pending') {
       statusMessage.hide();
       modal.find('#approveForm').show();
       modal.find('#declineForm').show();
@@ -132,6 +130,4 @@ if (indicator && governance) {
       targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' }); // Scroll into view
     }, 100);
   }
-
-
 }

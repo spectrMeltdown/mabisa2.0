@@ -8,7 +8,7 @@ if (isset($isInFolder)):
 <script src="<?= $doublePathPrepend ?>js/nav.js" defer></script> <!-- for letting js know that this file is nested in folder -->
 <script src="<?= $doublePathPrepend ?>js/read_notif.js" defer></script>
 <script src="<?= $doublePathPrepend ?>js/all_notif.js" defer></script>
-<script src="<?= $doublePathPrepend ?>js/bar-assessment.js"></script>
+<!-- <script src=" //$doublePathPrepend js/bar-assessment.js"></script> -->
 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
   <!-- Sidebar Toggle (Topbar) -->
   <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">

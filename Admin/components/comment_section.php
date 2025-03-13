@@ -41,12 +41,10 @@ $log = new Audit_log($pdo);
                             <iframe id="fileDisplay" src="" class="w-100 h-100 border rounded"></iframe>
                         </div>
                     </div>
-
                     <div class="col-md-3">
                         <div>
                             Comments
                         </div>
-
                         <?php if (userHasPerms('comments_read', 'any')): ?>
                             <div class="border rounded p-3 bg-light mb-3 comments-container">
                                 <div id="commentsContainer">
