@@ -39,7 +39,7 @@ try {
                 echo "<script>
                 alert('" . $action . "d successfully');
                 let url = new URL(document.referrer);
-                url.searchParams.set('expand', '" . $expand . "' );
+                url.searchParams.set('expand', '#" . $expand . "' );
                 location.href = (url.toString() + '#" . $bid . $iid . "');
                 </script>";
             } else {

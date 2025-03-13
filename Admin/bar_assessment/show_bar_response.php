@@ -482,9 +482,9 @@ unset($_SESSION['success']);
                                     let url = new URL(location.href.split("&")[0]);
                                     url.searchParams.set('expand', ('#' + formData.get('expand')));
                                     location.href = (url.toString() + '#' + formData.get('barangay_id') + formData.get('iid'));
-                                    setTimeout(() => {
-                                        location.reload();
-                                    }, 500);
+                                    // setTimeout(() => {
+                                    //     location.reload();
+                                    // }, 500);
                                 } else {
                                     console.log('nope');
                                     location.reload();
@@ -649,23 +649,23 @@ unset($_SESSION['success']);
             });
         }
 
-        document.addEventListener("DOMContentLoaded", function () {
-    const urlParams = new URLSearchParams(window.location.search);
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
 
-    if (urlParams.has("file-id")) {
-        const fileId = urlParams.get("file-id");
+            if (urlParams.has("file-id")) {
+                const fileId = urlParams.get("file-id");
 
-        console.log("Detected file-id:", fileId);
+                console.log("Detected file-id:", fileId);
 
-        $(document).ready(function () {
-            console.log("Triggering click for file-id:", fileId);
+                $(document).ready(function() {
+                    console.log("Triggering click for file-id:", fileId);
 
-            setTimeout(function () {
-                $('button[data-target="#commentModal"][data-fileid="' + fileId + '"]').trigger("click");
-            }, 500);
+                    setTimeout(function() {
+                        $('button[data-target="#commentModal"][data-fileid="' + fileId + '"]').trigger("click");
+                    }, 500);
+                });
+            }
         });
-    }
-});
 
 
         $(document).ready(function() {
