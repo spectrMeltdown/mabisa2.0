@@ -22,13 +22,29 @@
           <div class="container">
             <p id="changeProfileSettingSubtitle"></p>
             <div class="mb-3 form-group" id="firstInput">
-              <input maxlength="100" type="text" class="form-control" name="newValue" id="newValueInput" required />
+              <div class="d-flex align-items-center justify-content-center">
+                <input maxlength="100" type="text" class="form-control pass" name="newValue" id="newValueInput" required />
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary d-none rounded-circle p-0 passEye"
+                  style="width: 60px; height: 50px; margin-left: 5px">
+                  <i class="fa fa-eye"></i>
+                </button>
+              </div>
               <div class="invalid-feedback">
               </div>
             </div>
             <p id="changeProfileSettingSubtitle2"></p>
             <div class="mb-3 form-group" id="secondInput" style="display: none">
-              <input maxlength="100" type="text" class="form-control" name="newValue2" id="newValueInput2" required />
+              <div class="d-flex align-items-center justify-content-center">
+                <input maxlength="100" type="text" class="form-control pass" name="newValue2" id="newValueInput2" required />
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary d-none rounded-circle p-0 passEye"
+                  style="width: 60px; height: 50px; margin-left: 5px;">
+                  <i class="fa fa-eye"></i>
+                </button>
+              </div>
               <div class="invalid-feedback">
               </div>
             </div>

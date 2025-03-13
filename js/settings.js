@@ -202,18 +202,24 @@ function checkSetting(valToCheck) {
 
 // show dialog to get new value, then return that value
 async function changePassDialog() {
+  // cleanup
   removePhonePrepend('newValueInput');
-  $('#changeProfileSettingTitle').text('Verify password');
+  $('#newValueInput').removeAttr('pattern');
+  $('#newValueInput').removeAttr('inputmode');
+
+  // update text and attrs
+  $('#changeProfileSettingTitle').text('Change password');
   $('#changeProfileSettingSubtitle').text('Enter your current password:');
   $('#changeProfileSettingSubtitle2').text('Enter your new password:');
   $('#secondInput').css('display', 'block');
+  $('.passEye')
+    .removeClass('d-none')
+    .addClass('d-inline-block');
 
   // current pass
   $('#newValueInput').attr('name', 'oldPass');
   $('#newValueInput').attr('type', 'password');
   $('#newValueInput').attr('maxLength', '100');
-  $('#newValueInput').removeAttr('pattern');
-  $('#newValueInput').removeAttr('inputmode');
   $('#newValueInput').attr('autocomplete', 'current-password');
   $('#newValueInput').val('');
 
@@ -221,8 +227,6 @@ async function changePassDialog() {
   $('#newValueInput2').attr('name', 'newPass');
   $('#newValueInput2').attr('type', 'password');
   $('#newValueInput2').attr('maxLength', '100');
-  $('#newValueInput2').removeAttr('pattern');
-  $('#newValueInput2').removeAttr('inputmode');
   $('#newValueInput2').attr('autocomplete', 'new-password');
   $('#newValueInput2').val('');
 
@@ -235,13 +239,14 @@ async function changePassDialog() {
       .off('click')
       .on('click', () => {
         // show spinner
-        $('#barSelectorLoadingSpinner').removeClass('d-none');
+        // $('#barSelectorLoadingSpinner').removeClass('d-none');
 
         // get data
         const formData = new FormData($('#settingFormData').get(0));
         console.log('FormData was: ' + JSON.stringify(formData));
 
         // send to php
+        console.log(formData);
         $.ajax({
           url: '../api/change_pass.php',
           type: 'POST',
@@ -250,34 +255,43 @@ async function changePassDialog() {
             newPass: formData.get('newPass'),
           },
           success: data => {
+            $('#firstInput')
+              .find('.invalid-feedback')
+              .first()
+              .text('');
             console.log(data);
-            alert('Password updated successfully!');
-            dialog.hide();
-            resolve();
+            if (!data) {
+              alert('Password updated successfully!');
+              dialog.hide();
+              resolve();
+            }
           },
           error: err => {
             console.log(err.responseText);
-            if (err.responseText.includes('wrong-password')) {
-              $('#firstInput')
-                .find('.invalid-feedback')
-                .first()
-                .text('Current password is incorrect.');
-            } else if (err.responseText.trim() != '') {
-              $('#firstInput')
-                .find('.invalid-feedback')
-                .first()
-                .text('An unknown error occurred.');
+            if (err.responseText.trim() != '') {
+              $('#alert')
+                .text(err.responseText.replaceAll('"', ''))
+                .removeClass('hide')
+                .addClass('show');
             } else {
-              $('#firstInput')
-                .find('.invalid-feedback')
-                .first()
-                .text('');
+              $('#alert')
+                .text('An unknown error occurred.')
+                .removeClass('hide')
+                .addClass('show');
             }
           },
         });
       });
     // end if closed
     $('#changeProfileSettingDialog').on('hidden.bs.modal', () => {
+      $('#changeProfileSettingSubtitle2').text('');
+      $('#secondInput').css('display', 'none');
+      $('.passEye').addClass('d-none');
+      $('.passEye').removeClass('d-inline-block');
+      $('#alert')
+        .text('')
+        .addClass('hide')
+        .removeClass('show');
       resolve();
     });
   });
@@ -296,7 +310,7 @@ async function changeProfileSettingDialog(setting, title, subtitle, oldValue) {
     case 'mobileNum':
       $('#newValueInput').attr('type', 'tel');
       $('#newValueInput').attr('maxLength', '10');
-      $('#newValueInput').attr('pattern', '^+?[0-9]*$');
+      $('#newValueInput').attr('pattern', '^\\+?[0-9]*$');
       $('#newValueInput').attr('inputmode', 'numeric');
       $('#newValueInput').attr('autocomplete', 'tel');
       addPhonePrepend('newValueInput');
@@ -366,7 +380,7 @@ function updateAccData(/** @type {FormData} */ formData) {
         location.reload();
       },
       error: err => {
-        console.error(err);
+        console.error(err.responseText);
       },
     });
   } catch (error) {

@@ -15,6 +15,7 @@ global $userData;
   <script src="../js/util/confirmation.js" defer></script>
   <script src="../js/util/phone-prepend.js" defer></script>
   <script src="../js/util/file-link-exists.js" defer></script>
+  <script src="../js/util/pass-eye-class.js" defer></script>
 </head>
 
 <body id="page-top">

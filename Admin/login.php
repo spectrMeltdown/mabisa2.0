@@ -121,7 +121,6 @@ if (!empty($_COOKIE['id'])) {
                                                     style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
                                                     <i class="fa fa-eye"></i>
                                                 </button>
-
                                             </div>
                                         </div>
                                         <!-- <div class="d-flex align-items-center justify-content-between mb-4">
