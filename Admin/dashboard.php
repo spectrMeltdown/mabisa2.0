@@ -76,13 +76,13 @@ foreach ($barangayData as $barangay) {
                           $stmt = $pdo->query("SELECT barangay_id FROM `barangay_assessment`;");
                           $barangays = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-                          $complete = 0;
+                          $complete = 38;
 
                           foreach ($barangays as $barangay) {
-                            $progress = $responses->getProgress($barangay['barangay_id']);
+                            $progress = $responses->passedOrFail($barangay['barangay_id']);
 
-                            if ($progress != 100) {
-                              $complete++;
+                            if ($progress == 100) {
+                              $complete--;
                             }
                           }
 
@@ -115,7 +115,7 @@ foreach ($barangayData as $barangay) {
                           $complete = 0;
 
                           foreach ($barangays as $barangay) {
-                            $progress = $responses->getProgress($barangay['barangay_id']);
+                            $progress = $responses->passedOrFail($barangay['barangay_id']);
 
                             if ($progress == 100) {
                               $complete++;
