@@ -39,7 +39,7 @@ function sendNotif(\PDO $pdo, string $creatorID, string $title, string $message)
   return null;
 }
 
-function sendNotifBar(\PDO $pdo, string $creatorID, string $title, string $message, int|null $bid = null, int|null $iid = null, ?string $expand = null, array $perms = []): ?string
+function sendNotifBar(\PDO $pdo, string $creatorID, string $title, string $message, int|null $bid = null, int|null $iid = null, ?string $expand = null, array $perms = [], string $file_id): ?string
 {
   writeLog('IN SEND NOTIF BAR');
   writeLog($bid);
@@ -120,6 +120,7 @@ function sendNotifBar(\PDO $pdo, string $creatorID, string $title, string $messa
         $sql = 'INSERT INTO notifications (user_id, title, message, file_link) VALUES (:user_id, :title, :message, :file_link)';
         $params[':file_link'] = 'http://localhost/mabisa2.0/Admin/bar_assessment/show_bar_response.php?' . http_build_query([
           'barangay_id' => $bid,
+          'file-id' => $file_id,
           'expand' => '#' . $expand
         ]) . '#' . urlencode($bid . $iid);
         $stmt = $pdo->prepare($sql);

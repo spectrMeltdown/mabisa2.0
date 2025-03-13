@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
                     $barangay_id,
                     $iid,
                     $expand,
-                    ['assessment_comments_read', 'assessment_submissions_read']
+                    ['assessment_comments_read', 'assessment_submissions_read'], $file_id
                 );
 
                 if ($notifResult) {
