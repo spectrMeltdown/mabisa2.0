@@ -3,6 +3,7 @@ error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Manila');
 require_once 'common/auth.php';
 require_once '../db/db.php';
+global $userData;
 ?>
 
 <!DOCTYPE html>
@@ -71,7 +72,9 @@ require_once '../db/db.php';
                 <ul class="list-group mb-4">
                   <li class="list-group-item d-flex justify-content-between align-items-center">
                     <span><strong>Username:</strong> <span id="username">Loading...</span></span>
-                    <button class="btn btn-sm btn-secondary edit-btn" id="username-edit">Edit</button>
+                    <?php if (userHasPerms('user_create', 'gen')):  ?>
+                      <button class="btn btn-sm btn-secondary edit-btn" id="username-edit">Edit</button>
+                    <?php endif; ?>
                   </li>
                   <li class="list-group-item d-flex justify-content-between align-items-center">
                     <span><strong>Email:</strong> <span id="email">Loading...</span></span>
@@ -79,14 +82,19 @@ require_once '../db/db.php';
                   </li>
                   <li class="list-group-item d-flex justify-content-between align-items-center">
                     <span><strong>Full Name:</strong> <span id="fullName">Loading...</span></span>
-                    <button class="btn btn-sm btn-secondary edit-btn" id="fullName-edit">Edit</button>
+                    <?php if (userHasPerms('user_create', 'gen') || strtolower($userData['role'])):  ?>
+                      <button class="btn btn-sm btn-secondary edit-btn" id="fullName-edit">Edit</button>
+                    <?php endif; ?>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span><strong>Mobile Number:</strong> <span id="mobileNum">Loading...</span></span>
+                    <button class="btn btn-sm btn-secondary edit-btn" id="mobileNum-edit">Edit</button>
                   </li>
                   <li class="list-group-item d-flex justify-content-between align-items-center">
                     <span><strong>Mobile Number:</strong> <span id="mobileNum">Loading...</span></span>
                     <button class="btn btn-sm btn-secondary edit-btn" id="mobileNum-edit">Edit</button>
                   </li>
                 </ul>
-
                 <!-- disabled because the super admin should be the only one to manage accounts -->
                 <?php
                 if (strtolower($userData['role']) != 'super admin'):
