@@ -500,7 +500,9 @@ unset($_SESSION['success']);
         document.querySelectorAll('.delete-btn').forEach(button => {
             button.addEventListener('click', e => {
                 let fileId = e.target.closest('.delete-btn').getAttribute('data-file-id');
+                let iid = e.target.closest('.delete-btn').getAttribute('data-iid');
 
+                console.log(iid);
                 if (!confirm('Are you sure you want to delete this file?')) {
                     return;
                 }
@@ -508,7 +510,8 @@ unset($_SESSION['success']);
                     url: '../bar_assessment/user_actions/delete.php',
                     method: 'POST',
                     data: {
-                        file_id: fileId
+                        file_id: fileId,
+                        iid : iid
                     },
                     success: data => {
                         console.log(data);

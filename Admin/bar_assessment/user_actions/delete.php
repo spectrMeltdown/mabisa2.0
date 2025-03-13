@@ -23,12 +23,21 @@ try {
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['file_id'])) {
         $file_id = $_POST['file_id'];
-
+        $iid = $_POST['iid'];
+        $stmt = $pdo->prepare("
+        SELECT min.reqs_code 
+        FROM barangay_assessment_files file
+        INNER JOIN maintenance_criteria_setup cri ON file.criteria_keyctr = cri.keyctr
+        INNER JOIN maintenance_area_mininumreqs min ON min.keyctr = cri.minreqs_keyctr
+        WHERE file.file_id = ?
+    ");
+        $stmt->execute([$file_id]);
+        $icode = $stmt->fetchColumn();
         try {
             $delete = $userActions->deleteFile($file_id);
             if ($delete) {
-
-                $log->userLog("Deleted file with ID: $file_id");
+           
+                $log->userLog("Deleted file in indicator: $icode");
 
                 echo json_encode(['success' => true, 'message' => 'File deleted successfully.']);
             } else {
