@@ -441,7 +441,6 @@ unset($_SESSION['success']);
         if (successMessage) {
             alert(successMessage);
         }
-
         document.querySelectorAll(".file-input").forEach(input => {
             input.addEventListener("change", function() {
                 let formId = "uploadForm-" + this.id.split("-")[1];
@@ -482,9 +481,9 @@ unset($_SESSION['success']);
                                     let url = new URL(location.href.split("&")[0]);
                                     url.searchParams.set('expand', ('#' + formData.get('expand')));
                                     location.href = (url.toString() + '#' + formData.get('barangay_id') + formData.get('iid'));
-                                    // setTimeout(() => {
-                                    //     location.reload();
-                                    // }, 500);
+                                    setTimeout(() => {
+                                        location.reload();
+                                    }, 500);
                                 } else {
                                     console.log('nope');
                                     location.reload();
@@ -604,9 +603,9 @@ unset($_SESSION['success']);
                                 let url = new URL(location.href.split("&")[0]);
                                 url.searchParams.set('expand', ('#' + expand));
                                 location.href = (url.toString() + '#' + bid + iid);
-                                // setTimeout(() => {
-                                //     location.reload();
-                                // }, 500);
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 500);
                             } else {
                                 console.log('nope');
                                 location.reload();
@@ -666,6 +665,12 @@ unset($_SESSION['success']);
                 });
             }
         });
+
+        $('#commentModal').on('hidden.bs.modal', () => {
+            const url = new URL(window.location);
+            url.searchParams.delete('file-id');
+            window.location.replace(url.toString());
+        })
 
 
         $(document).ready(function() {

@@ -130,6 +130,9 @@ document.getElementById('fileInput').addEventListener('change', async event => {
 });
 
 // individual edit buttons
+$('#password-edit').on('click', () => {
+  changePassDialog();
+});
 $('#mobileNum-edit').on('click', async () => {
   /** @type {FormData} */
   const value = await changeProfileSettingDialog(
@@ -160,15 +163,7 @@ $('#username-edit').on('click', async () => {
   );
   if (value) updateAccData(value);
 });
-$('#password-edit').on('click', async () => {
-  /** @type {FormData} */
-  const value = await changeProfileSettingDialog(
-    'password',
-    'Change Password',
-    'Enter new password:',
-  );
-  if (value) updateAccData(value);
-});
+
 $('#email-edit').on('click', async () => {
   const value = await changeProfileSettingDialog(
     /** @type {FormData} */
@@ -206,6 +201,89 @@ function checkSetting(valToCheck) {
 }
 
 // show dialog to get new value, then return that value
+async function changePassDialog() {
+  removePhonePrepend('newValueInput');
+  $('#changeProfileSettingTitle').text('Verify password');
+  $('#changeProfileSettingSubtitle').text('Enter your current password:');
+  $('#changeProfileSettingSubtitle2').text('Enter your new password:');
+  $('#secondInput').css('display', 'block');
+
+  // current pass
+  $('#newValueInput').attr('name', 'oldPass');
+  $('#newValueInput').attr('type', 'password');
+  $('#newValueInput').attr('maxLength', '100');
+  $('#newValueInput').removeAttr('pattern');
+  $('#newValueInput').removeAttr('inputmode');
+  $('#newValueInput').attr('autocomplete', 'current-password');
+  $('#newValueInput').val('');
+
+  // new pass
+  $('#newValueInput2').attr('name', 'newPass');
+  $('#newValueInput2').attr('type', 'password');
+  $('#newValueInput2').attr('maxLength', '100');
+  $('#newValueInput2').removeAttr('pattern');
+  $('#newValueInput2').removeAttr('inputmode');
+  $('#newValueInput2').attr('autocomplete', 'new-password');
+  $('#newValueInput2').val('');
+
+  const dialog = new bootstrap.Modal($('#changeProfileSettingDialog').get(0));
+  dialog.show();
+
+  await new Promise(resolve => {
+    // return value if button clicked
+    $('#changeProfileSettingSubmit')
+      .off('click')
+      .on('click', () => {
+        // show spinner
+        $('#barSelectorLoadingSpinner').removeClass('d-none');
+
+        // get data
+        const formData = new FormData($('#settingFormData').get(0));
+        console.log('FormData was: ' + JSON.stringify(formData));
+
+        // send to php
+        $.ajax({
+          url: '../api/change_pass.php',
+          type: 'POST',
+          data: {
+            oldPass: formData.get('oldPass'),
+            newPass: formData.get('newPass'),
+          },
+          success: data => {
+            console.log(data);
+            alert('Password updated successfully!');
+            dialog.hide();
+            resolve();
+          },
+          error: err => {
+            console.log(err.responseText);
+            if (err.responseText.includes('wrong-password')) {
+              $('#firstInput')
+                .find('.invalid-feedback')
+                .first()
+                .text('Current password is incorrect.');
+            } else if (err.responseText.trim() != '') {
+              $('#firstInput')
+                .find('.invalid-feedback')
+                .first()
+                .text('An unknown error occurred.');
+            } else {
+              $('#firstInput')
+                .find('.invalid-feedback')
+                .first()
+                .text('');
+            }
+          },
+        });
+      });
+    // end if closed
+    $('#changeProfileSettingDialog').on('hidden.bs.modal', () => {
+      resolve();
+    });
+  });
+}
+
+// show dialog to get new value, then return that value
 async function changeProfileSettingDialog(setting, title, subtitle, oldValue) {
   if (checkSetting(setting)) {
     throw new Error('Invalid setting!');
@@ -230,14 +308,6 @@ async function changeProfileSettingDialog(setting, title, subtitle, oldValue) {
       $('#newValueInput').removeAttr('pattern');
       $('#newValueInput').removeAttr('inputmode');
       $('#newValueInput').attr('autocomplete', 'name');
-      break;
-    case 'password':
-      removePhonePrepend('newValueInput');
-      $('#newValueInput').attr('type', 'password');
-      $('#newValueInput').attr('maxLength', '100');
-      $('#newValueInput').removeAttr('pattern');
-      $('#newValueInput').removeAttr('inputmode');
-      $('#newValueInput').attr('autocomplete', 'new-password');
       break;
     case 'email':
       removePhonePrepend('newValueInput');

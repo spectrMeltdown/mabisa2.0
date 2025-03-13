@@ -54,8 +54,8 @@ global $userData;
           </div>
         </div> -->
           <div class="container my-5">
-            <div class="card">
-              <div class="card-header">
+            <div class="card shadow">
+              <div class="card-header bg-white ">
                 <h3 class="m-0 font-weight-bold text-primary">Settings</h3>
               </div>
               <div class="card-body">
@@ -72,7 +72,7 @@ global $userData;
                 <ul class="list-group mb-4">
                   <li class="list-group-item d-flex justify-content-between align-items-center">
                     <span><strong>Username:</strong> <span id="username">Loading...</span></span>
-                    <?php if (userHasPerms('user_create', 'gen')):  ?>
+                    <?php if (userHasPerms('user_create', 'gen') || strtolower($userData['role']) == 'super admin'):  ?>
                       <button class="btn btn-sm btn-secondary edit-btn" id="username-edit">Edit</button>
                     <?php endif; ?>
                   </li>
@@ -82,7 +82,7 @@ global $userData;
                   </li>
                   <li class="list-group-item d-flex justify-content-between align-items-center">
                     <span><strong>Full Name:</strong> <span id="fullName">Loading...</span></span>
-                    <?php if (userHasPerms('user_create', 'gen') || strtolower($userData['role'])):  ?>
+                    <?php if (userHasPerms('user_create', 'gen') || strtolower($userData['role']) == 'super admin'):  ?>
                       <button class="btn btn-sm btn-secondary edit-btn" id="fullName-edit">Edit</button>
                     <?php endif; ?>
                   </li>
@@ -91,8 +91,8 @@ global $userData;
                     <button class="btn btn-sm btn-secondary edit-btn" id="mobileNum-edit">Edit</button>
                   </li>
                   <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span><strong>Mobile Number:</strong> <span id="mobileNum">Loading...</span></span>
-                    <button class="btn btn-sm btn-secondary edit-btn" id="mobileNum-edit">Edit</button>
+                    <span><strong>Password:</strong> <span id="password"></span></span>
+                    <button class="btn btn-sm btn-secondary edit-btn" id="password-edit">Edit</button>
                   </li>
                 </ul>
                 <!-- disabled because the super admin should be the only one to manage accounts -->

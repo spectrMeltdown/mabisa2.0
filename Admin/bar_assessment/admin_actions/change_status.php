@@ -21,11 +21,11 @@ try {
             $title = $userData['role_name'] . ' ' . $action . 'd your submission.';
             $message = 'The ' . $userData['role_name']  . ' ' . $userData['full_name']  . ' ' . $action . 'd the submission with file ID ' . $file_id . '.';
             if ($action === 'approve') {
-                $result = $admin->approve($file_id);
+                $result = $admin->approve($file_id, $iid);
             } elseif ($action === 'decline') {
-                $result = $admin->decline($file_id);
+                $result = $admin->decline($file_id, $iid);
             } elseif ($action === 'revert') {
-                $result = $admin->revert($file_id);
+                $result = $admin->revert($file_id, $iid);
                 // add 'ed' instead of just 'd'
                 $title = $userData['role_name'] . ' ' . $action . 'ed your submission.';
                 $message = 'The ' . $userData['role_name']  . ' ' . $userData['full_name']  . ' ' . $action . 'ed the submission with file ID ' . $file_id . '.';

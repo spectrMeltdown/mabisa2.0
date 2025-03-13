@@ -21,8 +21,14 @@
           </div>
           <div class="container">
             <p id="changeProfileSettingSubtitle"></p>
-            <div class="mb-3 form-group">
+            <div class="mb-3 form-group" id="firstInput">
               <input maxlength="100" type="text" class="form-control" name="newValue" id="newValueInput" required />
+              <div class="invalid-feedback">
+              </div>
+            </div>
+            <p id="changeProfileSettingSubtitle2"></p>
+            <div class="mb-3 form-group" id="secondInput" style="display: none">
+              <input maxlength="100" type="text" class="form-control" name="newValue2" id="newValueInput2" required />
               <div class="invalid-feedback">
               </div>
             </div>

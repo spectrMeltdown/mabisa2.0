@@ -1,4 +1,5 @@
-functionalities/
+**/node_modules/**
+**/files/**
 
 # composer
 composer.phar
