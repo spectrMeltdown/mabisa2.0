@@ -32,7 +32,7 @@ try {
             } else {
                 throw new Exception('Invalid action specified.');
             }
-            $notifResult = sendNotifBar($pdo, $userData['id'], $title, $message, $bid, $iid, $expand, ['assessment_comments_read', 'assessment_submissions_read']);
+            $notifResult = sendNotifBar($pdo, $userData['id'], $title, $message, $bid, $iid, $expand, ['assessment_comments_read', 'assessment_submissions_read'], $file_id);
             if ($notifResult) echo $notifResult;
 
             if ($result) {

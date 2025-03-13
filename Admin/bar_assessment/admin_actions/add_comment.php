@@ -27,7 +27,7 @@ if (!empty($file_id) && !empty($name) && !empty($commentText)) {
     $userData = $stmt->fetch(PDO::FETCH_ASSOC);
 
     // send notif to all relevant users
-    $notifResult = sendNotifBar($pdo, $userData['id'], ($userData['role_name'] . ' commented on your submission'), 'The ' . $userData['role_name'] . ' ' . $userData['full_name'] . ' commented File ID ' . $file_id . '.', (int)$bid, (int)$iid, $expand, ['assessment_comments_read', 'assessment_submissions_read']);
+    $notifResult = sendNotifBar($pdo, $userData['id'], ($userData['role_name'] . ' commented on your submission'), 'The ' . $userData['role_name'] . ' ' . $userData['full_name'] . ' commented File ID ' . $file_id . '.', (int)$bid, (int)$iid, $expand, ['assessment_comments_read', 'assessment_submissions_read'], $file_id);
     if ($notifResult) {
         writeLog($notifResult);
     }
