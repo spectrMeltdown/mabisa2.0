@@ -207,10 +207,9 @@ unset($_SESSION['success']);
                             ?>
 
                             <?php
-                            if (userHasPerms('approve', 'any', $barangay_id) && !str_contains(strtolower($userData['role']), 'super admin')) :
-                                if ($ready == 0) :
+                            if (userHasPerms('disapprove', 'any', $barangay_id) && !str_contains(strtolower($userData['role']), 'super admin')) :
+                                if ($ready == 1):
                                 // Not ready for validation (no message shown)
-                                else :
                             ?>
                                     <button class="btn btn-success float-right submit-btn" data-reverse="true" data-bar-id="<?php echo htmlspecialchars($barangay_id); ?>">
                                         Validate
@@ -307,7 +306,9 @@ unset($_SESSION['success']);
 
                                                             <td>
                                                                 <?php
-                                                                echo htmlspecialchars($row['documentary_requirements']) . '<br><br>';
+                                                                $documentaryRequirements = htmlspecialchars($row['documentary_requirements']);
+                                                                $documentaryRequirements = preg_replace('/\bOR\b/', '<strong style="font-weight: 900; color: #000;">OR</strong>', $documentaryRequirements);
+                                                                echo $documentaryRequirements . '<br><br>';
 
                                                                 $templates = is_array($row['template']) ? $row['template'] : json_decode($row['template'], true);
 
@@ -321,6 +322,7 @@ unset($_SESSION['success']);
                                                                 }
                                                                 ?>
                                                             </td>
+
                                                             <?php
                                                             $data = $responses->getData($barangay_id, $row['keyctr']);
                                                             ?>
@@ -511,7 +513,7 @@ unset($_SESSION['success']);
                     method: 'POST',
                     data: {
                         file_id: fileId,
-                        iid : iid
+                        iid: iid
                     },
                     success: data => {
                         console.log(data);
