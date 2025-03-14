@@ -6,8 +6,8 @@ header('Content-Type: application/json; charset=utf-8');
 // ini_set('display_startup_errors', 1);
 // error_reporting(E_ALL);
 // ini_set('log_errors', 1);    // Enable error logging
-require_once '../db/db.php';
 require_once 'logging.php';
+require_once '../db/db.php';
 require_once '../api/audit_log.php';
 
 try {
@@ -49,7 +49,7 @@ try {
   ];
 
   setcookie('id', (string)$row['id'], [
-    'expires' => $rememberMe ? time() + (86400 * 14) : 0, // 2 weeks if user chose remember me
+    'expires' => ($rememberMe ? time() + (86400 * 14) : 0), // 2 weeks if user chose remember me
     'path' => '/',
     'secure' => true, // Ensure it's HTTPS
     'httponly' => true, // Prevent JavaScript access
