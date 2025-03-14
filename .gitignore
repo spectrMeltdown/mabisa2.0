@@ -3,7 +3,6 @@
 
 # composer
 composer.phar
-/vendor/
 
 # Logs
 logs

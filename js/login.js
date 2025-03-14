@@ -50,7 +50,7 @@ $('#loginBtn').on('click', e => {
       location.href = 'dashboard.php';
     },
     error: err => {
-      console.error(err);
+      console.error(err.responseText);
     }
   });
   loading = false;
