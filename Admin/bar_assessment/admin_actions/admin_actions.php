@@ -13,7 +13,7 @@ class Admin_Actions
         $this->auditLog = new Audit_log($pdo);
     }
 
-    public function approve(string $file_id, $iid): bool
+    public function approve(string $file_id): bool
     {
         try {
             $this->pdo->beginTransaction();
@@ -28,11 +28,17 @@ class Admin_Actions
 
             $this->pdo->commit();
 
-            $sql = "select indicator_code from maintenance_area_indicators where keyctr=?";
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$iid]);
-            $icode = $stmt->fetch();
-            $action = "Approved a file under indicator " . $icode[0];
+         
+            $stmt = $this->pdo->prepare("
+            SELECT min.reqs_code 
+            FROM barangay_assessment_files file
+            INNER JOIN maintenance_criteria_setup cri ON file.criteria_keyctr = cri.keyctr
+            INNER JOIN maintenance_area_mininumreqs min ON min.keyctr = cri.minreqs_keyctr
+            WHERE file.file_id = ?
+        ");
+            $stmt->execute([$file_id]);
+            $icode = $stmt->fetchColumn();
+            $action = "Approved a file under indicator " . $icode;
             $this->auditLog->userLog($action);
             return true;
         } catch (Exception $e) {
@@ -41,7 +47,7 @@ class Admin_Actions
         }
     }
 
-    public function decline(string $file_id, $iid): bool
+    public function decline(string $file_id): bool
     {
         try {
             $this->pdo->beginTransaction();
@@ -55,11 +61,18 @@ class Admin_Actions
             }
 
             $this->pdo->commit();
-            $sql = "select indicator_code from maintenance_area_indicators where keyctr=?";
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$iid]);
-            $icode = $stmt->fetch();
-            $action = "Returned a file under indicator " . $icode[0];
+         
+            
+            $stmt = $this->pdo->prepare("
+            SELECT min.reqs_code 
+            FROM barangay_assessment_files file
+            INNER JOIN maintenance_criteria_setup cri ON file.criteria_keyctr = cri.keyctr
+            INNER JOIN maintenance_area_mininumreqs min ON min.keyctr = cri.minreqs_keyctr
+            WHERE file.file_id = ?
+        ");
+            $stmt->execute([$file_id]);
+            $icode = $stmt->fetchColumn();
+            $action = "Returned a file under indicator " . $icode;
             $this->auditLog->userLog($action);
             return true;
         } catch (Exception $e) {
@@ -68,7 +81,7 @@ class Admin_Actions
         }
     }
 
-    public function revert(string $file_id, $iid): bool
+    public function revert(string $file_id): bool
     {
         try {
             $this->pdo->beginTransaction();
@@ -82,11 +95,17 @@ class Admin_Actions
             }
 
             $this->pdo->commit();
-            $sql = "select indicator_code from maintenance_area_indicators where keyctr=?";
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$iid]);
-            $icode = $stmt->fetch();
-            $action = "Reverted a file to pending under indicator " . $icode[0];
+           
+            $stmt = $this->pdo->prepare("
+            SELECT min.reqs_code 
+            FROM barangay_assessment_files file
+            INNER JOIN maintenance_criteria_setup cri ON file.criteria_keyctr = cri.keyctr
+            INNER JOIN maintenance_area_mininumreqs min ON min.keyctr = cri.minreqs_keyctr
+            WHERE file.file_id = ?
+        ");
+            $stmt->execute([$file_id]);
+            $icode = $stmt->fetchColumn();
+            $action = "Reverted a file to pending under indicator " . $icode;
             $this->auditLog->userLog($action);
             return true;
         } catch (Exception $e) {

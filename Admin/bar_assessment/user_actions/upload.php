@@ -45,8 +45,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
 
         if ($success) {
             $file_id = $pdo->lastInsertId(); // Retrieve last inserted ID
+            
+              $stmt = $pdo->prepare("
+          SELECT min.reqs_code 
+FROM maintenance_criteria_setup cri
+INNER JOIN maintenance_area_mininumreqs min ON min.keyctr = cri.minreqs_keyctr
+WHERE cri.keyctr = ?;
 
-            $log->userLog("Uploaded file: $fileName for Barangay ID: $barangay_id, Criteria: $criteria_keyctr");
+        ");
+            $stmt->execute([$criteria_keyctr]);
+            $icode = $stmt->fetchColumn();
+
+            $log->userLog("Uploaded file: $fileName for Barangay ID: $barangay_id, Indicator: $icode");
 
             // Fetch user data
             $stmt = $pdo->prepare('SELECT u.*, r.name as role_name FROM users u JOIN roles r ON u.role_id = r.id WHERE u.id = :id LIMIT 1');
