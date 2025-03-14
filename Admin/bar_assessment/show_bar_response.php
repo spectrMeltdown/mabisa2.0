@@ -346,10 +346,16 @@ unset($_SESSION['success']);
                                                                                 <i class="fa fa-upload"></i>
                                                                             </button>
                                                                         </form>
-                                                                        <?php else:
-                                                                        if ($version['is_accepting_response'] == '1') : ?>
+                                                                        <?php 
+                                                                        else:
+                                                                        if ($version['is_accepting_response'] == '1') : 
+                                                                        ?>
                                                                             <p>Submission Closed</p>
-                                                                        <?php else: ?>
+                                                                        <?php elseif(userHasPerms('create', 'any', $barangay_id) && $ready == 1): ?>
+                                                                            <button type="button" class="btn btn-secondary" title="Upload disabled until validation is complete.">
+                                                                                <i class="fa fa-upload"></i>
+                                                                            </button>
+                                                                            <?php else:  ?>
                                                                             <p>No Uploads Yet</p>
                                                                         <?php endif; ?>
                                                                     <?php endif; ?>

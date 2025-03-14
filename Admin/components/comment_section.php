@@ -68,7 +68,7 @@ $log = new Audit_log($pdo);
                             <div id="statusMessage" class="alert alert-info text-center" style="display: none;"></div>
                         <?php endif; ?>
                         <?php if (userHasPerms('submissions_approve', 'any')): ?>
-                            <div id="approveForm" style="display: none;">
+                            <div id="approveForm" style="display: none; margin-bottom: 10px">
                                 <form method="POST" action="admin_actions/change_status.php">
                                     <input class="bid" type="hidden" name="bid">
                                     <input class="iid" type="hidden" name="iid">
