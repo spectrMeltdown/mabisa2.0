@@ -352,7 +352,7 @@ unset($_SESSION['success']);
                                                                         if ($version['is_accepting_response'] == '1') :
                                                                         ?>
                                                                             <p>Submission Closed</p>
-                                                                        <?php elseif (userHasPerms('create', 'any', $barangay_id) && $ready == 1): ?>
+                                                                        <?php elseif (userHasPerms('submissions_create', 'any', $barangay_id) && $ready == 1): ?>
                                                                             <button type="button" class="btn btn-secondary" title="Upload disabled until validation is complete.">
                                                                                 <i class="fa fa-upload"></i>
                                                                             </button>
