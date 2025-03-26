@@ -26,9 +26,7 @@ $(document).ready(function() {
     console.log('expand :', expand);
     console.log('ready :', ready);
 
-    modal
-      .find('#commentModalLabel')
-      .text('File & Comments for File with ID: ' + fileId);
+    modal.find('#commentModalLabel').text('File & Comments');
 
     modal
       .find('#fileDisplay')

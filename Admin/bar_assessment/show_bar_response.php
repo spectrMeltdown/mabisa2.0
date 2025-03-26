@@ -179,9 +179,10 @@ unset($_SESSION['success']);
                 <div class="container-fluid">
                     <div class="card shadow mb-4">
                         <div class="card-body">
-                            <h4>Barangay Details</h4>
-                            <p><strong>Barangay ID:</strong> <?php echo htmlspecialchars($barangay_id); ?></p>
-                            <p><strong>Barangay Name:</strong> <?php echo htmlspecialchars($barangay_name); ?></p>
+                            <!-- <h4>Barangay Details</h4> -->
+                            <h4 class="mb-4">Barangay <?php echo htmlspecialchars($barangay_name); ?></h4>
+                            <!-- <p><strong>Barangay ID:</strong> <?php echo htmlspecialchars($barangay_id); ?></p> -->
+                            <!-- <p><strong>Barangay Name:</strong> <?php echo htmlspecialchars($barangay_name); ?></p> -->
                             <a href="../bar_assessment.php" class="btn btn-secondary">Back</a>
                             <button class="btn btn-info" onclick="fetchAllComments(<?php echo $barangay_id; ?>)" data-toggle="modal" data-target="#allCommentsModal">
                                 View All Comments Summary
@@ -209,7 +210,7 @@ unset($_SESSION['success']);
                             <?php
                             if (userHasPerms('disapprove', 'any', $barangay_id) && !str_contains(strtolower($userData['role']), 'super admin')) :
                                 if ($ready == 1):
-                                // Not ready for validation (no message shown)
+                                    // Not ready for validation (no message shown)
                             ?>
                                     <button class="btn btn-success float-right submit-btn" data-reverse="true" data-bar-id="<?php echo htmlspecialchars($barangay_id); ?>">
                                         Validate
@@ -346,16 +347,16 @@ unset($_SESSION['success']);
                                                                                 <i class="fa fa-upload"></i>
                                                                             </button>
                                                                         </form>
-                                                                        <?php 
-                                                                        else:
-                                                                        if ($version['is_accepting_response'] == '1') : 
+                                                                        <?php
+                                                                    else:
+                                                                        if ($version['is_accepting_response'] == '1') :
                                                                         ?>
                                                                             <p>Submission Closed</p>
-                                                                        <?php elseif(userHasPerms('create', 'any', $barangay_id) && $ready == 1): ?>
+                                                                        <?php elseif (userHasPerms('create', 'any', $barangay_id) && $ready == 1): ?>
                                                                             <button type="button" class="btn btn-secondary" title="Upload disabled until validation is complete.">
                                                                                 <i class="fa fa-upload"></i>
                                                                             </button>
-                                                                            <?php else:  ?>
+                                                                        <?php else:  ?>
                                                                             <p>No Uploads Yet</p>
                                                                         <?php endif; ?>
                                                                     <?php endif; ?>
