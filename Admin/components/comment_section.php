@@ -28,7 +28,7 @@ $log = new Audit_log($pdo);
     <div class="modal-dialog modal-xxl">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="commentModalLabel">File & Comments</h5>
+                <h5 class="modal-title" id="commentModalLabel">File Preview & Comments</h5>
                 <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
