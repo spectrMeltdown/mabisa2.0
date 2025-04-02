@@ -12,7 +12,7 @@ $log = new Audit_log($pdo);
 
 try {
   if ($_SERVER['REQUEST_METHOD'] != 'POST') throw new Exception('Invalid request method.');
-  if (empty($_POST['details']['id'])) throw new Exception('No ID given.');
+  if (empty($_POST['details']['id']) && empty($_POST['id'])) throw new Exception('No ID given.');
   // get post vars
   /** @var array */
   $details = empty($_POST['details']) ? [] : $_POST['details'];
@@ -23,17 +23,34 @@ try {
 
   // assign individual variables
   /** @var int|string */
-  $id = $details['id'];
+  $id = empty($details['id'])
+    ? (empty($_POST['id']) ? null : $_POST['id'])
+    : $details['id'];
+  if (empty($id)) throw new Exception('No ID given.');
   /** @var string */
-  $fullName = !empty($details['fullName']) ? trim($details['fullName']) : null;
+  $fullName  = !empty($details['fullName'])
+    ? trim($details['fullName'])
+    : (!empty($_POST['fullName']) ? trim($_POST['fullName']) : null);
+
   /** @var string */
-  $username = !empty($details['username']) ? trim($details['username']) : null;
+  $username  = !empty($details['username'])
+    ? trim($details['username'])
+    : (!empty($_POST['username']) ? trim($_POST['username']) : null);
+
   /** @var string */
-  $email = !empty($details['email']) ?  trim($details['email']) : null;
+  $email     = !empty($details['email'])
+    ? trim($details['email'])
+    : (!empty($_POST['email']) ? trim($_POST['email']) : null);
+
   /** @var string */
-  $mobileNum = !empty($details['mobileNum']) ? substr(trim((string)$details['mobileNum']), 3) : null;
+  $mobileNum = !empty($details['mobileNum'])
+    ? substr(trim((string)$details['mobileNum']), 3)
+    : (!empty($_POST['mobileNum']) ? substr(trim((string)$_POST['mobileNum']), 3) : null);
+
   /** @var string */
-  $pass = !empty($details['pass']) ? trim($details['pass']) : null;
+  $pass      = !empty($details['pass'])
+    ? trim($details['pass'])
+    : (!empty($_POST['pass']) ? trim($_POST['pass']) : null);
 
   // if self was specified, use cookie id
   if ($id == 'self') $id = $_COOKIE['id'];
@@ -87,6 +104,8 @@ try {
     writeLog($params);
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
+  } else {
+    writeLog('not shouldExecute!!');
   }
 
   // get all perms

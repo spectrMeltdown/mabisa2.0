@@ -367,6 +367,10 @@ async function changeProfileSettingDialog(setting, title, subtitle, oldValue) {
 // function to apply changes to database
 function updateAccData(/** @type {FormData} */ formData) {
   formData.append('id', 'self');
+  console.log('updateAccData');
+  for (const [key, value] of formData.entries()) {
+    console.log(key + ': ' + value);
+  }
   try {
     $.ajax({
       url: '../api/edit_user.php',
