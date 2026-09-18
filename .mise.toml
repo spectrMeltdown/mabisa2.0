@@ -1,0 +1,7 @@
+[tools]
+php = "8.2.33"
+node = "22.23.1"
+"github:composer/composer" = "2.8.12"
+
+[settings]
+# Prefer prebuilt PHP binaries when available (faster than building from source)

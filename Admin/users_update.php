@@ -125,7 +125,7 @@ if (!(userHasPerms('users_create', 'gen') || userHasPerms('users_update', 'gen')
                   </div>
                   <div class="mb-3 form-group col-lg-6">
                     <label for="mobileNum" class="form-label">Mobile Number</label>
-                    <input title="Please enter a valid phone number." maxLength="13" type="tel" class="form-control" name="mobileNum" id="mobileNum" pattern="^\+?[0-9]*$" inputmode="numeric" required autocomplete="tel" value="+639376206802" />
+                    <input title="Please enter a valid phone number." maxLength="13" type="tel" class="form-control" name="mobileNum" id="mobileNum" pattern="^\+?[0-9]*$" inputmode="numeric" required autocomplete="tel" />
                     <div class="invalid-feedback">
                     </div>
                   </div>
@@ -135,7 +135,7 @@ if (!(userHasPerms('users_create', 'gen') || userHasPerms('users_update', 'gen')
                   <div class="mb-3 col-lg-6 form-group" id="passField">
                     <label for="pass" class="form-label" id="passwordLabel">Password</label>
                     <div class="d-flex">
-                      <input maxlength="100" type="password" class="form-control" name="pass" id="pass" required autocomplete="new-password" value="iloveyou" />
+                      <input maxlength="100" type="password" class="form-control" name="pass" id="pass" required autocomplete="new-password" />
                       <div class="p-1"></div>
                       <button type="button" id="passEye" class="btn btn-outline-secondary d-inline-block">
                         <i class="fa fa-eye"></i> <!-- Add Font Awesome for the icon -->
@@ -148,7 +148,7 @@ if (!(userHasPerms('users_create', 'gen') || userHasPerms('users_update', 'gen')
                   <div class="mb-3 col-lg-6 form-group" id="confirmPassField">
                     <label for="confirmPass" class="form-label">Confirm password</label>
                     <div class="d-flex">
-                      <input maxlength="100" type="password" class="form-control" name="confirmPass" id="confirmPass" required autocomplete="new-password" value="iloveyou" />
+                      <input maxlength="100" type="password" class="form-control" name="confirmPass" id="confirmPass" required autocomplete="new-password" />
                       <div class="p-1"></div>
                       <button type="button" id="confirmPassEye" class="btn btn-outline-secondary">
                         <i class="fa fa-eye"></i> <!-- Add Font Awesome for the icon -->
