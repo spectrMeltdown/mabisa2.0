@@ -1,6 +1,4 @@
 -- MABISA 2.0 reference/seed data (non-sensitive)
--- Place names (refprovince/refcity/refbarangay), roles, permissions, user_roles.
-
 SET NAMES utf8mb4;
 USE `mabisa2.0`;
 

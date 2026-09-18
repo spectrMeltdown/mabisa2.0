@@ -27,7 +27,7 @@ function loadEnvFile(string $path): void
   }
 }
 
-loadEnvFile(__DIR__ . '/../.env');
+loadEnvFile(__DIR__ . '/../../.env');
 
 $dbHost = getenv('DB_HOST') ?: '127.0.0.1';
 $dbPort = getenv('DB_PORT') ?: '3306';
