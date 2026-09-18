@@ -129,3 +129,6 @@ web_modules/
 
 .cursor/
 TODO/
+
+# Sensitive data (quarantined for disposal; do not commit)
+sensitive/
